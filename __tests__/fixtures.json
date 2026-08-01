@@ -1,0 +1,5 @@
+[
+  {"reference":"Astrodienst-compatible 00:00 UT ephemeris","utc":"1990-05-01T00:00:00Z","toleranceDegrees":0.2,"expected":{"Sun":40.3667,"Moon":119.9167,"Mercury":45.0833,"Venus":356.4667,"Mars":337.5333,"Jupiter":96.95,"Saturn":295.3333,"Uranus":279.4667,"Neptune":284.5167,"Pluto":226.5667,"North Node":312.1}},
+  {"reference":"Astrodienst-compatible 00:00 UT ephemeris","utc":"1990-05-02T00:00:00Z","toleranceDegrees":0.2,"expected":{"Sun":41.3333,"Moon":133.2,"Mercury":44.5,"Venus":357.5833,"Mars":338.2833,"Jupiter":97.1167,"Saturn":295.3333,"Uranus":279.45,"Neptune":284.5167,"Pluto":226.55,"North Node":312.05}},
+  {"reference":"Astrodienst-compatible 00:00 UT ephemeris","utc":"1990-05-03T00:00:00Z","toleranceDegrees":0.2,"expected":{"Sun":42.3167,"Moon":146.1333,"Mercury":43.9,"Venus":358.7,"Mars":339.0333,"Jupiter":97.2833,"Saturn":295.3333,"Uranus":279.4333,"Neptune":284.5,"Pluto":226.5167,"North Node":312.0}}
+]
