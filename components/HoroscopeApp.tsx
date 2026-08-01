@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { calculateNatalChart } from "@/lib/chart";
 import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { HistoricalTimeError } from "@/lib/time";
 import { NatalChartWheel } from "./NatalChartWheel";
+
+const ZODIAC_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"] as const;
 
 function interpretationMarkup(text: string) {
   return text.split(/\n(?=\d+\.\s)/).map((section,i)=>{
@@ -19,9 +21,17 @@ export default function HoroscopeApp() {
   const [query,setQuery]=useState(""); const [places,setPlaces]=useState<ResolvedPlace[]>([]); const [place,setPlace]=useState<ResolvedPlace>();
   const [chart,setChart]=useState<NatalChart>(); const [interpretation,setInterpretation]=useState("");
   const [interpretationLoading,setInterpretationLoading]=useState(false);
+  const [interpretationProgress,setInterpretationProgress]=useState(0);
   const [interpretationError,setInterpretationError]=useState("");
   const [error,setError]=useState(""); const [busy,setBusy]=useState(false); const [searching,setSearching]=useState(false);
   const [ambiguity,setAmbiguity]=useState<"earlier"|"later"|undefined>();
+
+  useEffect(()=>{
+    if(!interpretationLoading){setInterpretationProgress(0);return;}
+    setInterpretationProgress(8);
+    const timer=window.setInterval(()=>setInterpretationProgress(value=>value>=92?value:Math.min(92,value+Math.max(1,Math.round((92-value)*0.08)))),450);
+    return ()=>window.clearInterval(timer);
+  },[interpretationLoading]);
 
   async function searchPlaces() {
     setError(""); setSearching(true); setPlace(undefined);
@@ -44,6 +54,7 @@ export default function HoroscopeApp() {
         const j=await r.json();
         if(!r.ok) throw new Error(j.error);
         if(typeof j.interpretation!=="string" || !j.interpretation.trim()) throw new Error("The interpretation service returned an empty response. The calculated chart remains available.");
+        setInterpretationProgress(100);
         setInterpretation(j.interpretation.trim());
       }
       catch(e){setInterpretationError(e instanceof Error?e.message:"The interpretation request failed. The calculated chart remains available.");}
@@ -80,7 +91,7 @@ export default function HoroscopeApp() {
         {chart.houses.length>0&&<section className="panel p-5"><h2 className="text-xl gold mb-3">House cusps</h2><div className="table-wrap"><table><thead><tr><th>House</th><th>Cusp</th></tr></thead><tbody>{chart.houses.map(h=><tr key={h.house}><td>{h.house}</td><td>{formatDegree(h.longitude)}</td></tr>)}</tbody></table></div></section>}
         <section className="panel p-5"><h2 className="text-xl gold mb-3">Major aspects</h2><div className="table-wrap"><table><thead><tr><th>Bodies</th><th>Aspect</th><th>Angle</th><th>Orb</th></tr></thead><tbody>{chart.aspects.map((a,i)=><tr key={i}><td>{a.body1}–{a.body2}</td><td>{a.type}</td><td>{a.angle.toFixed(2)}°</td><td>{a.orb.toFixed(2)}°</td></tr>)}</tbody></table></div></section>
         <section className="grid md:grid-cols-2 gap-4"><article className="panel p-5"><h2 className="text-xl gold">Calculation method</h2><p className="mt-2 text-sm leading-6">{chart.calculation.zodiac} zodiac; {chart.calculation.houseSystem} houses; {chart.calculation.ephemeris}. Default aspect orbs: conjunction/opposition 8°, trine/square 7°, sextile 5°.</p></article><article className="panel p-5"><h2 className="text-xl gold">Accuracy and limitations</h2><p className="mt-2 text-sm leading-6">Coordinates and the IANA historical time zone are resolved from the selected place. Unknown times omit houses and angles. Astrology is presented as a symbolic tradition rather than scientifically validated prediction.</p></article></section>
-        <section className="panel p-5 md:p-7" aria-live="polite"><h2 className="text-xl gold">Interpretation</h2>{interpretationLoading?<div className="mt-3"><p className="text-[#ddd6c8]">Generating your interpretation…</p><p className="text-sm text-[#b9b2a3] mt-1">The calculated chart remains available while the written analysis is prepared.</p></div>:interpretation?<div className="prose mt-3">{interpretationMarkup(interpretation)}</div>:interpretationError?<div role="alert" className="mt-3 p-3 rounded-lg border border-[#8b5b53] bg-[#2b1718]"><p>{interpretationError}</p></div>:<p className="mt-3 text-[#b9b2a3]">Submit valid birth information to generate a written interpretation.</p>}</section>
+        <section className="panel p-5 md:p-7" aria-live="polite"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl gold">Interpretation</h2><div className="flex flex-wrap gap-2 text-xl text-[#c9a75d]" aria-label="Zodiac constellation symbols">{ZODIAC_SYMBOLS.map(symbol=><span key={symbol} aria-hidden="true">{symbol}</span>)}</div></div>{interpretationLoading?<div className="mt-4"><div className="flex items-center justify-between gap-3"><p className="text-[#ddd6c8]">Generating your interpretation…</p><span className="text-sm gold tabular-nums">{interpretationProgress}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[#142338]" role="progressbar" aria-label="Interpretation generation progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={interpretationProgress}><div className="h-full rounded-full bg-[#c9a75d] transition-[width] duration-500 ease-out" style={{width:`${interpretationProgress}%`}}/></div><p className="text-sm text-[#b9b2a3] mt-2">The calculated chart remains available while the written analysis is prepared.</p></div>:interpretation?<div className="prose mt-4">{interpretationMarkup(interpretation)}</div>:interpretationError?<div role="alert" className="mt-3 p-3 rounded-lg border border-[#8b5b53] bg-[#2b1718]"><p>{interpretationError}</p></div>:<p className="mt-3 text-[#b9b2a3]">Submit valid birth information to generate a written interpretation.</p>}</section>
       </>}
     </div>
   </main>;
