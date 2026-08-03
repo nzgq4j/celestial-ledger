@@ -17,7 +17,8 @@ export function SiteHeader() {
           <Link href="/#chart">Chart</Link>
           <Link href="/reports">Reports</Link>
           <Link href="/account" className="site-nav__account">
-            Private library
+            <span className="site-nav__account-full">Private library</span>
+            <span className="site-nav__account-short">Library</span>
           </Link>
         </nav>
       </div>

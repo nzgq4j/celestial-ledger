@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
+import { CelestialRouteMap } from "./CelestialRouteMap";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -207,7 +208,8 @@ export default function HoroscopeApp() {
   return (
     <main className="min-h-screen">
       <header className="atlas-hero">
-        <div className="max-w-6xl mx-auto px-5 py-16 md:py-24">
+        <div className="atlas-hero__inner">
+          <div className="atlas-hero__content">
           <p className="eyebrow">Your chart · a private field guide</p>
           <h1>
             Your natal chart,
@@ -227,6 +229,8 @@ export default function HoroscopeApp() {
             <span>03</span>
             <p>Evidence interpreted</p>
           </div>
+          </div>
+          <CelestialRouteMap />
         </div>
       </header>
       <div
@@ -275,7 +279,7 @@ export default function HoroscopeApp() {
               <label className="label" htmlFor="place">
                 Birthplace search
               </label>
-              <div className="flex gap-2">
+              <div className="place-search-row">
                 <input
                   id="place"
                   className="input"

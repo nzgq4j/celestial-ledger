@@ -48,7 +48,7 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
   ];
   const placementMap = new Map(chart.placements.map((p) => [p.name, p]));
   return (
-    <figure className="panel p-4" aria-labelledby="wheel-title">
+    <figure className="panel chart-wheel" aria-labelledby="wheel-title">
       <h2 id="wheel-title" className="text-lg font-semibold gold mb-3">
         Natal Chart
       </h2>
