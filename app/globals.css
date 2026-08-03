@@ -989,39 +989,114 @@ a {
     serif;
 }
 .account-dashboard {
-  max-width: 68rem;
+  max-width: 72rem;
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 .account-hero {
+  position: relative;
+  min-height: 15rem;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  grid-template-columns: minmax(0, 0.72fr) minmax(16rem, 0.28fr);
+  align-items: center;
   gap: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  padding: 2.5rem;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(110deg, var(--surface-deep) 0 58%, transparent 75%),
+    radial-gradient(circle at 82% 50%, #28324b 0, #0a1626 42%, #07111f 75%);
 }
 .account-hero h1 {
-  margin-top: 0.45rem;
+  max-width: 13ch;
+  margin: 0.55rem 0 0;
   font:
     400 clamp(2.25rem, 5vw, 4rem)/1 Georgia,
     serif;
 }
-.account-hero > div > p:last-child,
+.account-hero__welcome > p:last-child,
 .dashboard-empty {
-  margin-top: 0.75rem;
+  max-width: 36rem;
+  margin-top: 1rem;
   color: var(--muted);
+  line-height: 1.6;
+}
+.account-hero__orbit {
+  position: relative;
+  justify-self: center;
+  width: 12rem;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 2.4rem color-mix(in srgb, var(--gold) 3%, transparent),
+    0 0 3rem color-mix(in srgb, var(--gold) 9%, transparent);
+}
+.account-hero__orbit::before,
+.account-hero__orbit::after {
+  position: absolute;
+  inset: 18%;
+  border: 1px solid color-mix(in srgb, var(--gold) 32%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+.account-hero__orbit::after {
+  inset: 46%;
+  border: 0;
+  background: var(--gold);
+  box-shadow: 0 0 1.5rem var(--gold);
+}
+.account-hero__orbit i {
+  position: absolute;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 0 0.7rem var(--paper);
+}
+.account-hero__orbit i:nth-child(1) {
+  top: 7%;
+  left: 47%;
+}
+.account-hero__orbit i:nth-child(2) {
+  right: 12%;
+  bottom: 26%;
+}
+.account-hero__orbit i:nth-child(3) {
+  bottom: 14%;
+  left: 18%;
+}
+.atlas-next-step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--gold);
+  background: color-mix(in srgb, var(--surface) 88%, var(--gold));
+}
+.atlas-next-step h2 {
+  margin: 0.35rem 0 0.45rem;
+  font:
+    400 clamp(1.5rem, 3vw, 2.15rem)/1.1 Georgia,
+    serif;
+}
+.atlas-next-step > div > p:last-child {
+  max-width: 44rem;
+  color: var(--muted);
+  line-height: 1.55;
 }
 .account-stats {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
 }
 .account-stats span {
-  min-width: 6.5rem;
-  padding: 0.65rem 0.8rem;
-  border: 1px solid var(--line);
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  background: var(--surface-deep);
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.25;
@@ -1047,8 +1122,8 @@ a {
   gap: 0.35rem;
   padding: 0.45rem;
   overflow-x: auto;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--ink) 94%, transparent);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 96%, transparent);
   backdrop-filter: blur(12px);
 }
 .account-jump-links a {
@@ -1065,7 +1140,7 @@ a {
 .dashboard-panel,
 .account-settings {
   scroll-margin-top: 9rem;
-  padding: 1.35rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
   border: 1px solid var(--line);
   background: var(--surface);
 }
@@ -1095,8 +1170,9 @@ a {
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
-  padding: 1rem;
+  padding: 1.15rem;
   border: 1px solid #4a5b72;
+  background: var(--surface-deep);
 }
 .ready-report p,
 .compact-products p,
@@ -1107,12 +1183,27 @@ a {
   font-size: 0.82rem;
 }
 .compact-products {
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.compact-products article {
+  grid-template-columns: 1fr;
+  align-content: space-between;
+  min-height: 11rem;
+  margin-top: 0;
+}
+.compact-products h3 {
+  color: var(--paper);
+  font:
+    400 1.3rem Georgia,
+    serif;
 }
 .compact-products__action {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 0.8rem;
 }
 .compact-products__action strong {
@@ -1126,6 +1217,69 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+}
+.birth-profile-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
+}
+.birth-profile-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+}
+.birth-profile-card__glyph {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  color: var(--gold);
+}
+.birth-profile-card__body h3 {
+  margin: 0.25rem 0;
+  color: var(--paper);
+  font:
+    400 1.15rem Georgia,
+    serif;
+}
+.birth-profile-card__body > p:not(.section-kicker),
+.birth-profile-card__body small,
+.birth-profile-empty p {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.birth-profile-card__body small {
+  display: block;
+  margin-top: 0.25rem;
+}
+.birth-profile-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.birth-profile-card__delete {
+  padding: 0.7rem 0.8rem;
+  color: #dca399;
+  font-size: 0.75rem;
+}
+.birth-profile-empty {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--line);
+}
+.birth-profile-empty > span {
+  color: var(--gold);
+  font-size: 1.8rem;
 }
 .account-form {
   display: grid;
@@ -1986,6 +2140,22 @@ input:focus-visible {
   .account-settings__grid {
     grid-template-columns: 1fr;
   }
+  .account-hero {
+    min-height: 0;
+  }
+  .account-hero__orbit {
+    position: absolute;
+    right: -2rem;
+    bottom: -4rem;
+    opacity: 0.42;
+  }
+  .account-hero__welcome {
+    position: relative;
+    z-index: 1;
+  }
+  .compact-products {
+    grid-template-columns: 1fr;
+  }
   .account-stats {
     justify-content: flex-start;
   }
@@ -2122,6 +2292,23 @@ input:focus-visible {
   }
   .account-hero {
     gap: 1.25rem;
+    padding: 1.5rem;
+  }
+  .atlas-next-step,
+  .birth-profile-card,
+  .birth-profile-empty {
+    grid-template-columns: 1fr;
+  }
+  .atlas-next-step {
+    align-items: start;
+    gap: 1.25rem;
+  }
+  .birth-profile-card__glyph,
+  .birth-profile-empty > span {
+    display: none;
+  }
+  .birth-profile-card__actions {
+    justify-content: space-between;
   }
   .account-stats {
     display: grid;

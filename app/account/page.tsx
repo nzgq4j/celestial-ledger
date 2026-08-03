@@ -82,31 +82,81 @@ export default async function AccountPage({
     authData.user.email?.split("@")[0] ||
     "Explorer";
   const notice = params.notice ? notices[params.notice] : undefined;
+  const latestReport = reports[0];
+  const nextStep = readyEntitlements.length
+    ? {
+        kicker: "A reading is waiting",
+        title: "Your purchased report is ready to begin.",
+        copy: "Choose the birth chart it belongs to, then open the next chapter of your atlas.",
+        href: "#reports",
+        action: "Generate my report",
+      }
+    : !birthProfiles.length
+      ? {
+          kicker: "Your first constellation",
+          title: "Begin with the sky at your first breath.",
+          copy: "Create your free natal chart, then save it here as the foundation of every personal reading.",
+          href: "/#chart",
+          action: "Create my natal chart",
+        }
+      : latestReport
+        ? {
+            kicker: "Continue your journey",
+            title: "Return to your most recent reading.",
+            copy: "Your report remains private in this atlas, ready whenever you want to revisit its guidance.",
+            href: `/reports/${latestReport.id}`,
+            action: "Open latest report",
+          }
+        : {
+            kicker: "Your chart is anchored",
+            title: "Choose the question your atlas will explore next.",
+            copy: "Step inside a sample edition, then choose the private reading that meets this moment in your life.",
+            href: "/samples",
+            action: "Explore sample readings",
+          };
 
   return (
     <main className="page-shell private-library account-dashboard">
       <header className="account-hero">
-        <div>
+        <div className="account-hero__welcome">
           <p className="eyebrow">My Celestial Atlas</p>
           <h1>Welcome, {displayName}</h1>
           <p>
-            Your charts, reports, and account settings in one private place.
+            Your private observatory for the charts you carry and the readings
+            still unfolding.
           </p>
         </div>
-        <div className="account-stats" aria-label="Account summary">
-          <span>
-            <strong>{birthProfiles.length}</strong> birth{" "}
-            {birthProfiles.length === 1 ? "profile" : "profiles"}
-          </span>
-          <span>
-            <strong>{reports.length}</strong>{" "}
-            {reports.length === 1 ? "report" : "reports"}
-          </span>
-          <span>
-            <strong>{readyEntitlements.length}</strong> ready to generate
-          </span>
+        <div className="account-hero__orbit" aria-hidden="true">
+          <i />
+          <i />
+          <i />
         </div>
       </header>
+
+      <section className="atlas-next-step" aria-labelledby="next-step-title">
+        <div>
+          <p className="section-kicker">{nextStep.kicker}</p>
+          <h2 id="next-step-title">{nextStep.title}</h2>
+          <p>{nextStep.copy}</p>
+        </div>
+        <Link href={nextStep.href} className="button-primary">
+          {nextStep.action}
+        </Link>
+      </section>
+
+      <div className="account-stats" aria-label="Account summary">
+        <span>
+          <strong>{birthProfiles.length}</strong> saved{" "}
+          {birthProfiles.length === 1 ? "chart" : "charts"}
+        </span>
+        <span>
+          <strong>{reports.length}</strong> private{" "}
+          {reports.length === 1 ? "reading" : "readings"}
+        </span>
+        <span>
+          <strong>{readyEntitlements.length}</strong> ready to generate
+        </span>
+      </div>
 
       {notice && (
         <p className="account-notice" role="status">
@@ -115,29 +165,19 @@ export default async function AccountPage({
       )}
 
       <nav className="account-jump-links" aria-label="Account sections">
-        <a href="#birth-profiles">Birth profiles</a>
-        <a href="#reports">Reports</a>
-        <a href="#account-settings">Account settings</a>
+        <a href="#reports">My readings</a>
+        <a href="#birth-profiles">My birth charts</a>
+        <a href="#account-settings">Settings</a>
       </nav>
 
-      <section className="dashboard-panel" id="birth-profiles">
+      <section
+        className="dashboard-panel dashboard-panel--reports"
+        id="reports"
+      >
         <div className="dashboard-panel__heading">
           <div>
-            <p className="section-kicker">Source material</p>
-            <h2>Birth profiles</h2>
-          </div>
-          <Link href="/#chart" className="text-link">
-            Create another chart
-          </Link>
-        </div>
-        <BirthProfileList initialProfiles={birthProfiles} />
-      </section>
-
-      <section className="dashboard-panel" id="reports">
-        <div className="dashboard-panel__heading">
-          <div>
-            <p className="section-kicker">My Celestial Atlas</p>
-            <h2>Reports</h2>
+            <p className="section-kicker">Your private library</p>
+            <h2>Readings and reports</h2>
           </div>
           <span className="dashboard-panel__meta">{reports.length} saved</span>
         </div>
@@ -214,6 +254,22 @@ export default async function AccountPage({
               </article>
             ))}
         </div>
+      </section>
+
+      <section
+        className="dashboard-panel dashboard-panel--charts"
+        id="birth-profiles"
+      >
+        <div className="dashboard-panel__heading">
+          <div>
+            <p className="section-kicker">The foundation of your atlas</p>
+            <h2>Saved birth charts</h2>
+          </div>
+          <Link href="/#chart" className="text-link">
+            Create another chart →
+          </Link>
+        </div>
+        <BirthProfileList initialProfiles={birthProfiles} />
       </section>
 
       <AccountSettings
