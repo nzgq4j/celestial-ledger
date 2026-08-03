@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,7 +13,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="meridian" aria-hidden="true" />
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

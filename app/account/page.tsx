@@ -46,19 +46,15 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-5 py-12">
-      <section className="panel p-6 md:p-8">
+    <main className="page-shell private-library">
+      <section className="library-heading">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="gold text-xs uppercase tracking-[.22em]">
-              Private account
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold">Report library</h1>
+            <p className="eyebrow">Private atlas index</p>
+            <h1>Report library</h1>
           </div>
           <form action={signOut}>
-            <button className="rounded-lg border border-[#536177] px-4 py-2">
-              Sign out
-            </button>
+            <button className="button-quiet">Sign out</button>
           </form>
         </div>
         <p className="mt-4 text-[#b9b2a3]">
@@ -66,18 +62,17 @@ export default async function AccountPage() {
           {profile?.adult_confirmed_at ? "recorded" : "not recorded"}
         </p>
       </section>
-      <section className="panel mt-6 p-6">
-        <h2 className="text-xl gold">Birth profiles</h2>
+      <section className="library-section">
+        <p className="section-kicker">Source material</p>
+        <h2>Birth profiles</h2>
         <BirthProfileList initialProfiles={birthProfiles ?? []} />
       </section>
-      <section className="panel mt-6 p-6">
-        <h2 className="text-xl gold">Available reports</h2>
+      <section className="library-section">
+        <p className="section-kicker">Report collection</p>
+        <h2>Available reports</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {(products ?? []).map((product) => (
-            <article
-              key={product.report_type}
-              className="rounded-lg border border-[#34455c] p-4"
-            >
+            <article key={product.report_type} className="library-product">
               <h3 className="font-semibold">{product.name}</h3>
               <p className="mt-2 text-sm text-[#b9b2a3]">
                 {product.description}
@@ -93,16 +88,18 @@ export default async function AccountPage() {
           ))}
         </div>
       </section>
-      <section className="panel mt-6 p-6">
-        <h2 className="text-xl gold">Entitlements</h2>
+      <section className="library-section">
+        <p className="section-kicker">Purchased access</p>
+        <h2>Entitlements</h2>
         <p className="mt-3 text-[#b9b2a3]">
           {entitlements?.length
             ? `${entitlements.length} purchased report entitlement(s).`
             : "No report entitlements yet."}
         </p>
       </section>
-      <section className="panel mt-6 p-6">
-        <h2 className="text-xl gold">Reports</h2>
+      <section className="library-section">
+        <p className="section-kicker">Your archive</p>
+        <h2>Reports</h2>
         <p className="mt-3 text-[#b9b2a3]">
           {reports?.length
             ? `${reports.length} report(s).`

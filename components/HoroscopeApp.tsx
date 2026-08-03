@@ -206,22 +206,33 @@ export default function HoroscopeApp() {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-[#2b3a4e]">
-        <div className="max-w-6xl mx-auto px-5 py-8">
-          <p className="gold uppercase tracking-[.22em] text-xs">
-            Celestial Atlas
-          </p>
-          <h1 className="text-3xl md:text-5xl font-semibold mt-2">
-            Your natal chart, calculated before it is interpreted.
+      <header className="atlas-hero">
+        <div className="max-w-6xl mx-auto px-5 py-16 md:py-24">
+          <p className="eyebrow">Your chart · a private field guide</p>
+          <h1>
+            Your natal chart,
+            <br />
+            <em>calculated before interpreted.</em>
           </h1>
-          <p className="text-[#b9b2a3] mt-3 max-w-3xl">
+          <p className="atlas-hero__copy">
             Astronomical positions are calculated deterministically. The
             language model explains validated chart data and does not calculate
             or modify placements.
           </p>
+          <div className="atlas-hero__method">
+            <span>01</span>
+            <p>Birthplace resolved</p>
+            <span>02</span>
+            <p>Chart calculated</p>
+            <span>03</span>
+            <p>Evidence interpreted</p>
+          </div>
         </div>
       </header>
-      <div className="max-w-6xl mx-auto px-5 py-8 space-y-8">
+      <div
+        id="chart"
+        className="max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
+      >
         <section className="panel p-5 md:p-7" aria-labelledby="birth-heading">
           <h2 id="birth-heading" className="text-xl gold font-semibold">
             Birth information
