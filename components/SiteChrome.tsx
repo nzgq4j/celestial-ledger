@@ -24,12 +24,61 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
-          <Link href="/#chart" className="site-nav__optional">
-            {pack.messages.navigation.chart}
-          </Link>
+          <details className="mega-nav">
+            <summary>
+              Explore <span aria-hidden="true">⌄</span>
+            </summary>
+            <div className="mega-nav__panel">
+              <section>
+                <p>Today’s sky</p>
+                <Link href="/horoscopes">
+                  <strong>Daily horoscopes</strong>
+                  <small>The day’s celestial weather for every sign</small>
+                </Link>
+                <Link href="/weekly-readings">
+                  <strong>Weekly readings</strong>
+                  <small>Your natal chart in the moving sky</small>
+                </Link>
+              </section>
+              <section>
+                <p>Your birth chart</p>
+                <Link href="/#chart">
+                  <strong>Free natal chart</strong>
+                  <small>Calculate the sky at your first breath</small>
+                </Link>
+                <Link href="/samples">
+                  <strong>Sample readings</strong>
+                  <small>Step inside a complete Celestial Atlas edition</small>
+                </Link>
+              </section>
+              <section>
+                <p>Private reports</p>
+                <Link href="/reports">
+                  <strong>Report collection</strong>
+                  <small>Career, recovery and future cycles</small>
+                </Link>
+                <Link href="/samples/career-purpose">
+                  <strong>Career sample</strong>
+                  <small>See how natal evidence becomes guidance</small>
+                </Link>
+                <Link href="/samples/recovery-reflection">
+                  <strong>Recovery sample</strong>
+                  <small>Grounding and renewal through the natal sky</small>
+                </Link>
+              </section>
+              <section className="mega-nav__feature">
+                <p>The celestial rhythm</p>
+                <strong>A new reading, every week.</strong>
+                <small>
+                  Follow the transits as they meet your own natal chart.
+                </small>
+                <Link href="/weekly-readings">Discover weekly readings →</Link>
+              </section>
+            </div>
+          </details>
           <Link href="/horoscopes">Horoscopes</Link>
           <Link href="/reports" className="site-nav__optional">
-            {pack.messages.navigation.reports}
+            Reports
           </Link>
           <Link href="/account" className="site-nav__account">
             <span className="site-nav__account-full">
