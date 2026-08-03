@@ -4,6 +4,7 @@ import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeClient } from "@/lib/stripe";
+import Stripe from "stripe";
 import {
   isSameOrigin,
   PRIVATE_RESPONSE_HEADERS,
@@ -37,6 +38,11 @@ export async function POST(request: Request) {
 
   try {
     const { reportType } = schema.parse(await readLimitedJson(request, 1_024));
+    if (reportType !== "career_purpose")
+      return json(
+        { error: "This report is not available for purchase yet." },
+        409,
+      );
     const admin = createAdminClient();
     const { data: product } = await admin
       .from("products")
@@ -122,7 +128,19 @@ export async function POST(request: Request) {
         .update({ stripe_checkout_session_id: session.id })
         .eq("id", order.id);
       return json({ url: session.url });
-    } catch {
+    } catch (error) {
+      if (error instanceof Stripe.errors.StripeError) {
+        console.error("[checkout] Stripe session creation failed", {
+          type: error.type,
+          code: error.code,
+          statusCode: error.statusCode,
+          requestId: error.requestId,
+        });
+      } else {
+        console.error("[checkout] Session creation failed", {
+          type: error instanceof Error ? error.name : "UnknownError",
+        });
+      }
       await admin
         .from("orders")
         .update({ status: "failed" })

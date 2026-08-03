@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 type Profile = {
   id: string;
@@ -65,14 +66,22 @@ export function BirthProfileList({
                 {new Date(profile.expires_at).toLocaleDateString()}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => remove(profile.id)}
-              disabled={deleting === profile.id}
-              className="rounded-lg border border-[#8b5b53] px-3 py-2 text-sm"
-            >
-              {deleting === profile.id ? "Deleting…" : "Delete"}
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/account/birth-profiles/${profile.id}`}
+                className="rounded-lg bg-[#c9a75d] px-3 py-2 text-sm font-semibold text-[#07111f]"
+              >
+                View natal chart
+              </Link>
+              <button
+                type="button"
+                onClick={() => remove(profile.id)}
+                disabled={deleting === profile.id}
+                className="rounded-lg border border-[#8b5b53] px-3 py-2 text-sm"
+              >
+                {deleting === profile.id ? "Deleting…" : "Delete"}
+              </button>
+            </div>
           </div>
         </article>
       ))}

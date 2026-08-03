@@ -73,21 +73,23 @@ export default async function AccountPage() {
         <p className="section-kicker">Report collection</p>
         <h2>Available reports</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {(products ?? []).map((product) => (
-            <article key={product.report_type} className="library-product">
-              <h3 className="font-semibold">{product.name}</h3>
-              <p className="mt-2 text-sm text-[#b9b2a3]">
-                {product.description}
-              </p>
-              <p className="my-3 gold">
-                {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: product.currency ?? "USD",
-                }).format((product.unit_amount ?? 0) / 100)}
-              </p>
-              <CheckoutButton reportType={product.report_type} />
-            </article>
-          ))}
+          {(products ?? [])
+            .filter((product) => product.report_type === "career_purpose")
+            .map((product) => (
+              <article key={product.report_type} className="library-product">
+                <h3 className="font-semibold">{product.name}</h3>
+                <p className="mt-2 text-sm text-[#b9b2a3]">
+                  {product.description}
+                </p>
+                <p className="my-3 gold">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: product.currency ?? "USD",
+                  }).format((product.unit_amount ?? 0) / 100)}
+                </p>
+                <CheckoutButton reportType={product.report_type} />
+              </article>
+            ))}
         </div>
       </section>
       <section className="library-section">
