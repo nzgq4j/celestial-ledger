@@ -13,10 +13,12 @@ Required production secrets will eventually include Supabase URL/anon/service-ro
 - Region: London (`eu-west-2`)
 - API URL: `https://jyguyvpbstskpuwqwrok.supabase.co`
 
-Configure `NEXT_PUBLIC_SUPABASE_URL` and the modern publishable key in Vercel. Do not expose a secret or service-role key. Configure Supabase Auth Site URL and allowed redirect URLs for the production domain and local development. For SSR email verification, set the confirm-signup email template link to:
+Configure the Vercel Supabase Marketplace variables documented in `.env.example`; the application consumes those names directly. Do not expose a secret or service-role key. Set the Supabase Auth Site URL to `https://celestial-ledger.vercel.app` and add `https://celestial-ledger.vercel.app/auth/confirm` to the allowed redirect URLs. Local development may additionally allow `http://localhost:3000/auth/confirm`.
+
+The application supplies the canonical production URL explicitly when creating a user. To honor that `emailRedirectTo` value, set the confirm-signup email template link to:
 
 ```html
-{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
+{{ .RedirectTo }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
 ```
 
 The three catalog products are deliberately inactive until Stripe and ephemeris release gates pass.

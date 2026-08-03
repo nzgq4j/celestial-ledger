@@ -14,6 +14,12 @@ function credentials(formData: FormData) {
   return { email: email.trim(), password };
 }
 
+function canonicalAppUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+  return "https://celestial-ledger.vercel.app";
+}
+
 export async function signIn(formData: FormData) {
   if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
   const supabase = await createClient();
@@ -27,7 +33,12 @@ export async function signIn(formData: FormData) {
 export async function signUp(formData: FormData) {
   if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp(credentials(formData));
+  const { error } = await supabase.auth.signUp({
+    ...credentials(formData),
+    options: {
+      emailRedirectTo: canonicalAppUrl(),
+    },
+  });
   if (error) redirect("/auth/login?error=sign_up_failed");
   redirect("/auth/check-email");
 }
