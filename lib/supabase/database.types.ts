@@ -516,6 +516,18 @@ export type Database = {
         };
         Returns: string;
       };
+      queue_complimentary_report: {
+        Args: {
+          p_birth_profile_id: string;
+          p_prompt_version: string;
+          p_recovery_themes?: Json | null;
+          p_report_type: string;
+          p_safety_version: string;
+          p_schema_version: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
       process_stripe_event: {
         Args: {
           p_action: string;

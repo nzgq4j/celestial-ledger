@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountSettings } from "@/components/AccountSettings";
 import { BirthProfileList } from "@/components/BirthProfileList";
-import { CheckoutButton } from "@/components/CheckoutButton";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
@@ -236,15 +235,16 @@ export default async function AccountPage({
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
                 </div>
-                <div className="compact-products__action">
-                  <strong>
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: product.currency ?? "USD",
-                    }).format((product.unit_amount ?? 0) / 100)}
-                  </strong>
+                <div className="compact-products__action compact-products__action--complimentary">
+                  <strong>Complimentary during preview</strong>
                   {birthProfiles.length ? (
-                    <CheckoutButton reportType={product.report_type} />
+                    <GenerateReportButton
+                      reportType={product.report_type}
+                      profiles={birthProfiles.map((item) => ({
+                        id: item.id,
+                        label: item.label,
+                      }))}
+                    />
                   ) : (
                     <Link href="/#chart" className="button-primary">
                       Create natal chart

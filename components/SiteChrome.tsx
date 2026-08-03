@@ -74,6 +74,7 @@ export function SiteFooter() {
           <Link href="/reports">Report collection</Link>
           <Link href="/auth/login">Sign in</Link>
           <Link href="/privacy">Privacy</Link>
+          <Link href="/method">Our method</Link>
           <Link href="/terms">Terms</Link>
           <span>Private by design</span>
         </div>

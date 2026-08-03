@@ -7,7 +7,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Celestial Atlas — Personal Astrology Reports",
   description:
-    "Privacy-conscious Western tropical charts calculated deterministically before interpretation.",
+    "Discover the planetary patterns, hidden correspondences, and ancient celestial wisdom held within your personal birth chart.",
 };
 
 export default function RootLayout({

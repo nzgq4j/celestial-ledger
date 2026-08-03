@@ -291,11 +291,11 @@ export default function HoroscopeApp() {
             </p>
             <div className="atlas-hero__method">
               <span>01</span>
-              <p>Birthplace resolved</p>
+              <p>Chart your first sky</p>
               <span>02</span>
-              <p>Chart calculated</p>
+              <p>Meet your celestial signatures</p>
               <span>03</span>
-              <p>Evidence interpreted</p>
+              <p>Follow the deeper pattern</p>
             </div>
           </div>
           <CelestialRouteMap />
@@ -817,30 +817,30 @@ export default function HoroscopeApp() {
         )}
         <section className="chart-method-notes">
           <article>
-            <p className="section-kicker">Why time and place matter</p>
-            <h2>Precision changes the chart</h2>
+            <p className="section-kicker">The moment you arrived</p>
+            <h2>Your first sky belongs to you alone</h2>
             <p>
-              Date, local time, and birthplace determine the astronomical
-              instant and local horizon. If the time is unknown, Celestial Atlas
-              excludes the Ascendant and houses rather than substituting noon.
+              Date, time, and birthplace reveal the rising sign, houses, and
+              planetary pattern held at your first breath—the celestial
+              signature from which your atlas unfolds.
             </p>
           </article>
           <article>
-            <p className="section-kicker">Built for clarity</p>
-            <h2>Calculation before interpretation</h2>
+            <p className="section-kicker">Ancient language, personal meaning</p>
+            <h2>Every placement joins the greater story</h2>
             <p>
-              Planetary positions come from a deterministic astronomy engine.
-              Interpretive text receives the completed evidence and cannot
-              rewrite the placements.
+              Planets reveal the forces at work, signs reveal how they move, and
+              houses reveal where their influence enters daily life. Together
+              they form a reading no single placement can tell alone.
             </p>
           </article>
           <article>
-            <p className="section-kicker">Learn at your pace</p>
-            <h2>Readable, inspectable results</h2>
+            <p className="section-kicker">A living atlas</p>
+            <h2>Return whenever the path changes</h2>
             <p>
-              Explore placements, house cusps, aspects, method notes, and
-              uncertainty disclosures in a format for both first-time readers
-              and experienced astrologers.
+              Begin with your free natal chart, then explore vocation, renewal,
+              and the changing celestial weather through readings shaped around
+              your own sky.
             </p>
           </article>
         </section>

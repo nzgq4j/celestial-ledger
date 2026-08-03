@@ -70,17 +70,17 @@ export function CelestialRouteMap() {
         </g>
         <g className="route-map__coordinates" aria-hidden="true">
           <text x="14" y="20">
-            MERIDIAN 00
+            FIRST BREATH
           </text>
           <text x="350" y="305">
-            FIELD 12 / 12
+            TWELVE HOUSES
           </text>
         </g>
         <rect width="460" height="320" filter="url(#mapRoughness)" />
       </svg>
       <figcaption>
-        <span>Celestial field</span>
-        <span>Routes are symbolic · positions are calculated</span>
+        <span>Your celestial field</span>
+        <span>Every path begins beneath a particular sky</span>
       </figcaption>
     </figure>
   );

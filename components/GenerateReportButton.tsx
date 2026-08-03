@@ -10,7 +10,7 @@ export function GenerateReportButton({
   profiles,
   reportType,
 }: {
-  entitlementId: string;
+  entitlementId?: string;
   profiles: Option[];
   reportType: string;
 }) {
@@ -31,7 +31,7 @@ export function GenerateReportButton({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          entitlementId,
+          ...(entitlementId ? { entitlementId } : { reportType }),
           birthProfileId: profileId,
           ...(isRecovery ? { adultConfirmed, recoveryThemes: themes } : {}),
         }),
@@ -52,11 +52,14 @@ export function GenerateReportButton({
   }
   return (
     <div className="report-generator">
-      <label className="label" htmlFor={`profile-${entitlementId}`}>
+      <label
+        className="label"
+        htmlFor={`profile-${entitlementId ?? reportType}`}
+      >
         Use birth profile
       </label>
       <select
-        id={`profile-${entitlementId}`}
+        id={`profile-${entitlementId ?? reportType}`}
         className="input"
         value={profileId}
         onChange={(event) => setProfileId(event.target.value)}

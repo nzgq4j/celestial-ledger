@@ -833,6 +833,32 @@ a {
   margin-top: 1.25rem;
   font-family: ui-monospace, monospace;
 }
+.report-edition__reveals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 1.5rem;
+  margin: 1.25rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+.report-edition__reveals li {
+  position: relative;
+  padding-left: 1rem;
+}
+.report-edition__reveals li::before {
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  content: "✦";
+}
+.report-edition__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
 .privacy-note {
   margin-top: 5rem;
   max-width: 48rem;
@@ -1212,6 +1238,20 @@ a {
     400 1.15rem Georgia,
     serif;
 }
+.compact-products__action--complimentary {
+  display: grid;
+  align-items: stretch;
+  justify-content: stretch;
+}
+.compact-products__action--complimentary > strong {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.compact-products__action--complimentary .report-generator {
+  grid-template-columns: 1fr;
+  margin-top: 0.25rem;
+}
 .account-settings__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1347,6 +1387,107 @@ a {
   border-radius: 999px;
   color: #f2c2ba;
   font-weight: 650;
+}
+.method-page {
+  max-width: 68rem;
+}
+.method-page__hero {
+  max-width: 54rem;
+  padding: 2rem 0 4rem;
+}
+.method-page__hero h1 {
+  max-width: 13ch;
+  margin: 0.65rem 0 1.25rem;
+  font:
+    400 clamp(3rem, 7vw, 5.8rem)/0.96 Georgia,
+    serif;
+}
+.method-page__hero > p:last-child {
+  max-width: 46rem;
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+.method-page__principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.method-page__principles article {
+  position: relative;
+  min-height: 23rem;
+  padding: 1.75rem;
+  background: var(--surface);
+}
+.method-page__principles article > span {
+  display: block;
+  margin-bottom: 4rem;
+  color: var(--gold);
+  font:
+    400 2.4rem Georgia,
+    serif;
+}
+.method-page__principles h2,
+.method-page__reading h2,
+.method-page__unknown-time h2 {
+  margin: 0.4rem 0 0.85rem;
+  color: var(--paper);
+  font:
+    400 1.65rem/1.1 Georgia,
+    serif;
+}
+.method-page__principles article > p:last-child,
+.method-page__reading li p,
+.method-page__unknown-time > p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.method-page__reading {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+  gap: 3rem;
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.method-page__reading ol {
+  counter-reset: method-step;
+  display: grid;
+  gap: 1.5rem;
+}
+.method-page__reading li {
+  counter-increment: method-step;
+  position: relative;
+  padding-left: 3rem;
+}
+.method-page__reading li::before {
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font:
+    400 1.4rem Georgia,
+    serif;
+  content: "0" counter(method-step);
+}
+.method-page__reading li strong {
+  color: var(--paper);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+}
+.method-page__reading li p {
+  margin-top: 0.4rem;
+}
+.method-page__unknown-time {
+  max-width: 48rem;
+  margin: 4rem 0;
+  padding: 1.5rem 0 1.5rem 1.75rem;
+  border-left: 1px solid var(--gold);
+}
+.method-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 .library-heading {
   display: flex;
@@ -1615,6 +1756,16 @@ a {
   }
   .report-generator .button-primary {
     width: 100%;
+  }
+  .method-page__principles,
+  .method-page__reading {
+    grid-template-columns: 1fr;
+  }
+  .method-page__principles article {
+    min-height: 0;
+  }
+  .method-page__principles article > span {
+    margin-bottom: 2rem;
   }
 }
 @media (max-width: 1120px) {
@@ -2272,6 +2423,13 @@ input:focus-visible {
   .report-edition__meta {
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+  .report-edition__reveals {
+    grid-template-columns: 1fr;
+  }
+  .report-edition__actions,
+  .method-page__actions {
+    display: grid;
   }
   .privacy-note {
     margin-top: 3rem;

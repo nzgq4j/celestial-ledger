@@ -22,12 +22,16 @@ import { isDemoMode } from "@/lib/supabase/config";
 export const runtime = "nodejs";
 const inputSchema = z
   .object({
-    entitlementId: z.string().uuid(),
+    entitlementId: z.string().uuid().optional(),
+    reportType: z.enum(["career_purpose", "recovery_reflection"]).optional(),
     birthProfileId: z.string().uuid(),
     adultConfirmed: z.boolean().optional(),
     recoveryThemes: z.array(recoveryThemeSchema).min(1).max(6).optional(),
   })
-  .strict();
+  .strict()
+  .refine((value) => value.entitlementId || value.reportType, {
+    message: "Choose a report type.",
+  });
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
@@ -47,15 +51,21 @@ export async function POST(request: Request) {
   try {
     const input = inputSchema.parse(await readLimitedJson(request, 2048));
     const admin = createAdminClient();
-    const { data: entitlement } = await admin
-      .from("entitlements")
-      .select("report_type")
-      .eq("id", input.entitlementId)
-      .eq("user_id", userId)
-      .single();
-    if (!entitlement)
-      return json({ error: "This report entitlement was not found." }, 404);
-    const isRecovery = entitlement.report_type === "recovery_reflection";
+    let reportType = input.reportType;
+    if (input.entitlementId) {
+      const { data: entitlement } = await admin
+        .from("entitlements")
+        .select("report_type")
+        .eq("id", input.entitlementId)
+        .eq("user_id", userId)
+        .single();
+      if (!entitlement)
+        return json({ error: "This report entitlement was not found." }, 404);
+      reportType = entitlement.report_type as
+        "career_purpose" | "recovery_reflection";
+    }
+    if (!reportType) return json({ error: "Choose a report type." }, 422);
+    const isRecovery = reportType === "recovery_reflection";
     if (isRecovery && (!input.adultConfirmed || !input.recoveryThemes?.length))
       return json(
         {
@@ -75,9 +85,8 @@ export async function POST(request: Request) {
           500,
         );
     }
-    const { data, error } = await admin.rpc("queue_paid_report", {
+    const versions = {
       p_user_id: userId,
-      p_entitlement_id: input.entitlementId,
       p_birth_profile_id: input.birthProfileId,
       p_schema_version: isRecovery
         ? RECOVERY_SCHEMA_VERSION
@@ -89,12 +98,17 @@ export async function POST(request: Request) {
         ? RECOVERY_SAFETY_VERSION
         : CAREER_SAFETY_VERSION,
       p_recovery_themes: isRecovery ? input.recoveryThemes : null,
-    });
-    if (error)
-      return json(
-        { error: "The report could not be queued for this entitlement." },
-        409,
-      );
+    };
+    const { data, error } = input.entitlementId
+      ? await admin.rpc("queue_paid_report", {
+          ...versions,
+          p_entitlement_id: input.entitlementId,
+        })
+      : await admin.rpc("queue_complimentary_report", {
+          ...versions,
+          p_report_type: reportType,
+        });
+    if (error) return json({ error: "The report could not be queued." }, 409);
     return json({ reportId: data, status: "queued" }, 202);
   } catch (error) {
     return json(
