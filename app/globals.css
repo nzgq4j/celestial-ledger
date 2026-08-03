@@ -367,6 +367,35 @@ a {
   color: var(--text-soft);
   line-height: 1.75;
 }
+.sample-report__chapter blockquote {
+  position: relative;
+  margin: 1.35rem 0 0;
+  padding: 1rem 1.15rem 1rem 1.35rem;
+  border-left: 2px solid var(--gold);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+.sample-report__chapter blockquote::before {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.8rem;
+  color: color-mix(in srgb, var(--gold) 35%, transparent);
+  content: "✦";
+}
+.sample-report__chapter blockquote strong {
+  color: var(--gold);
+  font:
+    0.62rem ui-monospace,
+    monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.sample-report__chapter blockquote p {
+  margin: 0.45rem 1.5rem 0 0;
+  color: var(--paper);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
 .sample-report > aside {
   display: flex;
   flex-direction: column;
