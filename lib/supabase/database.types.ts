@@ -119,7 +119,7 @@ export type Database = {
           report_type: string;
           status: string;
           updated_at: string;
-          user_id: string;
+          user_id: string | null;
         };
         Insert: {
           consumed_at?: string | null;
@@ -129,7 +129,7 @@ export type Database = {
           report_type: string;
           status?: string;
           updated_at?: string;
-          user_id: string;
+          user_id?: string | null;
         };
         Update: {
           consumed_at?: string | null;
@@ -139,7 +139,7 @@ export type Database = {
           report_type?: string;
           status?: string;
           updated_at?: string;
-          user_id?: string;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -158,6 +158,48 @@ export type Database = {
           },
         ];
       };
+      marketing_subscribers: {
+        Row: {
+          consent_source: string;
+          consent_version: string;
+          consented_at: string;
+          created_at: string;
+          email: string;
+          first_name: string;
+          id: string;
+          linked_user_id: string | null;
+          status: string;
+          unsubscribed_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          consent_source: string;
+          consent_version: string;
+          consented_at?: string;
+          created_at?: string;
+          email: string;
+          first_name: string;
+          id?: string;
+          linked_user_id?: string | null;
+          status?: string;
+          unsubscribed_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          consent_source?: string;
+          consent_version?: string;
+          consented_at?: string;
+          created_at?: string;
+          email?: string;
+          first_name?: string;
+          id?: string;
+          linked_user_id?: string | null;
+          status?: string;
+          unsubscribed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       orders: {
         Row: {
           amount_total: number | null;
@@ -170,7 +212,7 @@ export type Database = {
           stripe_checkout_session_id: string | null;
           stripe_payment_intent_id: string | null;
           updated_at: string;
-          user_id: string;
+          user_id: string | null;
         };
         Insert: {
           amount_total?: number | null;
@@ -183,7 +225,7 @@ export type Database = {
           stripe_checkout_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
           updated_at?: string;
-          user_id: string;
+          user_id?: string | null;
         };
         Update: {
           amount_total?: number | null;
@@ -196,7 +238,7 @@ export type Database = {
           stripe_checkout_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
           updated_at?: string;
-          user_id?: string;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -257,18 +299,21 @@ export type Database = {
         Row: {
           adult_confirmed_at: string | null;
           created_at: string;
+          display_name: string | null;
           id: string;
           updated_at: string;
         };
         Insert: {
           adult_confirmed_at?: string | null;
           created_at?: string;
+          display_name?: string | null;
           id: string;
           updated_at?: string;
         };
         Update: {
           adult_confirmed_at?: string | null;
           created_at?: string;
+          display_name?: string | null;
           id?: string;
           updated_at?: string;
         };

@@ -5,6 +5,7 @@ import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
 import { CelestialRouteMap } from "./CelestialRouteMap";
+import Link from "next/link";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -40,6 +41,10 @@ function interpretationMarkup(text: string) {
 }
 
 export default function HoroscopeApp() {
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [unknown, setUnknown] = useState(false);
@@ -109,8 +114,40 @@ export default function HoroscopeApp() {
       );
     if (!place)
       return setError("Select a resolved birthplace from the search results.");
+    if (marketingConsent && (!firstName.trim() || !email.trim()))
+      return setError("Add your name and email to join Celestial Atlas notes.");
     setBusy(true);
     try {
+      if (marketingConsent) {
+        setSubscriptionStatus("Saving your email preference…");
+        try {
+          const subscriptionResponse = await fetch("/api/marketing/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName,
+              email,
+              consent: true,
+              consentVersion: "marketing-v1-2026-08-03",
+              website: "",
+            }),
+          });
+          if (!subscriptionResponse.ok) throw new Error();
+          sessionStorage.setItem(
+            "celestial-atlas-marketing-email",
+            email.trim(),
+          );
+          sessionStorage.setItem(
+            "celestial-atlas-marketing-name",
+            firstName.trim(),
+          );
+          setSubscriptionStatus("You’re subscribed to Celestial Atlas notes.");
+        } catch {
+          setSubscriptionStatus(
+            "Your chart can continue, but the email subscription could not be saved.",
+          );
+        }
+      }
       const birthInput = {
         date,
         time: unknown ? undefined : time,
@@ -159,6 +196,10 @@ export default function HoroscopeApp() {
   }
 
   function clearAll() {
+    setFirstName("");
+    setEmail("");
+    setMarketingConsent(false);
+    setSubscriptionStatus("");
     setDate("");
     setTime("");
     setUnknown(false);
@@ -210,16 +251,16 @@ export default function HoroscopeApp() {
       <header className="atlas-hero">
         <div className="atlas-hero__inner">
           <div className="atlas-hero__content">
-            <p className="eyebrow">Your chart · a private field guide</p>
+            <p className="eyebrow">Ancient sky · your private atlas</p>
             <h1>
-              Your natal chart,
+              Your birth chart,
               <br />
-              <em>calculated before interpreted.</em>
+              <em>written in the stars.</em>
             </h1>
             <p className="atlas-hero__copy">
-              Astronomical positions are calculated deterministically. The
-              language model explains validated chart data and does not
-              calculate or modify placements.
+              Discover the celestial pattern of your first moment. Celestial
+              Atlas traces the planets, signs, houses, and hidden
+              correspondences that have guided astrologers for generations.
             </p>
             <div className="atlas-hero__method">
               <span>01</span>
@@ -237,11 +278,72 @@ export default function HoroscopeApp() {
         id="chart"
         className="max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
       >
+        <section
+          className="chart-introduction"
+          aria-labelledby="free-chart-heading"
+        >
+          <div>
+            <p className="section-kicker">Free birth chart calculator</p>
+            <h2 id="free-chart-heading">
+              A map of the sky at your first moment
+            </h2>
+            <p>
+              Your natal chart preserves the celestial signature of the moment
+              you were born. For centuries, astrologers have read these
+              planetary patterns as a guide to character, connection, challenge,
+              purpose, and possibility.
+            </p>
+          </div>
+          <dl>
+            <div>
+              <dt>Planets</dt>
+              <dd>The drives and functions astrologers interpret.</dd>
+            </div>
+            <div>
+              <dt>Signs</dt>
+              <dd>The style through which each placement is expressed.</dd>
+            </div>
+            <div>
+              <dt>Houses</dt>
+              <dd>Areas of life, available only when birth time is known.</dd>
+            </div>
+          </dl>
+        </section>
         <section className="panel p-5 md:p-7" aria-labelledby="birth-heading">
+          <p className="section-kicker">Free astrology chart</p>
           <h2 id="birth-heading" className="text-xl gold font-semibold">
-            Birth information
+            Enter your information
           </h2>
           <div className="grid md:grid-cols-2 gap-5 mt-5">
+            <div>
+              <label className="label" htmlFor="first-name">
+                Name
+              </label>
+              <input
+                id="first-name"
+                className="input"
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                autoComplete="given-name"
+                maxLength={80}
+                placeholder="Your first name"
+              />
+            </div>
+            <div>
+              <label className="label" htmlFor="marketing-email">
+                Email
+              </label>
+              <input
+                id="marketing-email"
+                className="input"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                maxLength={254}
+                placeholder="you@example.com"
+              />
+            </div>
             <div>
               <label className="label" htmlFor="birth-date">
                 Birth date
@@ -367,6 +469,24 @@ export default function HoroscopeApp() {
               </label>
             </div>
           )}
+          <label className="marketing-consent">
+            <input
+              type="checkbox"
+              checked={marketingConsent}
+              onChange={(event) => setMarketingConsent(event.target.checked)}
+            />
+            <span>
+              Email me occasional Celestial Atlas notes and product updates. I
+              can unsubscribe at any time. This is separate from creating an
+              account. See the <Link href="/terms">Terms</Link> and{" "}
+              <Link href="/privacy">Privacy Policy</Link>.
+            </span>
+          </label>
+          {subscriptionStatus && (
+            <p className="marketing-status" role="status">
+              {subscriptionStatus}
+            </p>
+          )}
           {error && (
             <div
               role="alert"
@@ -381,7 +501,7 @@ export default function HoroscopeApp() {
               disabled={busy}
               className="px-6 py-3 rounded-lg bg-[#c9a75d] text-[#07111f] font-semibold"
             >
-              {busy ? "Calculating…" : "Calculate My Chart"}
+              {busy ? "Calculating…" : "Get my free birth chart"}
             </button>
             <button
               onClick={clearAll}
@@ -455,6 +575,20 @@ export default function HoroscopeApp() {
                 )}
               </div>
             </section>
+            <aside className="chart-account-cta">
+              <div>
+                <p className="section-kicker">Keep your atlas</p>
+                <h2>Save this chart to a private account</h2>
+                <p>
+                  Create a verified account to keep your natal chart, manage
+                  private reports, and return without entering your birth data
+                  again.
+                </p>
+              </div>
+              <Link href="/auth/login" className="button-primary">
+                Create my account
+              </Link>
+            </aside>
             <section className="panel p-5">
               <h2 className="text-xl gold mb-3">Planetary placements</h2>
               <div className="table-wrap">
@@ -541,12 +675,13 @@ export default function HoroscopeApp() {
                 </p>
               </article>
               <article className="panel p-5">
-                <h2 className="text-xl gold">Accuracy and limitations</h2>
+                <h2 className="text-xl gold">Chart precision</h2>
                 <p className="mt-2 text-sm leading-6">
                   Coordinates and the IANA historical time zone are resolved
                   from the selected place. Unknown times omit houses and angles.
-                  Astrology is presented as a symbolic tradition rather than
-                  scientifically validated prediction.
+                  Celestial Atlas follows the Western tropical tradition,
+                  combining ancient astrological language with transparent,
+                  reproducible chart calculation.
                 </p>
               </article>
             </section>
@@ -612,6 +747,35 @@ export default function HoroscopeApp() {
             </section>
           </>
         )}
+        <section className="chart-method-notes">
+          <article>
+            <p className="section-kicker">Why time and place matter</p>
+            <h2>Precision changes the chart</h2>
+            <p>
+              Date, local time, and birthplace determine the astronomical
+              instant and local horizon. If the time is unknown, Celestial Atlas
+              excludes the Ascendant and houses rather than substituting noon.
+            </p>
+          </article>
+          <article>
+            <p className="section-kicker">Built for clarity</p>
+            <h2>Calculation before interpretation</h2>
+            <p>
+              Planetary positions come from a deterministic astronomy engine.
+              Interpretive text receives the completed evidence and cannot
+              rewrite the placements.
+            </p>
+          </article>
+          <article>
+            <p className="section-kicker">Learn at your pace</p>
+            <h2>Readable, inspectable results</h2>
+            <p>
+              Explore placements, house cusps, aspects, method notes, and
+              uncertainty disclosures in a format for both first-time readers
+              and experienced astrologers.
+            </p>
+          </article>
+        </section>
       </div>
     </main>
   );

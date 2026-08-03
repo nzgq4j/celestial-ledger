@@ -1,5 +1,5 @@
-import { signIn, signUp } from "../actions";
 import { isDemoMode } from "@/lib/supabase/config";
+import { AuthForm } from "@/components/AuthForm";
 import Link from "next/link";
 
 export const metadata = { title: "Sign in — Celestial Atlas" };
@@ -36,51 +36,7 @@ export default async function LoginPage({
             again.
           </p>
         ) : null}
-        <form className="mt-6 space-y-4">
-          <div>
-            <label className="label" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="input"
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div>
-            <label className="label" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="input"
-              id="password"
-              name="password"
-              type="password"
-              minLength={8}
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              disabled={demoMode}
-              formAction={signIn}
-              className="rounded-lg bg-[#c9a75d] px-5 py-3 font-semibold text-[#07111f]"
-            >
-              Sign in
-            </button>
-            <button
-              disabled={demoMode}
-              formAction={signUp}
-              className="rounded-lg border border-[#536177] px-5 py-3"
-            >
-              Create account
-            </button>
-          </div>
-        </form>
+        <AuthForm disabled={demoMode} />
         <p className="mt-4 text-sm">
           <Link className="gold underline" href="/auth/forgot-password">
             Forgot your password?

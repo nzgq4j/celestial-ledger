@@ -6,8 +6,8 @@ export default function CheckEmailPage() {
       <section className="panel p-6 md:p-8">
         <h1 className="text-3xl font-semibold gold">Check your email</h1>
         <p className="mt-3 text-[#ddd6c8]">
-          Use the verification link from Supabase before signing in. No private
-          report data is available until your email is verified.
+          Follow the verification link to open your private Celestial Atlas and
+          begin collecting the patterns written across your sky.
         </p>
       </section>
     </main>

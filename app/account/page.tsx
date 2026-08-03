@@ -1,11 +1,11 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { signOut } from "@/app/auth/actions";
-import { createClient } from "@/lib/supabase/server";
-import { isDemoMode } from "@/lib/supabase/config";
+import { AccountSettings } from "@/components/AccountSettings";
 import { BirthProfileList } from "@/components/BirthProfileList";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
-import Link from "next/link";
+import { isDemoMode } from "@/lib/supabase/config";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -13,20 +13,40 @@ export const metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
-export default async function AccountPage() {
+const notices: Record<string, string> = {
+  name_updated: "Display name updated.",
+  password_updated: "Password changed successfully.",
+  invalid_name: "Use a display name between 2 and 50 characters.",
+  name_failed: "Your display name could not be updated.",
+  invalid_password: "Passwords must match and contain at least 12 characters.",
+  current_password_failed: "Your current password was not accepted.",
+  password_failed: "Your password could not be changed.",
+  delete_confirmation_failed: "Account deletion was not confirmed.",
+};
+
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
   if (isDemoMode()) redirect("/auth/login");
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims?.sub) redirect("/auth/login");
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) redirect("/auth/login");
 
   const [
-    { data: profile },
-    { data: birthProfiles },
-    { data: reports },
-    { data: products },
-    { data: entitlements },
+    params,
+    profileResult,
+    birthProfileResult,
+    reportResult,
+    productResult,
+    entitlementResult,
   ] = await Promise.all([
-    supabase.from("profiles").select("adult_confirmed_at, created_at").single(),
+    searchParams,
+    supabase
+      .from("profiles")
+      .select("display_name, adult_confirmed_at, created_at")
+      .single(),
     supabase
       .from("birth_profiles")
       .select(
@@ -47,87 +67,96 @@ export default async function AccountPage() {
       .order("granted_at", { ascending: false }),
   ]);
 
+  const profile = profileResult.data;
+  const birthProfiles = birthProfileResult.data ?? [];
+  const reports = reportResult.data ?? [];
+  const products = productResult.data ?? [];
+  const entitlements = entitlementResult.data ?? [];
+  const readyEntitlements = entitlements.filter(
+    (item) => item.status === "unused" && item.report_type === "career_purpose",
+  );
+  const displayName =
+    profile?.display_name?.trim() ||
+    authData.user.email?.split("@")[0] ||
+    "Explorer";
+  const notice = params.notice ? notices[params.notice] : undefined;
+
   return (
-    <main className="page-shell private-library">
-      <section className="library-heading">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <main className="page-shell private-library account-dashboard">
+      <header className="account-hero">
+        <div>
+          <p className="eyebrow">Private atlas</p>
+          <h1>Welcome, {displayName}</h1>
+          <p>
+            Your charts, reports, and account settings in one private place.
+          </p>
+        </div>
+        <div className="account-stats" aria-label="Account summary">
+          <span>
+            <strong>{birthProfiles.length}</strong> birth{" "}
+            {birthProfiles.length === 1 ? "profile" : "profiles"}
+          </span>
+          <span>
+            <strong>{reports.length}</strong>{" "}
+            {reports.length === 1 ? "report" : "reports"}
+          </span>
+          <span>
+            <strong>{readyEntitlements.length}</strong> ready to generate
+          </span>
+        </div>
+      </header>
+
+      {notice && (
+        <p className="account-notice" role="status">
+          {notice}
+        </p>
+      )}
+
+      <nav className="account-jump-links" aria-label="Account sections">
+        <a href="#birth-profiles">Birth profiles</a>
+        <a href="#reports">Reports</a>
+        <a href="#account-settings">Account settings</a>
+      </nav>
+
+      <section className="dashboard-panel" id="birth-profiles">
+        <div className="dashboard-panel__heading">
           <div>
-            <p className="eyebrow">Private atlas index</p>
-            <h1>Report library</h1>
+            <p className="section-kicker">Source material</p>
+            <h2>Birth profiles</h2>
           </div>
-          <form action={signOut}>
-            <button className="button-quiet">Sign out</button>
-          </form>
+          <Link href="/#chart" className="text-link">
+            Create another chart
+          </Link>
         </div>
-        <p className="mt-4 text-[#b9b2a3]">
-          Adult confirmation:{" "}
-          {profile?.adult_confirmed_at ? "recorded" : "not recorded"}
-        </p>
+        <BirthProfileList initialProfiles={birthProfiles} />
       </section>
-      <section className="library-section">
-        <p className="section-kicker">Source material</p>
-        <h2>Birth profiles</h2>
-        <BirthProfileList initialProfiles={birthProfiles ?? []} />
-      </section>
-      <section className="library-section">
-        <p className="section-kicker">Report collection</p>
-        <h2>Available reports</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {(products ?? [])
-            .filter((product) => product.report_type === "career_purpose")
-            .map((product) => (
-              <article key={product.report_type} className="library-product">
-                <h3 className="font-semibold">{product.name}</h3>
-                <p className="mt-2 text-sm text-[#b9b2a3]">
-                  {product.description}
-                </p>
-                <p className="my-3 gold">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: product.currency ?? "USD",
-                  }).format((product.unit_amount ?? 0) / 100)}
-                </p>
-                <CheckoutButton reportType={product.report_type} />
-              </article>
-            ))}
+
+      <section className="dashboard-panel" id="reports">
+        <div className="dashboard-panel__heading">
+          <div>
+            <p className="section-kicker">Private library</p>
+            <h2>Reports</h2>
+          </div>
+          <span className="dashboard-panel__meta">{reports.length} saved</span>
         </div>
-      </section>
-      <section className="library-section">
-        <p className="section-kicker">Purchased access</p>
-        <h2>Entitlements</h2>
-        <p className="mt-3 text-[#b9b2a3]">
-          {entitlements?.length
-            ? `${entitlements.length} purchased report entitlement(s).`
-            : "No report entitlements yet."}
-        </p>
-        <div className="mt-5 grid gap-4">
-          {(entitlements ?? [])
-            .filter(
-              (entitlement) =>
-                entitlement.status === "unused" &&
-                entitlement.report_type === "career_purpose",
-            )
-            .map((entitlement) => (
-              <article className="library-product" key={entitlement.id}>
-                <h3>Career and Purpose</h3>
-                <p className="text-sm text-[#b9b2a3] mt-1">
-                  Purchased and ready to generate.
-                </p>
-                <GenerateReportButton
-                  entitlementId={entitlement.id}
-                  profiles={(birthProfiles ?? []).map((profile) => ({
-                    id: profile.id,
-                    label: profile.label,
-                  }))}
-                />
-              </article>
-            ))}
-        </div>
-      </section>
-      <section className="library-section">
-        <p className="section-kicker">Your archive</p>
-        <h2>Reports</h2>
-        {reports?.length ? (
+
+        {readyEntitlements.map((entitlement) => (
+          <article className="ready-report" key={entitlement.id}>
+            <div>
+              <strong>Career and Purpose</strong>
+              <p>Purchased and ready to generate.</p>
+            </div>
+            <GenerateReportButton
+              entitlementId={entitlement.id}
+              profiles={birthProfiles.map((item) => ({
+                id: item.id,
+                label: item.label,
+              }))}
+            />
+          </article>
+        ))}
+
+        {reports.length ? (
           <div className="report-library-list">
             {reports.map((report) => (
               <Link href={`/reports/${report.id}`} key={report.id}>
@@ -142,9 +171,38 @@ export default async function AccountPage() {
             ))}
           </div>
         ) : (
-          <p className="mt-3 text-[#b9b2a3]">No purchased reports.</p>
+          <p className="dashboard-empty">
+            No reports yet. Choose a report below when you are ready.
+          </p>
         )}
+
+        <div className="compact-products">
+          {products
+            .filter((product) => product.report_type === "career_purpose")
+            .map((product) => (
+              <article key={product.report_type}>
+                <div>
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                </div>
+                <div className="compact-products__action">
+                  <strong>
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: product.currency ?? "USD",
+                    }).format((product.unit_amount ?? 0) / 100)}
+                  </strong>
+                  <CheckoutButton reportType={product.report_type} />
+                </div>
+              </article>
+            ))}
+        </div>
       </section>
+
+      <AccountSettings
+        displayName={profile?.display_name ?? ""}
+        email={authData.user.email ?? ""}
+      />
     </main>
   );
 }

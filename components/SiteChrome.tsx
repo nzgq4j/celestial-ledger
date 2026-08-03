@@ -15,7 +15,7 @@ export function SiteHeader() {
           />
           <span>
             <strong>Celestial Atlas</strong>
-            <small>Calculated reflection</small>
+            <small>Ancient sky · personal atlas</small>
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
@@ -37,11 +37,13 @@ export function SiteFooter() {
       <div className="site-footer__inner">
         <div>
           <p className="eyebrow">Celestial Atlas</p>
-          <p>Astrology for reflection, grounded in reproducible calculation.</p>
+          <p>Ancient celestial wisdom, mapped for the moment you arrived.</p>
         </div>
         <div className="site-footer__links">
           <Link href="/reports">Report collection</Link>
           <Link href="/auth/login">Sign in</Link>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
           <span>Private by design</span>
         </div>
       </div>

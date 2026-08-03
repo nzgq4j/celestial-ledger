@@ -15,10 +15,6 @@ Required production secrets will eventually include Supabase URL/anon/service-ro
 
 Configure the Vercel Supabase Marketplace variables documented in `.env.example`; the application consumes those names directly. Do not expose a secret or service-role key. Set the Supabase Auth Site URL to `https://www.celestialatlas.app` and add `https://www.celestialatlas.app/auth/confirm` to the allowed redirect URLs. Local development may additionally allow `http://localhost:3000/auth/confirm`.
 
-The application supplies the canonical production URL explicitly when creating a user. To honor that `emailRedirectTo` value, set the confirm-signup email template link to:
-
-```html
-{{ .RedirectTo }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
-```
+The application supplies the canonical production URL explicitly when creating a user. Authentication and security email subjects, markup, and link contracts are versioned in [`supabase-email-templates.md`](supabase-email-templates.md) and `scripts/configure-supabase-email-templates.mjs`.
 
 The three catalog products are deliberately inactive until Stripe and ephemeris release gates pass.

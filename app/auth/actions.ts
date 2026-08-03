@@ -33,10 +33,17 @@ export async function signIn(formData: FormData) {
 export async function signUp(formData: FormData) {
   if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
   const supabase = await createClient();
+  const signupCredentials = credentials(formData);
+  if (signupCredentials.password.length < 12)
+    redirect("/auth/login?error=weak_password");
+  const displayName = formData.get("display_name");
+  const normalizedName =
+    typeof displayName === "string" ? displayName.trim().slice(0, 50) : "";
   const { error } = await supabase.auth.signUp({
-    ...credentials(formData),
+    ...signupCredentials,
     options: {
       emailRedirectTo: canonicalAppUrl(),
+      data: normalizedName.length >= 2 ? { display_name: normalizedName } : {},
     },
   });
   if (error) redirect("/auth/login?error=sign_up_failed");

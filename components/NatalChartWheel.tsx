@@ -23,6 +23,21 @@ const glyphs: Record<string, string> = {
   "North Node": "☊",
 };
 
+const zodiacSigns = [
+  { name: "Aries", glyph: "♈" },
+  { name: "Taurus", glyph: "♉" },
+  { name: "Gemini", glyph: "♊" },
+  { name: "Cancer", glyph: "♋" },
+  { name: "Leo", glyph: "♌" },
+  { name: "Virgo", glyph: "♍" },
+  { name: "Libra", glyph: "♎" },
+  { name: "Scorpio", glyph: "♏" },
+  { name: "Sagittarius", glyph: "♐" },
+  { name: "Capricorn", glyph: "♑" },
+  { name: "Aquarius", glyph: "♒" },
+  { name: "Pisces", glyph: "♓" },
+] as const;
+
 function point(longitude: number, radius: number, center = 210) {
   const angle = ((longitude - 90) * Math.PI) / 180;
   return {
@@ -32,20 +47,6 @@ function point(longitude: number, radius: number, center = 210) {
 }
 
 export function NatalChartWheel({ chart }: { chart: NatalChart }) {
-  const signs = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces",
-  ];
   const placementMap = new Map(chart.placements.map((p) => [p.name, p]));
   return (
     <figure className="panel chart-wheel" aria-labelledby="wheel-title">
@@ -71,19 +72,35 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
         {Array.from({ length: 12 }, (_, i) => {
           const p1 = point(i * 30, 150),
             p2 = point(i * 30, 190),
-            label = point(i * 30 + 15, 170);
+            glyphPosition = point(i * 30 + 15, 164),
+            labelPosition = point(i * 30 + 15, 181),
+            sign = zodiacSigns[i];
           return (
             <g key={i}>
               <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#536177" />
               <text
-                x={label.x}
-                y={label.y}
-                fill="#f2ead8"
-                fontSize="10"
+                x={glyphPosition.x}
+                y={glyphPosition.y}
+                fill="#d7b45e"
+                fontSize="18"
                 textAnchor="middle"
                 dominantBaseline="middle"
+                aria-hidden="true"
               >
-                {signs[i].slice(0, 3)}
+                {sign.glyph}
+              </text>
+              <text
+                x={labelPosition.x}
+                y={labelPosition.y}
+                fill="#c8c0b2"
+                fontSize="7"
+                fontFamily="ui-monospace, monospace"
+                letterSpacing="0.8"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                aria-hidden="true"
+              >
+                {sign.name.slice(0, 3).toUpperCase()}
               </text>
             </g>
           );
