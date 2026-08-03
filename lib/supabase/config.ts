@@ -6,12 +6,16 @@ function requiredPublicSetting(name: string, value: string | undefined) {
 export function supabasePublicConfig() {
   return {
     url: requiredPublicSetting(
-      "NEXT_PUBLIC_SUPABASE_URL",
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "Supabase public URL",
+      process.env.NEXT_PUBLIC_CELESTIAL_SUPABASE_URL ??
+        process.env.NEXT_PUBLIC_STORAGE_SUPABASE_URL ??
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
     ),
     publishableKey: requiredPublicSetting(
-      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      "Supabase public key",
+      process.env.NEXT_PUBLIC_CELESTIAL_SUPABASE_KEY ??
+        process.env.NEXT_PUBLIC_STORAGE_SUPABASE_ANON_KEY ??
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     ),
   };
 }

@@ -2,6 +2,20 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Normalize Vercel Marketplace and local Supabase public variable names into
+  // application-owned browser-safe aliases. Never map a secret here.
+  env: {
+    NEXT_PUBLIC_CELESTIAL_SUPABASE_URL:
+      process.env.NEXT_PUBLIC_STORAGE_SUPABASE_URL ??
+      process.env.NEXT_PUBLIC_SUPABASE_URL ??
+      process.env.SUPABASE_URL ??
+      "",
+    NEXT_PUBLIC_CELESTIAL_SUPABASE_KEY:
+      process.env.NEXT_PUBLIC_STORAGE_SUPABASE_ANON_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+      process.env.SUPABASE_PUBLISHABLE_KEY ??
+      "",
+  },
   experimental: {
     serverActions: { bodySizeLimit: "1mb" },
   },
