@@ -1239,13 +1239,19 @@ input:focus-visible {
   padding-bottom: 2.5rem;
   border-bottom: 1px solid var(--line);
 }
-.horoscope-hero h1,
-.horoscope-detail h1 {
+.horoscope-hero h1 {
   margin: 0.6rem 0 0;
   font:
     400 clamp(3.2rem, 7vw, 6.5rem)/0.92 Georgia,
     serif;
   letter-spacing: -0.045em;
+}
+.horoscope-detail h1 {
+  margin: 0.4rem 0 0;
+  font:
+    400 clamp(2.35rem, 5vw, 4.25rem)/0.98 Georgia,
+    serif;
+  letter-spacing: -0.035em;
 }
 .horoscope-hero > p {
   color: var(--muted);
@@ -1352,25 +1358,27 @@ input:focus-visible {
 }
 .horoscope-back {
   display: inline-block;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   color: var(--gold);
   font-size: 0.75rem;
 }
 .horoscope-detail {
-  max-width: 68rem;
+  max-width: 62rem;
+  padding-top: 3.25rem;
+  padding-bottom: 3.25rem;
 }
 .horoscope-detail > header {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
-  padding-bottom: 2.5rem;
+  padding-bottom: 1.75rem;
   border-bottom: 1px solid var(--line);
 }
 .horoscope-detail__glyph {
   color: var(--gold);
   font:
-    clamp(4rem, 10vw, 8rem)/1 Georgia,
+    clamp(3rem, 7vw, 5rem)/1 Georgia,
     serif;
 }
 .horoscope-detail header > div > p:last-child {
@@ -1382,10 +1390,10 @@ input:focus-visible {
   letter-spacing: 0.12em;
 }
 .horoscope-reading {
-  max-width: 50rem;
+  max-width: 46rem;
 }
 .horoscope-reading article {
-  padding: 2rem 0;
+  padding: 1.35rem 0;
   border-bottom: 1px solid var(--line);
 }
 .horoscope-reading h2,
@@ -1393,37 +1401,39 @@ input:focus-visible {
   margin: 0 0 0.7rem;
   color: var(--paper);
   font:
-    400 clamp(1.5rem, 3vw, 2.2rem) Georgia,
+    400 clamp(1.2rem, 2vw, 1.55rem) Georgia,
     serif;
 }
 .horoscope-reading p {
   color: var(--text-soft);
-  line-height: 1.8;
+  font-size: 0.91rem;
+  line-height: 1.65;
 }
 .horoscope-reading__lead p {
   font:
-    400 clamp(1.25rem, 2.5vw, 1.65rem)/1.65 Georgia,
+    400 clamp(1.05rem, 1.7vw, 1.25rem)/1.55 Georgia,
     serif;
   color: var(--paper);
 }
 .horoscope-guidance {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 .horoscope-question h2 {
   color: var(--gold);
 }
 .horoscope-evidence {
-  margin-top: 3rem;
-  padding: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.15rem;
   border: 1px solid var(--line);
   background: var(--surface);
 }
 .horoscope-evidence li {
-  margin-block: 0.6rem;
+  margin-block: 0.4rem;
   color: var(--text-soft);
-  line-height: 1.55;
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 .horoscope-evidence > p:last-child {
   margin-top: 1rem;
