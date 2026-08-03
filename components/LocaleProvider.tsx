@@ -1,0 +1,52 @@
+"use client";
+
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  defaultLocale,
+  isLocaleTag,
+  localeRegistry,
+  type LocaleTag,
+  type TranslationPack,
+} from "@/lib/i18n/config";
+import englishPack from "@/lib/i18n/locales/en-GB";
+
+const localeStorageKey = "celestial-atlas-locale";
+
+type LocaleContextValue = {
+  locale: LocaleTag;
+  pack: TranslationPack;
+  selectLocale: (tag: LocaleTag) => Promise<void>;
+};
+
+const LocaleContext = createContext<LocaleContextValue | null>(null);
+
+export function LocaleProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocale] = useState<LocaleTag>(defaultLocale);
+  const [pack, setPack] = useState<TranslationPack>(englishPack);
+
+  async function selectLocale(tag: LocaleTag) {
+    const nextPack = await localeRegistry[tag].load();
+    setLocale(tag);
+    setPack(nextPack);
+    localStorage.setItem(localeStorageKey, tag);
+    document.documentElement.lang = tag;
+    document.documentElement.dir = nextPack.direction;
+  }
+
+  useEffect(() => {
+    const stored = localStorage.getItem(localeStorageKey);
+    if (stored && isLocaleTag(stored) && stored !== defaultLocale)
+      void selectLocale(stored);
+  }, []);
+
+  const value = useMemo(() => ({ locale, pack, selectLocale }), [locale, pack]);
+  return (
+    <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
+  );
+}
+
+export function useLocale() {
+  const context = useContext(LocaleContext);
+  if (!context) throw new Error("useLocale must be used within LocaleProvider");
+  return context;
+}

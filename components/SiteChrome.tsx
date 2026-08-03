@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { SitePreferences } from "@/components/SitePreferences";
+import { useLocale } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
+  const { pack } = useLocale();
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -19,12 +24,17 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
-          <Link href="/#chart">Chart</Link>
-          <Link href="/reports">Reports</Link>
+          <Link href="/#chart">{pack.messages.navigation.chart}</Link>
+          <Link href="/reports">{pack.messages.navigation.reports}</Link>
           <Link href="/account" className="site-nav__account">
-            <span className="site-nav__account-full">Private library</span>
-            <span className="site-nav__account-short">Library</span>
+            <span className="site-nav__account-full">
+              {pack.messages.navigation.library}
+            </span>
+            <span className="site-nav__account-short">
+              {pack.messages.navigation.library}
+            </span>
           </Link>
+          <SitePreferences />
         </nav>
       </div>
     </header>

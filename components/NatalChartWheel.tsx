@@ -63,12 +63,18 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
           cx="210"
           cy="210"
           r="190"
-          fill="#081524"
-          stroke="#c9a75d"
+          fill="var(--surface-field)"
+          stroke="var(--gold)"
           strokeWidth="2"
         />
-        <circle cx="210" cy="210" r="150" fill="none" stroke="#536177" />
-        <circle cx="210" cy="210" r="85" fill="none" stroke="#2b3a4e" />
+        <circle
+          cx="210"
+          cy="210"
+          r="150"
+          fill="none"
+          stroke="var(--control-border)"
+        />
+        <circle cx="210" cy="210" r="85" fill="none" stroke="var(--line)" />
         {Array.from({ length: 12 }, (_, i) => {
           const p1 = point(i * 30, 150),
             p2 = point(i * 30, 190),
@@ -77,11 +83,17 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
             sign = zodiacSigns[i];
           return (
             <g key={i}>
-              <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#536177" />
+              <line
+                x1={p1.x}
+                y1={p1.y}
+                x2={p2.x}
+                y2={p2.y}
+                stroke="var(--control-border)"
+              />
               <text
                 x={glyphPosition.x}
                 y={glyphPosition.y}
-                fill="#d7b45e"
+                fill="var(--gold)"
                 fontSize="18"
                 textAnchor="middle"
                 dominantBaseline="middle"
@@ -92,7 +104,7 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
               <text
                 x={labelPosition.x}
                 y={labelPosition.y}
-                fill="#c8c0b2"
+                fill="var(--text-soft)"
                 fontSize="7"
                 fontFamily="ui-monospace, monospace"
                 letterSpacing="0.8"
@@ -115,7 +127,7 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
               y1={a.y}
               x2={b.x}
               y2={b.y}
-              stroke="#c9a75d"
+              stroke="var(--gold)"
               strokeWidth="1.2"
             />
           );
@@ -133,7 +145,7 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
               y1={q1.y}
               x2={q2.x}
               y2={q2.y}
-              stroke="#8fa0b8"
+              stroke="var(--muted)"
               strokeWidth="1"
               strokeDasharray={aspectDash[a.type]}
               opacity=".65"
@@ -148,13 +160,13 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
                 cx={q.x}
                 cy={q.y}
                 r="11"
-                fill="#0d1a2b"
-                stroke="#c9a75d"
+                fill="var(--surface)"
+                stroke="var(--gold)"
               />
               <text
                 x={q.x}
                 y={q.y + 1}
-                fill="#f2ead8"
+                fill="var(--ivory)"
                 fontSize="14"
                 textAnchor="middle"
                 dominantBaseline="middle"
