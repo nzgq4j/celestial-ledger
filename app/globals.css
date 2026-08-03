@@ -75,41 +75,16 @@ a {
   gap: 0.8rem;
 }
 .brand__mark {
-  width: 2.3rem;
-  height: 2.3rem;
-  border: 1px solid var(--gold);
+  width: 2.85rem;
+  height: 2.85rem;
+  flex: 0 0 auto;
+  object-fit: cover;
   border-radius: 50%;
-  position: relative;
   display: block;
-}
-.brand__mark::before,
-.brand__mark::after {
-  content: "";
-  position: absolute;
-  background: var(--gold);
-  opacity: 0.7;
-}
-.brand__mark::before {
-  width: 1px;
-  top: -0.3rem;
-  bottom: -0.3rem;
-  left: 50%;
-}
-.brand__mark::after {
-  height: 1px;
-  left: -0.3rem;
-  right: -0.3rem;
-  top: 50%;
-}
-.brand__mark i {
-  position: absolute;
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 50%;
-  background: var(--paper);
-  top: 0.38rem;
-  right: 0.34rem;
-  box-shadow: 0 0 12px var(--paper);
+  border: 1px solid rgba(233, 224, 202, 0.7);
+  box-shadow:
+    0 0 0 2px rgba(201, 167, 93, 0.14),
+    0 0 1.2rem rgba(201, 167, 93, 0.16);
 }
 .brand strong {
   display: block;
@@ -689,9 +664,8 @@ input:focus-visible {
     gap: 0.55rem;
   }
   .brand__mark {
-    width: 1.9rem;
-    height: 1.9rem;
-    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
   }
   .brand strong {
     font-size: 0.9rem;

@@ -1,13 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
         <Link href="/" className="brand" aria-label="Celestial Atlas home">
-          <span className="brand__mark" aria-hidden="true">
-            <i />
-          </span>
+          <Image
+            className="brand__mark"
+            src="/celestialatlas-logo.png"
+            alt=""
+            width="46"
+            height="46"
+          />
           <span>
             <strong>Celestial Atlas</strong>
             <small>Calculated reflection</small>
