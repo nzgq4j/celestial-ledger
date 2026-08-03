@@ -2,11 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRef } from "react";
 import { SitePreferences } from "@/components/SitePreferences";
 import { useLocale } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
   const { pack } = useLocale();
+  const megaMenu = useRef<HTMLDetailsElement>(null);
+  function closeMegaMenu() {
+    if (megaMenu.current) megaMenu.current.open = false;
+  }
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -24,11 +29,11 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
-          <details className="mega-nav">
+          <details className="mega-nav" ref={megaMenu}>
             <summary>
               Explore <span aria-hidden="true">⌄</span>
             </summary>
-            <div className="mega-nav__panel">
+            <div className="mega-nav__panel" onClick={closeMegaMenu}>
               <section>
                 <p>Today’s sky</p>
                 <Link href="/horoscopes">
