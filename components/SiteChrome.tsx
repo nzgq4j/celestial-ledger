@@ -24,8 +24,13 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
-          <Link href="/#chart">{pack.messages.navigation.chart}</Link>
-          <Link href="/reports">{pack.messages.navigation.reports}</Link>
+          <Link href="/#chart" className="site-nav__optional">
+            {pack.messages.navigation.chart}
+          </Link>
+          <Link href="/horoscopes">Horoscopes</Link>
+          <Link href="/reports" className="site-nav__optional">
+            {pack.messages.navigation.reports}
+          </Link>
           <Link href="/account" className="site-nav__account">
             <span className="site-nav__account-full">
               {pack.messages.navigation.library}

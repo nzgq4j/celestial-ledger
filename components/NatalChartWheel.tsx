@@ -216,18 +216,56 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
           between them.
         </p>
       </aside>
-      <figcaption id="wheel-desc" className="text-sm text-[#b9b2a3] mt-3">
-        Zodiac positions:{" "}
-        {chart.placements
-          .map(
-            (p) =>
-              `${p.name} ${p.degree} degrees ${p.minute} minutes ${p.sign}`,
-          )
-          .join("; ")}
-        .{" "}
-        {chart.timeKnown
-          ? `Twelve ${chart.calculation.houseSystem} houses are shown. ${chart.aspects.length} major aspects use distinct line patterns.`
-          : "Birth time is unknown; houses and angles are omitted."}
+      <figcaption id="wheel-desc" className="ephemeris-register">
+        <div className="ephemeris-register__heading">
+          <div>
+            <p className="section-kicker">Technical register</p>
+            <h3>Primary ephemeris positions</h3>
+          </div>
+          <span>{chart.utc}</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Celestial body</th>
+                <th>Zodiac sign</th>
+                <th>Degree</th>
+                <th>Minute</th>
+                <th>Motion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chart.placements.map((placement) => (
+                <tr key={placement.name}>
+                  <td>{placement.name}</td>
+                  <td>{placement.sign}</td>
+                  <td>{placement.degree}°</td>
+                  <td>{String(placement.minute).padStart(2, "0")}′</td>
+                  <td>{placement.retrograde ? "Retrograde" : "Direct"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <dl className="ephemeris-register__status">
+          <div>
+            <dt>Birth time</dt>
+            <dd>{chart.timeKnown ? "Recorded" : "Unknown"}</dd>
+          </div>
+          <div>
+            <dt>House system</dt>
+            <dd>{chart.calculation.houseSystem}</dd>
+          </div>
+          <div>
+            <dt>Angles</dt>
+            <dd>{chart.timeKnown ? "Calculated" : "Omitted"}</dd>
+          </div>
+          <div>
+            <dt>Major aspects</dt>
+            <dd>{chart.aspects.length}</dd>
+          </div>
+        </dl>
       </figcaption>
     </figure>
   );

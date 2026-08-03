@@ -1169,6 +1169,269 @@ input:focus-visible {
   font-size: 0.84rem;
   line-height: 1.65;
 }
+.ephemeris-register {
+  display: block;
+  max-width: 60rem;
+  margin: 1.5rem auto 0;
+  border: 1px solid var(--line);
+  background: var(--surface-field);
+}
+.ephemeris-register__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.ephemeris-register__heading h3 {
+  margin: 0.3rem 0 0;
+  font:
+    400 1.35rem Georgia,
+    serif;
+  color: var(--paper);
+}
+.ephemeris-register__heading > span {
+  color: var(--muted);
+  font:
+    0.62rem ui-monospace,
+    monospace;
+}
+.ephemeris-register td:first-child {
+  color: var(--paper);
+  font-family: Georgia, serif;
+}
+.ephemeris-register__status {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.ephemeris-register__status div {
+  padding: 0.75rem 1rem;
+  border-right: 1px solid var(--line);
+}
+.ephemeris-register__status div:last-child {
+  border-right: 0;
+}
+.ephemeris-register__status dt {
+  color: var(--muted);
+  font:
+    0.58rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ephemeris-register__status dd {
+  margin: 0.25rem 0 0;
+  color: var(--paper);
+  font-size: 0.82rem;
+}
+
+.daily-horoscopes {
+  max-width: 78rem;
+}
+.horoscope-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(19rem, 0.6fr);
+  gap: 3rem;
+  align-items: end;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.horoscope-hero h1,
+.horoscope-detail h1 {
+  margin: 0.6rem 0 0;
+  font:
+    400 clamp(3.2rem, 7vw, 6.5rem)/0.92 Georgia,
+    serif;
+  letter-spacing: -0.045em;
+}
+.horoscope-hero > p {
+  color: var(--muted);
+  line-height: 1.75;
+}
+.daily-sky-strip {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+.daily-sky-strip span {
+  min-width: 9rem;
+  padding: 0.8rem 1rem;
+  border-right: 1px solid var(--line);
+  color: var(--muted);
+  font:
+    0.68rem ui-monospace,
+    monospace;
+}
+.daily-sky-strip strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.horoscope-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-left: 1px solid var(--line);
+}
+.horoscope-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 27rem;
+  padding: 1.5rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--surface) 92%, transparent),
+    color-mix(in srgb, var(--surface-field) 80%, transparent)
+  );
+}
+.horoscope-card__sign {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+.horoscope-card__sign > span {
+  color: var(--gold);
+  font:
+    2.2rem Georgia,
+    serif;
+}
+.horoscope-card__sign p {
+  margin: 0;
+  color: var(--paper);
+  font:
+    400 1.35rem Georgia,
+    serif;
+}
+.horoscope-card__sign small {
+  color: var(--gold);
+  font:
+    0.58rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.horoscope-card > p {
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+.horoscope-card dl {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+}
+.horoscope-card dl div {
+  padding-top: 0.65rem;
+  border-top: 1px dotted var(--line);
+}
+.horoscope-card dt {
+  color: var(--gold);
+  font:
+    0.58rem ui-monospace,
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.horoscope-card dd {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.horoscope-card > a {
+  margin-top: auto;
+  color: var(--gold);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.horoscope-back {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: var(--gold);
+  font-size: 0.75rem;
+}
+.horoscope-detail {
+  max-width: 68rem;
+}
+.horoscope-detail > header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.horoscope-detail__glyph {
+  color: var(--gold);
+  font:
+    clamp(4rem, 10vw, 8rem)/1 Georgia,
+    serif;
+}
+.horoscope-detail header > div > p:last-child {
+  color: var(--gold);
+  font:
+    0.7rem ui-monospace,
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.horoscope-reading {
+  max-width: 50rem;
+}
+.horoscope-reading article {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.horoscope-reading h2,
+.horoscope-evidence h2 {
+  margin: 0 0 0.7rem;
+  color: var(--paper);
+  font:
+    400 clamp(1.5rem, 3vw, 2.2rem) Georgia,
+    serif;
+}
+.horoscope-reading p {
+  color: var(--text-soft);
+  line-height: 1.8;
+}
+.horoscope-reading__lead p {
+  font:
+    400 clamp(1.25rem, 2.5vw, 1.65rem)/1.65 Georgia,
+    serif;
+  color: var(--paper);
+}
+.horoscope-guidance {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.horoscope-question h2 {
+  color: var(--gold);
+}
+.horoscope-evidence {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.horoscope-evidence li {
+  margin-block: 0.6rem;
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+.horoscope-evidence > p:last-child {
+  margin-top: 1rem;
+  color: var(--muted);
+  font:
+    0.65rem ui-monospace,
+    monospace;
+}
 .big-three-section {
   display: grid;
   gap: 0;
@@ -1245,6 +1508,13 @@ input:focus-visible {
   }
 }
 @media (max-width: 900px) {
+  .horoscope-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .horoscope-hero {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
   .atlas-hero__inner {
     grid-template-columns: 1fr;
     gap: 2.5rem;
@@ -1272,6 +1542,31 @@ input:focus-visible {
   }
 }
 @media (max-width: 560px) {
+  .horoscope-grid {
+    grid-template-columns: 1fr;
+  }
+  .horoscope-card {
+    min-height: 0;
+  }
+  .horoscope-guidance {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .horoscope-detail > header {
+    grid-template-columns: 1fr;
+  }
+  .ephemeris-register__heading {
+    display: grid;
+  }
+  .ephemeris-register__status {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ephemeris-register__status div:nth-child(2) {
+    border-right: 0;
+  }
+  .ephemeris-register__status div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
   .site-header__inner {
     min-height: 4.2rem;
     padding-inline: 1rem;
@@ -1304,7 +1599,7 @@ input:focus-visible {
     width: 1.65rem;
     height: 1.65rem;
   }
-  .site-nav a:nth-child(-n + 2) {
+  .site-nav__optional {
     display: none;
   }
   .site-nav__account {
