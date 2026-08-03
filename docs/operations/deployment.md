@@ -13,7 +13,7 @@ Required production secrets will eventually include Supabase URL/anon/service-ro
 - Region: London (`eu-west-2`)
 - API URL: `https://jyguyvpbstskpuwqwrok.supabase.co`
 
-Configure the Vercel Supabase Marketplace variables documented in `.env.example`; the application consumes those names directly. Do not expose a secret or service-role key. Set the Supabase Auth Site URL to `https://celestial-ledger.vercel.app` and add `https://celestial-ledger.vercel.app/auth/confirm` to the allowed redirect URLs. Local development may additionally allow `http://localhost:3000/auth/confirm`.
+Configure the Vercel Supabase Marketplace variables documented in `.env.example`; the application consumes those names directly. Do not expose a secret or service-role key. Set the Supabase Auth Site URL to `https://www.celestialatlas.app` and add `https://www.celestialatlas.app/auth/confirm` to the allowed redirect URLs. Local development may additionally allow `http://localhost:3000/auth/confirm`.
 
 The application supplies the canonical production URL explicitly when creating a user. To honor that `emailRedirectTo` value, set the confirm-signup email template link to:
 

@@ -17,7 +17,7 @@ function credentials(formData: FormData) {
 function canonicalAppUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configuredUrl) return configuredUrl.replace(/\/$/, "");
-  return "https://celestial-ledger.vercel.app";
+  return "https://www.celestialatlas.app";
 }
 
 export async function signIn(formData: FormData) {
