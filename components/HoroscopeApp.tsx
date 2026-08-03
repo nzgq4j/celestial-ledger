@@ -23,18 +23,36 @@ const ZODIAC_SYMBOLS = [
 ] as const;
 
 function interpretationMarkup(text: string) {
-  return text.split(/\n(?=\d+\.\s)/).map((section, i) => {
-    const [first, ...rest] = section.trim().split("\n");
+  const normalized = text
+    .replace(/\r\n/g, "\n")
+    .replace(/\s+(?=(?:#{1,3}\s*)?\d{1,2}\.\s+[A-Z])/g, "\n")
+    .trim();
+  const sections = normalized
+    .split(/\n(?=(?:#{1,3}\s*)?\d{1,2}\.\s+)/)
+    .filter(Boolean);
+
+  return sections.map((section, i) => {
+    const lines = section.trim().split("\n");
+    const first = lines.shift() ?? "Chart interpretation";
+    const heading = first
+      .replace(/^#{1,3}\s*/, "")
+      .replace(/^\d{1,2}\.\s*/, "");
+    const body = lines.join("\n").trim();
+    const paragraphs = (body || (sections.length === 1 ? normalized : ""))
+      .split(/\n\s*\n+/)
+      .map((paragraph) => paragraph.replace(/^#{1,3}\s*/, "").trim())
+      .filter(Boolean);
     return (
-      <section key={i}>
-        <h2>{first.replace(/^\d+\.\s*/, "")}</h2>
-        {rest
-          .join("\n")
-          .split(/\n\n+/)
-          .filter(Boolean)
-          .map((p, j) => (
-            <p key={j}>{p}</p>
+      <section key={`${heading}-${i}`} className="interpretation-section">
+        <p className="interpretation-section__index">
+          {String(i + 1).padStart(2, "0")}
+        </p>
+        <div>
+          <h2>{heading}</h2>
+          {paragraphs.map((paragraph, j) => (
+            <p key={j}>{paragraph}</p>
           ))}
+        </div>
       </section>
     );
   });

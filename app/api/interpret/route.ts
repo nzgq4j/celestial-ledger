@@ -136,6 +136,11 @@ Use these exact headings:
 9. Potential Growth Areas
 10. Concise Summary
 
+Formatting requirements:
+- Put every numbered heading on its own line.
+- Follow each heading with one or more short paragraphs separated by blank lines.
+- Do not use a single uninterrupted block of text.
+
 Display information:\n${JSON.stringify(display)}\n\nValidated chart facts:\n${JSON.stringify(facts)}`;
 
   try {

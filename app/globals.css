@@ -1042,6 +1042,89 @@ input:focus-visible {
 .chart-wheel {
   padding: 1rem;
 }
+.chart-wheel__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10.5rem;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: center;
+  max-width: 48rem;
+  margin-inline: auto;
+}
+.chart-wheel__svg {
+  display: block;
+  width: 100%;
+  max-width: 35rem;
+  margin-inline: auto;
+}
+.zodiac-legend {
+  position: relative;
+  padding: 1.15rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 64%, var(--line));
+  background:
+    linear-gradient(
+        135deg,
+        transparent 0 49%,
+        rgba(201, 167, 93, 0.035) 50% 51%,
+        transparent 52%
+      )
+      0 0 / 9px 9px,
+    color-mix(in srgb, var(--surface-field) 92%, transparent);
+  box-shadow:
+    inset 0 0 0 3px var(--surface-field),
+    inset 0 0 0 4px color-mix(in srgb, var(--gold) 28%, transparent);
+}
+.zodiac-legend::before,
+.zodiac-legend::after {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  padding-inline: 0.35rem;
+  background: var(--surface-field);
+  color: var(--gold);
+  font-size: 0.55rem;
+}
+.zodiac-legend::before {
+  top: -0.42rem;
+}
+.zodiac-legend::after {
+  bottom: -0.42rem;
+}
+.zodiac-legend__title {
+  margin: 0 0 0.85rem;
+  color: var(--gold);
+  font:
+    0.58rem ui-monospace,
+    monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.zodiac-legend ol {
+  display: grid;
+  gap: 0.24rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.zodiac-legend li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  align-items: center;
+  min-height: 1.45rem;
+  border-bottom: 1px dotted color-mix(in srgb, var(--line) 65%, transparent);
+  color: var(--text-soft);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.76rem;
+}
+.zodiac-legend__glyph {
+  color: var(--gold);
+  font:
+    1rem Georgia,
+    "Times New Roman",
+    serif;
+  text-align: center;
+}
 .place-search-row {
   display: flex;
   gap: 0.5rem;
@@ -1050,6 +1133,16 @@ input:focus-visible {
   min-width: 0;
 }
 @media (max-width: 700px) {
+  .chart-wheel__layout {
+    grid-template-columns: 1fr;
+  }
+  .zodiac-legend {
+    width: 100%;
+  }
+  .zodiac-legend ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem 1rem;
+  }
   .site-header__inner {
     align-items: flex-start;
   }
@@ -1324,6 +1417,35 @@ th {
   color: var(--gold);
   margin-top: 1.6rem;
   font-size: 1.2rem;
+}
+.interpretation-section {
+  display: grid;
+  grid-template-columns: 2.3rem minmax(0, 1fr);
+  gap: 0.8rem;
+  padding: 1.35rem 0;
+  border-top: 1px solid var(--line);
+}
+.interpretation-section:first-child {
+  border-top-color: color-mix(in srgb, var(--gold) 60%, var(--line));
+}
+.interpretation-section__index {
+  margin: 0.23rem 0 0 !important;
+  color: var(--gold) !important;
+  font:
+    0.62rem ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+}
+.interpretation-section h2 {
+  margin: 0 0 0.65rem;
+  color: var(--paper);
+  font:
+    400 clamp(1.2rem, 2.5vw, 1.65rem)/1.15 Georgia,
+    serif;
+}
+.interpretation-section p {
+  max-width: 68ch;
+  margin: 0.65rem 0 0;
 }
 .prose p {
   color: #ddd6c8;
