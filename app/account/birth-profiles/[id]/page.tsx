@@ -47,7 +47,7 @@ export default async function BirthProfilePage({
       <NatalChartWheel chart={chart} />
       <div className="mt-6">
         <Link className="button-quiet" href="/account">
-          Return to private library
+          Return to My Celestial Atlas
         </Link>
       </div>
     </main>

@@ -18,8 +18,8 @@ const reports = [
     status: "Available",
     title: "Recovery Reflection",
     price: "$5",
-    copy: "An adults-only reflection using reviewed themes. It never diagnoses, predicts relapse or replaces professional support.",
-    evidence: "Reviewed themes · natal evidence · safety policy",
+    copy: "A private natal reading for grounding, self-trust, relationships, daily rhythms, boundaries and renewal. Choose the themes calling for your attention now.",
+    evidence: "Your natal chart · chosen themes · reflective questions",
   },
   {
     status: "In development",
@@ -71,7 +71,7 @@ export default function ReportsPage() {
           indexing.
         </p>
         <Link href="/auth/login" className="button-primary">
-          Open your private library
+          Open My Celestial Atlas
         </Link>
       </section>
     </main>

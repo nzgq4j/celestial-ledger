@@ -888,6 +888,88 @@ a {
   align-items: end;
   margin-top: 1rem;
 }
+
+.recovery-compass {
+  grid-column: 1 / -1;
+  margin: 0.4rem 0;
+  padding: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  background:
+    radial-gradient(
+      circle at 50% 0,
+      color-mix(in srgb, var(--gold) 10%, transparent),
+      transparent 48%
+    ),
+    var(--surface);
+}
+
+.recovery-compass legend {
+  padding-inline: 0.5rem;
+  color: var(--gold);
+  font:
+    400 1.15rem Georgia,
+    serif;
+}
+
+.recovery-compass > p {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+}
+
+.recovery-compass__themes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.recovery-compass__themes label,
+.recovery-confirmation {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.recovery-compass__themes label:has(input:checked) {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+
+.recovery-compass input {
+  margin-top: 0.2rem;
+  accent-color: var(--gold);
+}
+
+.recovery-compass__themes span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.recovery-compass__themes small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.recovery-confirmation {
+  margin-top: 0.8rem;
+  border-style: dashed;
+}
+
+.checkout-guidance {
+  margin-top: 0.65rem;
+  max-width: 20rem;
+  color: #e0a39a;
+  font-size: 0.82rem;
+}
+
+.checkout-guidance a {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: var(--gold);
+  text-decoration: underline;
+}
 .report-generator .label,
 .report-generator p {
   grid-column: 1 / -1;
@@ -1012,6 +1094,9 @@ a {
   border-color: var(--map-cyan);
 }
 @media (max-width: 760px) {
+  .recovery-compass__themes {
+    grid-template-columns: 1fr;
+  }
   .report-viewer-grid {
     grid-template-columns: 1fr;
   }

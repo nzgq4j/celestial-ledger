@@ -9,7 +9,7 @@ const pack = {
     navigation: {
       chart: "Chart",
       reports: "Reports",
-      library: "Private library",
+      library: "My Celestial Atlas",
     },
     preferences: {
       appearance: "Appearance",

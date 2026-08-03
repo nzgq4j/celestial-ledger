@@ -9,6 +9,14 @@ import {
   careerReportSchema,
   validateEvidenceLinks,
 } from "@/lib/reports/career";
+import {
+  buildRecoveryEvidence,
+  recoveryPrompt,
+  recoveryReportJsonSchema,
+  recoveryReportSchema,
+  recoveryThemeSchema,
+  validateRecoveryReport,
+} from "@/lib/reports/recovery";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -28,7 +36,7 @@ export async function POST(request: Request) {
   if (claimError) return json({ error: "Job claim failed." }, 500);
   if (!job) return json({ claimed: false });
   try {
-    if (job.report_type !== "career_purpose")
+    if (!["career_purpose", "recovery_reflection"].includes(job.report_type))
       throw new Error("UNSUPPORTED_REPORT_TYPE");
     const { data: profile, error } = await admin
       .from("birth_profiles")
@@ -55,25 +63,47 @@ export async function POST(request: Request) {
         timeZone: profile.time_zone,
       },
     };
-    const { chart, evidence } = await buildCareerEvidence(birthInput);
+    const recoveryThemes =
+      job.report_type === "recovery_reflection"
+        ? recoveryThemeSchema.array().min(1).max(6).parse(job.recovery_themes)
+        : undefined;
+    const { chart, evidence } =
+      job.report_type === "recovery_reflection"
+        ? await buildRecoveryEvidence(birthInput)
+        : await buildCareerEvidence(birthInput);
     const model = process.env.OPENAI_REPORT_MODEL || "gpt-5-mini";
     const response = await new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     }).responses.create({
       model,
       store: false,
-      input: careerPrompt(evidence),
+      input: recoveryThemes
+        ? recoveryPrompt(evidence, recoveryThemes)
+        : careerPrompt(evidence),
       text: {
         format: {
           type: "json_schema",
-          name: "career_purpose_report",
+          name: recoveryThemes
+            ? "recovery_reflection_report"
+            : "career_purpose_report",
           strict: true,
-          schema: careerReportJsonSchema,
+          schema: recoveryThemes
+            ? recoveryReportJsonSchema
+            : careerReportJsonSchema,
         },
       },
     });
-    const report = careerReportSchema.parse(JSON.parse(response.output_text));
-    validateEvidenceLinks(report, evidence);
+    const rawReport: unknown = JSON.parse(response.output_text);
+    let report;
+    if (recoveryThemes) {
+      const recoveryReport = recoveryReportSchema.parse(rawReport);
+      validateRecoveryReport(recoveryReport, evidence, recoveryThemes);
+      report = recoveryReport;
+    } else {
+      const careerReport = careerReportSchema.parse(rawReport);
+      validateEvidenceLinks(careerReport, evidence);
+      report = careerReport;
+    }
     const { error: completeError } = await admin.rpc("complete_report_job", {
       p_report_id: job.id,
       p_output: report,

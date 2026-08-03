@@ -73,7 +73,9 @@ export default async function AccountPage({
   const products = productResult.data ?? [];
   const entitlements = entitlementResult.data ?? [];
   const readyEntitlements = entitlements.filter(
-    (item) => item.status === "unused" && item.report_type === "career_purpose",
+    (item) =>
+      item.status === "unused" &&
+      ["career_purpose", "recovery_reflection"].includes(item.report_type),
   );
   const displayName =
     profile?.display_name?.trim() ||
@@ -85,7 +87,7 @@ export default async function AccountPage({
     <main className="page-shell private-library account-dashboard">
       <header className="account-hero">
         <div>
-          <p className="eyebrow">Private atlas</p>
+          <p className="eyebrow">My Celestial Atlas</p>
           <h1>Welcome, {displayName}</h1>
           <p>
             Your charts, reports, and account settings in one private place.
@@ -134,7 +136,7 @@ export default async function AccountPage({
       <section className="dashboard-panel" id="reports">
         <div className="dashboard-panel__heading">
           <div>
-            <p className="section-kicker">Private library</p>
+            <p className="section-kicker">My Celestial Atlas</p>
             <h2>Reports</h2>
           </div>
           <span className="dashboard-panel__meta">{reports.length} saved</span>
@@ -143,11 +145,16 @@ export default async function AccountPage({
         {readyEntitlements.map((entitlement) => (
           <article className="ready-report" key={entitlement.id}>
             <div>
-              <strong>Career and Purpose</strong>
+              <strong>
+                {entitlement.report_type === "recovery_reflection"
+                  ? "Recovery Reflection"
+                  : "Career and Purpose"}
+              </strong>
               <p>Purchased and ready to generate.</p>
             </div>
             <GenerateReportButton
               entitlementId={entitlement.id}
+              reportType={entitlement.report_type}
               profiles={birthProfiles.map((item) => ({
                 id: item.id,
                 label: item.label,
@@ -178,7 +185,11 @@ export default async function AccountPage({
 
         <div className="compact-products">
           {products
-            .filter((product) => product.report_type === "career_purpose")
+            .filter((product) =>
+              ["career_purpose", "recovery_reflection"].includes(
+                product.report_type,
+              ),
+            )
             .map((product) => (
               <article key={product.report_type}>
                 <div>
@@ -192,7 +203,13 @@ export default async function AccountPage({
                       currency: product.currency ?? "USD",
                     }).format((product.unit_amount ?? 0) / 100)}
                   </strong>
-                  <CheckoutButton reportType={product.report_type} />
+                  {birthProfiles.length ? (
+                    <CheckoutButton reportType={product.report_type} />
+                  ) : (
+                    <Link href="/#chart" className="button-primary">
+                      Create natal chart
+                    </Link>
+                  )}
                 </div>
               </article>
             ))}

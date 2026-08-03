@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export function CheckoutButton({ reportType }: { reportType: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [actionUrl, setActionUrl] = useState("");
 
   async function checkout() {
     setBusy(true);
     setError("");
+    setActionUrl("");
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -16,8 +19,11 @@ export function CheckoutButton({ reportType }: { reportType: string }) {
         body: JSON.stringify({ reportType }),
       });
       const payload = await response.json();
-      if (!response.ok || typeof payload.url !== "string")
+      if (!response.ok || typeof payload.url !== "string") {
+        if (typeof payload.actionUrl === "string")
+          setActionUrl(payload.actionUrl);
         throw new Error(payload.error ?? "Checkout could not be started.");
+      }
       window.location.assign(payload.url);
     } catch (caught) {
       setError(
@@ -40,9 +46,10 @@ export function CheckoutButton({ reportType }: { reportType: string }) {
         {busy ? "Opening Stripe…" : "Purchase"}
       </button>
       {error && (
-        <p role="alert" className="mt-2 text-sm text-[#e0a39a]">
-          {error}
-        </p>
+        <div role="alert" className="checkout-guidance">
+          <p>{error}</p>
+          {actionUrl && <Link href={actionUrl}>Create my natal chart</Link>}
+        </div>
       )}
     </div>
   );

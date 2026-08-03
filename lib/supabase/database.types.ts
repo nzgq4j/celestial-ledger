@@ -509,6 +509,7 @@ export type Database = {
           p_birth_profile_id: string;
           p_entitlement_id: string;
           p_prompt_version: string;
+          p_recovery_themes?: Json | null;
           p_safety_version: string;
           p_schema_version: string;
           p_user_id: string;

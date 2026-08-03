@@ -38,12 +38,30 @@ export async function POST(request: Request) {
 
   try {
     const { reportType } = schema.parse(await readLimitedJson(request, 1_024));
-    if (reportType !== "career_purpose")
+    if (
+      !(["career_purpose", "recovery_reflection"] as const).includes(
+        reportType as "career_purpose" | "recovery_reflection",
+      )
+    )
       return json(
         { error: "This report is not available for purchase yet." },
         409,
       );
     const admin = createAdminClient();
+    const { count: birthProfileCount } = await admin
+      .from("birth_profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gt("expires_at", new Date().toISOString());
+    if (!birthProfileCount)
+      return json(
+        {
+          error:
+            "Create and save your natal chart before purchasing this report.",
+          actionUrl: "/#chart",
+        },
+        409,
+      );
     const { data: product } = await admin
       .from("products")
       .select("report_type, stripe_price_id, unit_amount, currency, active")

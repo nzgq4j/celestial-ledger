@@ -5,6 +5,7 @@ import {
   careerReportSchema,
   type CareerEvidenceBundle,
 } from "@/lib/reports/career";
+import { recoveryReportSchema } from "@/lib/reports/recovery";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -51,7 +52,10 @@ export default async function ReportPage({
         </Link>
       </main>
     );
-  const output = careerReportSchema.safeParse(report.output);
+  const isRecovery = report.report_type === "recovery_reflection";
+  const output = isRecovery
+    ? recoveryReportSchema.safeParse(report.output)
+    : careerReportSchema.safeParse(report.output);
   const evidence = evidenceRow?.evidence as unknown as
     CareerEvidenceBundle | undefined;
   if (!output.success || !evidence)
@@ -64,7 +68,11 @@ export default async function ReportPage({
   return (
     <main className="page-shell private-report">
       <header className="report-viewer-heading">
-        <p className="eyebrow">Career and Purpose · private edition</p>
+        <p className="eyebrow">
+          {isRecovery
+            ? "Recovery Reflection · private edition"
+            : "Career and Purpose · private edition"}
+        </p>
         <h1>{output.data.title}</h1>
         <p>{output.data.introduction}</p>
         {evidence.uncertainty.map((note) => (
@@ -102,7 +110,9 @@ export default async function ReportPage({
           ))}
           <footer>
             <p>{output.data.closing}</p>
-            <small>{output.data.disclaimer}</small>
+            {!isRecovery && "disclaimer" in output.data && (
+              <small>{output.data.disclaimer}</small>
+            )}
           </footer>
         </article>
         <aside className="evidence-map">
