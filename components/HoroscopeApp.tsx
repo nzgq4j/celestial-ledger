@@ -210,25 +210,25 @@ export default function HoroscopeApp() {
       <header className="atlas-hero">
         <div className="atlas-hero__inner">
           <div className="atlas-hero__content">
-          <p className="eyebrow">Your chart · a private field guide</p>
-          <h1>
-            Your natal chart,
-            <br />
-            <em>calculated before interpreted.</em>
-          </h1>
-          <p className="atlas-hero__copy">
-            Astronomical positions are calculated deterministically. The
-            language model explains validated chart data and does not calculate
-            or modify placements.
-          </p>
-          <div className="atlas-hero__method">
-            <span>01</span>
-            <p>Birthplace resolved</p>
-            <span>02</span>
-            <p>Chart calculated</p>
-            <span>03</span>
-            <p>Evidence interpreted</p>
-          </div>
+            <p className="eyebrow">Your chart · a private field guide</p>
+            <h1>
+              Your natal chart,
+              <br />
+              <em>calculated before interpreted.</em>
+            </h1>
+            <p className="atlas-hero__copy">
+              Astronomical positions are calculated deterministically. The
+              language model explains validated chart data and does not
+              calculate or modify placements.
+            </p>
+            <div className="atlas-hero__method">
+              <span>01</span>
+              <p>Birthplace resolved</p>
+              <span>02</span>
+              <p>Chart calculated</p>
+              <span>03</span>
+              <p>Evidence interpreted</p>
+            </div>
           </div>
           <CelestialRouteMap />
         </div>

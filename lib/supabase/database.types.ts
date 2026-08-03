@@ -435,6 +435,41 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      claim_report_job: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database["public"]["Tables"]["reports"]["Row"][];
+      };
+      complete_report_job: {
+        Args: {
+          p_calculation_version: string;
+          p_ephemeris_version: string;
+          p_evidence: Json;
+          p_model_version: string;
+          p_output: Json;
+          p_report_id: string;
+          p_timezone_name: string;
+        };
+        Returns: undefined;
+      };
+      fail_report_job: {
+        Args: {
+          p_failure_code: string;
+          p_report_id: string;
+          p_retryable: boolean;
+        };
+        Returns: undefined;
+      };
+      queue_paid_report: {
+        Args: {
+          p_birth_profile_id: string;
+          p_entitlement_id: string;
+          p_prompt_version: string;
+          p_safety_version: string;
+          p_schema_version: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
       process_stripe_event: {
         Args: {
           p_action: string;

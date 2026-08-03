@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/supabase/config";
 import { BirthProfileList } from "@/components/BirthProfileList";
 import { CheckoutButton } from "@/components/CheckoutButton";
+import { GenerateReportButton } from "@/components/GenerateReportButton";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -96,15 +98,50 @@ export default async function AccountPage() {
             ? `${entitlements.length} purchased report entitlement(s).`
             : "No report entitlements yet."}
         </p>
+        <div className="mt-5 grid gap-4">
+          {(entitlements ?? [])
+            .filter(
+              (entitlement) =>
+                entitlement.status === "unused" &&
+                entitlement.report_type === "career_purpose",
+            )
+            .map((entitlement) => (
+              <article className="library-product" key={entitlement.id}>
+                <h3>Career and Purpose</h3>
+                <p className="text-sm text-[#b9b2a3] mt-1">
+                  Purchased and ready to generate.
+                </p>
+                <GenerateReportButton
+                  entitlementId={entitlement.id}
+                  profiles={(birthProfiles ?? []).map((profile) => ({
+                    id: profile.id,
+                    label: profile.label,
+                  }))}
+                />
+              </article>
+            ))}
+        </div>
       </section>
       <section className="library-section">
         <p className="section-kicker">Your archive</p>
         <h2>Reports</h2>
-        <p className="mt-3 text-[#b9b2a3]">
-          {reports?.length
-            ? `${reports.length} report(s).`
-            : "No purchased reports."}
-        </p>
+        {reports?.length ? (
+          <div className="report-library-list">
+            {reports.map((report) => (
+              <Link href={`/reports/${report.id}`} key={report.id}>
+                <span>{report.report_type.replaceAll("_", " ")}</span>
+                <strong>{report.status}</strong>
+                <small>
+                  {report.expires_at
+                    ? `Available until ${new Date(report.expires_at).toLocaleDateString("en-GB")}`
+                    : new Date(report.created_at).toLocaleDateString("en-GB")}
+                </small>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 text-[#b9b2a3]">No purchased reports.</p>
+        )}
       </section>
     </main>
   );
