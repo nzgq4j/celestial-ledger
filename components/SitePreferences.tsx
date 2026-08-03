@@ -51,22 +51,31 @@ export function SitePreferences() {
 
   return (
     <div className="site-preferences">
-      <label>
-        <span className="sr-only">{pack.messages.preferences.appearance}</span>
-        <select
-          aria-label={pack.messages.preferences.appearance}
-          value={theme}
-          onChange={(event) =>
-            changeTheme(event.target.value as ThemePreference)
-          }
-        >
-          <option value="system">{pack.messages.preferences.system}</option>
-          <option value="dark">{pack.messages.preferences.dark}</option>
-          <option value="light">{pack.messages.preferences.light}</option>
-        </select>
-      </label>
-      <label>
-        <span className="sr-only">{pack.messages.preferences.language}</span>
+      <fieldset className="theme-switcher">
+        <legend>{pack.messages.preferences.appearance}</legend>
+        {(["system", "light", "dark"] as const).map((preference) => (
+          <button
+            key={preference}
+            type="button"
+            aria-pressed={theme === preference}
+            title={pack.messages.preferences[preference]}
+            onClick={() => changeTheme(preference)}
+          >
+            <span aria-hidden="true">
+              {preference === "system"
+                ? "◐"
+                : preference === "light"
+                  ? "☼"
+                  : "☾"}
+            </span>
+            <span className="sr-only">
+              {pack.messages.preferences[preference]}
+            </span>
+          </button>
+        ))}
+      </fieldset>
+      <label className="language-picker">
+        <span>{pack.messages.preferences.language}</span>
         <select
           aria-label={pack.messages.preferences.language}
           lang={locale}
@@ -77,7 +86,7 @@ export function SitePreferences() {
         >
           {localeTags.map((tag) => (
             <option key={tag} value={tag} lang={tag}>
-              {localeRegistry[tag].nativeName} ({tag})
+              {localeRegistry[tag].nativeName} · {tag}
             </option>
           ))}
         </select>

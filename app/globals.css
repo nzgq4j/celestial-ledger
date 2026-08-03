@@ -141,7 +141,7 @@ a {
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 1.6rem;
+  gap: 1.15rem;
   color: var(--muted);
   font-size: 0.82rem;
 }
@@ -164,19 +164,78 @@ a {
 .site-preferences {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.7rem;
+  margin-left: 0.15rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--line);
 }
-.site-preferences select {
-  max-width: 8.4rem;
-  min-height: 2.1rem;
+.theme-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, 1.8rem);
+  gap: 0.16rem;
+  margin: 0;
+  padding: 0.18rem;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--control-bg) 86%, transparent);
+}
+.theme-switcher legend,
+.language-picker > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.theme-switcher button {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.theme-switcher button:hover {
+  color: var(--ivory);
+}
+.theme-switcher button[aria-pressed="true"] {
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent);
+}
+.language-picker {
+  position: relative;
+}
+.language-picker::after {
+  content: "⌄";
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  translate: 0 -58%;
+  color: var(--gold);
+  pointer-events: none;
+}
+.language-picker select {
+  max-width: 8.9rem;
+  min-height: 2.2rem;
   border: 1px solid var(--control-border);
   border-radius: 999px;
   background: var(--control-bg);
   color: var(--ivory);
-  padding: 0.35rem 1.65rem 0.35rem 0.65rem;
-  font-size: 0.7rem;
+  padding: 0.35rem 1.7rem 0.35rem 0.72rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  appearance: none;
 }
-.site-preferences select:focus-visible {
+.language-picker select:focus-visible,
+.theme-switcher button:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
@@ -998,6 +1057,23 @@ input:focus-visible {
     gap: 0.75rem;
     font-size: 0.75rem;
   }
+  .site-preferences {
+    padding-left: 0.6rem;
+  }
+  .language-picker select {
+    width: 3rem;
+    color: transparent;
+  }
+  .language-picker::before {
+    content: "EN";
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    translate: 0 -50%;
+    color: var(--ivory);
+    font-size: 0.65rem;
+    pointer-events: none;
+  }
   .site-nav a:first-child {
     display: none;
   }
@@ -1069,6 +1145,19 @@ input:focus-visible {
   }
   .site-nav {
     gap: 0.45rem;
+  }
+  .site-preferences {
+    gap: 0.35rem;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+  .theme-switcher {
+    grid-template-columns: repeat(3, 1.65rem);
+  }
+  .theme-switcher button {
+    width: 1.65rem;
+    height: 1.65rem;
   }
   .site-nav a:nth-child(-n + 2) {
     display: none;
