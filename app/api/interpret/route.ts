@@ -1,6 +1,16 @@
 import OpenAI from "openai";
-import { validateChart, ChartValidationError } from "@/lib/validation";
-import type { NatalChart } from "@/lib/types";
+import { calculateNatalChart } from "@/lib/chart";
+import {
+  CHART_REQUEST_MAX_BYTES,
+  chartRequestSchema,
+} from "@/lib/chart-request";
+import {
+  isSameOrigin,
+  readLimitedJson,
+  RequestPayloadError,
+} from "@/lib/api-security";
+import { HistoricalTimeError } from "@/lib/time";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,7 +18,8 @@ export const dynamic = "force-dynamic";
 function extractResponseText(response: unknown): string {
   if (!response || typeof response !== "object") return "";
   const candidate = response as { output_text?: unknown; output?: unknown };
-  if (typeof candidate.output_text === "string" && candidate.output_text.trim()) return candidate.output_text.trim();
+  if (typeof candidate.output_text === "string" && candidate.output_text.trim())
+    return candidate.output_text.trim();
   if (!Array.isArray(candidate.output)) return "";
   const parts: string[] = [];
   for (const item of candidate.output) {
@@ -27,29 +38,69 @@ function extractResponseText(response: unknown): string {
 const hits = new Map<string, number[]>();
 function rateLimited(key: string) {
   const now = Date.now();
-  const recent = (hits.get(key) || []).filter(t => now - t < 60_000);
-  recent.push(now); hits.set(key, recent);
+  const recent = (hits.get(key) || []).filter((t) => now - t < 60_000);
+  recent.push(now);
+  hits.set(key, recent);
   return recent.length > 8;
 }
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anonymous";
-  if (rateLimited(ip)) return Response.json({ error: "Too many interpretation requests. Try again shortly." }, { status: 429 });
-  if (!process.env.OPENAI_API_KEY) return Response.json({ error: "The interpretation service is not configured." }, { status: 503 });
-  let chart: NatalChart;
+  if (!isSameOrigin(request))
+    return Response.json(
+      { error: "Cross-origin interpretation requests are not allowed." },
+      { status: 403 },
+    );
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "anonymous";
+  if (rateLimited(ip))
+    return Response.json(
+      { error: "Too many interpretation requests. Try again shortly." },
+      { status: 429 },
+    );
+  if (!process.env.OPENAI_API_KEY)
+    return Response.json(
+      { error: "The interpretation service is not configured." },
+      { status: 503 },
+    );
+  let chart;
   try {
-    const body = await request.json();
-    chart = validateChart(body.chart as NatalChart);
+    const body = await readLimitedJson(request, CHART_REQUEST_MAX_BYTES);
+    const { birthInput } = chartRequestSchema.parse(body);
+    chart = await calculateNatalChart(birthInput);
   } catch (error) {
-    const message = error instanceof ChartValidationError ? error.message : "Invalid chart payload.";
-    return Response.json({ error: message }, { status: 422 });
+    if (error instanceof RequestPayloadError)
+      return Response.json(
+        { error: "Invalid interpretation request." },
+        { status: error.code === "REQUEST_TOO_LARGE" ? 413 : 400 },
+      );
+    if (error instanceof z.ZodError)
+      return Response.json(
+        { error: "Invalid birth information." },
+        { status: 422 },
+      );
+    if (error instanceof HistoricalTimeError)
+      return Response.json(
+        { error: error.message, code: error.code },
+        { status: 422 },
+      );
+    return Response.json(
+      { error: "The chart could not be calculated." },
+      { status: 500 },
+    );
   }
 
   const display = {
-    birthplace: [chart.input.place.city, chart.input.place.region, chart.input.place.country].filter(Boolean).join(", "),
+    birthplace: [
+      chart.input.place.city,
+      chart.input.place.region,
+      chart.input.place.country,
+    ]
+      .filter(Boolean)
+      .join(", "),
     birthDate: chart.input.date,
     timeKnown: chart.timeKnown,
-    utc: chart.utc
+    utc: chart.utc,
   };
   const facts = {
     placements: chart.placements,
@@ -58,7 +109,7 @@ export async function POST(request: Request) {
     houses: chart.houses,
     aspects: chart.aspects,
     moonMayChangeSign: chart.moonMayChangeSign,
-    calculation: chart.calculation
+    calculation: chart.calculation,
   };
 
   const prompt = `You are writing a careful Western tropical natal-chart interpretation. Astrology is a symbolic interpretive tradition, not scientifically validated prediction.
@@ -89,12 +140,34 @@ Display information:\n${JSON.stringify(display)}\n\nValidated chart facts:\n${JS
 
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const response = await client.responses.create({ model: process.env.OPENAI_MODEL || "gpt-5-mini", input: prompt, store: false });
+    const response = await client.responses.create({
+      model: process.env.OPENAI_MODEL || "gpt-5-mini",
+      input: prompt,
+      store: false,
+    });
     const interpretation = extractResponseText(response);
-    if (!interpretation) return Response.json({ error: "The interpretation service returned an empty response. The calculated chart remains available." }, { status: 502, headers: { "Cache-Control": "private, no-store" } });
-    return Response.json({ interpretation }, { headers: { "Cache-Control": "private, no-store" } });
+    if (!interpretation)
+      return Response.json(
+        {
+          error:
+            "The interpretation service returned an empty response. The calculated chart remains available.",
+        },
+        { status: 502, headers: { "Cache-Control": "private, no-store" } },
+      );
+    return Response.json(
+      { interpretation },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch (error: any) {
     const status = error?.status === 429 ? 429 : 502;
-    return Response.json({ error: status === 429 ? "The interpretation service is rate limited. The calculated chart remains available." : "The interpretation could not be generated. The calculated chart remains available." }, { status });
+    return Response.json(
+      {
+        error:
+          status === 429
+            ? "The interpretation service is rate limited. The calculated chart remains available."
+            : "The interpretation could not be generated. The calculated chart remains available.",
+      },
+      { status },
+    );
   }
 }

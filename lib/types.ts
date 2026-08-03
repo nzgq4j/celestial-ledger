@@ -18,8 +18,19 @@ export type BirthInput = {
 };
 
 export type PlanetName =
-  | "Sun" | "Moon" | "Mercury" | "Venus" | "Mars" | "Jupiter"
-  | "Saturn" | "Uranus" | "Neptune" | "Pluto" | "North Node" | "Ascendant" | "Midheaven";
+  | "Sun"
+  | "Moon"
+  | "Mercury"
+  | "Venus"
+  | "Mars"
+  | "Jupiter"
+  | "Saturn"
+  | "Uranus"
+  | "Neptune"
+  | "Pluto"
+  | "North Node"
+  | "Ascendant"
+  | "Midheaven";
 
 export type Placement = {
   name: PlanetName;
@@ -32,9 +43,22 @@ export type Placement = {
   uncertain?: boolean;
 };
 
-export type HouseCusp = { house: number; longitude: number; sign: string; degree: number; minute: number };
-export type AspectName = "Conjunction" | "Opposition" | "Trine" | "Square" | "Sextile";
-export type Aspect = { body1: PlanetName; body2: PlanetName; type: AspectName; angle: number; orb: number };
+export type HouseCusp = {
+  house: number;
+  longitude: number;
+  sign: string;
+  degree: number;
+  minute: number;
+};
+export type AspectName =
+  "Conjunction" | "Opposition" | "Trine" | "Square" | "Sextile";
+export type Aspect = {
+  body1: PlanetName;
+  body2: PlanetName;
+  type: AspectName;
+  angle: number;
+  orb: number;
+};
 
 export type NatalChart = {
   input: BirthInput;
@@ -49,8 +73,10 @@ export type NatalChart = {
   moonMayChangeSign: boolean;
   calculation: {
     zodiac: "Tropical";
-    houseSystem: "Placidus" | "None";
+    houseSystem: "Equal (Ascendant)" | "None";
     ephemeris: string;
+    engineVersion: string;
+    calculationVersion: string;
     aspectOrbs: Record<AspectName, number>;
   };
 };

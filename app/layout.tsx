@@ -2,10 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Celestial Ledger — Personal Natal Chart",
-  description: "A privacy-conscious Western tropical natal chart calculator with deterministic astronomical calculations."
+  title: "Celestial Atlas — Personal Astrology Reports",
+  description:
+    "Privacy-conscious Western tropical charts calculated deterministically before interpretation.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
 }

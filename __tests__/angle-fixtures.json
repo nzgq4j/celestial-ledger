@@ -1,0 +1,50 @@
+[
+  {
+    "label": "London historical chart",
+    "source": "USNO Sidereal Time API 4.0.1",
+    "sourceUrl": "https://aa.usno.navy.mil/api/siderealtime?date=1990-05-01&time=11:00:00&coords=51.5074,-0.1278&reps=1&intv_mag=1&intv_unit=day",
+    "utc": "1990-05-01T11:00:00Z",
+    "latitude": 51.5074,
+    "longitude": -0.1278,
+    "expectedLocalApparentSiderealTimeHours": 1.5992176111,
+    "expectedAscendant": 133.7048533351,
+    "expectedMidheaven": 25.8738255808,
+    "toleranceDegrees": 0.01
+  },
+  {
+    "label": "J2000 equator and Greenwich",
+    "source": "USNO Sidereal Time API 4.0.1",
+    "sourceUrl": "https://aa.usno.navy.mil/api/siderealtime?date=2000-01-01&time=12:00:00&coords=0,0&reps=1&intv_mag=1&intv_unit=day",
+    "utc": "2000-01-01T12:00:00Z",
+    "latitude": 0,
+    "longitude": 0,
+    "expectedLocalApparentSiderealTimeHours": 18.6971381667,
+    "expectedAscendant": 11.3740349894,
+    "expectedMidheaven": 279.6109726435,
+    "toleranceDegrees": 0.01
+  },
+  {
+    "label": "London DST boundary",
+    "source": "USNO Sidereal Time API 4.0.1",
+    "sourceUrl": "https://aa.usno.navy.mil/api/siderealtime?date=2024-03-31&time=00:30:00&coords=51.5074,-0.1278&reps=1&intv_mag=1&intv_unit=day",
+    "utc": "2024-03-31T00:30:00Z",
+    "latitude": 51.5074,
+    "longitude": -0.1278,
+    "expectedLocalApparentSiderealTimeHours": 13.08348575,
+    "expectedAscendant": 255.7754906037,
+    "expectedMidheaven": 197.6265106825,
+    "toleranceDegrees": 0.01
+  },
+  {
+    "label": "Tromso high latitude",
+    "source": "USNO Sidereal Time API 4.0.1",
+    "sourceUrl": "https://aa.usno.navy.mil/api/siderealtime?date=2020-01-01&time=00:00:00&coords=69.6492,18.9553&reps=1&intv_mag=1&intv_unit=day",
+    "utc": "2020-01-01T00:00:00Z",
+    "latitude": 69.6492,
+    "longitude": 18.9553,
+    "expectedLocalApparentSiderealTimeHours": 7.9381937778,
+    "expectedAscendant": 194.5350351467,
+    "expectedMidheaven": 117.0263965731,
+    "toleranceDegrees": 0.01
+  }
+]

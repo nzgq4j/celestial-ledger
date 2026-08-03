@@ -5,7 +5,7 @@ export const DEFAULT_ASPECT_ORBS: Record<AspectName, number> = {
   Opposition: 8,
   Trine: 7,
   Square: 7,
-  Sextile: 5
+  Sextile: 5,
 };
 
 const TARGETS: Record<AspectName, number> = {
@@ -13,7 +13,7 @@ const TARGETS: Record<AspectName, number> = {
   Opposition: 180,
   Trine: 120,
   Square: 90,
-  Sextile: 60
+  Sextile: 60,
 };
 
 export function angularSeparation(a: number, b: number): number {
@@ -23,24 +23,32 @@ export function angularSeparation(a: number, b: number): number {
 
 export function detectAspects(
   placements: Placement[],
-  orbs: Record<AspectName, number> = DEFAULT_ASPECT_ORBS
+  orbs: Record<AspectName, number> = DEFAULT_ASPECT_ORBS,
 ): Aspect[] {
   const aspects: Aspect[] = [];
   for (let i = 0; i < placements.length; i++) {
     for (let j = i + 1; j < placements.length; j++) {
-      const angle = angularSeparation(placements[i].longitude, placements[j].longitude);
+      const angle = angularSeparation(
+        placements[i].longitude,
+        placements[j].longitude,
+      );
       let best: { type: AspectName; orb: number } | undefined;
-      for (const [type, target] of Object.entries(TARGETS) as [AspectName, number][]) {
+      for (const [type, target] of Object.entries(TARGETS) as [
+        AspectName,
+        number,
+      ][]) {
         const orb = Math.abs(angle - target);
-        if (orb <= orbs[type] && (!best || orb < best.orb)) best = { type, orb };
+        if (orb <= orbs[type] && (!best || orb < best.orb))
+          best = { type, orb };
       }
-      if (best) aspects.push({
-        body1: placements[i].name,
-        body2: placements[j].name,
-        type: best.type,
-        angle,
-        orb: best.orb
-      });
+      if (best)
+        aspects.push({
+          body1: placements[i].name,
+          body2: placements[j].name,
+          type: best.type,
+          angle,
+          orb: best.orb,
+        });
     }
   }
   return aspects.sort((a, b) => a.orb - b.orb);

@@ -1,16 +1,20 @@
-# Celestial Ledger
+# Celestial Atlas
 
-Celestial Ledger is a privacy-conscious browser application that calculates a Western tropical natal chart from verified birth data and then asks the OpenAI Responses API to interpret only the validated results.
+Celestial Atlas is a privacy-conscious browser application that calculates a Western tropical natal chart from verified birth data and then asks the OpenAI Responses API to interpret only the validated results.
+
+> Astronomy Engine now passes the Node runtime, planetary, angle, equal-house, timezone, unknown-time, high-latitude, and motion fixtures. Production paid reports remain blocked by the identity, commerce, safety, security, and operations gates.
+
+The hosted Supabase backend schema and password-auth integration are provisioned but do not enable paid reports. Copy `.env.example` to `.env.local` and provide the project URL and modern publishable key to use authentication locally.
 
 ## Architecture
 
-The application uses Next.js App Router, React, TypeScript, Tailwind CSS, `@swisseph/browser`, `tz-lookup`, and the official OpenAI JavaScript SDK.
+The application uses Next.js App Router, React, TypeScript, Tailwind CSS, MIT-licensed `astronomy-engine`, `tz-lookup`, and the official OpenAI JavaScript SDK.
 
 1. The browser collects a birth date, time, and a selected birthplace.
 2. `/api/geocode` searches OpenStreetMap Nominatim, resolves latitude and longitude, and derives an IANA time-zone identifier with `tz-lookup`.
 3. The browser converts the historical local wall time to UTC by matching it against the selected IANA zone. This detects repeated and nonexistent daylight-saving times and never uses the browser’s current time zone.
-4. `@swisseph/browser` calculates tropical planetary positions, velocity, Placidus houses, ascendant, midheaven, and house cusps.
-5. Deterministic code converts longitudes to zodiac positions, assigns houses, identifies major aspects, and validates all chart values.
+4. Astronomy Engine calculates geocentric true-ecliptic planetary positions in browser and Node runtimes.
+5. Celestial Atlas-owned deterministic code calculates the mean North Node, longitude speed, Ascendant, Midheaven, equal houses, zodiac positions, aspects, and validation.
 6. `/api/interpret` validates the chart again and sends only validated chart facts plus limited display information to the OpenAI Responses API.
 7. The UI presents tables, an accessible SVG chart wheel, methodology, limitations, and the written interpretation.
 
@@ -29,22 +33,23 @@ The application uses Next.js App Router, React, TypeScript, Tailwind CSS, `@swis
 ## Calculation assumptions
 
 - Zodiac: Western tropical.
-- House system: Placidus when an exact time is known.
+- Validated birth-year range: 1800–2050. Expansion requires another reviewed authoritative fixture source.
+- House system: equal houses beginning at the Ascendant when an exact time is known.
 - Unknown birth time: local noon is used only as a reduced-date calculation anchor. Houses, ascendant, midheaven, and angle-dependent claims are omitted. The Moon is marked uncertain when its sign differs between the beginning and end of the local calendar day.
-- North Node: mean lunar node where supported by the selected library build; the wrapper falls back to the available node enum.
+- North Node: Celestial Atlas-owned mean lunar node calculation.
 - Default aspect orbs, documented in `lib/aspects.ts`:
   - Conjunction: 8°
   - Opposition: 8°
   - Trine: 7°
   - Square: 7°
   - Sextile: 5°
-- The browser package uses its built-in Moshier ephemeris unless standard Swiss Ephemeris files are explicitly loaded. Confirm the precision profile required for the intended deployment.
+- Planetary coordinates use Astronomy Engine 2.1.19. Output records both the engine version and the Celestial Atlas calculation version.
 
-## Licensing warning
+## Licensing
 
-`@swisseph/browser` and related Swiss Ephemeris-derived packages are published under the **GNU Affero General Public License version 3 (AGPL-3.0)**. Swiss Ephemeris itself may also require a commercial/professional license for deployments that do not comply with the applicable open-source terms. Review the package license, Astrodienst licensing terms, distribution method, network-use obligations, and any commercial requirements with qualified counsel before production deployment. Do not assume that installing the npm package grants unrestricted proprietary use.
+Astronomy Engine is MIT-licensed. Its required notice is preserved in `THIRD_PARTY_NOTICES.md`. The previous AGPL Swiss Ephemeris packages have been removed from direct and transitive dependencies.
 
-Other principal dependencies retain their respective licenses. Run `npm license-checker` or an equivalent software-composition analysis tool before release and preserve required notices.
+Other principal dependencies retain their respective licenses. Run `npm run licenses` before release and preserve required notices.
 
 ## Environment setup
 
@@ -60,7 +65,7 @@ Never commit `.env.local`. `.env.example` contains names only.
 
 ## Local development
 
-Requirements: Node.js 22 or a currently supported Node.js long-term-support release, npm, and a browser with WebAssembly support.
+Requirements: Node.js 22 and npm.
 
 ```bash
 npm install
@@ -77,7 +82,7 @@ npm test
 
 The test suite covers longitude-to-zodiac conversion, degree formatting, aspect detection, angular separation and orb calculations, historical local-time conversion, ambiguous and nonexistent times, unknown-time behavior, validation failures, and API-key isolation.
 
-`__tests__/fixtures.json` contains three fixed 00:00 UT reference fixtures transcribed from a trusted geocentric ephemeris for May 1–3, 1990. The permitted comparison tolerance is **0.2°**. A production release should run those values against the packaged WASM engine in a browser-capable integration test. The fixture metadata test ensures the acceptance set remains present even in Node-only CI.
+`__tests__/fixtures.json` contains three fixed 00:00 UT reference fixtures transcribed from a trusted geocentric ephemeris for May 1–3, 1990. The permitted comparison tolerance is **0.2°**. Node CI executes all eleven bodies against Astronomy Engine. Authoritative Ascendant, Midheaven, and house fixtures are still required before production release.
 
 ## Production build
 
@@ -93,12 +98,12 @@ npm start
 3. Add `OPENAI_MODEL` and `NOMINATIM_USER_AGENT`.
 4. Do not create any `NEXT_PUBLIC_OPENAI_API_KEY` variable.
 5. Deploy with the Vercel dashboard, Git integration, or `vercel --prod`.
-6. Confirm the package’s WebAssembly asset loads in the deployed browser and execute the fixed ephemeris fixtures.
+6. Execute the Node server gate and fixed astronomical fixtures.
 7. Review Nominatim’s public-service usage policy. For sustained production traffic, use a contracted geocoding provider or self-hosted Nominatim instance.
 
 ## Error behavior
 
-The interface distinguishes missing date/time, unresolved birthplace, ambiguous or nonexistent historical time, geocoding failure, ephemeris initialization failure, chart validation failure, OpenAI failure, and rate limiting. A failed interpretation does not remove a valid calculated chart.
+The interface distinguishes missing date/time, unresolved birthplace, ambiguous or nonexistent historical time, calculation failure, chart validation failure, OpenAI failure, and rate limiting. A failed interpretation does not remove a valid calculated chart.
 
 ## Data flow boundary
 
