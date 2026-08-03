@@ -31,7 +31,10 @@ export function SiteHeader() {
         <nav className="site-nav" aria-label="Primary navigation">
           <details className="mega-nav" ref={megaMenu}>
             <summary>
-              Explore <span aria-hidden="true">⌄</span>
+              Explore{" "}
+              <span className="mega-nav__indicator" aria-hidden="true">
+                +
+              </span>
             </summary>
             <div className="mega-nav__panel" onClick={closeMegaMenu}>
               <section>
