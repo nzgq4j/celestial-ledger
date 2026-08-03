@@ -1,17 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { SitePreferences } from "@/components/SitePreferences";
 import { useLocale } from "@/components/LocaleProvider";
 
 export function SiteHeader() {
   const { pack } = useLocale();
-  const megaMenu = useRef<HTMLDetailsElement>(null);
-  function closeMegaMenu() {
-    if (megaMenu.current) megaMenu.current.open = false;
+  const mobileMenu = useRef<HTMLDetailsElement>(null);
+
+  function closeMobileMenu() {
+    if (mobileMenu.current) mobileMenu.current.open = false;
   }
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -29,72 +31,29 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
-          <details className="mega-nav" ref={megaMenu}>
+          <div className="site-nav__desktop">
+            <Link href="/#chart">Birth chart</Link>
+            <Link href="/horoscopes">Horoscopes</Link>
+            <Link href="/weekly-readings">Weekly</Link>
+            <Link href="/reports">Reports</Link>
+            <Link href="/samples">Samples</Link>
+          </div>
+          <details className="mobile-nav" ref={mobileMenu}>
             <summary>
-              Explore{" "}
-              <span className="mega-nav__indicator" aria-hidden="true">
-                +
-              </span>
+              <span className="mobile-nav__icon" aria-hidden="true" />
+              Menu
             </summary>
-            <div className="mega-nav__panel" onClick={closeMegaMenu}>
-              <section>
-                <p>Today’s sky</p>
-                <Link href="/horoscopes">
-                  <strong>Daily horoscopes</strong>
-                  <small>The day’s celestial weather for every sign</small>
-                </Link>
-                <Link href="/weekly-readings">
-                  <strong>Weekly readings</strong>
-                  <small>Your natal chart in the moving sky</small>
-                </Link>
-              </section>
-              <section>
-                <p>Your birth chart</p>
-                <Link href="/#chart">
-                  <strong>Free natal chart</strong>
-                  <small>Calculate the sky at your first breath</small>
-                </Link>
-                <Link href="/samples">
-                  <strong>Sample readings</strong>
-                  <small>Step inside a complete Celestial Atlas edition</small>
-                </Link>
-              </section>
-              <section>
-                <p>Private reports</p>
-                <Link href="/reports">
-                  <strong>Report collection</strong>
-                  <small>Career, recovery and future cycles</small>
-                </Link>
-                <Link href="/samples/career-purpose">
-                  <strong>Career sample</strong>
-                  <small>See how natal evidence becomes guidance</small>
-                </Link>
-                <Link href="/samples/recovery-reflection">
-                  <strong>Recovery sample</strong>
-                  <small>Grounding and renewal through the natal sky</small>
-                </Link>
-              </section>
-              <section className="mega-nav__feature">
-                <p>The celestial rhythm</p>
-                <strong>A new reading, every week.</strong>
-                <small>
-                  Follow the transits as they meet your own natal chart.
-                </small>
-                <Link href="/weekly-readings">Discover weekly readings →</Link>
-              </section>
+            <div className="mobile-nav__panel" onClick={closeMobileMenu}>
+              <Link href="/#chart">Free birth chart</Link>
+              <Link href="/horoscopes">Daily horoscopes</Link>
+              <Link href="/weekly-readings">Weekly readings</Link>
+              <Link href="/reports">Private reports</Link>
+              <Link href="/samples">Sample reports</Link>
+              <Link href="/account">{pack.messages.navigation.library}</Link>
             </div>
           </details>
-          <Link href="/horoscopes">Horoscopes</Link>
-          <Link href="/reports" className="site-nav__optional">
-            Reports
-          </Link>
           <Link href="/account" className="site-nav__account">
-            <span className="site-nav__account-full">
-              {pack.messages.navigation.library}
-            </span>
-            <span className="site-nav__account-short">
-              {pack.messages.navigation.library}
-            </span>
+            {pack.messages.navigation.library}
           </Link>
           <SitePreferences />
         </nav>
