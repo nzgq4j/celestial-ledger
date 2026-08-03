@@ -1125,6 +1125,54 @@ input:focus-visible {
     serif;
   text-align: center;
 }
+.chart-time-notice {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.32fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin: 1rem auto 0;
+  max-width: 48rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--gold);
+  background: var(--surface-soft);
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.chart-time-notice strong {
+  color: var(--paper);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+}
+.meaning-note {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem 0.95rem;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 48%, var(--line));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gold) 6%, transparent),
+    transparent 72%
+  );
+}
+.meaning-note h3 {
+  margin: 0;
+  color: var(--gold);
+  font:
+    0.63rem ui-monospace,
+    monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.meaning-note p {
+  max-width: 72ch;
+  margin: 0.45rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+.big-three-section {
+  display: grid;
+  gap: 0;
+}
 .place-search-row {
   display: flex;
   gap: 0.5rem;
@@ -1133,6 +1181,10 @@ input:focus-visible {
   min-width: 0;
 }
 @media (max-width: 700px) {
+  .chart-time-notice {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
   .chart-wheel__layout {
     grid-template-columns: 1fr;
   }

@@ -58,6 +58,15 @@ function interpretationMarkup(text: string) {
   });
 }
 
+function MeaningNote({ children }: { children: React.ReactNode }) {
+  return (
+    <aside className="meaning-note">
+      <h3>What does this mean for me?</h3>
+      <p>{children}</p>
+    </aside>
+  );
+}
+
 export default function HoroscopeApp() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -532,39 +541,44 @@ export default function HoroscopeApp() {
 
         {chart && (
           <>
-            <section
-              className="grid md:grid-cols-3 gap-4"
-              aria-label="Big Three"
-            >
-              {[
-                chart.placements.find((p) => p.name === "Sun"),
-                chart.placements.find((p) => p.name === "Moon"),
-                chart.ascendant,
-              ].map((p, i) => (
-                <article key={i} className="panel p-5">
-                  <p className="label">
-                    {i === 0 ? "Sun" : i === 1 ? "Moon" : "Ascendant"}
-                  </p>
-                  {p ? (
-                    <>
-                      <h2 className="text-2xl gold">{p.sign}</h2>
-                      <p>{formatDegree(p.longitude)}</p>
-                      {p.uncertain && (
-                        <p className="text-sm text-[#d7bd7b] mt-2">
-                          The Moon may change signs during this date.
+            <section className="big-three-section" aria-label="Big Three">
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  chart.placements.find((p) => p.name === "Sun"),
+                  chart.placements.find((p) => p.name === "Moon"),
+                  chart.ascendant,
+                ].map((p, i) => (
+                  <article key={i} className="panel p-5">
+                    <p className="label">
+                      {i === 0 ? "Sun" : i === 1 ? "Moon" : "Ascendant"}
+                    </p>
+                    {p ? (
+                      <>
+                        <h2 className="text-2xl gold">{p.sign}</h2>
+                        <p>{formatDegree(p.longitude)}</p>
+                        {p.uncertain && (
+                          <p className="text-sm text-[#d7bd7b] mt-2">
+                            The Moon may change signs during this date.
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="text-xl text-[#b9b2a3]">Unavailable</h2>
+                        <p className="text-sm">
+                          An exact birth time is required.
                         </p>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <h2 className="text-xl text-[#b9b2a3]">Unavailable</h2>
-                      <p className="text-sm">
-                        An exact birth time is required.
-                      </p>
-                    </>
-                  )}
-                </article>
-              ))}
+                      </>
+                    )}
+                  </article>
+                ))}
+              </div>
+              <MeaningNote>
+                Your Sun describes the self you are growing into, your Moon
+                reflects emotional instinct and inner needs, and your
+                Ascendant—when birth time is known—describes how you meet the
+                world and begin new experiences.
+              </MeaningNote>
             </section>
             <NatalChartWheel chart={chart} />
             <section className="panel p-5">
@@ -577,6 +591,11 @@ export default function HoroscopeApp() {
               <p className="text-sm text-[#b9b2a3]">
                 Normalized UTC: {chart.utc} · Zone: {chart.input.place.timeZone}
               </p>
+              <MeaningNote>
+                This is the earthly anchor of your chart. Date, time, and place
+                locate the sky you were born beneath and determine which
+                celestial patterns belong to your natal map.
+              </MeaningNote>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -609,6 +628,11 @@ export default function HoroscopeApp() {
             </aside>
             <section className="panel p-5">
               <h2 className="text-xl gold mb-3">Planetary placements</h2>
+              <MeaningNote>
+                Each planet represents a different drive or faculty. Its sign
+                shows how that energy tends to express itself; its house shows
+                where in life that pattern is most likely to become noticeable.
+              </MeaningNote>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -635,6 +659,11 @@ export default function HoroscopeApp() {
             {chart.houses.length > 0 && (
               <section className="panel p-5">
                 <h2 className="text-xl gold mb-3">House cusps</h2>
+                <MeaningNote>
+                  The houses divide your chart into twelve fields of lived
+                  experience—from identity and relationships to work, home,
+                  creativity, community, and inner life.
+                </MeaningNote>
                 <div className="table-wrap">
                   <table>
                     <thead>
@@ -657,6 +686,11 @@ export default function HoroscopeApp() {
             )}
             <section className="panel p-5">
               <h2 className="text-xl gold mb-3">Major aspects</h2>
+              <MeaningNote>
+                Aspects describe how planetary drives cooperate, amplify, or
+                challenge one another. They often reveal recurring strengths,
+                tensions, and ways you integrate different parts of yourself.
+              </MeaningNote>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -685,6 +719,11 @@ export default function HoroscopeApp() {
             <section className="grid md:grid-cols-2 gap-4">
               <article className="panel p-5">
                 <h2 className="text-xl gold">Calculation method</h2>
+                <MeaningNote>
+                  These settings define the astrological tradition used to
+                  construct your chart, ensuring that every placement and
+                  relationship is read within one consistent framework.
+                </MeaningNote>
                 <p className="mt-2 text-sm leading-6">
                   {chart.calculation.zodiac} zodiac;{" "}
                   {chart.calculation.houseSystem} houses;{" "}
@@ -694,6 +733,12 @@ export default function HoroscopeApp() {
               </article>
               <article className="panel p-5">
                 <h2 className="text-xl gold">Chart precision</h2>
+                <MeaningNote>
+                  Precision tells you which details can be read confidently.
+                  When the birth time is unknown, planetary signs remain useful,
+                  while houses, angles, and time-sensitive conclusions are left
+                  open.
+                </MeaningNote>
                 <p className="mt-2 text-sm leading-6">
                   Coordinates and the IANA historical time zone are resolved
                   from the selected place. Unknown times omit houses and angles.
@@ -717,6 +762,11 @@ export default function HoroscopeApp() {
                   ))}
                 </div>
               </div>
+              <MeaningNote>
+                This reading brings the separate chart factors together into
+                larger themes, showing how individual placements may combine in
+                your temperament, relationships, motivations, and direction.
+              </MeaningNote>
               {interpretationLoading ? (
                 <div className="mt-4">
                   <div className="flex items-center justify-between gap-3">

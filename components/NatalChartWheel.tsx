@@ -197,6 +197,25 @@ export function NatalChartWheel({ chart }: { chart: NatalChart }) {
           </ol>
         </aside>
       </div>
+      {!chart.timeKnown && (
+        <aside className="chart-time-notice" role="note">
+          <strong>House lines unavailable</strong>
+          <span>
+            Birth time was marked unknown, so the Ascendant, Midheaven, and
+            twelve house cusps are intentionally omitted. Add an exact birth
+            time and recalculate to reveal them.
+          </span>
+        </aside>
+      )}
+      <aside className="meaning-note">
+        <h3>What does this mean for me?</h3>
+        <p>
+          The wheel shows your chart as one connected pattern: planets describe
+          the energies at work, zodiac signs colour their expression, houses
+          locate them in life, and the central lines reveal major relationships
+          between them.
+        </p>
+      </aside>
       <figcaption id="wheel-desc" className="text-sm text-[#b9b2a3] mt-3">
         Zodiac positions:{" "}
         {chart.placements
