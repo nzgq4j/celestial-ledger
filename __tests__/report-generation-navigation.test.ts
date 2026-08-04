@@ -17,5 +17,6 @@ describe("report generation navigation", () => {
     );
     expect(library).toContain("report.scrollIntoView");
     expect(library).toContain("report.focus({ preventScroll: true })");
+    expect(library).toContain("setReports(normalizeReports(initialReports))");
   });
 });

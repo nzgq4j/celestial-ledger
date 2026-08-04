@@ -17,6 +17,18 @@ type LibraryReport = {
   created_at: string;
 };
 
+function normalizeReports(reports: LibraryReport[]) {
+  return reports.map((report) => ({
+    ...report,
+    status: (["queued", "generating", "failed", "completed"].includes(
+      report.status,
+    )
+      ? report.status
+      : "failed") as ReportStatus,
+    locale: isLocaleTag(report.locale) ? report.locale : defaultLocale,
+  }));
+}
+
 export function AccountReportList({
   initialReports,
   focusReportId,
@@ -24,21 +36,13 @@ export function AccountReportList({
   initialReports: LibraryReport[];
   focusReportId?: string;
 }) {
-  const [reports, setReports] = useState(
-    initialReports.map((report) => ({
-      ...report,
-      status: (["queued", "generating", "failed", "completed"].includes(
-        report.status,
-      )
-        ? report.status
-        : "failed") as ReportStatus,
-      locale: isLocaleTag(report.locale) ? report.locale : defaultLocale,
-    })),
+  const [reports, setReports] = useState(() =>
+    normalizeReports(initialReports),
   );
   const [busyId, setBusyId] = useState<string>();
   const [progressPhase, setProgressPhase] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<string>();
-  const focusedReport = useRef(false);
+  const focusedReport = useRef<string | undefined>(undefined);
   const { locale, pack } = useLocale();
   const router = useRouter();
   const copy = pack.messages.account;
@@ -47,10 +51,14 @@ export function AccountReportList({
   );
 
   useEffect(() => {
-    if (!focusReportId || focusedReport.current) return;
+    setReports(normalizeReports(initialReports));
+  }, [initialReports]);
+
+  useEffect(() => {
+    if (!focusReportId || focusedReport.current === focusReportId) return;
     const report = document.getElementById(`report-${focusReportId}`);
     if (!report) return;
-    focusedReport.current = true;
+    focusedReport.current = focusReportId;
     window.requestAnimationFrame(() => {
       report.scrollIntoView({ behavior: "smooth", block: "center" });
       report.focus({ preventScroll: true });
