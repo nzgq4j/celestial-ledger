@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -18,8 +19,10 @@ import {
   recoveryThemeSchema,
 } from "@/lib/reports/recovery";
 import { isDemoMode } from "@/lib/supabase/config";
+import { runNextReportJob } from "@/app/api/internal/report-worker/route";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 const inputSchema = z
   .object({
     entitlementId: z.string().uuid().optional(),
@@ -109,6 +112,17 @@ export async function POST(request: Request) {
           p_report_type: reportType,
         });
     if (error) return json({ error: "The report could not be queued." }, 409);
+    after(async () => {
+      const result = await runNextReportJob();
+      if (!result.ok)
+        console.error(
+          JSON.stringify({
+            level: "error",
+            message: "Immediate report worker invocation failed",
+            status: result.status,
+          }),
+        );
+    });
     return json({ reportId: data, status: "queued" }, 202);
   } catch (error) {
     return json(

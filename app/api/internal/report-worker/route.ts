@@ -23,18 +23,20 @@ export const maxDuration = 60;
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
-export async function POST(request: Request) {
-  const expected = process.env.CRON_SECRET;
-  if (
-    !expected ||
-    request.headers.get("authorization") !== `Bearer ${expected}`
-  )
-    return json({ error: "Unauthorized." }, 401);
+export async function runNextReportJob() {
+  const startedAt = Date.now();
   const admin = createAdminClient();
   const { data: jobs, error: claimError } = await admin.rpc("claim_report_job");
   const job = jobs?.[0];
   if (claimError) return json({ error: "Job claim failed." }, 500);
   if (!job) return json({ claimed: false });
+  console.log(
+    JSON.stringify({
+      level: "info",
+      message: "Report worker claimed job",
+      reportType: job.report_type,
+    }),
+  );
   try {
     if (!["career_purpose", "recovery_reflection"].includes(job.report_type))
       throw new Error("UNSUPPORTED_REPORT_TYPE");
@@ -114,6 +116,14 @@ export async function POST(request: Request) {
       p_timezone_name: chart.input.place.timeZone,
     });
     if (completeError) throw new Error("COMPLETION_FAILED");
+    console.log(
+      JSON.stringify({
+        level: "info",
+        message: "Report worker completed job",
+        reportType: job.report_type,
+        durationMs: Date.now() - startedAt,
+      }),
+    );
     return json({ claimed: true, reportId: job.id, status: "completed" });
   } catch (error) {
     const code =
@@ -123,8 +133,27 @@ export async function POST(request: Request) {
       p_failure_code: code,
       p_retryable: !/UNSUPPORTED|NOT_FOUND|UNKNOWN_EVIDENCE/.test(code),
     });
+    console.error(
+      JSON.stringify({
+        level: "error",
+        message: "Report worker failed job",
+        reportType: job.report_type,
+        code,
+        durationMs: Date.now() - startedAt,
+      }),
+    );
     return json({ claimed: true, reportId: job.id, status: "failed" }, 500);
   }
+}
+
+export async function POST(request: Request) {
+  const expected = process.env.CRON_SECRET;
+  if (
+    !expected ||
+    request.headers.get("authorization") !== `Bearer ${expected}`
+  )
+    return json({ error: "Unauthorized." }, 401);
+  return runNextReportJob();
 }
 
 export const GET = POST;
