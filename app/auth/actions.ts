@@ -20,6 +20,19 @@ function canonicalAppUrl() {
   return "https://www.celestialatlas.app";
 }
 
+export async function signInWithGoogle() {
+  if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${canonicalAppUrl()}/auth/callback?next=/account`,
+    },
+  });
+  if (error || !data.url) redirect("/auth/login?error=oauth_failed");
+  redirect(data.url);
+}
+
 export async function signIn(formData: FormData) {
   if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
   const supabase = await createClient();
