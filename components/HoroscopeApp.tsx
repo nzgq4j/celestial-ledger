@@ -531,9 +531,7 @@ export default function HoroscopeApp() {
             />
             <span>
               Email me occasional Celestial Atlas notes and product updates. I
-              can unsubscribe at any time. This is separate from creating an
-              account. See the <Link href="/terms">Terms</Link> and{" "}
-              <Link href="/privacy">Privacy Policy</Link>.
+              can unsubscribe at any time.
             </span>
           </label>
           {subscriptionStatus && (
