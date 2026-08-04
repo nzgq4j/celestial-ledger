@@ -1662,18 +1662,49 @@ a {
 }
 .report-library-row__actions a,
 .report-library-row__actions button {
-  border: 0;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.15rem;
+  border: 1px solid rgba(198, 161, 77, 0.48);
+  border-radius: 999px;
+  background: rgba(198, 161, 77, 0.06);
   color: var(--ivory);
-  padding: 0.25rem 0;
+  padding: 0.45rem 0.8rem;
   font: inherit;
   font-size: 0.76rem;
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
+  line-height: 1;
+  text-decoration: none;
   cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.report-library-row__actions .report-action--primary {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #081321;
+}
+.report-library-row__actions .report-action--quiet:hover {
+  border-color: var(--gold);
+  background: rgba(198, 161, 77, 0.14);
+}
+.report-library-row__actions .report-action--primary:hover {
+  background: #dbc17d;
+}
+.report-library-row__actions .report-action:focus-visible {
+  outline: 2px solid var(--ivory);
+  outline-offset: 3px;
 }
 .report-library-row__actions .report-delete-action {
   color: #d7a18d;
+  border-color: rgba(215, 161, 141, 0.48);
+  background: rgba(215, 161, 141, 0.05);
+}
+.report-library-row__actions .report-delete-action:hover {
+  border-color: #d7a18d;
+  background: rgba(215, 161, 141, 0.12);
 }
 .report-library-row__actions button:disabled {
   opacity: 0.55;

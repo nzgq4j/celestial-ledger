@@ -33,9 +33,26 @@ export function AccountReportList({
     })),
   );
   const [busyId, setBusyId] = useState<string>();
+  const [progressPhase, setProgressPhase] = useState(0);
   const { locale, pack } = useLocale();
   const router = useRouter();
   const copy = pack.messages.account;
+  const hasActiveReports = reports.some(
+    (report) => report.status === "queued" || report.status === "generating",
+  );
+
+  useEffect(() => {
+    if (
+      !hasActiveReports ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const interval = window.setInterval(
+      () => setProgressPhase((phase) => (phase + 1) % 5),
+      3200,
+    );
+    return () => window.clearInterval(interval);
+  }, [hasActiveReports]);
 
   useEffect(() => {
     if (
@@ -105,16 +122,26 @@ export function AccountReportList({
     failed: copy.statusFailed,
     completed: copy.statusCompleted,
   };
+  const progressPhrases = [
+    copy.progressReadingStars,
+    copy.progressTracingPatterns,
+    copy.progressExploringMeaning,
+    copy.progressWeavingReflection,
+    copy.progressCheckingEvidence,
+  ];
 
   return (
     <div className="report-library-list">
-      {reports.map((report) => {
+      {reports.map((report, index) => {
         const active =
           report.status === "queued" || report.status === "generating";
         const title =
           report.report_type === "recovery_reflection"
             ? copy.recoveryReflection
             : copy.careerPurpose;
+        const statusLabel = active
+          ? progressPhrases[(progressPhase + index) % progressPhrases.length]
+          : labels[report.status];
         return (
           <article className="report-library-row" key={report.id}>
             <div className="report-library-row__identity">
@@ -128,8 +155,10 @@ export function AccountReportList({
                 {localeRegistry[report.locale].nativeName}
               </small>
             </div>
-            <div className="report-library-row__state" aria-live="polite">
-              <span data-status={report.status}>{labels[report.status]}</span>
+            <div className="report-library-row__state">
+              <span data-status={report.status} aria-hidden={active}>
+                {statusLabel}
+              </span>
               {active && (
                 <div
                   className={`report-row-progress report-row-progress--${report.status}`}
@@ -143,15 +172,25 @@ export function AccountReportList({
             </div>
             <div className="report-library-row__actions">
               {report.status === "completed" && (
-                <Link href={`/reports/${report.id}`}>{copy.openReport}</Link>
+                <Link
+                  className="report-action report-action--primary"
+                  href={`/reports/${report.id}`}
+                >
+                  {copy.openReport}
+                </Link>
               )}
               {report.status === "completed" && (
-                <Link href={`/reports/${report.id}?print=1`} target="_blank">
+                <Link
+                  className="report-action report-action--quiet"
+                  href={`/reports/${report.id}?print=1`}
+                  target="_blank"
+                >
                   {copy.printReport}
                 </Link>
               )}
               {report.status === "failed" && (
                 <button
+                  className="report-action report-action--primary"
                   type="button"
                   onClick={() => void retry(report.id)}
                   disabled={busyId === report.id}
@@ -160,7 +199,7 @@ export function AccountReportList({
                 </button>
               )}
               <button
-                className="report-delete-action"
+                className="report-action report-action--danger report-delete-action"
                 type="button"
                 onClick={() => void remove(report.id)}
                 disabled={busyId === report.id}
