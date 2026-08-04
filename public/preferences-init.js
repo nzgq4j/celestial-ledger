@@ -1,15 +1,8 @@
 (function () {
   try {
-    var preference = localStorage.getItem("celestial-atlas-theme") || "system";
-    var resolved = preference;
-    if (preference === "system") {
-      resolved = matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark";
-    }
-    document.documentElement.dataset.theme = resolved;
-    document.documentElement.dataset.themePreference = preference;
-    document.documentElement.style.colorScheme = resolved;
+    localStorage.removeItem("celestial-atlas-theme");
+    document.documentElement.dataset.theme = "dark";
+    document.documentElement.style.colorScheme = "dark";
 
     var locale = localStorage.getItem("celestial-atlas-locale") || "en-GB";
     if (locale === "en-GB") {

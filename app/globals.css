@@ -29,34 +29,6 @@
   --control-bg: #081524;
   --control-border: #536177;
 }
-[data-theme="light"] {
-  color-scheme: light;
-  --navy: #f3ecd9;
-  --panel: #fffaf0;
-  --ivory: #172439;
-  --muted: #605c54;
-  --gold: #8b671d;
-  --line: #c9b991;
-  --paper: #14233a;
-  --copper: #87573f;
-  --ink: #f8f1df;
-  --map-cyan: #176b78;
-  --map-red: #914231;
-  --surface: #fffaf0;
-  --surface-deep: #e9dec4;
-  --surface-field: #fffdf7;
-  --surface-soft: #eee3ca;
-  --text-soft: #514d46;
-  --danger-surface: #f5dfd9;
-  --danger-line: #a86255;
-  --danger-text: #753b31;
-  --header: rgba(248, 241, 223, 0.9);
-  --footer: rgba(229, 218, 192, 0.72);
-  --body-glow: rgba(201, 167, 93, 0.2);
-  --body-end: #e9dec4;
-  --control-bg: #fffaf0;
-  --control-border: #9d8755;
-}
 * {
   box-sizing: border-box;
 }
@@ -507,17 +479,6 @@ a {
   padding-left: 0.85rem;
   border-left: 1px solid var(--line);
 }
-.theme-switcher {
-  display: grid;
-  grid-template-columns: repeat(3, 1.8rem);
-  gap: 0.16rem;
-  margin: 0;
-  padding: 0.18rem;
-  border: 1px solid var(--control-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--control-bg) 86%, transparent);
-}
-.theme-switcher legend,
 .language-picker > span {
   position: absolute;
   width: 1px;
@@ -528,25 +489,6 @@ a {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-.theme-switcher button {
-  display: grid;
-  place-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-.theme-switcher button:hover {
-  color: var(--ivory);
-}
-.theme-switcher button[aria-pressed="true"] {
-  background: var(--gold);
-  color: var(--ink);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent);
 }
 .language-picker {
   position: relative;
@@ -572,8 +514,7 @@ a {
   letter-spacing: 0.03em;
   appearance: none;
 }
-.language-picker select:focus-visible,
-.theme-switcher button:focus-visible {
+.language-picker select:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
@@ -2369,13 +2310,6 @@ input:focus-visible {
     padding-left: 0;
     border-left: 0;
   }
-  .theme-switcher {
-    grid-template-columns: repeat(3, 1.65rem);
-  }
-  .theme-switcher button {
-    width: 1.65rem;
-    height: 1.65rem;
-  }
   .atlas-hero__inner {
     width: min(100% - 2rem, 72rem);
     padding-block: 3.2rem;
@@ -2803,39 +2737,4 @@ th {
   .atlas-hero__privacy {
     max-width: 19rem;
   }
-}
-
-/* Existing utility-colour surfaces inherit the active atlas palette. */
-[data-theme="light"] .text-\[\#b9b2a3\],
-[data-theme="light"] .text-\[\#8f98a6\] {
-  color: var(--muted);
-}
-[data-theme="light"] .text-\[\#ddd6c8\],
-[data-theme="light"] .text-\[\#c8c0b2\] {
-  color: var(--text-soft);
-}
-[data-theme="light"] .text-\[\#d7bd7b\],
-[data-theme="light"] .text-\[\#c9a75d\] {
-  color: var(--gold);
-}
-[data-theme="light"] .bg-\[\#081524\] {
-  background-color: var(--surface-field);
-}
-[data-theme="light"] .bg-\[\#2b1718\] {
-  background-color: var(--danger-surface);
-}
-[data-theme="light"] .border-\[\#34455c\],
-[data-theme="light"] .border-\[\#536177\] {
-  border-color: var(--control-border);
-}
-[data-theme="light"] .border-\[\#8b5b53\] {
-  border-color: var(--danger-line);
-}
-[data-theme="light"] .text-\[\#e0a39a\] {
-  color: var(--danger-text);
-}
-[data-theme="light"] .panel,
-[data-theme="light"] .dashboard-panel,
-[data-theme="light"] .account-settings {
-  box-shadow: 0 1rem 3rem rgba(73, 54, 17, 0.08);
 }
