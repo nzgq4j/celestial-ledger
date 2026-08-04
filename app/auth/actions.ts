@@ -15,6 +15,9 @@ function credentials(formData: FormData) {
 }
 
 function canonicalAppUrl() {
+  if (process.env.VERCEL_ENV === "production") {
+    return "https://www.celestialatlas.app";
+  }
   const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configuredUrl) return configuredUrl.replace(/\/$/, "");
   return "https://www.celestialatlas.app";

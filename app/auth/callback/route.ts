@@ -1,6 +1,7 @@
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { isDemoMode } from "@/lib/supabase/config";
+import type { Database } from "@/lib/supabase/database.types";
+import { isDemoMode, supabasePublicConfig } from "@/lib/supabase/config";
 
 export async function GET(request: NextRequest) {
   if (isDemoMode()) {
@@ -17,9 +18,22 @@ export async function GET(request: NextRequest) {
       : "/account";
 
   if (code) {
-    const supabase = await createClient();
+    const response = NextResponse.redirect(
+      new URL(next, "https://www.celestialatlas.app"),
+    );
+    const { url, publishableKey } = supabasePublicConfig();
+    const supabase = createServerClient<Database>(url, publishableKey, {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll(cookiesToSet) {
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options);
+          }
+        },
+      },
+    });
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(next, request.url));
+    if (!error) return response;
   }
 
   return NextResponse.redirect(
