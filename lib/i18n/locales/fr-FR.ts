@@ -166,6 +166,7 @@ const pack = {
       restarting: "Redémarrage…",
       reportActions: "Actions du rapport",
       reportLanguage: "Langue du rapport",
+      useSelectedLanguage: "Utiliser la langue sélectionnée pour le rapport",
       reportLanguageCopy: "Choisissez la langue de vos lectures personnelles.",
       defaultReportLanguage: "Langue par défaut des rapports",
       reportLanguageNote:

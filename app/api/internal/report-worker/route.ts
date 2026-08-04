@@ -21,7 +21,7 @@ import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
@@ -80,39 +80,63 @@ export async function runNextReportJob() {
       typeof job.locale === "string" && isLocaleTag(job.locale)
         ? job.locale
         : defaultLocale;
-    const response = await new OpenAI({
+    const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-    }).responses.create({
-      model,
-      store: false,
-      input: recoveryThemes
-        ? recoveryPrompt(evidence, recoveryThemes, reportLocale)
-        : careerPrompt(evidence, reportLocale),
-      text: {
-        format: {
-          type: "json_schema",
-          name: recoveryThemes
-            ? "recovery_reflection_report"
-            : "career_purpose_report",
-          strict: true,
-          schema: bindEvidenceIds(
-            recoveryThemes ? recoveryReportJsonSchema : careerReportJsonSchema,
-            evidence.items.map((item) => item.id),
-          ),
-        },
-      },
     });
-    const rawReport: unknown = JSON.parse(response.output_text);
+    const prompt = recoveryThemes
+      ? recoveryPrompt(evidence, recoveryThemes, reportLocale)
+      : careerPrompt(evidence, reportLocale);
     let report;
-    if (recoveryThemes) {
-      const recoveryReport = recoveryReportSchema.parse(rawReport);
-      validateRecoveryReport(recoveryReport, evidence, recoveryThemes);
-      report = recoveryReport;
-    } else {
-      const careerReport = careerReportSchema.parse(rawReport);
-      validateEvidenceLinks(careerReport, evidence);
-      report = careerReport;
+    let draftError: unknown;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const response = await client.responses.create({
+          model,
+          store: false,
+          input:
+            attempt === 0
+              ? prompt
+              : `${prompt}\n\nThe previous draft did not pass validation. Create a fresh draft and use only the exact evidence IDs supplied above.`,
+          text: {
+            format: {
+              type: "json_schema",
+              name: recoveryThemes
+                ? "recovery_reflection_report"
+                : "career_purpose_report",
+              strict: true,
+              schema: bindEvidenceIds(
+                recoveryThemes
+                  ? recoveryReportJsonSchema
+                  : careerReportJsonSchema,
+                evidence.items.map((item) => item.id),
+              ),
+            },
+          },
+        });
+        const rawReport: unknown = JSON.parse(response.output_text);
+        if (recoveryThemes) {
+          const recoveryReport = recoveryReportSchema.parse(rawReport);
+          validateRecoveryReport(recoveryReport, evidence, recoveryThemes);
+          report = recoveryReport;
+        } else {
+          const careerReport = careerReportSchema.parse(rawReport);
+          validateEvidenceLinks(careerReport, evidence);
+          report = careerReport;
+        }
+        break;
+      } catch (error) {
+        draftError = error;
+        if (attempt === 0)
+          console.warn(
+            JSON.stringify({
+              level: "warning",
+              message: "Report draft failed validation; regenerating",
+              reportType: job.report_type,
+            }),
+          );
+      }
     }
+    if (!report) throw draftError ?? new Error("GENERATION_FAILED");
     const { error: completeError } = await admin.rpc("complete_report_job", {
       p_report_id: job.id,
       p_output: report,

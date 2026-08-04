@@ -1595,6 +1595,23 @@ a {
   grid-column: 1 / -1;
   color: var(--muted);
 }
+.report-language-default {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--ivory);
+  cursor: pointer;
+}
+.report-language-default input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--gold);
+}
+.report-language-override {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.65rem;
+}
 .report-library-list {
   display: grid;
   margin-top: 1rem;

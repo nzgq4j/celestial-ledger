@@ -25,6 +25,7 @@ export function GenerateReportButton({
   const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [themes, setThemes] = useState<RecoveryTheme[]>([]);
   const [reportLocale, setReportLocale] = useState(defaultLocale);
+  const [useDefaultLocale, setUseDefaultLocale] = useState(true);
   const isRecovery = reportType === "recovery_reflection";
   const { pack } = useLocale();
   const copy = pack.messages.account;
@@ -47,7 +48,7 @@ export function GenerateReportButton({
         body: JSON.stringify({
           ...(entitlementId ? { entitlementId } : { reportType }),
           birthProfileId: profileId,
-          locale: reportLocale,
+          ...(!useDefaultLocale ? { locale: reportLocale } : {}),
           ...(isRecovery ? { adultConfirmed, recoveryThemes: themes } : {}),
         }),
       });
@@ -85,27 +86,41 @@ export function GenerateReportButton({
           <option value="">{copy.noSavedProfiles}</option>
         )}
       </select>
-      <label
-        className="label"
-        htmlFor={`locale-${entitlementId ?? reportType}`}
-      >
-        {copy.reportLanguage}
+      <label className="report-language-default">
+        <input
+          type="checkbox"
+          checked={useDefaultLocale}
+          onChange={(event) => setUseDefaultLocale(event.target.checked)}
+        />
+        <span>{copy.useSelectedLanguage}</span>
       </label>
-      <select
-        id={`locale-${entitlementId ?? reportType}`}
-        className="input"
-        value={reportLocale}
-        onChange={(event) => setReportLocale(event.target.value as LocaleTag)}
-      >
-        {localeTags.map((tag) => (
-          <option key={tag} value={tag} lang={tag}>
-            {localeRegistry[tag].nativeName}
-          </option>
-        ))}
-      </select>
-      <small className="report-language-hint">
-        {copy.reportLanguageOverride}
-      </small>
+      {!useDefaultLocale && (
+        <div className="report-language-override">
+          <label
+            className="label"
+            htmlFor={`locale-${entitlementId ?? reportType}`}
+          >
+            {copy.reportLanguage}
+          </label>
+          <select
+            id={`locale-${entitlementId ?? reportType}`}
+            className="input"
+            value={reportLocale}
+            onChange={(event) =>
+              setReportLocale(event.target.value as LocaleTag)
+            }
+          >
+            {localeTags.map((tag) => (
+              <option key={tag} value={tag} lang={tag}>
+                {localeRegistry[tag].nativeName}
+              </option>
+            ))}
+          </select>
+          <small className="report-language-hint">
+            {copy.reportLanguageOverride}
+          </small>
+        </div>
+      )}
       {isRecovery && (
         <fieldset className="recovery-compass">
           <legend>{copy.chooseThemes}</legend>

@@ -23,7 +23,7 @@ import { runNextReportJob } from "@/app/api/internal/report-worker/route";
 import { localeTags } from "@/lib/i18n/config";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 const inputSchema = z
   .object({
     entitlementId: z.string().uuid().optional(),
