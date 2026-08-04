@@ -10,19 +10,27 @@ export async function GET() {
 
 > ${settings.geo.organizationDescription}
 
-Celestial Atlas maps natal placements, houses, aspects, planetary transits, and numerological patterns into personal charts and private reflective readings.
+Celestial Atlas maps the sky at the moment of birth and follows the planetary transits moving through it. Natal placements, houses, angles, aspects, and current celestial weather are carried into personal charts and private reflective readings.
 
-## Astrology and readings
+## Natal charts and ephemeris
 
-- [Daily horoscopes](${base}/horoscopes): Daily guidance for every zodiac sign, shaped by the current celestial weather.
-- [Weekly readings](${base}/weekly-readings): The larger planetary patterns and themes unfolding through the week.
-- [Personal reports](${base}/reports): Private natal-chart readings for vocation, purpose, renewal, and reflection.
-- [Sample reports](${base}/samples): Complete sample editions showing the structure and voice of Celestial Atlas readings.
+- [Create a natal chart](${base}/#chart): Calculate a personal tropical birth chart from birth date, exact time when known, and a verified birthplace.
+- [Ephemeris and chart method](${base}/method): How planetary longitudes, tropical signs, the Ascendant, houses, major aspects, time zones, coordinates, and unknown birth times are handled.
 
-## Journal and methodology
+## Current sky
 
-- [Celestial Journal](${base}/journal): Astrological essays, celestial patterns, and practical guidance.
-- [Our method](${base}/method): How astronomical calculations, evidence references, and interpretive layers are assembled.
+- [Daily horoscopes](${base}/horoscopes): Daily guidance for Aries through Pisces, shaped by planetary transits and the current celestial weather.
+- [Weekly astrology readings](${base}/weekly-readings): The larger planetary patterns unfolding through the week and their relationship to the natal chart.
+
+## Personal atlas
+
+- [Personal astrology reports](${base}/reports): Private, evidence-linked natal-chart readings for vocation, purpose, renewal, and reflection.
+- [Sample astrology reports](${base}/samples): Complete sample editions showing the structure, evidence references, and interpretive voice of Celestial Atlas readings.
+- [My Celestial Atlas](${base}/account): The private account library for saved natal charts, report generation, language preferences, and completed readings.
+
+## Essays and guidance
+
+- [Celestial Journal](${base}/journal): Astrological essays on natal symbolism, planetary cycles, transits, houses, aspects, and practical reflection.
 
 ## Policies
 

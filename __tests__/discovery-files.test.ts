@@ -7,7 +7,10 @@ describe("crawler discovery files", () => {
     expect(route).toContain("# Celestial Atlas");
     expect(route).toContain("> ${settings.geo.organizationDescription}");
     expect(route).toContain("- [Daily horoscopes]");
-    expect(route).toContain("## Journal and methodology");
+    expect(route).toContain("## Natal charts and ephemeris");
+    expect(route).toContain("- [Create a natal chart]");
+    expect(route).toContain("- [Ephemeris and chart method]");
+    expect(route).toContain("## Essays and guidance");
   });
 
   it("publishes the canonical sitemap through robots.txt", () => {
