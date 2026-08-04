@@ -20,6 +20,7 @@ import {
 } from "@/lib/reports/recovery";
 import { isDemoMode } from "@/lib/supabase/config";
 import { runNextReportJob } from "@/app/api/internal/report-worker/route";
+import { localeTags } from "@/lib/i18n/config";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -30,6 +31,7 @@ const inputSchema = z
     birthProfileId: z.string().uuid(),
     adultConfirmed: z.boolean().optional(),
     recoveryThemes: z.array(recoveryThemeSchema).min(1).max(6).optional(),
+    locale: z.enum(localeTags).optional(),
   })
   .strict()
   .refine((value) => value.entitlementId || value.reportType, {
@@ -68,6 +70,13 @@ export async function POST(request: Request) {
         "career_purpose" | "recovery_reflection";
     }
     if (!reportType) return json({ error: "Choose a report type." }, 422);
+    const { data: profileSettings } = await admin
+      .from("profiles")
+      .select("report_locale")
+      .eq("id", userId)
+      .single();
+    const reportLocale =
+      input.locale ?? profileSettings?.report_locale ?? "en-GB";
     const isRecovery = reportType === "recovery_reflection";
     if (isRecovery && (!input.adultConfirmed || !input.recoveryThemes?.length))
       return json(
@@ -101,6 +110,7 @@ export async function POST(request: Request) {
         ? RECOVERY_SAFETY_VERSION
         : CAREER_SAFETY_VERSION,
       p_recovery_themes: isRecovery ? input.recoveryThemes : null,
+      p_locale: reportLocale,
     };
     const { data, error } = input.entitlementId
       ? await admin.rpc("queue_paid_report", {

@@ -157,6 +157,17 @@ const pack = {
       retryReport: "Try again",
       restarting: "Restarting…",
       reportActions: "Report actions",
+      reportLanguage: "Report language",
+      reportLanguageCopy:
+        "Choose the language used for your personal readings.",
+      defaultReportLanguage: "Default report language",
+      reportLanguageNote:
+        "New reports begin in this language. You can override it before generating any individual report.",
+      saveReportLanguage: "Save report language",
+      reportLanguageOverride: "This choice applies only to this report.",
+      reportLocaleUpdated: "Default report language updated.",
+      invalidReportLocale: "Choose a supported report language.",
+      reportLocaleFailed: "Your report language could not be updated.",
     },
     home: {
       eyebrow: "The sky at the moment you arrived",

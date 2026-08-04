@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
+import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 type LibraryReport = {
   id: string;
   report_type: string;
   status: string;
+  locale: string;
   expires_at: string | null;
   created_at: string;
 };
@@ -27,6 +29,7 @@ export function AccountReportList({
       )
         ? report.status
         : "failed") as ReportStatus,
+      locale: isLocaleTag(report.locale) ? report.locale : defaultLocale,
     })),
   );
   const [busyId, setBusyId] = useState<string>();
@@ -120,6 +123,9 @@ export function AccountReportList({
                 {report.expires_at
                   ? `${copy.availableUntil} ${new Date(report.expires_at).toLocaleDateString(locale)}`
                   : new Date(report.created_at).toLocaleDateString(locale)}
+              </small>
+              <small lang={report.locale}>
+                {localeRegistry[report.locale].nativeName}
               </small>
             </div>
             <div className="report-library-row__state" aria-live="polite">

@@ -3,17 +3,21 @@ import {
   changeAccountPassword,
   deleteAccount,
   updateDisplayName,
+  updateReportLocale,
 } from "@/app/account/actions";
 import type { TranslationPack } from "@/lib/i18n/config";
+import { localeRegistry, localeTags, type LocaleTag } from "@/lib/i18n/config";
 
 export function AccountSettings({
   displayName,
   email,
   copy,
+  reportLocale,
 }: {
   displayName: string;
   email: string;
   copy: TranslationPack["messages"]["account"];
+  reportLocale: LocaleTag;
 }) {
   return (
     <section className="account-settings" id="account-settings">
@@ -30,6 +34,29 @@ export function AccountSettings({
       </div>
 
       <div className="account-settings__grid">
+        <form
+          action={updateReportLocale}
+          className="account-form account-form--language"
+        >
+          <div>
+            <h3>{copy.reportLanguage}</h3>
+            <p>{copy.reportLanguageCopy}</p>
+          </div>
+          <label>
+            <span>{copy.defaultReportLanguage}</span>
+            <select name="report_locale" defaultValue={reportLocale}>
+              {localeTags.map((tag) => (
+                <option key={tag} value={tag} lang={tag}>
+                  {localeRegistry[tag].nativeName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <small>{copy.reportLanguageNote}</small>
+          <button className="button-primary" type="submit">
+            {copy.saveReportLanguage}
+          </button>
+        </form>
         <form action={updateDisplayName} className="account-form">
           <div>
             <h3>{copy.profile}</h3>

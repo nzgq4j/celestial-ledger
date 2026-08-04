@@ -7,6 +7,7 @@ import { AccountReportList } from "@/components/AccountReportList";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
+import { isLocaleTag } from "@/lib/i18n/config";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -40,7 +41,7 @@ export default async function AccountPage({
     searchParams,
     supabase
       .from("profiles")
-      .select("display_name, adult_confirmed_at, created_at")
+      .select("display_name, adult_confirmed_at, created_at, report_locale")
       .single(),
     supabase
       .from("birth_profiles")
@@ -50,7 +51,7 @@ export default async function AccountPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("reports")
-      .select("id, report_type, status, expires_at, created_at")
+      .select("id, report_type, status, locale, expires_at, created_at")
       .order("created_at", { ascending: false }),
     supabase
       .from("products")
@@ -67,6 +68,10 @@ export default async function AccountPage({
   const reports = reportResult.data ?? [];
   const products = productResult.data ?? [];
   const entitlements = entitlementResult.data ?? [];
+  const reportLocale =
+    profile?.report_locale && isLocaleTag(profile.report_locale)
+      ? profile.report_locale
+      : pack.tag;
   const readyEntitlements = entitlements.filter(
     (item) =>
       item.status === "unused" &&
@@ -85,6 +90,9 @@ export default async function AccountPage({
     current_password_failed: copy.currentPasswordFailed,
     password_failed: copy.passwordFailed,
     delete_confirmation_failed: copy.deleteConfirmationFailed,
+    report_locale_updated: copy.reportLocaleUpdated,
+    invalid_report_locale: copy.invalidReportLocale,
+    report_locale_failed: copy.reportLocaleFailed,
   };
   const notice = params.notice ? notices[params.notice] : undefined;
   const latestReport = reports[0];
@@ -205,6 +213,7 @@ export default async function AccountPage({
                 id: item.id,
                 label: item.label,
               }))}
+              defaultLocale={reportLocale}
             />
           </article>
         ))}
@@ -245,6 +254,7 @@ export default async function AccountPage({
                         id: item.id,
                         label: item.label,
                       }))}
+                      defaultLocale={reportLocale}
                     />
                   ) : (
                     <Link href="/#chart" className="button-primary">
@@ -277,6 +287,7 @@ export default async function AccountPage({
         displayName={profile?.display_name ?? ""}
         email={authData.user.email ?? ""}
         copy={copy}
+        reportLocale={reportLocale}
       />
     </main>
   );

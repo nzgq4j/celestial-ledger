@@ -154,6 +154,16 @@ const pack = {
       retryReport: "Intentar de nuevo",
       restarting: "Reiniciando…",
       reportActions: "Acciones del informe",
+      reportLanguage: "Idioma del informe",
+      reportLanguageCopy: "Elige el idioma de tus lecturas personales.",
+      defaultReportLanguage: "Idioma predeterminado de los informes",
+      reportLanguageNote:
+        "Los informes nuevos comienzan en este idioma. Puedes cambiarlo antes de generar cada informe.",
+      saveReportLanguage: "Guardar idioma",
+      reportLanguageOverride: "Esta elección solo se aplica a este informe.",
+      reportLocaleUpdated: "Idioma predeterminado actualizado.",
+      invalidReportLocale: "Elige un idioma compatible.",
+      reportLocaleFailed: "No se pudo actualizar el idioma de tus informes.",
     },
     home: {
       eyebrow: "El cielo en el momento de tu llegada",

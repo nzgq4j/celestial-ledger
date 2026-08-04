@@ -18,6 +18,7 @@ import {
   validateRecoveryReport,
 } from "@/lib/reports/recovery";
 import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
+import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -75,14 +76,18 @@ export async function runNextReportJob() {
         ? await buildRecoveryEvidence(birthInput)
         : await buildCareerEvidence(birthInput);
     const model = process.env.OPENAI_REPORT_MODEL || "gpt-5-mini";
+    const reportLocale =
+      typeof job.locale === "string" && isLocaleTag(job.locale)
+        ? job.locale
+        : defaultLocale;
     const response = await new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     }).responses.create({
       model,
       store: false,
       input: recoveryThemes
-        ? recoveryPrompt(evidence, recoveryThemes)
-        : careerPrompt(evidence),
+        ? recoveryPrompt(evidence, recoveryThemes, reportLocale)
+        : careerPrompt(evidence, reportLocale),
       text: {
         format: {
           type: "json_schema",

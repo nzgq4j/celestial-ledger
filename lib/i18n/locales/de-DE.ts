@@ -158,6 +158,17 @@ const pack = {
       retryReport: "Erneut versuchen",
       restarting: "Neustart…",
       reportActions: "Berichtsaktionen",
+      reportLanguage: "Berichtssprache",
+      reportLanguageCopy: "Wähle die Sprache deiner persönlichen Deutungen.",
+      defaultReportLanguage: "Standard-Berichtssprache",
+      reportLanguageNote:
+        "Neue Berichte beginnen in dieser Sprache. Du kannst sie vor jedem einzelnen Bericht ändern.",
+      saveReportLanguage: "Berichtssprache speichern",
+      reportLanguageOverride: "Diese Auswahl gilt nur für diesen Bericht.",
+      reportLocaleUpdated: "Standard-Berichtssprache aktualisiert.",
+      invalidReportLocale: "Wähle eine unterstützte Berichtssprache.",
+      reportLocaleFailed:
+        "Deine Berichtssprache konnte nicht aktualisiert werden.",
     },
     home: {
       eyebrow: "Der Himmel im Augenblick deiner Ankunft",

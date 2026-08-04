@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { isLocaleTag } from "@/lib/i18n/config";
 
 function accountNotice(value: string): never {
   redirect(`/account?notice=${encodeURIComponent(value)}#account-settings`);
@@ -29,6 +30,19 @@ export async function updateDisplayName(formData: FormData) {
     .eq("id", user.id);
   if (error) accountNotice("name_failed");
   accountNotice("name_updated");
+}
+
+export async function updateReportLocale(formData: FormData) {
+  const locale = formData.get("report_locale");
+  if (typeof locale !== "string" || !isLocaleTag(locale))
+    accountNotice("invalid_report_locale");
+  const { supabase, user } = await authenticatedUser();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ report_locale: locale })
+    .eq("id", user.id);
+  if (error) accountNotice("report_locale_failed");
+  accountNotice("report_locale_updated");
 }
 
 export async function changeAccountPassword(formData: FormData) {

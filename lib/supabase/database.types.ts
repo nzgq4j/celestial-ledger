@@ -167,6 +167,7 @@ export type Database = {
           email: string;
           first_name: string;
           id: string;
+          locale: string;
           linked_user_id: string | null;
           status: string;
           unsubscribed_at: string | null;
@@ -180,6 +181,7 @@ export type Database = {
           email: string;
           first_name: string;
           id?: string;
+          locale?: string;
           linked_user_id?: string | null;
           status?: string;
           unsubscribed_at?: string | null;
@@ -193,6 +195,7 @@ export type Database = {
           email?: string;
           first_name?: string;
           id?: string;
+          locale?: string;
           linked_user_id?: string | null;
           status?: string;
           unsubscribed_at?: string | null;
@@ -301,6 +304,7 @@ export type Database = {
           created_at: string;
           display_name: string | null;
           id: string;
+          report_locale: string | null;
           updated_at: string;
         };
         Insert: {
@@ -308,6 +312,7 @@ export type Database = {
           created_at?: string;
           display_name?: string | null;
           id: string;
+          report_locale?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -315,6 +320,7 @@ export type Database = {
           created_at?: string;
           display_name?: string | null;
           id?: string;
+          report_locale?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -367,6 +373,7 @@ export type Database = {
           expires_at: string | null;
           failure_code: string | null;
           id: string;
+          locale: string;
           model_version: string | null;
           next_attempt_at: string;
           output: Json | null;
@@ -389,6 +396,7 @@ export type Database = {
           expires_at?: string | null;
           failure_code?: string | null;
           id?: string;
+          locale?: string;
           model_version?: string | null;
           next_attempt_at?: string;
           output?: Json | null;
@@ -411,6 +419,7 @@ export type Database = {
           expires_at?: string | null;
           failure_code?: string | null;
           id?: string;
+          locale?: string;
           model_version?: string | null;
           next_attempt_at?: string;
           output?: Json | null;
@@ -508,6 +517,7 @@ export type Database = {
         Args: {
           p_birth_profile_id: string;
           p_entitlement_id: string;
+          p_locale: string;
           p_prompt_version: string;
           p_recovery_themes?: Json | null;
           p_safety_version: string;
@@ -519,6 +529,7 @@ export type Database = {
       queue_complimentary_report: {
         Args: {
           p_birth_profile_id: string;
+          p_locale: string;
           p_prompt_version: string;
           p_recovery_themes?: Json | null;
           p_report_type: string;

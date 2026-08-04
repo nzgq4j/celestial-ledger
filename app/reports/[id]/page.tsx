@@ -33,7 +33,7 @@ export default async function ReportPage({
     supabase
       .from("reports")
       .select(
-        "id,report_type,status,output,failure_code,attempts,created_at,completed_at,expires_at",
+        "id,report_type,status,locale,output,failure_code,attempts,created_at,completed_at,expires_at",
       )
       .eq("id", id)
       .single(),
@@ -83,7 +83,7 @@ export default async function ReportPage({
   const evidenceById = new Map(evidence.items.map((item) => [item.id, item]));
   const autoPrint = (await searchParams).print === "1";
   return (
-    <main className="page-shell private-report">
+    <main className="page-shell private-report" lang={report.locale}>
       <ReportViewerActions reportId={report.id} autoPrint={autoPrint} />
       <header className="report-viewer-heading">
         <p className="eyebrow">

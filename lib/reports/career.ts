@@ -1,6 +1,8 @@
 import { z } from "zod";
 import type { BirthInput, NatalChart } from "@/lib/types";
 import { calculateNatalChart } from "@/lib/chart";
+import type { LocaleTag } from "@/lib/i18n/config";
+import { reportLanguageInstruction } from "@/lib/reports/language";
 
 export const CAREER_SCHEMA_VERSION = "career-1";
 export const CAREER_PROMPT_VERSION = "career-1";
@@ -156,10 +158,14 @@ export async function buildCareerEvidence(input: BirthInput) {
   return { chart, evidence };
 }
 
-export function careerPrompt(evidence: CareerEvidenceBundle) {
+export function careerPrompt(
+  evidence: CareerEvidenceBundle,
+  locale: LocaleTag = "en-GB",
+) {
   return `Write a Career and Purpose reflection using only the immutable evidence bundle below.
 
 Rules:
+${reportLanguageInstruction(locale)}
 - Astrology is symbolic reflection, not scientifically validated prediction.
 - Never invent or recalculate chart facts. Every section must cite only supplied evidence IDs.
 - Discuss motivations, values, contribution, work environments, tensions, and reflective questions.

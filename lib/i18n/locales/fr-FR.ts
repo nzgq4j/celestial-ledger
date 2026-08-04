@@ -160,6 +160,17 @@ const pack = {
       retryReport: "Réessayer",
       restarting: "Redémarrage…",
       reportActions: "Actions du rapport",
+      reportLanguage: "Langue du rapport",
+      reportLanguageCopy: "Choisissez la langue de vos lectures personnelles.",
+      defaultReportLanguage: "Langue par défaut des rapports",
+      reportLanguageNote:
+        "Les nouveaux rapports commencent dans cette langue. Vous pouvez la modifier avant chaque génération.",
+      saveReportLanguage: "Enregistrer la langue",
+      reportLanguageOverride: "Ce choix s’applique uniquement à ce rapport.",
+      reportLocaleUpdated: "Langue par défaut mise à jour.",
+      invalidReportLocale: "Choisissez une langue prise en charge.",
+      reportLocaleFailed:
+        "La langue de vos rapports n’a pas pu être mise à jour.",
     },
     home: {
       eyebrow: "Le ciel au moment de votre arrivée",

@@ -1319,13 +1319,17 @@ a {
   color: #d4cdbc;
   font-size: 0.75rem;
 }
-.account-form input {
+.account-form input,
+.account-form select {
   min-width: 0;
   border: 1px solid #40516a;
   border-radius: 4px;
   background: var(--surface-deep);
   color: var(--paper);
   padding: 0.7rem 0.8rem;
+}
+.account-form select {
+  appearance: auto;
 }
 .account-form input:disabled {
   color: #7f8998;
@@ -1586,6 +1590,10 @@ a {
 .report-generator p {
   grid-column: 1 / -1;
   margin: 0;
+}
+.report-language-hint {
+  grid-column: 1 / -1;
+  color: var(--muted);
 }
 .report-library-list {
   display: grid;

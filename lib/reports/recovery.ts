@@ -4,6 +4,8 @@ import {
   buildCareerEvidence,
   type CareerEvidenceBundle,
 } from "@/lib/reports/career";
+import type { LocaleTag } from "@/lib/i18n/config";
+import { reportLanguageInstruction } from "@/lib/reports/language";
 
 export const RECOVERY_SCHEMA_VERSION = "recovery-1";
 export const RECOVERY_PROMPT_VERSION = "recovery-1";
@@ -128,6 +130,7 @@ export async function buildRecoveryEvidence(input: BirthInput) {
 export function recoveryPrompt(
   evidence: CareerEvidenceBundle,
   themes: RecoveryTheme[],
+  locale: LocaleTag = "en-GB",
 ) {
   const labels = recoveryThemes
     .filter((theme) => themes.includes(theme.id))
@@ -135,6 +138,7 @@ export function recoveryPrompt(
   return `Create a Celestial Atlas Recovery Reflection from the immutable natal evidence and reviewed themes below.
 
 Voice and craft:
+${reportLanguageInstruction(locale)}
 - Write from inside astrology: mystical, compassionate, confident and specific.
 - Reveal constructive patterns without forced optimism, shame or fatalism.
 - Use only the selected themes, with one section per theme.

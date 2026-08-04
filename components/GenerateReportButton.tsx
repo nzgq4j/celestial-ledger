@@ -4,16 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { recoveryThemes, type RecoveryTheme } from "@/lib/reports/recovery";
 import { useLocale } from "@/components/LocaleProvider";
+import { localeRegistry, localeTags, type LocaleTag } from "@/lib/i18n/config";
 
 type Option = { id: string; label: string };
 export function GenerateReportButton({
   entitlementId,
   profiles,
   reportType,
+  defaultLocale,
 }: {
   entitlementId?: string;
   profiles: Option[];
   reportType: string;
+  defaultLocale: LocaleTag;
 }) {
   const router = useRouter();
   const [profileId, setProfileId] = useState(profiles[0]?.id ?? "");
@@ -21,6 +24,7 @@ export function GenerateReportButton({
   const [busy, setBusy] = useState(false);
   const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [themes, setThemes] = useState<RecoveryTheme[]>([]);
+  const [reportLocale, setReportLocale] = useState(defaultLocale);
   const isRecovery = reportType === "recovery_reflection";
   const { pack } = useLocale();
   const copy = pack.messages.account;
@@ -43,6 +47,7 @@ export function GenerateReportButton({
         body: JSON.stringify({
           ...(entitlementId ? { entitlementId } : { reportType }),
           birthProfileId: profileId,
+          locale: reportLocale,
           ...(isRecovery ? { adultConfirmed, recoveryThemes: themes } : {}),
         }),
       });
@@ -80,6 +85,27 @@ export function GenerateReportButton({
           <option value="">{copy.noSavedProfiles}</option>
         )}
       </select>
+      <label
+        className="label"
+        htmlFor={`locale-${entitlementId ?? reportType}`}
+      >
+        {copy.reportLanguage}
+      </label>
+      <select
+        id={`locale-${entitlementId ?? reportType}`}
+        className="input"
+        value={reportLocale}
+        onChange={(event) => setReportLocale(event.target.value as LocaleTag)}
+      >
+        {localeTags.map((tag) => (
+          <option key={tag} value={tag} lang={tag}>
+            {localeRegistry[tag].nativeName}
+          </option>
+        ))}
+      </select>
+      <small className="report-language-hint">
+        {copy.reportLanguageOverride}
+      </small>
       {isRecovery && (
         <fieldset className="recovery-compass">
           <legend>{copy.chooseThemes}</legend>

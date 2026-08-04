@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCareerEvidence,
+  careerPrompt,
   careerReportSchema,
   validateEvidenceLinks,
 } from "@/lib/reports/career";
@@ -16,6 +17,19 @@ const birthplace = {
 };
 
 describe("career report evidence", () => {
+  it("binds the requested report language without altering evidence IDs", async () => {
+    const { evidence } = await buildCareerEvidence({
+      date: "1990-01-15",
+      time: "12:00",
+      timeUnknown: false,
+      place: birthplace,
+    });
+    const prompt = careerPrompt(evidence, "es-ES");
+    expect(prompt).toContain("Spanish as used in Spain (es-ES)");
+    expect(prompt).toContain("placement:sun");
+    expect(prompt).toContain("Preserve supplied evidence IDs exactly");
+  });
+
   it("builds stable evidence IDs from a server calculation", async () => {
     const { evidence } = await buildCareerEvidence({
       date: "1990-01-15",
