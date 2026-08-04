@@ -2595,6 +2595,276 @@ th {
   line-height: 1.7;
 }
 
+/* Home — midnight observatory landing experience */
+.atlas-hero {
+  isolation: isolate;
+  min-height: calc(100svh - 4.7rem);
+  border-bottom-color: rgba(205, 168, 91, 0.34);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 8, 16, 0.97) 0%,
+      rgba(3, 11, 22, 0.79) 43%,
+      rgba(3, 9, 18, 0.18) 78%
+    ),
+    linear-gradient(180deg, rgba(4, 11, 21, 0.16) 50%, #030811 100%),
+    url("/atlas-night-sky.png") center 46% / cover no-repeat;
+  color: #f5eddb;
+}
+.atlas-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 74% 44%,
+      transparent 0 14rem,
+      rgba(205, 168, 91, 0.06) 14.1rem,
+      transparent 14.25rem
+    ),
+    linear-gradient(180deg, transparent 62%, rgba(1, 5, 11, 0.62));
+  content: "";
+  pointer-events: none;
+}
+.atlas-hero::after {
+  display: none;
+}
+.atlas-hero__inner {
+  min-height: clamp(35rem, calc(100svh - 14rem), 52rem);
+  padding-block: clamp(4rem, 9vw, 8.5rem) clamp(3rem, 6vw, 6rem);
+  grid-template-columns: minmax(0, 0.85fr) minmax(22rem, 0.72fr);
+}
+.atlas-hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 38rem;
+  text-shadow: 0 0.2rem 1.5rem rgba(0, 0, 0, 0.56);
+}
+.atlas-hero .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #d3b46f;
+  font-size: 0.64rem;
+  letter-spacing: 0.24em;
+}
+.atlas-hero .eyebrow::before {
+  width: 2.4rem;
+  border-top: 1px solid currentColor;
+  content: "";
+}
+.atlas-hero h1 {
+  margin: 1.15rem 0 0;
+  color: #f7efdf;
+  font-size: clamp(4rem, 7.2vw, 7.2rem);
+  letter-spacing: -0.048em;
+  line-height: 0.85;
+}
+.atlas-hero h1 em {
+  display: inline-block;
+  color: #eadcc1;
+  font-weight: 400;
+}
+.atlas-hero__copy {
+  max-width: 34rem;
+  margin-top: 2rem;
+  color: #ded5c4;
+  font:
+    400 clamp(1rem, 1.5vw, 1.14rem)/1.7 Georgia,
+    "Times New Roman",
+    serif;
+}
+.atlas-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+.atlas-hero__cta {
+  min-width: 12.8rem;
+  border: 1px solid #e0c37c;
+  border-radius: 0.15rem;
+  background: linear-gradient(120deg, #b98b38, #dfbd70 55%, #bd8f3d);
+  box-shadow: 0 0.8rem 2.8rem rgba(0, 0, 0, 0.3);
+  color: #07101b;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.atlas-hero__cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.atlas-hero__text-link {
+  padding-block: 0.75rem;
+  border-bottom: 1px solid rgba(222, 195, 129, 0.48);
+  color: #eee3cf;
+  font-size: 0.77rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.atlas-hero__text-link span {
+  margin-left: 0.35rem;
+  color: #d8b86e;
+}
+.atlas-hero__privacy {
+  margin: 1.15rem 0 0;
+  color: rgba(232, 224, 209, 0.66);
+  font-size: 0.68rem;
+  letter-spacing: 0.035em;
+}
+.atlas-hero__instrument {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: min(39vw, 35rem);
+  aspect-ratio: 1;
+  justify-self: end;
+  filter: drop-shadow(0 1.4rem 2.2rem rgba(0, 0, 0, 0.56));
+}
+.atlas-hero__instrument img {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 84%;
+  height: auto;
+  opacity: 0.82;
+}
+.atlas-hero__orbit {
+  position: absolute;
+  border: 1px solid rgba(218, 184, 107, 0.46);
+  border-radius: 50%;
+}
+.atlas-hero__orbit::before,
+.atlas-hero__orbit::after {
+  position: absolute;
+  inset: 8%;
+  border: 1px dashed rgba(218, 184, 107, 0.24);
+  border-radius: inherit;
+  content: "";
+}
+.atlas-hero__orbit::after {
+  inset: 18%;
+  border-style: solid;
+}
+.atlas-hero__orbit--outer {
+  inset: 0;
+  animation: atlas-orbit 70s linear infinite;
+}
+.atlas-hero__orbit--inner {
+  inset: 15%;
+  border-color: rgba(218, 184, 107, 0.25);
+  animation: atlas-orbit 48s linear infinite reverse;
+}
+.atlas-hero__features {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: min(100%, 76rem);
+  margin: auto;
+  border-top: 1px solid rgba(211, 180, 111, 0.25);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 7, 14, 0.8),
+    rgba(5, 14, 27, 0.72),
+    rgba(2, 7, 14, 0.8)
+  );
+  backdrop-filter: blur(10px);
+}
+.atlas-hero__features article {
+  display: flex;
+  gap: 1rem;
+  min-height: 7rem;
+  padding: 1.5rem clamp(1rem, 3vw, 2rem);
+  border-right: 1px solid rgba(211, 180, 111, 0.18);
+}
+.atlas-hero__features article:last-child {
+  border-right: 0;
+}
+.atlas-hero__features article > span {
+  color: #caa85e;
+  font:
+    1.2rem Georgia,
+    serif;
+}
+.atlas-hero__features h2 {
+  margin: 0;
+  color: #f0e5d0;
+  font:
+    400 1.05rem Georgia,
+    "Times New Roman",
+    serif;
+}
+.atlas-hero__features p {
+  margin: 0.4rem 0 0;
+  color: rgba(222, 213, 196, 0.7);
+  font-size: 0.73rem;
+  line-height: 1.5;
+}
+@keyframes atlas-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 900px) {
+  .atlas-hero {
+    background-position: 56% center;
+  }
+  .atlas-hero__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.55fr);
+  }
+  .atlas-hero__instrument {
+    width: min(42vw, 25rem);
+  }
+}
+@media (max-width: 700px) {
+  .atlas-hero {
+    background-position: 62% center;
+  }
+  .atlas-hero__inner {
+    grid-template-columns: 1fr;
+    min-height: 37rem;
+    padding-top: 4rem;
+  }
+  .atlas-hero__content {
+    max-width: 32rem;
+  }
+  .atlas-hero__instrument {
+    position: absolute;
+    z-index: 0;
+    right: -8rem;
+    top: 4rem;
+    width: 27rem;
+    opacity: 0.34;
+  }
+  .atlas-hero__features {
+    grid-template-columns: 1fr;
+    width: calc(100% - 2rem);
+  }
+  .atlas-hero__features article {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(211, 180, 111, 0.18);
+  }
+  .atlas-hero__features article:last-child {
+    border-bottom: 0;
+  }
+}
+@media (max-width: 480px) {
+  .atlas-hero h1 {
+    font-size: clamp(3.45rem, 17vw, 5rem);
+  }
+  .atlas-hero__actions {
+    display: grid;
+  }
+  .atlas-hero__privacy {
+    max-width: 19rem;
+  }
+}
+
 /* Existing utility-colour surfaces inherit the active atlas palette. */
 [data-theme="light"] .text-\[\#b9b2a3\],
 [data-theme="light"] .text-\[\#8f98a6\] {

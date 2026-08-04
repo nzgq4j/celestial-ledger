@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
-import { CelestialRouteMap } from "./CelestialRouteMap";
 import Link from "next/link";
+import Image from "next/image";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -278,27 +278,66 @@ export default function HoroscopeApp() {
       <header className="atlas-hero">
         <div className="atlas-hero__inner">
           <div className="atlas-hero__content">
-            <p className="eyebrow">Ancient sky · your private atlas</p>
+            <p className="eyebrow">Astrology for thoughtful reflection</p>
             <h1>
-              Your birth chart,
+              Navigate
               <br />
-              <em>written in the stars.</em>
+              <em>your cosmos.</em>
             </h1>
             <p className="atlas-hero__copy">
-              Discover the celestial pattern of your first moment. Celestial
-              Atlas traces the planets, signs, houses, and hidden
-              correspondences that have guided astrologers for generations.
+              Timeless symbolism. Modern guidance. Explore the sky at your first
+              moment through a private, evidence-linked atlas made for
+              reflection, not prediction.
             </p>
-            <div className="atlas-hero__method">
-              <span>01</span>
-              <p>Chart your first sky</p>
-              <span>02</span>
-              <p>Meet your celestial signatures</p>
-              <span>03</span>
-              <p>Follow the deeper pattern</p>
+            <div className="atlas-hero__actions">
+              <a className="button-primary atlas-hero__cta" href="#chart">
+                Explore your chart
+              </a>
+              <Link className="atlas-hero__text-link" href="/samples">
+                Read a sample <span aria-hidden="true">&#8599;</span>
+              </Link>
             </div>
+            <p className="atlas-hero__privacy">
+              Private by design · Birth data never appears in URLs
+            </p>
           </div>
-          <CelestialRouteMap />
+          <div className="atlas-hero__instrument" aria-hidden="true">
+            <span className="atlas-hero__orbit atlas-hero__orbit--outer" />
+            <span className="atlas-hero__orbit atlas-hero__orbit--inner" />
+            <Image
+              src="/celestial-compass.png"
+              alt=""
+              width={720}
+              height={720}
+              priority
+            />
+          </div>
+        </div>
+        <div
+          className="atlas-hero__features"
+          aria-label="Celestial Atlas principles"
+        >
+          <article>
+            <span aria-hidden="true">&#10022;</span>
+            <div>
+              <h2>Personalised charts</h2>
+              <p>Calculated for your time and place.</p>
+            </div>
+          </article>
+          <article>
+            <span aria-hidden="true">&#9788;</span>
+            <div>
+              <h2>In-depth astrology</h2>
+              <p>Placements, aspects, and houses explained.</p>
+            </div>
+          </article>
+          <article>
+            <span aria-hidden="true">&#9671;</span>
+            <div>
+              <h2>Transparent method</h2>
+              <p>Every claim connects to chart evidence.</p>
+            </div>
+          </article>
         </div>
       </header>
       <div
