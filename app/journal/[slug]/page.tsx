@@ -26,7 +26,7 @@ export async function generateMetadata({
   const post = await postFor((await params).slug);
   if (!post) return {};
   return {
-    title: post.seo_title || `${post.title} — Celestial Atlas`,
+    title: post.seo_title || post.title,
     description: post.seo_description || post.excerpt,
     alternates: { canonical: `/journal/${post.slug}` },
     openGraph: {

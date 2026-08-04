@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 300;
 export const metadata = {
-  title: "Celestial Journal — Celestial Atlas",
+  title: "Celestial Journal",
   description:
     "Astrological essays, celestial patterns, and practical guidance from Celestial Atlas.",
 };

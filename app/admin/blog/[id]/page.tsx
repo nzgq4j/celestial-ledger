@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Edit journal entry — Celestial Atlas",
+  title: "Edit journal entry",
   robots: { index: false, follow: false },
 };
 
