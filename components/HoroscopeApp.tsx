@@ -71,7 +71,7 @@ export default function HoroscopeApp() {
   const { pack } = useLocale();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
-  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
