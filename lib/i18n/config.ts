@@ -17,6 +17,7 @@ export type TranslationPack = {
       weekly: string;
       reports: string;
       samples: string;
+      journal: string;
       library: string;
       menu: string;
       dailyHoroscopes: string;

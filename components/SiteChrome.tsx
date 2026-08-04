@@ -48,6 +48,7 @@ export function SiteHeader() {
             </Link>
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
             <Link href="/samples">{pack.messages.navigation.samples}</Link>
+            <Link href="/journal">{pack.messages.navigation.journal}</Link>
           </div>
           <details className="mobile-nav" ref={mobileMenu}>
             <summary>
@@ -68,6 +69,7 @@ export function SiteHeader() {
               <Link href="/samples">
                 {pack.messages.navigation.sampleReports}
               </Link>
+              <Link href="/journal">{pack.messages.navigation.journal}</Link>
               <Link href="/account">{pack.messages.navigation.library}</Link>
             </div>
           </details>

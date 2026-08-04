@@ -14,6 +14,81 @@ export type Database = {
   };
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          id: number;
+          actor_id: string;
+          action: string;
+          target_user_id: string | null;
+          setting_key: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: never;
+          actor_id: string;
+          action: string;
+          target_user_id?: string | null;
+          setting_key?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: never;
+          actor_id?: string;
+          action?: string;
+          target_user_id?: string | null;
+          setting_key?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      admin_roles: {
+        Row: {
+          user_id: string;
+          role: string;
+          granted_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          role: string;
+          granted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          role?: string;
+          granted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      site_settings: {
+        Row: {
+          key: string;
+          value: Json;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          value?: Json;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          value?: Json;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       audit_events: {
         Row: {
           created_at: string;
@@ -41,6 +116,54 @@ export type Database = {
           resource_id?: string | null;
           resource_type?: string | null;
           user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      blog_posts: {
+        Row: {
+          id: string;
+          author_id: string;
+          author_name: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          body: string;
+          seo_title: string | null;
+          seo_description: string | null;
+          status: string;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          author_name: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          body: string;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          author_name?: string;
+          slug?: string;
+          title?: string;
+          excerpt?: string;
+          body?: string;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

@@ -8,6 +8,7 @@ import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { isLocaleTag } from "@/lib/i18n/config";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -29,6 +30,13 @@ export default async function AccountPage({
   const supabase = await createClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError || !authData.user) redirect("/auth/login");
+
+  const adminClient = createAdminClient();
+  const { data: adminRole } = await adminClient
+    .from("admin_roles")
+    .select("role")
+    .eq("user_id", authData.user.id)
+    .maybeSingle();
 
   const [
     params,
@@ -180,6 +188,7 @@ export default async function AccountPage({
         <a href="#reports">{copy.myReadings}</a>
         <a href="#birth-profiles">{copy.myBirthCharts}</a>
         <a href="#account-settings">{copy.settings}</a>
+        {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
       </nav>
 
       <section

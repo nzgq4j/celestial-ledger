@@ -149,6 +149,7 @@ export default function HoroscopeApp() {
       if (marketingConsent) {
         setSubscriptionStatus("Saving your email preference…");
         try {
+          const recaptchaToken = await executeRecaptcha();
           const subscriptionResponse = await fetch("/api/marketing/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -158,6 +159,7 @@ export default function HoroscopeApp() {
               consent: true,
               consentVersion: "marketing-v1-2026-08-03",
               website: "",
+              recaptchaToken,
             }),
           });
           if (!subscriptionResponse.ok) throw new Error();
@@ -874,4 +876,25 @@ export default function HoroscopeApp() {
       </div>
     </main>
   );
+}
+
+async function executeRecaptcha() {
+  const google = window as typeof window & {
+    grecaptcha?: {
+      ready: (callback: () => void) => void;
+      execute: (
+        siteKey: string,
+        options: { action: string },
+      ) => Promise<string>;
+    };
+  };
+  const script = document.querySelector<HTMLScriptElement>(
+    'script[src*="recaptcha/api.js"]',
+  );
+  const siteKey = script
+    ? new URL(script.src).searchParams.get("render")
+    : null;
+  if (!siteKey || !google.grecaptcha) return undefined;
+  await new Promise<void>((resolve) => google.grecaptcha!.ready(resolve));
+  return google.grecaptcha.execute(siteKey, { action: "marketing_subscribe" });
 }

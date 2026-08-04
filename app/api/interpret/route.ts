@@ -11,6 +11,7 @@ import {
 } from "@/lib/api-security";
 import { HistoricalTimeError } from "@/lib/time";
 import { z } from "zod";
+import { getConfiguredModel } from "@/lib/admin/settings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -146,7 +147,7 @@ Display information:\n${JSON.stringify(display)}\n\nValidated chart facts:\n${JS
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-5-mini",
+      model: await getConfiguredModel("interpretation"),
       input: prompt,
       store: false,
     });

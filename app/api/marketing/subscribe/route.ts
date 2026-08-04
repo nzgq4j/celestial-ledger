@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isSameOrigin, readLimitedJson } from "@/lib/api-security";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { verifyRecaptcha } from "@/lib/recaptcha";
 
 const subscriptionSchema = z
   .object({
@@ -10,6 +11,7 @@ const subscriptionSchema = z
     consent: z.literal(true),
     consentVersion: z.literal("marketing-v1-2026-08-03"),
     website: z.string().max(0).optional(),
+    recaptchaToken: z.string().max(4096).optional(),
   })
   .strict();
 
@@ -27,7 +29,10 @@ export async function POST(request: Request) {
         { status: 400 },
       );
 
-    const { firstName, email, consentVersion } = parsed.data;
+    const { firstName, email, consentVersion, recaptchaToken } = parsed.data;
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    if (!(await verifyRecaptcha(recaptchaToken, ip)))
+      return NextResponse.json({ error: "CAPTCHA_REJECTED" }, { status: 403 });
     const { error } = await createAdminClient()
       .from("marketing_subscribers")
       .upsert(

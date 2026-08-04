@@ -19,6 +19,7 @@ import {
 } from "@/lib/reports/recovery";
 import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
+import { getConfiguredModel } from "@/lib/admin/settings";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -75,7 +76,7 @@ export async function runNextReportJob() {
       job.report_type === "recovery_reflection"
         ? await buildRecoveryEvidence(birthInput)
         : await buildCareerEvidence(birthInput);
-    const model = process.env.OPENAI_REPORT_MODEL || "gpt-5-mini";
+    const model = await getConfiguredModel("report");
     const reportLocale =
       typeof job.locale === "string" && isLocaleTag(job.locale)
         ? job.locale
