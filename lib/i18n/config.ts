@@ -27,6 +27,7 @@ export type TranslationPack = {
     preferences: {
       language: string;
     };
+    account: Record<string, string>;
     home: {
       eyebrow: string;
       titleFirst: string;
@@ -90,6 +91,7 @@ export const localeRegistry: Record<
     name: string;
     nativeName: string;
     direction: "ltr" | "rtl";
+    flag: string;
     load: () => Promise<TranslationPack>;
   }
 > = {
@@ -97,24 +99,28 @@ export const localeRegistry: Record<
     name: "English",
     nativeName: "English",
     direction: "ltr",
+    flag: "🇬🇧",
     load: () => import("./locales/en-GB").then(({ default: pack }) => pack),
   },
   "es-ES": {
     name: "Spanish",
     nativeName: "Español",
     direction: "ltr",
+    flag: "🇪🇸",
     load: () => import("./locales/es-ES").then(({ default: pack }) => pack),
   },
   "fr-FR": {
     name: "French",
     nativeName: "Français",
     direction: "ltr",
+    flag: "🇫🇷",
     load: () => import("./locales/fr-FR").then(({ default: pack }) => pack),
   },
   "de-DE": {
     name: "German",
     nativeName: "Deutsch",
     direction: "ltr",
+    flag: "🇩🇪",
     load: () => import("./locales/de-DE").then(({ default: pack }) => pack),
   },
 };

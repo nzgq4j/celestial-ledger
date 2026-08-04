@@ -29,14 +29,14 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setLocale(tag);
     setPack(nextPack);
     localStorage.setItem(localeStorageKey, tag);
+    document.cookie = `${localeStorageKey}=${encodeURIComponent(tag)}; Path=/; Max-Age=31536000; SameSite=Lax`;
     document.documentElement.lang = tag;
     document.documentElement.dir = nextPack.direction;
   }
 
   useEffect(() => {
     const stored = localStorage.getItem(localeStorageKey);
-    if (stored && isLocaleTag(stored) && stored !== defaultLocale)
-      void selectLocale(stored);
+    if (stored && isLocaleTag(stored)) void selectLocale(stored);
   }, []);
 
   const value = useMemo(() => ({ locale, pack, selectLocale }), [locale, pack]);

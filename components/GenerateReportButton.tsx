@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { recoveryThemes, type RecoveryTheme } from "@/lib/reports/recovery";
+import { useLocale } from "@/components/LocaleProvider";
 
 type Option = { id: string; label: string };
 export function GenerateReportButton({
@@ -21,9 +22,18 @@ export function GenerateReportButton({
   const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [themes, setThemes] = useState<RecoveryTheme[]>([]);
   const isRecovery = reportType === "recovery_reflection";
+  const { pack } = useLocale();
+  const copy = pack.messages.account;
+  const themeCopy: Record<RecoveryTheme, [string, string]> = {
+    grounding: [copy.grounding, copy.groundingDetail],
+    relationships: [copy.relationships, copy.relationshipsDetail],
+    self_trust: [copy.selfTrust, copy.selfTrustDetail],
+    daily_rhythms: [copy.dailyRhythms, copy.dailyRhythmsDetail],
+    boundaries: [copy.boundaries, copy.boundariesDetail],
+    renewal: [copy.renewal, copy.renewalDetail],
+  };
   async function generate() {
-    if (!profileId)
-      return setStatus("Save a birth profile before generating this report.");
+    if (!profileId) return setStatus(copy.saveProfileFirst);
     setBusy(true);
     setStatus("");
     try {
@@ -41,11 +51,7 @@ export function GenerateReportButton({
       router.push(`/reports/${payload.reportId}`);
       router.refresh();
     } catch (error) {
-      setStatus(
-        error instanceof Error
-          ? error.message
-          : "The report could not be queued.",
-      );
+      setStatus(error instanceof Error ? error.message : copy.reportFailed);
     } finally {
       setBusy(false);
     }
@@ -56,7 +62,7 @@ export function GenerateReportButton({
         className="label"
         htmlFor={`profile-${entitlementId ?? reportType}`}
       >
-        Use birth profile
+        {copy.useProfile}
       </label>
       <select
         id={`profile-${entitlementId ?? reportType}`}
@@ -71,13 +77,13 @@ export function GenerateReportButton({
             </option>
           ))
         ) : (
-          <option value="">No saved birth profiles</option>
+          <option value="">{copy.noSavedProfiles}</option>
         )}
       </select>
       {isRecovery && (
         <fieldset className="recovery-compass">
-          <legend>Choose your reflection themes</legend>
-          <p>Select the areas you want your natal chart to illuminate.</p>
+          <legend>{copy.chooseThemes}</legend>
+          <p>{copy.chooseThemesCopy}</p>
           <div className="recovery-compass__themes">
             {recoveryThemes.map((theme) => (
               <label key={theme.id}>
@@ -93,8 +99,8 @@ export function GenerateReportButton({
                   }
                 />
                 <span>
-                  <strong>{theme.label}</strong>
-                  <small>{theme.detail}</small>
+                  <strong>{themeCopy[theme.id][0]}</strong>
+                  <small>{themeCopy[theme.id][1]}</small>
                 </span>
               </label>
             ))}
@@ -105,7 +111,7 @@ export function GenerateReportButton({
               checked={adultConfirmed}
               onChange={(event) => setAdultConfirmed(event.target.checked)}
             />
-            <span>I confirm that I am 18 or older.</span>
+            <span>{copy.adultConfirmation}</span>
           </label>
         </fieldset>
       )}
@@ -119,7 +125,7 @@ export function GenerateReportButton({
         }
         onClick={generate}
       >
-        {busy ? "Queueing…" : "Generate report"}
+        {busy ? copy.queueing : copy.generateReport}
       </button>
       {status && (
         <p role="status" className="text-sm text-[#d7bd7b]">

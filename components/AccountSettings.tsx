@@ -4,24 +4,27 @@ import {
   deleteAccount,
   updateDisplayName,
 } from "@/app/account/actions";
+import type { TranslationPack } from "@/lib/i18n/config";
 
 export function AccountSettings({
   displayName,
   email,
+  copy,
 }: {
   displayName: string;
   email: string;
+  copy: TranslationPack["messages"]["account"];
 }) {
   return (
     <section className="account-settings" id="account-settings">
       <div className="account-settings__heading">
         <div>
-          <p className="section-kicker">Account management</p>
-          <h2>Your details and security</h2>
+          <p className="section-kicker">{copy.managementKicker}</p>
+          <h2>{copy.detailsSecurity}</h2>
         </div>
         <form action={signOut}>
           <button className="button-quiet" type="submit">
-            Log out
+            {copy.logOut}
           </button>
         </form>
       </div>
@@ -29,11 +32,11 @@ export function AccountSettings({
       <div className="account-settings__grid">
         <form action={updateDisplayName} className="account-form">
           <div>
-            <h3>Profile</h3>
-            <p>Choose the name shown in your private dashboard.</p>
+            <h3>{copy.profile}</h3>
+            <p>{copy.profileCopy}</p>
           </div>
           <label>
-            <span>Display name</span>
+            <span>{copy.displayName}</span>
             <input
               name="display_name"
               defaultValue={displayName}
@@ -44,24 +47,22 @@ export function AccountSettings({
             />
           </label>
           <label>
-            <span>Email address</span>
+            <span>{copy.emailAddress}</span>
             <input value={email} disabled aria-describedby="email-note" />
           </label>
-          <small id="email-note">
-            Email changes require a verified confirmation flow.
-          </small>
+          <small id="email-note">{copy.emailNote}</small>
           <button className="button-primary" type="submit">
-            Save name
+            {copy.saveName}
           </button>
         </form>
 
         <form action={changeAccountPassword} className="account-form">
           <div>
-            <h3>Change password</h3>
-            <p>Confirm your current password before choosing a new one.</p>
+            <h3>{copy.changePassword}</h3>
+            <p>{copy.changePasswordCopy}</p>
           </div>
           <label>
-            <span>Current password</span>
+            <span>{copy.currentPassword}</span>
             <input
               name="current_password"
               type="password"
@@ -70,7 +71,7 @@ export function AccountSettings({
             />
           </label>
           <label>
-            <span>New password</span>
+            <span>{copy.newPassword}</span>
             <input
               name="password"
               type="password"
@@ -80,7 +81,7 @@ export function AccountSettings({
             />
           </label>
           <label>
-            <span>Confirm new password</span>
+            <span>{copy.confirmPassword}</span>
             <input
               name="password_confirmation"
               type="password"
@@ -90,25 +91,21 @@ export function AccountSettings({
             />
           </label>
           <button className="button-primary" type="submit">
-            Change password
+            {copy.changePassword}
           </button>
         </form>
       </div>
 
       <details className="danger-zone">
-        <summary>Delete account</summary>
+        <summary>{copy.deleteAccount}</summary>
         <div className="danger-zone__body">
-          <p>
-            Permanently removes your birth profiles, reports, evidence, and
-            account. Minimized payment records may be retained where legally
-            required.
-          </p>
+          <p>{copy.deleteAccountCopy}</p>
           <form
             action={deleteAccount}
             className="account-form account-form--danger"
           >
             <label>
-              <span>Current password</span>
+              <span>{copy.currentPassword}</span>
               <input
                 name="current_password"
                 type="password"
@@ -117,7 +114,7 @@ export function AccountSettings({
               />
             </label>
             <label>
-              <span>Type DELETE to confirm</span>
+              <span>{copy.typeDelete}</span>
               <input
                 name="confirmation"
                 pattern="DELETE"
@@ -126,7 +123,7 @@ export function AccountSettings({
               />
             </label>
             <button className="button-danger" type="submit">
-              Permanently delete account
+              {copy.permanentlyDelete}
             </button>
           </form>
         </div>

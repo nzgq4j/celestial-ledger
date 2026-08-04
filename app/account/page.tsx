@@ -5,23 +5,16 @@ import { BirthProfileList } from "@/components/BirthProfileList";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { getServerTranslationPack } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Account — Celestial Atlas",
-  robots: { index: false, follow: false, nocache: true },
-};
-
-const notices: Record<string, string> = {
-  name_updated: "Display name updated.",
-  password_updated: "Password changed successfully.",
-  invalid_name: "Use a display name between 2 and 50 characters.",
-  name_failed: "Your display name could not be updated.",
-  invalid_password: "Passwords must match and contain at least 12 characters.",
-  current_password_failed: "Your current password was not accepted.",
-  password_failed: "Your password could not be changed.",
-  delete_confirmation_failed: "Account deletion was not confirmed.",
-};
+export async function generateMetadata() {
+  const pack = await getServerTranslationPack();
+  return {
+    title: pack.messages.account.metadataTitle,
+    robots: { index: false, follow: false, nocache: true },
+  };
+}
 
 export default async function AccountPage({
   searchParams,
@@ -29,6 +22,8 @@ export default async function AccountPage({
   searchParams: Promise<{ notice?: string }>;
 }) {
   if (isDemoMode()) redirect("/auth/login");
+  const pack = await getServerTranslationPack();
+  const copy = pack.messages.account;
   const supabase = await createClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError || !authData.user) redirect("/auth/login");
@@ -79,51 +74,60 @@ export default async function AccountPage({
   const displayName =
     profile?.display_name?.trim() ||
     authData.user.email?.split("@")[0] ||
-    "Explorer";
+    copy.explorer;
+  const notices: Record<string, string> = {
+    name_updated: copy.nameUpdated,
+    password_updated: copy.passwordUpdated,
+    invalid_name: copy.invalidName,
+    name_failed: copy.nameFailed,
+    invalid_password: copy.invalidPassword,
+    current_password_failed: copy.currentPasswordFailed,
+    password_failed: copy.passwordFailed,
+    delete_confirmation_failed: copy.deleteConfirmationFailed,
+  };
   const notice = params.notice ? notices[params.notice] : undefined;
   const latestReport = reports[0];
   const nextStep = readyEntitlements.length
     ? {
-        kicker: "A reading is waiting",
-        title: "Your purchased report is ready to begin.",
-        copy: "Choose the birth chart it belongs to, then open the next chapter of your atlas.",
+        kicker: copy.waitingKicker,
+        title: copy.waitingTitle,
+        copy: copy.waitingCopy,
         href: "#reports",
-        action: "Generate my report",
+        action: copy.waitingAction,
       }
     : !birthProfiles.length
       ? {
-          kicker: "Your first constellation",
-          title: "Begin with the sky at your first breath.",
-          copy: "Create your free natal chart, then save it here as the foundation of every personal reading.",
+          kicker: copy.firstKicker,
+          title: copy.firstTitle,
+          copy: copy.firstCopy,
           href: "/#chart",
-          action: "Create my natal chart",
+          action: copy.firstAction,
         }
       : latestReport
         ? {
-            kicker: "Continue your journey",
-            title: "Return to your most recent reading.",
-            copy: "Your report remains private in this atlas, ready whenever you want to revisit its guidance.",
+            kicker: copy.continueKicker,
+            title: copy.continueTitle,
+            copy: copy.continueCopy,
             href: `/reports/${latestReport.id}`,
-            action: "Open latest report",
+            action: copy.continueAction,
           }
         : {
-            kicker: "Your chart is anchored",
-            title: "Choose the question your atlas will explore next.",
-            copy: "Step inside a sample edition, then choose the private reading that meets this moment in your life.",
+            kicker: copy.anchoredKicker,
+            title: copy.anchoredTitle,
+            copy: copy.anchoredCopy,
             href: "/samples",
-            action: "Explore sample readings",
+            action: copy.anchoredAction,
           };
 
   return (
     <main className="page-shell private-library account-dashboard">
       <header className="account-hero">
         <div className="account-hero__welcome">
-          <p className="eyebrow">My Celestial Atlas</p>
-          <h1>Welcome, {displayName}</h1>
-          <p>
-            Your private observatory for the charts you carry and the readings
-            still unfolding.
-          </p>
+          <p className="eyebrow">{copy.heroKicker}</p>
+          <h1>
+            {copy.welcome}, {displayName}
+          </h1>
+          <p>{copy.heroCopy}</p>
         </div>
         <div className="account-hero__orbit" aria-hidden="true">
           <i />
@@ -143,17 +147,17 @@ export default async function AccountPage({
         </Link>
       </section>
 
-      <div className="account-stats" aria-label="Account summary">
+      <div className="account-stats" aria-label={copy.accountSummary}>
         <span>
-          <strong>{birthProfiles.length}</strong> saved{" "}
-          {birthProfiles.length === 1 ? "chart" : "charts"}
+          <strong>{birthProfiles.length}</strong>{" "}
+          {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
         </span>
         <span>
-          <strong>{reports.length}</strong> private{" "}
-          {reports.length === 1 ? "reading" : "readings"}
+          <strong>{reports.length}</strong>{" "}
+          {reports.length === 1 ? copy.privateReading : copy.privateReadings}
         </span>
         <span>
-          <strong>{readyEntitlements.length}</strong> ready to generate
+          <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
         </span>
       </div>
 
@@ -163,10 +167,10 @@ export default async function AccountPage({
         </p>
       )}
 
-      <nav className="account-jump-links" aria-label="Account sections">
-        <a href="#reports">My readings</a>
-        <a href="#birth-profiles">My birth charts</a>
-        <a href="#account-settings">Settings</a>
+      <nav className="account-jump-links" aria-label={copy.accountSections}>
+        <a href="#reports">{copy.myReadings}</a>
+        <a href="#birth-profiles">{copy.myBirthCharts}</a>
+        <a href="#account-settings">{copy.settings}</a>
       </nav>
 
       <section
@@ -175,10 +179,12 @@ export default async function AccountPage({
       >
         <div className="dashboard-panel__heading">
           <div>
-            <p className="section-kicker">Your private library</p>
-            <h2>Readings and reports</h2>
+            <p className="section-kicker">{copy.libraryKicker}</p>
+            <h2>{copy.readingsTitle}</h2>
           </div>
-          <span className="dashboard-panel__meta">{reports.length} saved</span>
+          <span className="dashboard-panel__meta">
+            {reports.length} {copy.saved}
+          </span>
         </div>
 
         {readyEntitlements.map((entitlement) => (
@@ -186,10 +192,10 @@ export default async function AccountPage({
             <div>
               <strong>
                 {entitlement.report_type === "recovery_reflection"
-                  ? "Recovery Reflection"
-                  : "Career and Purpose"}
+                  ? copy.recoveryReflection
+                  : copy.careerPurpose}
               </strong>
-              <p>Purchased and ready to generate.</p>
+              <p>{copy.purchasedReady}</p>
             </div>
             <GenerateReportButton
               entitlementId={entitlement.id}
@@ -210,16 +216,14 @@ export default async function AccountPage({
                 <strong>{report.status}</strong>
                 <small>
                   {report.expires_at
-                    ? `Available until ${new Date(report.expires_at).toLocaleDateString("en-GB")}`
-                    : new Date(report.created_at).toLocaleDateString("en-GB")}
+                    ? `${copy.availableUntil} ${new Date(report.expires_at).toLocaleDateString(pack.tag)}`
+                    : new Date(report.created_at).toLocaleDateString(pack.tag)}
                 </small>
               </Link>
             ))}
           </div>
         ) : (
-          <p className="dashboard-empty">
-            No reports yet. Choose a report below when you are ready.
-          </p>
+          <p className="dashboard-empty">{copy.noReports}</p>
         )}
 
         <div className="compact-products">
@@ -232,11 +236,19 @@ export default async function AccountPage({
             .map((product) => (
               <article key={product.report_type}>
                 <div>
-                  <h3>{product.name}</h3>
-                  <p>{product.description}</p>
+                  <h3>
+                    {product.report_type === "recovery_reflection"
+                      ? copy.recoveryReflection
+                      : copy.careerPurpose}
+                  </h3>
+                  <p>
+                    {product.report_type === "recovery_reflection"
+                      ? copy.recoveryDescription
+                      : copy.careerDescription}
+                  </p>
                 </div>
                 <div className="compact-products__action compact-products__action--complimentary">
-                  <strong>Complimentary during preview</strong>
+                  <strong>{copy.complimentary}</strong>
                   {birthProfiles.length ? (
                     <GenerateReportButton
                       reportType={product.report_type}
@@ -247,7 +259,7 @@ export default async function AccountPage({
                     />
                   ) : (
                     <Link href="/#chart" className="button-primary">
-                      Create natal chart
+                      {copy.createNatalChart}
                     </Link>
                   )}
                 </div>
@@ -262,11 +274,11 @@ export default async function AccountPage({
       >
         <div className="dashboard-panel__heading">
           <div>
-            <p className="section-kicker">The foundation of your atlas</p>
-            <h2>Saved birth charts</h2>
+            <p className="section-kicker">{copy.foundationKicker}</p>
+            <h2>{copy.savedBirthCharts}</h2>
           </div>
           <Link href="/#chart" className="text-link">
-            Create another chart →
+            {copy.createAnotherChart}
           </Link>
         </div>
         <BirthProfileList initialProfiles={birthProfiles} />
@@ -275,6 +287,7 @@ export default async function AccountPage({
       <AccountSettings
         displayName={profile?.display_name ?? ""}
         email={authData.user.email ?? ""}
+        copy={copy}
       />
     </main>
   );

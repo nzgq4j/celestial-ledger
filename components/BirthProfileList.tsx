@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
 
 type Profile = {
   id: string;
@@ -19,10 +20,11 @@ export function BirthProfileList({
   const [profiles, setProfiles] = useState(initialProfiles);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState<string>();
+  const { locale, pack } = useLocale();
+  const copy = pack.messages.account;
 
   async function remove(id: string) {
-    if (!window.confirm("Delete this birth profile and any dependent reports?"))
-      return;
+    if (!window.confirm(copy.deleteProfileConfirm)) return;
     setError("");
     setDeleting(id);
     try {
@@ -33,7 +35,7 @@ export function BirthProfileList({
       if (!response.ok) throw new Error(payload.error);
       setProfiles((current) => current.filter((profile) => profile.id !== id));
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Deletion failed.");
+      setError(caught instanceof Error ? caught.message : copy.deletionFailed);
     } finally {
       setDeleting(undefined);
     }
@@ -44,11 +46,11 @@ export function BirthProfileList({
       <div className="birth-profile-empty">
         <span aria-hidden="true">☉</span>
         <div>
-          <strong>No birth charts saved yet</strong>
-          <p>Your first chart will become the foundation of this atlas.</p>
+          <strong>{copy.noChartsTitle}</strong>
+          <p>{copy.noChartsCopy}</p>
         </div>
         <Link href="/#chart" className="button-primary">
-          Create my chart
+          {copy.createMyChart}
         </Link>
       </div>
     );
@@ -65,16 +67,16 @@ export function BirthProfileList({
             ✦
           </span>
           <div className="birth-profile-card__body">
-            <p className="section-kicker">Natal chart</p>
+            <p className="section-kicker">{copy.natalChart}</p>
             <h3>{profile.label}</h3>
             <p>
               {profile.birth_date} ·{" "}
-              {profile.time_unknown ? "time unknown" : "time recorded"} ·{" "}
+              {profile.time_unknown ? copy.timeUnknown : copy.timeRecorded} ·{" "}
               {profile.display_name}
             </p>
             <small>
-              Held privately until{" "}
-              {new Date(profile.expires_at).toLocaleDateString()}
+              {copy.heldUntil}{" "}
+              {new Date(profile.expires_at).toLocaleDateString(locale)}
             </small>
           </div>
           <div className="birth-profile-card__actions">
@@ -82,7 +84,7 @@ export function BirthProfileList({
               href={`/account/birth-profiles/${profile.id}`}
               className="button-primary"
             >
-              Open chart
+              {copy.openChart}
             </Link>
             <button
               type="button"
@@ -90,7 +92,7 @@ export function BirthProfileList({
               disabled={deleting === profile.id}
               className="birth-profile-card__delete"
             >
-              {deleting === profile.id ? "Deleting…" : "Delete"}
+              {deleting === profile.id ? copy.deleting : copy.delete}
             </button>
           </div>
         </article>
