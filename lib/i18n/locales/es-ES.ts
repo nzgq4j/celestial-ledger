@@ -263,6 +263,12 @@ const pack = {
         "Ámbitos de la vida, disponibles cuando se conoce la hora de nacimiento.",
     },
     chartForm: {
+      accountKicker: "Tu atlas privado",
+      accountTitle: "Crea una carta para tu cuenta",
+      accountCopy:
+        "Sesión iniciada como {name}. Tu carta se guardará de forma privada en tu cuenta existente.",
+      accountSaving: "Guardando esta carta en tu cuenta…",
+      accountSaved: "Guardada de forma privada en tu cuenta.",
       kicker: "Carta astrológica gratuita",
       title: "Introduce tus datos",
       name: "Nombre",

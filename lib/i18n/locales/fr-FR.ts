@@ -269,6 +269,12 @@ const pack = {
         "Les domaines de vie, disponibles lorsque l'heure de naissance est connue.",
     },
     chartForm: {
+      accountKicker: "Votre atlas privé",
+      accountTitle: "Créez un thème pour votre compte",
+      accountCopy:
+        "Connecté en tant que {name}. Votre thème sera enregistré en privé dans votre compte existant.",
+      accountSaving: "Enregistrement de ce thème dans votre compte…",
+      accountSaved: "Enregistré en privé dans votre compte.",
       kicker: "Thème astrologique gratuit",
       title: "Saisissez vos informations",
       name: "Prénom",

@@ -265,6 +265,12 @@ const pack = {
       housesCopy: "Lebensbereiche, verfügbar bei bekannter Geburtszeit.",
     },
     chartForm: {
+      accountKicker: "Dein privater Atlas",
+      accountTitle: "Erstelle ein Horoskop für dein Konto",
+      accountCopy:
+        "Angemeldet als {name}. Dein Horoskop wird privat in deinem bestehenden Konto gespeichert.",
+      accountSaving: "Dieses Horoskop wird in deinem Konto gespeichert…",
+      accountSaved: "Privat in deinem Konto gespeichert.",
       kicker: "Kostenloses Astrologie-Horoskop",
       title: "Gib deine Daten ein",
       name: "Vorname",

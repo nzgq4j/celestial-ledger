@@ -264,6 +264,12 @@ const pack = {
       housesCopy: "Areas of life, available only when birth time is known.",
     },
     chartForm: {
+      accountKicker: "Your private atlas",
+      accountTitle: "Create a chart for your account",
+      accountCopy:
+        "Signed in as {name}. Your chart will be saved privately to your existing account.",
+      accountSaving: "Saving this chart to your account…",
+      accountSaved: "Saved privately to your account.",
       kicker: "Free astrology chart",
       title: "Enter your information",
       name: "Name",

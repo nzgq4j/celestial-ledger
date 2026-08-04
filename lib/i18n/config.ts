@@ -56,6 +56,11 @@ export type TranslationPack = {
       housesCopy: string;
     };
     chartForm: {
+      accountKicker: string;
+      accountTitle: string;
+      accountCopy: string;
+      accountSaving: string;
+      accountSaved: string;
       kicker: string;
       title: string;
       name: string;

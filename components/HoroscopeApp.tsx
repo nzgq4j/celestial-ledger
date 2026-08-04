@@ -67,7 +67,11 @@ function MeaningNote({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function HoroscopeApp() {
+export default function HoroscopeApp({
+  account,
+}: {
+  account?: { displayName: string };
+}) {
   const { pack } = useLocale();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -142,11 +146,11 @@ export default function HoroscopeApp() {
       );
     if (!place)
       return setError("Select a resolved birthplace from the search results.");
-    if (marketingConsent && (!firstName.trim() || !email.trim()))
+    if (!account && marketingConsent && (!firstName.trim() || !email.trim()))
       return setError("Add your name and email to join Celestial Atlas notes.");
     setBusy(true);
     try {
-      if (marketingConsent) {
+      if (!account && marketingConsent) {
         setSubscriptionStatus("Saving your email preference…");
         try {
           const recaptchaToken = await executeRecaptcha();
@@ -194,6 +198,7 @@ export default function HoroscopeApp() {
       if (!chartResponse.ok) throw new Error(chartPayload.error);
       const result = chartPayload.chart as NatalChart;
       setChart(result);
+      if (account) await saveChart(result);
       setInterpretationLoading(true);
       try {
         const r = await fetch("/api/interpret", {
@@ -245,8 +250,8 @@ export default function HoroscopeApp() {
     setSaveStatus("");
   }
 
-  async function saveChart() {
-    if (!chart) return;
+  async function saveChart(chartToSave = chart) {
+    if (!chartToSave) return;
     setSaving(true);
     setSaveStatus("");
     try {
@@ -255,7 +260,7 @@ export default function HoroscopeApp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           label: "My birth chart",
-          birthInput: chart.input,
+          birthInput: chartToSave.input,
         }),
       });
       const payload = await response.json();
@@ -264,7 +269,11 @@ export default function HoroscopeApp() {
         return;
       }
       if (!response.ok) throw new Error(payload.error);
-      setSaveStatus("Saved privately. You can manage it from your account.");
+      setSaveStatus(
+        account
+          ? pack.messages.chartForm.accountSaved
+          : "Saved privately. You can manage it from your account.",
+      );
     } catch (caught) {
       setSaveStatus(
         caught instanceof Error
@@ -362,40 +371,58 @@ export default function HoroscopeApp() {
           </dl>
         </section>
         <section className="panel p-5 md:p-7" aria-labelledby="birth-heading">
-          <p className="section-kicker">{pack.messages.chartForm.kicker}</p>
+          <p className="section-kicker">
+            {account
+              ? pack.messages.chartForm.accountKicker
+              : pack.messages.chartForm.kicker}
+          </p>
           <h2 id="birth-heading" className="text-xl gold font-semibold">
-            {pack.messages.chartForm.title}
+            {account
+              ? pack.messages.chartForm.accountTitle
+              : pack.messages.chartForm.title}
           </h2>
+          {account && (
+            <p className="mt-3 text-[#b9b2a3]">
+              {pack.messages.chartForm.accountCopy.replace(
+                "{name}",
+                account.displayName,
+              )}
+            </p>
+          )}
           <div className="grid md:grid-cols-2 gap-5 mt-5">
-            <div>
-              <label className="label" htmlFor="first-name">
-                {pack.messages.chartForm.name}
-              </label>
-              <input
-                id="first-name"
-                className="input"
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
-                autoComplete="given-name"
-                maxLength={80}
-                placeholder={pack.messages.chartForm.namePlaceholder}
-              />
-            </div>
-            <div>
-              <label className="label" htmlFor="marketing-email">
-                {pack.messages.chartForm.email}
-              </label>
-              <input
-                id="marketing-email"
-                className="input"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                autoComplete="email"
-                maxLength={254}
-                placeholder="you@example.com"
-              />
-            </div>
+            {!account && (
+              <>
+                <div>
+                  <label className="label" htmlFor="first-name">
+                    {pack.messages.chartForm.name}
+                  </label>
+                  <input
+                    id="first-name"
+                    className="input"
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    autoComplete="given-name"
+                    maxLength={80}
+                    placeholder={pack.messages.chartForm.namePlaceholder}
+                  />
+                </div>
+                <div>
+                  <label className="label" htmlFor="marketing-email">
+                    {pack.messages.chartForm.email}
+                  </label>
+                  <input
+                    id="marketing-email"
+                    className="input"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    autoComplete="email"
+                    maxLength={254}
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </>
+            )}
             <div>
               <label className="label" htmlFor="birth-date">
                 {pack.messages.chartForm.birthDate}
@@ -525,21 +552,27 @@ export default function HoroscopeApp() {
               </label>
             </div>
           )}
-          <label className="marketing-consent">
-            <input
-              type="checkbox"
-              checked={marketingConsent}
-              onChange={(event) => setMarketingConsent(event.target.checked)}
-            />
-            <span>
-              Email me occasional Celestial Atlas notes and product updates. I
-              can unsubscribe at any time.
-            </span>
-          </label>
-          {subscriptionStatus && (
-            <p className="marketing-status" role="status">
-              {subscriptionStatus}
-            </p>
+          {!account && (
+            <>
+              <label className="marketing-consent">
+                <input
+                  type="checkbox"
+                  checked={marketingConsent}
+                  onChange={(event) =>
+                    setMarketingConsent(event.target.checked)
+                  }
+                />
+                <span>
+                  Email me occasional Celestial Atlas notes and product updates.
+                  I can unsubscribe at any time.
+                </span>
+              </label>
+              {subscriptionStatus && (
+                <p className="marketing-status" role="status">
+                  {subscriptionStatus}
+                </p>
+              )}
+            </>
           )}
           {error && (
             <div
@@ -626,14 +659,21 @@ export default function HoroscopeApp() {
                 celestial patterns belong to your natal map.
               </MeaningNote>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={saveChart}
-                  disabled={saving}
-                  className="rounded-lg border border-[#536177] px-4 py-2"
-                >
-                  {saving ? "Saving…" : "Save privately"}
-                </button>
+                {account && saving && (
+                  <p role="status" className="text-sm text-[#d7bd7b]">
+                    {pack.messages.chartForm.accountSaving}
+                  </p>
+                )}
+                {!account && (
+                  <button
+                    type="button"
+                    onClick={() => saveChart()}
+                    disabled={saving}
+                    className="rounded-lg border border-[#536177] px-4 py-2"
+                  >
+                    {saving ? "Saving…" : "Save privately"}
+                  </button>
+                )}
                 {saveStatus && (
                   <p role="status" className="text-sm text-[#d7bd7b]">
                     {saveStatus}
@@ -641,20 +681,22 @@ export default function HoroscopeApp() {
                 )}
               </div>
             </section>
-            <aside className="chart-account-cta">
-              <div>
-                <p className="section-kicker">Keep your atlas</p>
-                <h2>Save this chart to a private account</h2>
-                <p>
-                  Create a verified account to keep your natal chart, manage
-                  private reports, and return without entering your birth data
-                  again.
-                </p>
-              </div>
-              <Link href="/auth/login" className="button-primary">
-                Create my account
-              </Link>
-            </aside>
+            {!account && (
+              <aside className="chart-account-cta">
+                <div>
+                  <p className="section-kicker">Keep your atlas</p>
+                  <h2>Save this chart to a private account</h2>
+                  <p>
+                    Create a verified account to keep your natal chart, manage
+                    private reports, and return without entering your birth data
+                    again.
+                  </p>
+                </div>
+                <Link href="/auth/login" className="button-primary">
+                  Create my account
+                </Link>
+              </aside>
+            )}
             <section className="panel p-5">
               <h2 className="text-xl gold mb-3">Planetary placements</h2>
               <MeaningNote>
