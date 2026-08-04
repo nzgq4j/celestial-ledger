@@ -159,6 +159,14 @@ const pack = {
       printReport: "Drucken",
       deleteReport: "Löschen",
       deleteReportConfirm: "Diesen privaten Bericht dauerhaft löschen?",
+      deleteReportKicker: "Aus deinem Atlas entfernen",
+      deleteReportTitle: "Diesen privaten Bericht löschen?",
+      deleteReportDescription:
+        "Der Bericht und seine Horoskopbelege werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+      deleteReportCheckbox:
+        "Ich verstehe, dass dieser Bericht dauerhaft gelöscht wird.",
+      confirmDeleteReport: "Bericht dauerhaft löschen",
+      cancel: "Abbrechen",
       deletingReport: "Wird gelöscht…",
       retryReport: "Erneut versuchen",
       restarting: "Neustart…",
@@ -175,6 +183,57 @@ const pack = {
       invalidReportLocale: "Wähle eine unterstützte Berichtssprache.",
       reportLocaleFailed:
         "Deine Berichtssprache konnte nicht aktualisiert werden.",
+      returnToLibrary: "Zur Bibliothek zurückkehren",
+      reportUnavailable: "Bericht nicht verfügbar",
+      recoveryPrivateEdition: "Recovery-Reflexion · private Ausgabe",
+      careerPrivateEdition: "Beruf und Bestimmung · private Ausgabe",
+      unknownTimeEvidence:
+        "Die Geburtszeit ist unbekannt; Häuser, Achsen und Aussagen, die eine genaue Zeit voraussetzen, sind ausgeschlossen.",
+      questionsToCarry: "Fragen zum Weitertragen",
+      evidenceForSection: "Horoskopbelege für diesen Abschnitt",
+      evidenceConstellation: "Konstellation der Belege",
+      chartFactorsUsed: "Verwendete Horoskopfaktoren",
+      evidenceKind_placement: "Stellung",
+      evidenceKind_angle: "Achse",
+      evidenceKind_house: "Haus",
+      evidenceKind_aspect: "Aspekt",
+      privateReport: "Privater Bericht",
+      reportDraftFailed: "Der erste Entwurf konnte nicht abgeschlossen werden",
+      reportTakingShape: "Deine Deutung nimmt Gestalt an",
+      preparingChartEvidence: "Deine Horoskopbelege werden vorbereitet",
+      writingReflection: "Deine Deutung wird geschrieben und geprüft",
+      preparingNatalEvidence:
+        "Deine Geburtskonstellationen und ausgewählten Themen werden vorbereitet…",
+      checkingChartReferences:
+        "Deine Deutung wird geschrieben und jede Horoskopreferenz geprüft…",
+      canLeaveReportPage:
+        "Du kannst diese Seite verlassen; dein privater Bericht nimmt weiter Gestalt an.",
+      reportEvidenceFailed:
+        "Der Entwurf hat die Prüfung der Horoskopbelege nicht bestanden. Es wurde kein Bericht gespeichert.",
+      tryGenerationAgain: "Erstellung erneut versuchen",
+    },
+    horoscopes: {
+      almanac: "Täglicher Himmelsalmanach",
+      title: "Tageshoroskope",
+      introduction:
+        "Wähle dein Sonnenzeichen für eine ausführliche Deutung der heutigen Themen, Beziehungen, Arbeit, des Wohlbefindens, der Chancen, Hinweise und des berechneten Himmels dahinter.",
+      todaysSky: "Der heutige Himmel",
+      twelveHoroscopes: "Zwölf Tageshoroskope",
+      opportunity: "Chance",
+      reflection: "Reflexion",
+      readFull: "Das vollständige Horoskop lesen für",
+      allHoroscopes: "Alle Tageshoroskope",
+      sunSignReading: "Deutung des Sonnenzeichens",
+      dailyHoroscope: "Tageshoroskop",
+      relationships: "Beziehungen und Verbindung",
+      work: "Arbeit, Bestimmung und praktische Bewegung",
+      wellbeing: "Rhythmus des Wohlbefindens",
+      watchFor: "Achte auf",
+      questionForDay: "Frage des Tages",
+      whyReading: "Grundlage dieser Deutung",
+      celestialEvidence: "Die heutigen Himmelsbelege",
+      calculationNote:
+        "Berechnet für 12:00 UTC mit Astronomy Engine und durch ein tropisches Ganzzeichen-Sonnenhoroskop gedeutet.",
     },
     home: {
       eyebrow: "Der Himmel im Augenblick deiner Ankunft",

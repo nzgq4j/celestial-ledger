@@ -161,6 +161,14 @@ const pack = {
       printReport: "Imprimer",
       deleteReport: "Supprimer",
       deleteReportConfirm: "Supprimer définitivement ce rapport privé ?",
+      deleteReportKicker: "Retirer de votre atlas",
+      deleteReportTitle: "Supprimer ce rapport privé ?",
+      deleteReportDescription:
+        "Le rapport et les éléments de son thème seront définitivement supprimés. Cette action est irréversible.",
+      deleteReportCheckbox:
+        "Je comprends que ce rapport sera définitivement supprimé.",
+      confirmDeleteReport: "Supprimer définitivement le rapport",
+      cancel: "Annuler",
       deletingReport: "Suppression…",
       retryReport: "Réessayer",
       restarting: "Redémarrage…",
@@ -177,6 +185,57 @@ const pack = {
       invalidReportLocale: "Choisissez une langue prise en charge.",
       reportLocaleFailed:
         "La langue de vos rapports n’a pas pu être mise à jour.",
+      returnToLibrary: "Retour à la bibliothèque",
+      reportUnavailable: "Rapport indisponible",
+      recoveryPrivateEdition: "Réflexion de rétablissement · édition privée",
+      careerPrivateEdition: "Carrière et vocation · édition privée",
+      unknownTimeEvidence:
+        "L’heure de naissance est inconnue ; les maisons, les angles et les interprétations dépendant d’une heure précise sont exclus.",
+      questionsToCarry: "Questions à emporter",
+      evidenceForSection: "Éléments astrologiques de cette section",
+      evidenceConstellation: "Constellation d’éléments",
+      chartFactorsUsed: "Facteurs du thème utilisés",
+      evidenceKind_placement: "position",
+      evidenceKind_angle: "angle",
+      evidenceKind_house: "maison",
+      evidenceKind_aspect: "aspect",
+      privateReport: "Rapport privé",
+      reportDraftFailed: "Le premier texte n’a pas pu être achevé",
+      reportTakingShape: "Votre lecture prend forme",
+      preparingChartEvidence: "Préparation des éléments de votre thème",
+      writingReflection: "Rédaction et vérification de votre lecture",
+      preparingNatalEvidence:
+        "Préparation de vos éléments natals et des thèmes choisis…",
+      checkingChartReferences:
+        "Rédaction de votre lecture et vérification de chaque référence au thème…",
+      canLeaveReportPage:
+        "Vous pouvez quitter cette page ; votre rapport privé continuera à prendre forme.",
+      reportEvidenceFailed:
+        "Le texte n’a pas réussi la vérification des éléments du thème. Aucun rapport n’a été enregistré.",
+      tryGenerationAgain: "Relancer la génération",
+    },
+    horoscopes: {
+      almanac: "Almanach céleste du jour",
+      title: "Horoscopes du jour",
+      introduction:
+        "Choisissez votre signe solaire pour une lecture détaillée des thèmes du jour, des relations, du travail, du bien-être, des occasions, des points de vigilance et du ciel calculé qui les sous-tend.",
+      todaysSky: "Le ciel du jour",
+      twelveHoroscopes: "Douze horoscopes du jour",
+      opportunity: "Occasion",
+      reflection: "Réflexion",
+      readFull: "Lire l’horoscope complet pour",
+      allHoroscopes: "Tous les horoscopes du jour",
+      sunSignReading: "Lecture du signe solaire",
+      dailyHoroscope: "horoscope du jour",
+      relationships: "Relations et liens",
+      work: "Travail, vocation et mouvement concret",
+      wellbeing: "Rythme de bien-être",
+      watchFor: "Point de vigilance",
+      questionForDay: "Question du jour",
+      whyReading: "Les fondements de cette lecture",
+      celestialEvidence: "Les éléments célestes du jour",
+      calculationNote:
+        "Calculé pour 12 h 00 UTC avec Astronomy Engine et interprété selon une carte solaire tropicale en signes entiers.",
     },
     home: {
       eyebrow: "Le ciel au moment de votre arrivée",

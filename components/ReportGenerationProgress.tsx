@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/components/LocaleProvider";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 
@@ -15,6 +16,8 @@ export function ReportGenerationProgress({
   const router = useRouter();
   const [status, setStatus] = useState(initialStatus);
   const [retrying, setRetrying] = useState(false);
+  const { pack } = useLocale();
+  const copy = pack.messages.account;
 
   useEffect(() => {
     if (status === "completed" || status === "failed") return;
@@ -47,11 +50,11 @@ export function ReportGenerationProgress({
           ✦
         </span>
         <div>
-          <p className="eyebrow">Private report</p>
+          <p className="eyebrow">{copy.privateReport}</p>
           <h1>
             {status === "failed"
-              ? "The first draft could not be completed"
-              : "Your reflection is taking shape"}
+              ? copy.reportDraftFailed
+              : copy.reportTakingShape}
           </h1>
         </div>
       </div>
@@ -60,39 +63,33 @@ export function ReportGenerationProgress({
           <div
             className={`generation-progress__track generation-progress__track--${status}`}
             role="progressbar"
-            aria-label="Report generation progress"
+            aria-label={copy.reportProgress}
             aria-valuetext={
               status === "queued"
-                ? "Preparing your chart evidence"
-                : "Writing and verifying your reflection"
+                ? copy.preparingChartEvidence
+                : copy.writingReflection
             }
           >
             <i />
           </div>
           <p className="report-status-copy">
             {status === "queued"
-              ? "Preparing your natal evidence and selected themes…"
-              : "Writing your reflection and checking every chart reference…"}
+              ? copy.preparingNatalEvidence
+              : copy.checkingChartReferences}
           </p>
-          <small>
-            You can leave this page; your private report will continue
-            unfolding.
-          </small>
+          <small>{copy.canLeaveReportPage}</small>
         </>
       )}
       {status === "failed" && (
         <div className="generation-progress__recovery">
-          <p>
-            The draft did not pass its chart-evidence check. No report was
-            saved.
-          </p>
+          <p>{copy.reportEvidenceFailed}</p>
           <button
             className="button-primary"
             type="button"
             onClick={retry}
             disabled={retrying}
           >
-            {retrying ? "Restarting…" : "Try generation again"}
+            {retrying ? copy.restarting : copy.tryGenerationAgain}
           </button>
         </div>
       )}

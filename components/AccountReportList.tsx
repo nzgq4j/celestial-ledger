@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
+import { ReportDeleteModal } from "@/components/ReportDeleteModal";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 type LibraryReport = {
@@ -34,6 +35,7 @@ export function AccountReportList({
   );
   const [busyId, setBusyId] = useState<string>();
   const [progressPhase, setProgressPhase] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState<string>();
   const { locale, pack } = useLocale();
   const router = useRouter();
   const copy = pack.messages.account;
@@ -107,13 +109,13 @@ export function AccountReportList({
   }
 
   async function remove(id: string) {
-    if (!window.confirm(copy.deleteReportConfirm)) return;
     setBusyId(id);
     const response = await fetch(`/api/reports/${id}`, { method: "DELETE" });
     if (response.ok)
       setReports((current) => current.filter((report) => report.id !== id));
     if (response.ok) router.refresh();
     setBusyId(undefined);
+    if (response.ok) setDeleteTarget(undefined);
   }
 
   const labels: Record<ReportStatus, string> = {
@@ -201,7 +203,7 @@ export function AccountReportList({
               <button
                 className="report-action report-action--danger report-delete-action"
                 type="button"
-                onClick={() => void remove(report.id)}
+                onClick={() => setDeleteTarget(report.id)}
                 disabled={busyId === report.id}
               >
                 {busyId === report.id ? copy.deletingReport : copy.deleteReport}
@@ -210,6 +212,12 @@ export function AccountReportList({
           </article>
         );
       })}
+      <ReportDeleteModal
+        open={Boolean(deleteTarget)}
+        busy={Boolean(deleteTarget && busyId === deleteTarget)}
+        onCancel={() => setDeleteTarget(undefined)}
+        onConfirm={() => deleteTarget && void remove(deleteTarget)}
+      />
     </div>
   );
 }

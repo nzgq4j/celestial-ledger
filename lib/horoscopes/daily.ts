@@ -2,6 +2,9 @@ import { detectAspects } from "@/lib/aspects";
 import { geocentricLongitude, longitudeSpeed } from "@/lib/astronomy";
 import type { Aspect, Placement, PlanetName } from "@/lib/types";
 import { longitudeToZodiac, SIGNS } from "@/lib/zodiac";
+import { defaultLocale, type LocaleTag } from "@/lib/i18n/config";
+import { dailyCopy, localizedAspectPhrase } from "@/lib/horoscopes/copy";
+import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 
 export const zodiacSlugs = SIGNS.map((sign) => sign.toLowerCase());
 
@@ -45,42 +48,6 @@ const rulers: Record<string, PlanetName> = {
   Aquarius: "Saturn",
   Pisces: "Jupiter",
 };
-const houseTopics = [
-  "identity and fresh starts",
-  "resources and self-worth",
-  "conversation and daily movement",
-  "home and belonging",
-  "creativity and pleasure",
-  "routines and useful work",
-  "partnership and reciprocity",
-  "trust and shared resources",
-  "learning and wider horizons",
-  "career and public direction",
-  "friends and future plans",
-  "rest and inner renewal",
-] as const;
-const elementGuidance: Record<string, string> = {
-  fire: "Give inspiration a practical next step before its heat disperses.",
-  earth: "Let steady progress count; refinement is more useful than urgency.",
-  air: "Name the idea clearly, then notice which conversation gives it life.",
-  water:
-    "Treat sensitivity as information and choose where it deserves your attention.",
-};
-const elements = [
-  "fire",
-  "earth",
-  "air",
-  "water",
-  "fire",
-  "earth",
-  "air",
-  "water",
-  "fire",
-  "earth",
-  "air",
-  "water",
-] as const;
-
 function placement(name: PlanetName, date: Date): Placement {
   const longitude = geocentricLongitude(name, date);
   const zodiac = longitudeToZodiac(longitude);
@@ -102,16 +69,6 @@ function wholeSignHouse(transitSign: string, natalSignIndex: number) {
       12) +
     1
   );
-}
-
-function aspectPhrase(aspect: Aspect) {
-  const tone =
-    aspect.type === "Trine" || aspect.type === "Sextile"
-      ? "opens an easier exchange"
-      : aspect.type === "Conjunction"
-        ? "concentrates attention"
-        : "creates a productive tension";
-  return `${aspect.body1} ${aspect.type.toLowerCase()} ${aspect.body2} ${tone} between their two drives`;
 }
 
 export type DailyHoroscope = {
@@ -139,7 +96,11 @@ export type DailySky = {
   horoscopes: DailyHoroscope[];
 };
 
-export function dailySkyFor(dateInput = new Date()): DailySky {
+export function dailySkyFor(
+  dateInput = new Date(),
+  locale: LocaleTag = defaultLocale,
+): DailySky {
+  const copy = dailyCopy(locale);
   const dateKey = dateInput.toISOString().slice(0, 10);
   const date = new Date(`${dateKey}T12:00:00.000Z`);
   const placements = bodies.map((body) => placement(body, date));
@@ -148,7 +109,7 @@ export function dailySkyFor(dateInput = new Date()): DailySky {
     .slice(0, 8);
   const moon = placements.find((item) => item.name === "Moon")!;
   const sun = placements.find((item) => item.name === "Sun")!;
-  const displayDate = new Intl.DateTimeFormat("en-GB", {
+  const displayDate = new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -164,37 +125,88 @@ export function dailySkyFor(dateInput = new Date()): DailySky {
     const moonHouse = wholeSignHouse(moon.sign, signIndex);
     const sunHouse = wholeSignHouse(sun.sign, signIndex);
     const rulerHouse = wholeSignHouse(rulerPlacement.sign, signIndex);
-    const theme = `${houseTopics[moonHouse - 1][0].toUpperCase()}${houseTopics[moonHouse - 1].slice(1)}`;
+    const moonTopic = copy.topics[moonHouse - 1];
+    const sunTopic = copy.topics[sunHouse - 1];
+    const rulerTopic = copy.topics[rulerHouse - 1];
+    const localizedRuler = localizeAstroTerm(ruler, locale) as PlanetName;
+    const localizedRulerSign = localizeAstroTerm(rulerPlacement.sign, locale);
+    const context = {
+      moonTopic,
+      sunTopic,
+      rulerTopic,
+      ruler: localizedRuler,
+      rulerSign: localizedRulerSign,
+      retrograde: rulerPlacement.retrograde,
+      aspect: keyAspect,
+    };
+    const theme = `${moonTopic[0].toUpperCase()}${moonTopic.slice(1)}`;
+    const moonSign = localizeAstroTerm(moon.sign, locale);
+    const sunSign = localizeAstroTerm(sun.sign, locale);
+    const ordinal =
+      locale === "en-GB"
+        ? `${moonHouse}${moonHouse === 1 ? "st" : moonHouse === 2 ? "nd" : moonHouse === 3 ? "rd" : "th"}`
+        : String(moonHouse);
     const evidence = [
-      `Moon at ${moon.degree}° ${moon.minute}′ ${moon.sign} activates your ${moonHouse}${moonHouse === 1 ? "st" : moonHouse === 2 ? "nd" : moonHouse === 3 ? "rd" : "th"} whole-sign house.`,
-      `Sun at ${sun.degree}° ${sun.minute}′ ${sun.sign} illuminates ${houseTopics[sunHouse - 1]}.`,
-      `${ruler} in ${rulerPlacement.sign}${rulerPlacement.retrograde ? " retrograde" : ""} places your sign ruler in the field of ${houseTopics[rulerHouse - 1]}.`,
+      locale === "es-ES"
+        ? `La Luna a ${moon.degree}° ${moon.minute}′ de ${moonSign} activa tu casa ${ordinal} de signo completo.`
+        : locale === "fr-FR"
+          ? `La Lune à ${moon.degree}° ${moon.minute}′ en ${moonSign} active votre maison ${ordinal} en signes entiers.`
+          : locale === "de-DE"
+            ? `Der Mond auf ${moon.degree}° ${moon.minute}′ ${moonSign} aktiviert dein ${ordinal}. Ganzzeichenhaus.`
+            : `Moon at ${moon.degree}° ${moon.minute}′ ${moonSign} activates your ${ordinal} whole-sign house.`,
+      locale === "es-ES"
+        ? `El Sol a ${sun.degree}° ${sun.minute}′ de ${sunSign} ilumina ${sunTopic}.`
+        : locale === "fr-FR"
+          ? `Le Soleil à ${sun.degree}° ${sun.minute}′ en ${sunSign} éclaire ${sunTopic}.`
+          : locale === "de-DE"
+            ? `Die Sonne auf ${sun.degree}° ${sun.minute}′ ${sunSign} beleuchtet ${sunTopic}.`
+            : `Sun at ${sun.degree}° ${sun.minute}′ ${sunSign} illuminates ${sunTopic}.`,
+      locale === "es-ES"
+        ? `${localizedRuler} en ${localizedRulerSign}${rulerPlacement.retrograde ? " retrógrado" : ""} sitúa al regente de tu signo en el ámbito de ${rulerTopic}.`
+        : locale === "fr-FR"
+          ? `${localizedRuler} en ${localizedRulerSign}${rulerPlacement.retrograde ? " rétrograde" : ""} place le maître de votre signe dans le domaine de ${rulerTopic}.`
+          : locale === "de-DE"
+            ? `${localizedRuler} in ${localizedRulerSign}${rulerPlacement.retrograde ? " rückläufig" : ""} stellt deinen Zeichenherrscher in das Feld für ${rulerTopic}.`
+            : `${localizedRuler} in ${localizedRulerSign}${rulerPlacement.retrograde ? " retrograde" : ""} places your sign ruler in the field of ${rulerTopic}.`,
       keyAspect
-        ? `${keyAspect.body1} ${keyAspect.type.toLowerCase()} ${keyAspect.body2}, orb ${keyAspect.orb.toFixed(1)}°.`
-        : "No tight major aspect dominates the daily snapshot.",
+        ? `${localizeAstroTerm(keyAspect.body1, locale)} ${localizeAstroTerm(keyAspect.type, locale).toLowerCase()} ${localizeAstroTerm(keyAspect.body2, locale)}, ${locale === "de-DE" ? "Orbis" : "orb"} ${keyAspect.orb.toFixed(1)}°.`
+        : locale === "es-ES"
+          ? "Ningún aspecto mayor estrecho domina la instantánea diaria."
+          : locale === "fr-FR"
+            ? "Aucun aspect majeur serré ne domine le ciel du jour."
+            : locale === "de-DE"
+              ? "Kein enger Hauptaspekt bestimmt die heutige Momentaufnahme."
+              : "No tight major aspect dominates the daily snapshot.",
     ];
     return {
-      sign,
+      sign: localizeAstroTerm(sign, locale),
       slug: sign.toLowerCase(),
       glyph: glyphs[signIndex],
       date: dateKey,
       displayDate,
       theme,
-      overview: `The Moon moves through your field of ${houseTopics[moonHouse - 1]}, making this a day to notice what asks for an immediate emotional response. Meanwhile, the Sun keeps the longer arc centred on ${houseTopics[sunHouse - 1]}. ${elementGuidance[elements[signIndex]]}`,
-      relationships: `In connection, listen for the need beneath the first reaction. ${ruler} in ${rulerPlacement.sign} favours ${rulerPlacement.retrograde ? "reviewing an old pattern before making a promise" : "clear signals and choices that match your present values"}.`,
-      work: `Direct practical effort toward ${houseTopics[rulerHouse - 1]}. ${keyAspect ? `${aspectPhrase(keyAspect)}, so use that contrast to improve the plan rather than forcing a quick conclusion.` : "A simple sequence and one completed task will create useful momentum."}`,
-      wellbeing: `Protect enough quiet to distinguish your own rhythm from the atmosphere around you. Small rituals connected with ${houseTopics[moonHouse - 1]} can restore steadiness today.`,
-      opportunity: `Make one visible choice that supports ${houseTopics[sunHouse - 1]}; consistency will carry more weight than spectacle.`,
-      caution: `Do not treat a passing mood as a final verdict, especially around ${houseTopics[moonHouse - 1]}.`,
-      question: `What would a more intentional relationship with ${houseTopics[moonHouse - 1]} look like today?`,
+      overview: copy.overview(context, copy.elements[signIndex % 4]),
+      relationships: copy.relationships(context),
+      work: copy.work(
+        context,
+        keyAspect ? localizedAspectPhrase(keyAspect, locale) : "",
+      ),
+      wellbeing: copy.wellbeing(context),
+      opportunity: copy.opportunity(context),
+      caution: copy.caution(context),
+      question: copy.question(context),
       evidence,
     };
   });
   return { date: dateKey, displayDate, placements, aspects, horoscopes };
 }
 
-export function horoscopeForSlug(slug: string, date = new Date()) {
-  return dailySkyFor(date).horoscopes.find(
+export function horoscopeForSlug(
+  slug: string,
+  date = new Date(),
+  locale: LocaleTag = defaultLocale,
+) {
+  return dailySkyFor(date, locale).horoscopes.find(
     (item) => item.slug === slug.toLowerCase(),
   );
 }

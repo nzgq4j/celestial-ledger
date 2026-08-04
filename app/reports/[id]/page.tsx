@@ -10,6 +10,8 @@ import {
 import { recoveryReportSchema } from "@/lib/reports/recovery";
 import { ReportGenerationProgress } from "@/components/ReportGenerationProgress";
 import { ReportViewerActions } from "@/components/ReportViewerActions";
+import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
+import { localizeEvidenceLabel } from "@/lib/reports/evidence-label";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -44,6 +46,11 @@ export default async function ReportPage({
       .maybeSingle(),
   ]);
   if (!report) notFound();
+  const reportLocale = isLocaleTag(report.locale)
+    ? report.locale
+    : defaultLocale;
+  const reportPack = await localeRegistry[reportLocale].load();
+  const copy = reportPack.messages.account;
   if (report.status === "queued")
     after(async () => {
       const result = await runNextReportJob();
@@ -64,7 +71,7 @@ export default async function ReportPage({
           initialStatus={report.status as "queued" | "generating" | "failed"}
         />
         <Link className="button-quiet" href="/account">
-          Return to library
+          {copy.returnToLibrary}
         </Link>
       </main>
     );
@@ -77,24 +84,22 @@ export default async function ReportPage({
   if (!output.success || !evidence)
     return (
       <main className="page-shell">
-        <h1>Report unavailable</h1>
+        <h1>{copy.reportUnavailable}</h1>
       </main>
     );
   const evidenceById = new Map(evidence.items.map((item) => [item.id, item]));
   const autoPrint = (await searchParams).print === "1";
   return (
-    <main className="page-shell private-report" lang={report.locale}>
+    <main className="page-shell private-report" lang={reportLocale}>
       <ReportViewerActions reportId={report.id} autoPrint={autoPrint} />
       <header className="report-viewer-heading">
         <p className="eyebrow">
-          {isRecovery
-            ? "Recovery Reflection · private edition"
-            : "Career and Purpose · private edition"}
+          {isRecovery ? copy.recoveryPrivateEdition : copy.careerPrivateEdition}
         </p>
         <h1>{output.data.title}</h1>
         <p>{output.data.introduction}</p>
         {evidence.uncertainty.map((note) => (
-          <aside key={note}>{note}</aside>
+          <aside key={note}>{copy.unknownTimeEvidence}</aside>
         ))}
       </header>
       <div className="report-viewer-grid">
@@ -105,7 +110,7 @@ export default async function ReportPage({
               <p>{section.narrative}</p>
               {!!section.reflectionQuestions.length && (
                 <div className="reflection-prompts">
-                  <h3>Questions to carry forward</h3>
+                  <h3>{copy.questionsToCarry}</h3>
                   <ul>
                     {section.reflectionQuestions.map((question) => (
                       <li key={question}>{question}</li>
@@ -114,12 +119,16 @@ export default async function ReportPage({
                 </div>
               )}
               <details>
-                <summary>Evidence for this section</summary>
+                <summary>{copy.evidenceForSection}</summary>
                 <ul>
                   {section.evidenceIds.map((evidenceId) => (
                     <li key={evidenceId}>
                       <code>{evidenceId}</code> —{" "}
-                      {evidenceById.get(evidenceId)?.label}
+                      {evidenceById.get(evidenceId) &&
+                        localizeEvidenceLabel(
+                          evidenceById.get(evidenceId)!,
+                          reportLocale,
+                        )}
                     </li>
                   ))}
                 </ul>
@@ -134,8 +143,8 @@ export default async function ReportPage({
           </footer>
         </article>
         <aside className="evidence-map">
-          <p className="section-kicker">Evidence constellation</p>
-          <h2>Chart factors used</h2>
+          <p className="section-kicker">{copy.evidenceConstellation}</p>
+          <h2>{copy.chartFactorsUsed}</h2>
           {evidence.items
             .filter((item) =>
               output.data.sections.some((section) =>
@@ -147,8 +156,8 @@ export default async function ReportPage({
                 key={item.id}
                 className={`evidence-node evidence-node--${item.kind}`}
               >
-                <span>{item.kind}</span>
-                <strong>{item.label}</strong>
+                <span>{copy[`evidenceKind_${item.kind}`]}</span>
+                <strong>{localizeEvidenceLabel(item, reportLocale)}</strong>
                 <code>{item.id}</code>
               </div>
             ))}

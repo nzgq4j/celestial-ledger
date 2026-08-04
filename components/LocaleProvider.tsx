@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   defaultLocale,
   isLocaleTag,
@@ -9,6 +16,7 @@ import {
   type TranslationPack,
 } from "@/lib/i18n/config";
 import englishPack from "@/lib/i18n/locales/en-GB";
+import { useRouter } from "next/navigation";
 
 const localeStorageKey = "celestial-atlas-locale";
 
@@ -21,25 +29,33 @@ type LocaleContextValue = {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [locale, setLocale] = useState<LocaleTag>(defaultLocale);
   const [pack, setPack] = useState<TranslationPack>(englishPack);
 
-  async function selectLocale(tag: LocaleTag) {
-    const nextPack = await localeRegistry[tag].load();
-    setLocale(tag);
-    setPack(nextPack);
-    localStorage.setItem(localeStorageKey, tag);
-    document.cookie = `${localeStorageKey}=${encodeURIComponent(tag)}; Path=/; Max-Age=31536000; SameSite=Lax`;
-    document.documentElement.lang = tag;
-    document.documentElement.dir = nextPack.direction;
-  }
+  const selectLocale = useCallback(
+    async (tag: LocaleTag) => {
+      const nextPack = await localeRegistry[tag].load();
+      setLocale(tag);
+      setPack(nextPack);
+      localStorage.setItem(localeStorageKey, tag);
+      document.cookie = `${localeStorageKey}=${encodeURIComponent(tag)}; Path=/; Max-Age=31536000; SameSite=Lax`;
+      document.documentElement.lang = tag;
+      document.documentElement.dir = nextPack.direction;
+      router.refresh();
+    },
+    [router],
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem(localeStorageKey);
     if (stored && isLocaleTag(stored)) void selectLocale(stored);
-  }, []);
+  }, [selectLocale]);
 
-  const value = useMemo(() => ({ locale, pack, selectLocale }), [locale, pack]);
+  const value = useMemo(
+    () => ({ locale, pack, selectLocale }),
+    [locale, pack, selectLocale],
+  );
   return (
     <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
   );

@@ -28,4 +28,20 @@ describe("daily horoscopes", () => {
       horoscopeForSlug("ophiuchus", new Date("2026-08-03T09:00:00.000Z")),
     ).toBeUndefined();
   });
+
+  it("localizes every reader-facing horoscope field", () => {
+    const spanish = dailySkyFor(new Date("2026-08-03T09:00:00.000Z"), "es-ES");
+    const aries = spanish.horoscopes[0];
+    expect(aries.sign).toBe("Aries");
+    expect(aries.overview).toMatch(/^La Luna/);
+    expect(aries.relationships).toMatch(/^En tus vínculos/);
+    expect(aries.work).toMatch(/^Dirige/);
+    expect(aries.wellbeing).toMatch(/^Protege/);
+    expect(aries.opportunity).toMatch(/^Haz/);
+    expect(aries.caution).toMatch(/^No conviertas/);
+    expect(aries.question).toMatch(/^¿/);
+    expect(aries.evidence.every((line) => !line.startsWith("Moon at"))).toBe(
+      true,
+    );
+  });
 });

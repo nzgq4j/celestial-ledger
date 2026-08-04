@@ -8,5 +8,5 @@ const reportLanguageNames: Record<LocaleTag, string> = {
 };
 
 export function reportLanguageInstruction(locale: LocaleTag) {
-  return `- Write every reader-facing field in ${reportLanguageNames[locale]} (${locale}). Preserve supplied evidence IDs exactly, without translating or altering them.`;
+  return `- Write every reader-facing field in ${reportLanguageNames[locale]} (${locale}), including the report title, introduction, every section title and narrative, every reflection question, the closing, and the disclaimer when present. Do not leave headings or explanatory prose in English. Preserve supplied evidence IDs exactly, without translating or altering them.`;
 }

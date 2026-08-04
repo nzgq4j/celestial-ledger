@@ -1,32 +1,34 @@
 import Link from "next/link";
 import { dailySkyFor } from "@/lib/horoscopes/daily";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
-export default function DailyHoroscopesPage() {
-  const sky = dailySkyFor();
+export default async function DailyHoroscopesPage() {
+  const pack = await getServerTranslationPack();
+  const copy = pack.messages.horoscopes;
+  const sky = dailySkyFor(new Date(), pack.tag);
   return (
     <main className="page-shell daily-horoscopes">
       <header className="horoscope-hero">
         <div>
-          <p className="eyebrow">Daily celestial almanac · {sky.displayDate}</p>
-          <h1>Daily horoscopes</h1>
+          <p className="eyebrow">
+            {copy.almanac} · {sky.displayDate}
+          </p>
+          <h1>{copy.title}</h1>
         </div>
-        <p>
-          Choose your Sun sign for a detailed reading of today’s themes,
-          relationships, work, wellbeing, opportunities, cautions, and the
-          calculated sky behind them.
-        </p>
+        <p>{copy.introduction}</p>
       </header>
-      <section className="daily-sky-strip" aria-label="Today's sky">
+      <section className="daily-sky-strip" aria-label={copy.todaysSky}>
         {sky.placements.slice(0, 5).map((item) => (
           <span key={item.name}>
-            <strong>{item.name}</strong>
-            {item.degree}° {item.sign}
+            <strong>{localizeAstroTerm(item.name, pack.tag)}</strong>
+            {item.degree}° {localizeAstroTerm(item.sign, pack.tag)}
           </span>
         ))}
       </section>
-      <section className="horoscope-grid" aria-label="Twelve daily horoscopes">
+      <section className="horoscope-grid" aria-label={copy.twelveHoroscopes}>
         {sky.horoscopes.map((item) => (
           <article className="horoscope-card" key={item.sign}>
             <div className="horoscope-card__sign">
@@ -39,17 +41,16 @@ export default function DailyHoroscopesPage() {
             <p>{item.overview}</p>
             <dl>
               <div>
-                <dt>Opportunity</dt>
+                <dt>{copy.opportunity}</dt>
                 <dd>{item.opportunity}</dd>
               </div>
               <div>
-                <dt>Reflection</dt>
+                <dt>{copy.reflection}</dt>
                 <dd>{item.question}</dd>
               </div>
             </dl>
             <Link href={`/horoscopes/${item.slug}`}>
-              Read the full {item.sign} horoscope{" "}
-              <span aria-hidden="true">→</span>
+              {copy.readFull} {item.sign} <span aria-hidden="true">→</span>
             </Link>
           </article>
         ))}

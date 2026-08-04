@@ -1733,6 +1733,56 @@ a {
   gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
+.report-delete-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(2, 8, 16, 0.82);
+  backdrop-filter: blur(8px);
+}
+.report-delete-modal {
+  width: min(100%, 34rem);
+  border: 1px solid rgba(198, 161, 77, 0.5);
+  background: #071321;
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.55);
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+.report-delete-modal h2 {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--ivory);
+  font:
+    400 clamp(1.7rem, 5vw, 2.35rem) Georgia,
+    serif;
+}
+.report-delete-modal > p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.report-delete-check {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin: 1.5rem 0;
+  color: var(--ivory);
+  line-height: 1.5;
+  cursor: pointer;
+}
+.report-delete-check input {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
+  accent-color: #c8846e;
+}
+.report-delete-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
 .private-report {
   max-width: 72rem;
 }

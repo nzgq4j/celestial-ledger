@@ -28,6 +28,7 @@ export type TranslationPack = {
       language: string;
     };
     account: Record<string, string>;
+    horoscopes: Record<string, string>;
     home: {
       eyebrow: string;
       titleFirst: string;
