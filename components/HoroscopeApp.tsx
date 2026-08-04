@@ -5,6 +5,7 @@ import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
 import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -67,6 +68,7 @@ function MeaningNote({ children }: { children: React.ReactNode }) {
 }
 
 export default function HoroscopeApp() {
+  const { pack } = useLocale();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
@@ -277,54 +279,50 @@ export default function HoroscopeApp() {
       <header className="atlas-hero">
         <div className="atlas-hero__inner">
           <div className="atlas-hero__content">
-            <p className="eyebrow">The sky at the moment you arrived</p>
+            <p className="eyebrow">{pack.messages.home.eyebrow}</p>
             <h1>
-              Navigate
+              {pack.messages.home.titleFirst}
               <br />
-              <em>your cosmos.</em>
+              <em>{pack.messages.home.titleSecond}</em>
             </h1>
             <p className="atlas-hero__copy">
-              Your Sun, Moon, rising sign, house placements, and planetary
-              aspects form a pattern entirely your own. Begin with your natal
-              chart, then follow its deeper signatures through vocation,
-              connection, challenge, and change.
+              {pack.messages.home.introduction}
             </p>
             <div className="atlas-hero__actions">
               <a className="button-primary atlas-hero__cta" href="#chart">
-                Explore your chart
+                {pack.messages.home.exploreChart}
               </a>
               <Link className="atlas-hero__text-link" href="/samples">
-                Read a sample <span aria-hidden="true">&#8599;</span>
+                {pack.messages.home.readSample}{" "}
+                <span aria-hidden="true">&#8599;</span>
               </Link>
             </div>
-            <p className="atlas-hero__privacy">
-              Private by design · Birth data never appears in URLs
-            </p>
+            <p className="atlas-hero__privacy">{pack.messages.home.privacy}</p>
           </div>
         </div>
         <div
           className="atlas-hero__features"
-          aria-label="Celestial Atlas principles"
+          aria-label={pack.messages.home.principlesLabel}
         >
           <article>
             <span aria-hidden="true">&#10022;</span>
             <div>
-              <h2>Personalised charts</h2>
-              <p>Calculated for your time and place.</p>
+              <h2>{pack.messages.home.personalisedTitle}</h2>
+              <p>{pack.messages.home.personalisedCopy}</p>
             </div>
           </article>
           <article>
             <span aria-hidden="true">&#9788;</span>
             <div>
-              <h2>In-depth astrology</h2>
-              <p>Placements, aspects, and houses explained.</p>
+              <h2>{pack.messages.home.depthTitle}</h2>
+              <p>{pack.messages.home.depthCopy}</p>
             </div>
           </article>
           <article>
             <span aria-hidden="true">&#9671;</span>
             <div>
-              <h2>Transparent method</h2>
-              <p>Every claim connects to chart evidence.</p>
+              <h2>{pack.messages.home.methodTitle}</h2>
+              <p>{pack.messages.home.methodCopy}</p>
             </div>
           </article>
         </div>
@@ -338,41 +336,38 @@ export default function HoroscopeApp() {
           aria-labelledby="free-chart-heading"
         >
           <div>
-            <p className="section-kicker">Free birth chart calculator</p>
-            <h2 id="free-chart-heading">
-              A map of the sky at your first moment
-            </h2>
-            <p>
-              Your natal chart preserves the celestial signature of the moment
-              you were born. For centuries, astrologers have read these
-              planetary patterns as a guide to character, connection, challenge,
-              purpose, and possibility.
+            <p className="section-kicker">
+              {pack.messages.home.calculatorKicker}
             </p>
+            <h2 id="free-chart-heading">
+              {pack.messages.home.calculatorTitle}
+            </h2>
+            <p>{pack.messages.home.calculatorCopy}</p>
           </div>
           <dl>
             <div>
-              <dt>Planets</dt>
-              <dd>The drives and functions astrologers interpret.</dd>
+              <dt>{pack.messages.home.planets}</dt>
+              <dd>{pack.messages.home.planetsCopy}</dd>
             </div>
             <div>
-              <dt>Signs</dt>
-              <dd>The style through which each placement is expressed.</dd>
+              <dt>{pack.messages.home.signs}</dt>
+              <dd>{pack.messages.home.signsCopy}</dd>
             </div>
             <div>
-              <dt>Houses</dt>
-              <dd>Areas of life, available only when birth time is known.</dd>
+              <dt>{pack.messages.home.houses}</dt>
+              <dd>{pack.messages.home.housesCopy}</dd>
             </div>
           </dl>
         </section>
         <section className="panel p-5 md:p-7" aria-labelledby="birth-heading">
-          <p className="section-kicker">Free astrology chart</p>
+          <p className="section-kicker">{pack.messages.chartForm.kicker}</p>
           <h2 id="birth-heading" className="text-xl gold font-semibold">
-            Enter your information
+            {pack.messages.chartForm.title}
           </h2>
           <div className="grid md:grid-cols-2 gap-5 mt-5">
             <div>
               <label className="label" htmlFor="first-name">
-                Name
+                {pack.messages.chartForm.name}
               </label>
               <input
                 id="first-name"
@@ -381,12 +376,12 @@ export default function HoroscopeApp() {
                 onChange={(event) => setFirstName(event.target.value)}
                 autoComplete="given-name"
                 maxLength={80}
-                placeholder="Your first name"
+                placeholder={pack.messages.chartForm.namePlaceholder}
               />
             </div>
             <div>
               <label className="label" htmlFor="marketing-email">
-                Email
+                {pack.messages.chartForm.email}
               </label>
               <input
                 id="marketing-email"
@@ -401,7 +396,7 @@ export default function HoroscopeApp() {
             </div>
             <div>
               <label className="label" htmlFor="birth-date">
-                Birth date
+                {pack.messages.chartForm.birthDate}
               </label>
               <input
                 id="birth-date"
@@ -413,7 +408,7 @@ export default function HoroscopeApp() {
             </div>
             <div>
               <label className="label" htmlFor="birth-time">
-                Exact birth time
+                {pack.messages.chartForm.birthTime}
               </label>
               <input
                 id="birth-time"
@@ -429,12 +424,12 @@ export default function HoroscopeApp() {
                   checked={unknown}
                   onChange={(e) => setUnknown(e.target.checked)}
                 />{" "}
-                Birth time unknown
+                {pack.messages.chartForm.unknownTime}
               </label>
             </div>
             <div className="md:col-span-2">
               <label className="label" htmlFor="place">
-                Birthplace search
+                {pack.messages.chartForm.birthplace}
               </label>
               <div className="place-search-row">
                 <input
@@ -443,7 +438,7 @@ export default function HoroscopeApp() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && searchPlaces()}
-                  placeholder="City, region, country"
+                  placeholder={pack.messages.chartForm.birthplacePlaceholder}
                 />
                 <button
                   type="button"
@@ -451,14 +446,18 @@ export default function HoroscopeApp() {
                   disabled={searching}
                   className="px-5 rounded-lg bg-[#c9a75d] text-[#07111f] font-semibold"
                 >
-                  {searching ? "Searching…" : "Search"}
+                  {searching
+                    ? pack.messages.chartForm.searching
+                    : pack.messages.chartForm.search}
                 </button>
               </div>
             </div>
           </div>
           {places.length > 0 && (
             <fieldset className="mt-4">
-              <legend className="label">Select the verified birthplace</legend>
+              <legend className="label">
+                {pack.messages.chartForm.selectBirthplace}
+              </legend>
               <div className="grid gap-2">
                 {places.map((p) => (
                   <label
@@ -556,13 +555,15 @@ export default function HoroscopeApp() {
               disabled={busy}
               className="px-6 py-3 rounded-lg bg-[#c9a75d] text-[#07111f] font-semibold"
             >
-              {busy ? "Calculating…" : "Get my free birth chart"}
+              {busy
+                ? pack.messages.chartForm.calculating
+                : pack.messages.chartForm.calculate}
             </button>
             <button
               onClick={clearAll}
               className="px-6 py-3 rounded-lg border border-[#536177]"
             >
-              Clear My Data
+              {pack.messages.chartForm.clear}
             </button>
           </div>
         </section>

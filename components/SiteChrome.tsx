@@ -17,7 +17,11 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link href="/" className="brand" aria-label="Celestial Atlas home">
+        <Link
+          href="/"
+          className="brand"
+          aria-label={pack.messages.navigation.homeLabel}
+        >
           <Image
             className="brand__mark"
             src="/celestialatlas-logo.png"
@@ -27,28 +31,43 @@ export function SiteHeader() {
           />
           <span>
             <strong>Celestial Atlas</strong>
-            <small>Ancient sky · personal atlas</small>
+            <small>{pack.messages.navigation.tagline}</small>
           </span>
         </Link>
-        <nav className="site-nav" aria-label="Primary navigation">
+        <nav
+          className="site-nav"
+          aria-label={pack.messages.navigation.primaryLabel}
+        >
           <div className="site-nav__desktop">
-            <Link href="/#chart">Birth chart</Link>
-            <Link href="/horoscopes">Horoscopes</Link>
-            <Link href="/weekly-readings">Weekly</Link>
-            <Link href="/reports">Reports</Link>
-            <Link href="/samples">Samples</Link>
+            <Link href="/#chart">{pack.messages.navigation.birthChart}</Link>
+            <Link href="/horoscopes">
+              {pack.messages.navigation.horoscopes}
+            </Link>
+            <Link href="/weekly-readings">
+              {pack.messages.navigation.weekly}
+            </Link>
+            <Link href="/reports">{pack.messages.navigation.reports}</Link>
+            <Link href="/samples">{pack.messages.navigation.samples}</Link>
           </div>
           <details className="mobile-nav" ref={mobileMenu}>
             <summary>
               <span className="mobile-nav__icon" aria-hidden="true" />
-              Menu
+              {pack.messages.navigation.menu}
             </summary>
             <div className="mobile-nav__panel" onClick={closeMobileMenu}>
-              <Link href="/#chart">Free birth chart</Link>
-              <Link href="/horoscopes">Daily horoscopes</Link>
-              <Link href="/weekly-readings">Weekly readings</Link>
-              <Link href="/reports">Private reports</Link>
-              <Link href="/samples">Sample reports</Link>
+              <Link href="/#chart">{pack.messages.navigation.birthChart}</Link>
+              <Link href="/horoscopes">
+                {pack.messages.navigation.dailyHoroscopes}
+              </Link>
+              <Link href="/weekly-readings">
+                {pack.messages.navigation.weeklyReadings}
+              </Link>
+              <Link href="/reports">
+                {pack.messages.navigation.privateReports}
+              </Link>
+              <Link href="/samples">
+                {pack.messages.navigation.sampleReports}
+              </Link>
               <Link href="/account">{pack.messages.navigation.library}</Link>
             </div>
           </details>
@@ -63,20 +82,21 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const { pack } = useLocale();
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div>
           <p className="eyebrow">Celestial Atlas</p>
-          <p>Ancient celestial wisdom, mapped for the moment you arrived.</p>
+          <p>{pack.messages.footer.description}</p>
         </div>
         <div className="site-footer__links">
-          <Link href="/reports">Report collection</Link>
-          <Link href="/auth/login">Sign in</Link>
-          <Link href="/privacy">Privacy</Link>
-          <Link href="/method">Our method</Link>
-          <Link href="/terms">Terms</Link>
-          <span>Private by design</span>
+          <Link href="/reports">{pack.messages.footer.collection}</Link>
+          <Link href="/auth/login">{pack.messages.footer.signIn}</Link>
+          <Link href="/privacy">{pack.messages.footer.privacy}</Link>
+          <Link href="/method">{pack.messages.footer.method}</Link>
+          <Link href="/terms">{pack.messages.footer.terms}</Link>
+          <span>{pack.messages.footer.privateByDesign}</span>
         </div>
       </div>
     </footer>

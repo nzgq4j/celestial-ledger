@@ -5,7 +5,7 @@
     document.documentElement.style.colorScheme = "dark";
 
     var locale = localStorage.getItem("celestial-atlas-locale") || "en-GB";
-    if (locale === "en-GB") {
+    if (["en-GB", "es-ES", "fr-FR", "de-DE"].includes(locale)) {
       document.documentElement.lang = locale;
       document.documentElement.dir = "ltr";
     }

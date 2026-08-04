@@ -1,0 +1,86 @@
+import type { TranslationPack } from "@/lib/i18n/config";
+
+const pack = {
+  tag: "fr-FR",
+  name: "French",
+  nativeName: "Français",
+  direction: "ltr",
+  messages: {
+    navigation: {
+      homeLabel: "Accueil de Celestial Atlas",
+      tagline: "Ciel ancestral · atlas personnel",
+      primaryLabel: "Navigation principale",
+      birthChart: "Thème natal",
+      horoscopes: "Horoscopes",
+      weekly: "Semaine",
+      reports: "Rapports",
+      samples: "Exemples",
+      library: "Mon Celestial Atlas",
+      menu: "Menu",
+      dailyHoroscopes: "Horoscopes du jour",
+      weeklyReadings: "Lectures de la semaine",
+      privateReports: "Rapports privés",
+      sampleReports: "Exemples de rapports",
+    },
+    preferences: { language: "Langue" },
+    home: {
+      eyebrow: "Le ciel au moment de votre arrivée",
+      titleFirst: "Explorez",
+      titleSecond: "votre cosmos.",
+      introduction:
+        "Votre Soleil, votre Lune, votre ascendant, vos maisons et vos aspects planétaires forment un motif qui n'appartient qu'à vous. Commencez par votre thème natal, puis suivez ses signatures profondes à travers la vocation, les liens, les défis et le changement.",
+      exploreChart: "Explorer votre thème",
+      readSample: "Lire un exemple",
+      privacy:
+        "Privé par conception · Les données de naissance n'apparaissent jamais dans les URL",
+      principlesLabel: "Principes de Celestial Atlas",
+      personalisedTitle: "Thèmes personnalisés",
+      personalisedCopy: "Calculés pour votre heure et votre lieu.",
+      depthTitle: "Astrologie approfondie",
+      depthCopy: "Positions, aspects et maisons expliqués.",
+      methodTitle: "Méthode transparente",
+      methodCopy: "Chaque interprétation renvoie aux données du thème.",
+      calculatorKicker: "Calcul gratuit du thème natal",
+      calculatorTitle: "Une carte du ciel de votre premier instant",
+      calculatorCopy:
+        "Votre thème natal conserve la signature céleste du moment de votre naissance. Depuis des siècles, les astrologues lisent ces motifs planétaires comme un guide du caractère, des liens, des défis, de la vocation et des possibles.",
+      planets: "Planètes",
+      planetsCopy: "Les forces et fonctions que les astrologues interprètent.",
+      signs: "Signes",
+      signsCopy: "La manière dont chaque position s'exprime.",
+      houses: "Maisons",
+      housesCopy:
+        "Les domaines de vie, disponibles lorsque l'heure de naissance est connue.",
+    },
+    chartForm: {
+      kicker: "Thème astrologique gratuit",
+      title: "Saisissez vos informations",
+      name: "Prénom",
+      namePlaceholder: "Votre prénom",
+      email: "E-mail",
+      birthDate: "Date de naissance",
+      birthTime: "Heure exacte de naissance",
+      unknownTime: "Heure de naissance inconnue",
+      birthplace: "Rechercher le lieu de naissance",
+      birthplacePlaceholder: "Ville, région, pays",
+      search: "Rechercher",
+      searching: "Recherche…",
+      selectBirthplace: "Sélectionnez le lieu de naissance vérifié",
+      calculate: "Obtenir mon thème natal gratuit",
+      calculating: "Calcul en cours…",
+      clear: "Effacer mes données",
+    },
+    footer: {
+      description:
+        "La sagesse céleste ancestrale, cartographiée pour l'instant de votre arrivée.",
+      collection: "Collection de rapports",
+      signIn: "Se connecter",
+      privacy: "Confidentialité",
+      method: "Notre méthode",
+      terms: "Conditions",
+      privateByDesign: "Privé par conception",
+    },
+  },
+} satisfies TranslationPack;
+
+export default pack;
