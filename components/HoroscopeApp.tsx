@@ -888,12 +888,16 @@ async function executeRecaptcha() {
       ) => Promise<string>;
     };
   };
-  const script = document.querySelector<HTMLScriptElement>(
-    'script[src*="recaptcha/api.js"]',
-  );
-  const siteKey = script
-    ? new URL(script.src).searchParams.get("render")
-    : null;
+  const deadline = Date.now() + 5000;
+  let siteKey: string | null = null;
+  while (Date.now() < deadline) {
+    const script = document.querySelector<HTMLScriptElement>(
+      'script[src*="recaptcha/api.js"]',
+    );
+    siteKey = script ? new URL(script.src).searchParams.get("render") : null;
+    if (siteKey && google.grecaptcha) break;
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
   if (!siteKey || !google.grecaptcha) return undefined;
   await new Promise<void>((resolve) => google.grecaptcha!.ready(resolve));
   return google.grecaptcha.execute(siteKey, { action: "marketing_subscribe" });
