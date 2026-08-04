@@ -132,10 +132,10 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="site-footer__signature" aria-hidden="true">
-          <span>Celestial</span>
+        <div className="site-footer__seal" aria-hidden="true">
           <i />
-          <span>Atlas</span>
+          <Image src="/celestialatlas-logo.png" alt="" width="92" height="92" />
+          <i />
         </div>
 
         <div className="site-footer__colophon">
