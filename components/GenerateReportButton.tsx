@@ -48,7 +48,7 @@ export function GenerateReportButton({
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error);
-      router.push(`/reports/${payload.reportId}`);
+      router.push("/account#reports");
       router.refresh();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : copy.reportFailed);

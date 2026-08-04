@@ -1591,23 +1591,91 @@ a {
   display: grid;
   margin-top: 1rem;
 }
-.report-library-list a {
+.report-library-row {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.35rem 1rem;
-  padding: 1rem 0;
+  grid-template-columns: minmax(12rem, 1fr) minmax(11rem, 0.7fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.35rem 0;
   border-bottom: 1px solid var(--line);
-  text-transform: capitalize;
 }
-.report-library-list strong {
+.report-library-row__identity {
+  display: grid;
+  gap: 0.45rem;
+}
+.report-library-row__identity strong {
+  color: var(--paper);
+  font:
+    400 1.12rem Georgia,
+    serif;
+}
+.report-library-row__state {
+  display: grid;
+  gap: 0.55rem;
+}
+.report-library-row__state > span {
   color: var(--gold);
   font:
     0.7rem ui-monospace,
     monospace;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
-.report-library-list small {
+.report-library-row__state > span[data-status="failed"] {
+  color: #d29a83;
+}
+.report-library-row__identity small {
   color: var(--muted);
+}
+.report-row-progress {
+  position: relative;
+  height: 0.28rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(244, 235, 216, 0.1);
+}
+.report-row-progress i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 46%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8c6a2e, #e1c67b, #f6e9bd);
+  animation: atlas-generation 1.9s ease-in-out infinite alternate;
+}
+.report-row-progress--generating i {
+  width: 68%;
+  animation-duration: 1.45s;
+}
+.report-library-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.report-library-row__actions a,
+.report-library-row__actions button {
+  border: 0;
+  background: transparent;
+  color: var(--ivory);
+  padding: 0.25rem 0;
+  font: inherit;
+  font-size: 0.76rem;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+  cursor: pointer;
+}
+.report-library-row__actions .report-delete-action {
+  color: #d7a18d;
+}
+.report-library-row__actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.report-viewer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 .private-report {
   max-width: 72rem;
@@ -1694,9 +1762,52 @@ a {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .generation-progress__track i {
+  .generation-progress__track i,
+  .report-row-progress i {
     animation: none;
     left: 28%;
+  }
+}
+
+@media (max-width: 720px) {
+  .report-library-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  .report-library-row__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  .report-viewer-actions,
+  .report-narrative details {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .private-report {
+    max-width: none;
+    padding: 0;
+  }
+  .report-viewer-heading,
+  .report-narrative > section {
+    border-color: #bbb;
+  }
+  .report-viewer-heading *,
+  .report-narrative *,
+  .evidence-map * {
+    color: #111 !important;
+  }
+  .report-viewer-grid {
+    grid-template-columns: 1fr;
+  }
+  .evidence-map {
+    break-before: page;
   }
 }
 .report-viewer-heading aside {

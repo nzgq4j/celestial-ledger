@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AccountSettings } from "@/components/AccountSettings";
 import { BirthProfileList } from "@/components/BirthProfileList";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
+import { AccountReportList } from "@/components/AccountReportList";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
@@ -209,19 +210,7 @@ export default async function AccountPage({
         ))}
 
         {reports.length ? (
-          <div className="report-library-list">
-            {reports.map((report) => (
-              <Link href={`/reports/${report.id}`} key={report.id}>
-                <span>{report.report_type.replaceAll("_", " ")}</span>
-                <strong>{report.status}</strong>
-                <small>
-                  {report.expires_at
-                    ? `${copy.availableUntil} ${new Date(report.expires_at).toLocaleDateString(pack.tag)}`
-                    : new Date(report.created_at).toLocaleDateString(pack.tag)}
-                </small>
-              </Link>
-            ))}
-          </div>
+          <AccountReportList initialReports={reports} />
         ) : (
           <p className="dashboard-empty">{copy.noReports}</p>
         )}

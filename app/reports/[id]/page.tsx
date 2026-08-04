@@ -9,6 +9,7 @@ import {
 } from "@/lib/reports/career";
 import { recoveryReportSchema } from "@/lib/reports/recovery";
 import { ReportGenerationProgress } from "@/components/ReportGenerationProgress";
+import { ReportViewerActions } from "@/components/ReportViewerActions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -19,8 +20,10 @@ export const metadata = {
 
 export default async function ReportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ print?: string }>;
 }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -78,8 +81,10 @@ export default async function ReportPage({
       </main>
     );
   const evidenceById = new Map(evidence.items.map((item) => [item.id, item]));
+  const autoPrint = (await searchParams).print === "1";
   return (
     <main className="page-shell private-report">
+      <ReportViewerActions reportId={report.id} autoPrint={autoPrint} />
       <header className="report-viewer-heading">
         <p className="eyebrow">
           {isRecovery
