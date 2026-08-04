@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   buildRecoveryEvidence,
+  recoveryReportJsonSchema,
   recoveryReportSchema,
   validateRecoveryReport,
 } from "@/lib/reports/recovery";
+import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 
 const birthplace = {
   id: "greenwich",
@@ -43,6 +45,19 @@ function report(narrative = "The Sun offers a steady centre for renewal.") {
 }
 
 describe("Recovery Reflection safety and evidence", () => {
+  it("constrains generated citations to immutable evidence IDs", () => {
+    const schema = bindEvidenceIds(recoveryReportJsonSchema, [
+      "placement:sun",
+      "aspect:7",
+    ]);
+    expect(
+      schema.properties.sections.items.properties.evidenceIds.items,
+    ).toEqual({
+      type: "string",
+      enum: ["placement:sun", "aspect:7"],
+    });
+  });
+
   it("accepts selected reviewed themes linked to natal evidence", async () => {
     const bundle = await evidence();
     expect(() =>

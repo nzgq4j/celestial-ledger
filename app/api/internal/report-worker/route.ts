@@ -17,6 +17,7 @@ import {
   recoveryThemeSchema,
   validateRecoveryReport,
 } from "@/lib/reports/recovery";
+import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -89,9 +90,10 @@ export async function runNextReportJob() {
             ? "recovery_reflection_report"
             : "career_purpose_report",
           strict: true,
-          schema: recoveryThemes
-            ? recoveryReportJsonSchema
-            : careerReportJsonSchema,
+          schema: bindEvidenceIds(
+            recoveryThemes ? recoveryReportJsonSchema : careerReportJsonSchema,
+            evidence.items.map((item) => item.id),
+          ),
         },
       },
     });
@@ -131,7 +133,7 @@ export async function runNextReportJob() {
     await admin.rpc("fail_report_job", {
       p_report_id: job.id,
       p_failure_code: code,
-      p_retryable: !/UNSUPPORTED|NOT_FOUND|UNKNOWN_EVIDENCE/.test(code),
+      p_retryable: !/UNSUPPORTED|BIRTH_PROFILE_NOT_FOUND/.test(code),
     });
     console.error(
       JSON.stringify({

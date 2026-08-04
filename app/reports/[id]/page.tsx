@@ -8,6 +8,7 @@ import {
   type CareerEvidenceBundle,
 } from "@/lib/reports/career";
 import { recoveryReportSchema } from "@/lib/reports/recovery";
+import { ReportGenerationProgress } from "@/components/ReportGenerationProgress";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -55,13 +56,10 @@ export default async function ReportPage({
   if (report.status !== "completed")
     return (
       <main className="page-shell private-report">
-        <p className="eyebrow">Private report</p>
-        <h1>Report {report.status}</h1>
-        <p className="report-status-copy">
-          {report.status === "failed"
-            ? "Generation will retry automatically when the failure is transient."
-            : "Your report is in the private generation queue. Refresh this page shortly."}
-        </p>
+        <ReportGenerationProgress
+          reportId={report.id}
+          initialStatus={report.status as "queued" | "generating" | "failed"}
+        />
         <Link className="button-quiet" href="/account">
           Return to library
         </Link>
