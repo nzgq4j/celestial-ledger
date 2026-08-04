@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { after } from "next/server";
+import { runNextReportJob } from "@/app/api/internal/report-worker/route";
 import { createClient } from "@/lib/supabase/server";
 import {
   careerReportSchema,
@@ -8,6 +10,7 @@ import {
 import { recoveryReportSchema } from "@/lib/reports/recovery";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 export const metadata = {
   title: "Private report — Celestial Atlas",
   robots: { index: false, follow: false, nocache: true },
@@ -37,6 +40,18 @@ export default async function ReportPage({
       .maybeSingle(),
   ]);
   if (!report) notFound();
+  if (report.status === "queued")
+    after(async () => {
+      const result = await runNextReportJob();
+      if (!result.ok)
+        console.error(
+          JSON.stringify({
+            level: "error",
+            message: "Queued report page worker invocation failed",
+            status: result.status,
+          }),
+        );
+    });
   if (report.status !== "completed")
     return (
       <main className="page-shell private-report">
