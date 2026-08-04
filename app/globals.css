@@ -1741,7 +1741,6 @@ a {
   place-items: center;
   padding: 1.25rem;
   background: rgba(2, 8, 16, 0.82);
-  backdrop-filter: blur(8px);
 }
 .report-delete-modal {
   width: min(100%, 34rem);

@@ -49,8 +49,19 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem(localeStorageKey);
-    if (stored && isLocaleTag(stored)) void selectLocale(stored);
-  }, [selectLocale]);
+    if (!stored || !isLocaleTag(stored)) return;
+    let active = true;
+    void localeRegistry[stored].load().then((storedPack) => {
+      if (!active) return;
+      setLocale(stored);
+      setPack(storedPack);
+      document.documentElement.lang = stored;
+      document.documentElement.dir = storedPack.direction;
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const value = useMemo(
     () => ({ locale, pack, selectLocale }),

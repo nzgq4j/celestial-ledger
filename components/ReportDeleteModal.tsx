@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocale } from "@/components/LocaleProvider";
 
 export function ReportDeleteModal({
@@ -23,10 +24,20 @@ export function ReportDeleteModal({
     if (!open) return;
     setConfirmed(false);
     cancelRef.current?.focus();
-  }, [open]);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) onCancel();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [busy, onCancel, open]);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="report-delete-backdrop" role="presentation">
       <section
         className="report-delete-modal"
@@ -66,6 +77,7 @@ export function ReportDeleteModal({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }
