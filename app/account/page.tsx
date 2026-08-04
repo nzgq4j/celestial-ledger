@@ -22,7 +22,7 @@ export async function generateMetadata() {
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ notice?: string }>;
+  searchParams: Promise<{ notice?: string; focusReport?: string }>;
 }) {
   if (isDemoMode()) redirect("/auth/login");
   const pack = await getServerTranslationPack();
@@ -228,7 +228,10 @@ export default async function AccountPage({
         ))}
 
         {reports.length ? (
-          <AccountReportList initialReports={reports} />
+          <AccountReportList
+            initialReports={reports}
+            focusReportId={params.focusReport}
+          />
         ) : (
           <p className="dashboard-empty">{copy.noReports}</p>
         )}

@@ -3440,3 +3440,7 @@ th {
     max-width: 19rem;
   }
 }
+.report-library-row:focus {
+  outline: 1px solid var(--gold);
+  outline-offset: 6px;
+}

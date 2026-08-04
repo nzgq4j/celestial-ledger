@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
@@ -19,8 +19,10 @@ type LibraryReport = {
 
 export function AccountReportList({
   initialReports,
+  focusReportId,
 }: {
   initialReports: LibraryReport[];
+  focusReportId?: string;
 }) {
   const [reports, setReports] = useState(
     initialReports.map((report) => ({
@@ -36,12 +38,24 @@ export function AccountReportList({
   const [busyId, setBusyId] = useState<string>();
   const [progressPhase, setProgressPhase] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<string>();
+  const focusedReport = useRef(false);
   const { locale, pack } = useLocale();
   const router = useRouter();
   const copy = pack.messages.account;
   const hasActiveReports = reports.some(
     (report) => report.status === "queued" || report.status === "generating",
   );
+
+  useEffect(() => {
+    if (!focusReportId || focusedReport.current) return;
+    const report = document.getElementById(`report-${focusReportId}`);
+    if (!report) return;
+    focusedReport.current = true;
+    window.requestAnimationFrame(() => {
+      report.scrollIntoView({ behavior: "smooth", block: "center" });
+      report.focus({ preventScroll: true });
+    });
+  }, [focusReportId, reports]);
 
   useEffect(() => {
     if (
@@ -145,7 +159,12 @@ export function AccountReportList({
           ? progressPhrases[(progressPhase + index) % progressPhrases.length]
           : labels[report.status];
         return (
-          <article className="report-library-row" key={report.id}>
+          <article
+            className="report-library-row"
+            id={`report-${report.id}`}
+            key={report.id}
+            tabIndex={focusReportId === report.id ? -1 : undefined}
+          >
             <div className="report-library-row__identity">
               <strong>{title}</strong>
               <small>
