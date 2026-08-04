@@ -5,7 +5,6 @@ import { formatDegree } from "@/lib/zodiac";
 import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
 import Link from "next/link";
-import Image from "next/image";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -278,16 +277,17 @@ export default function HoroscopeApp() {
       <header className="atlas-hero">
         <div className="atlas-hero__inner">
           <div className="atlas-hero__content">
-            <p className="eyebrow">Astrology for thoughtful reflection</p>
+            <p className="eyebrow">The sky at the moment you arrived</p>
             <h1>
               Navigate
               <br />
               <em>your cosmos.</em>
             </h1>
             <p className="atlas-hero__copy">
-              Timeless symbolism. Modern guidance. Explore the sky at your first
-              moment through a private, evidence-linked atlas made for
-              reflection, not prediction.
+              Your Sun, Moon, rising sign, house placements, and planetary
+              aspects form a pattern entirely your own. Begin with your natal
+              chart, then follow its deeper signatures through vocation,
+              connection, challenge, and change.
             </p>
             <div className="atlas-hero__actions">
               <a className="button-primary atlas-hero__cta" href="#chart">
@@ -300,17 +300,6 @@ export default function HoroscopeApp() {
             <p className="atlas-hero__privacy">
               Private by design · Birth data never appears in URLs
             </p>
-          </div>
-          <div className="atlas-hero__instrument" aria-hidden="true">
-            <span className="atlas-hero__orbit atlas-hero__orbit--outer" />
-            <span className="atlas-hero__orbit atlas-hero__orbit--inner" />
-            <Image
-              src="/celestial-compass.png"
-              alt=""
-              width={720}
-              height={720}
-              priority
-            />
           </div>
         </div>
         <div

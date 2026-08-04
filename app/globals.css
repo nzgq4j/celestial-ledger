@@ -2608,7 +2608,7 @@ th {
       rgba(3, 9, 18, 0.18) 78%
     ),
     linear-gradient(180deg, rgba(4, 11, 21, 0.16) 50%, #030811 100%),
-    url("/atlas-night-sky.png") center 46% / cover no-repeat;
+    url("/hero1.png") center 46% / cover no-repeat;
   color: #f5eddb;
 }
 .atlas-hero::before {
@@ -2632,7 +2632,7 @@ th {
 .atlas-hero__inner {
   min-height: clamp(35rem, calc(100svh - 14rem), 52rem);
   padding-block: clamp(4rem, 9vw, 8.5rem) clamp(3rem, 6vw, 6rem);
-  grid-template-columns: minmax(0, 0.85fr) minmax(22rem, 0.72fr);
+  grid-template-columns: minmax(0, 38rem) 1fr;
 }
 .atlas-hero__content {
   position: relative;
@@ -2714,50 +2714,6 @@ th {
   font-size: 0.68rem;
   letter-spacing: 0.035em;
 }
-.atlas-hero__instrument {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: min(39vw, 35rem);
-  aspect-ratio: 1;
-  justify-self: end;
-  filter: drop-shadow(0 1.4rem 2.2rem rgba(0, 0, 0, 0.56));
-}
-.atlas-hero__instrument img {
-  position: relative;
-  z-index: 2;
-  display: block;
-  width: 84%;
-  height: auto;
-  opacity: 0.82;
-}
-.atlas-hero__orbit {
-  position: absolute;
-  border: 1px solid rgba(218, 184, 107, 0.46);
-  border-radius: 50%;
-}
-.atlas-hero__orbit::before,
-.atlas-hero__orbit::after {
-  position: absolute;
-  inset: 8%;
-  border: 1px dashed rgba(218, 184, 107, 0.24);
-  border-radius: inherit;
-  content: "";
-}
-.atlas-hero__orbit::after {
-  inset: 18%;
-  border-style: solid;
-}
-.atlas-hero__orbit--outer {
-  inset: 0;
-  animation: atlas-orbit 70s linear infinite;
-}
-.atlas-hero__orbit--inner {
-  inset: 15%;
-  border-color: rgba(218, 184, 107, 0.25);
-  animation: atlas-orbit 48s linear infinite reverse;
-}
 .atlas-hero__features {
   position: relative;
   z-index: 3;
@@ -2804,20 +2760,12 @@ th {
   font-size: 0.73rem;
   line-height: 1.5;
 }
-@keyframes atlas-orbit {
-  to {
-    transform: rotate(360deg);
-  }
-}
 @media (max-width: 900px) {
   .atlas-hero {
     background-position: 56% center;
   }
   .atlas-hero__inner {
-    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.55fr);
-  }
-  .atlas-hero__instrument {
-    width: min(42vw, 25rem);
+    grid-template-columns: minmax(0, 36rem) 1fr;
   }
 }
 @media (max-width: 700px) {
@@ -2831,14 +2779,6 @@ th {
   }
   .atlas-hero__content {
     max-width: 32rem;
-  }
-  .atlas-hero__instrument {
-    position: absolute;
-    z-index: 0;
-    right: -8rem;
-    top: 4rem;
-    width: 27rem;
-    opacity: 0.34;
   }
   .atlas-hero__features {
     grid-template-columns: 1fr;
