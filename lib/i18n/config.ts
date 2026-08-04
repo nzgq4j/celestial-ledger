@@ -74,7 +74,16 @@ export type TranslationPack = {
       clear: string;
     };
     footer: {
+      kicker: string;
+      title: string;
       description: string;
+      chartAction: string;
+      explore: string;
+      yourAtlas: string;
+      trust: string;
+      language: string;
+      languageCopy: string;
+      rights: string;
       collection: string;
       signIn: string;
       privacy: string;

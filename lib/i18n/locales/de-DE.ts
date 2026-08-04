@@ -283,8 +283,17 @@ const pack = {
       clear: "Meine Daten löschen",
     },
     footer: {
+      kicker: "Der Himmel dreht sich weiter",
+      title: "Kehre zurück, wenn sich das Muster wandelt.",
       description:
         "Alte Himmelsweisheit, kartiert für den Augenblick deiner Ankunft.",
+      chartAction: "Deinen Geburtshimmel kartieren",
+      explore: "Entdecken",
+      yourAtlas: "Dein Atlas",
+      trust: "Vertrauen und Methode",
+      language: "Sprache",
+      languageCopy: "Nutze deine gewählte Sprache im gesamten Atlas.",
+      rights: "Alle Rechte vorbehalten.",
       collection: "Deutungssammlung",
       signIn: "Anmelden",
       privacy: "Datenschutz",

@@ -287,8 +287,17 @@ const pack = {
       clear: "Effacer mes données",
     },
     footer: {
+      kicker: "Le ciel poursuit sa course",
+      title: "Revenez lorsque le motif change.",
       description:
         "La sagesse céleste ancestrale, cartographiée pour l'instant de votre arrivée.",
+      chartAction: "Tracer votre ciel natal",
+      explore: "Explorer",
+      yourAtlas: "Votre atlas",
+      trust: "Confiance et méthode",
+      language: "Langue",
+      languageCopy: "Gardez la langue choisie dans tout votre atlas.",
+      rights: "Tous droits réservés.",
       collection: "Collection de rapports",
       signIn: "Se connecter",
       privacy: "Confidentialité",

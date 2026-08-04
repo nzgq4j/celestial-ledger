@@ -85,20 +85,63 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const { pack } = useLocale();
+  const copy = pack.messages.footer;
+  const navigation = pack.messages.navigation;
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <div>
-          <p className="eyebrow">Celestial Atlas</p>
-          <p>{pack.messages.footer.description}</p>
+        <div className="site-footer__lead">
+          <Image src="/celestialatlas-logo.png" alt="" width="58" height="58" />
+          <div>
+            <p className="eyebrow">{copy.kicker}</p>
+            <h2>{copy.title}</h2>
+            <p>{copy.description}</p>
+          </div>
+          <Link href="/#chart" className="site-footer__chart-link">
+            {copy.chartAction}
+            <span aria-hidden="true">↗</span>
+          </Link>
         </div>
-        <div className="site-footer__links">
-          <Link href="/reports">{pack.messages.footer.collection}</Link>
-          <Link href="/auth/login">{pack.messages.footer.signIn}</Link>
-          <Link href="/privacy">{pack.messages.footer.privacy}</Link>
-          <Link href="/method">{pack.messages.footer.method}</Link>
-          <Link href="/terms">{pack.messages.footer.terms}</Link>
-          <span>{pack.messages.footer.privateByDesign}</span>
+
+        <div className="site-footer__directory">
+          <nav aria-labelledby="footer-explore">
+            <h3 id="footer-explore">{copy.explore}</h3>
+            <Link href="/horoscopes">{navigation.dailyHoroscopes}</Link>
+            <Link href="/weekly-readings">{navigation.weeklyReadings}</Link>
+            <Link href="/journal">{navigation.journal}</Link>
+            <Link href="/samples">{navigation.sampleReports}</Link>
+          </nav>
+          <nav aria-labelledby="footer-atlas">
+            <h3 id="footer-atlas">{copy.yourAtlas}</h3>
+            <Link href="/account">{navigation.library}</Link>
+            <Link href="/#chart">{navigation.birthChart}</Link>
+            <Link href="/reports">{copy.collection}</Link>
+            <Link href="/auth/login">{copy.signIn}</Link>
+          </nav>
+          <nav aria-labelledby="footer-trust">
+            <h3 id="footer-trust">{copy.trust}</h3>
+            <Link href="/method">{copy.method}</Link>
+            <Link href="/privacy">{copy.privacy}</Link>
+            <Link href="/terms">{copy.terms}</Link>
+            <span>{copy.privateByDesign}</span>
+          </nav>
+          <div className="site-footer__language">
+            <h3>{copy.language}</h3>
+            <p>{copy.languageCopy}</p>
+            <SitePreferences />
+          </div>
+        </div>
+
+        <div className="site-footer__signature" aria-hidden="true">
+          <span>Celestial</span>
+          <i />
+          <span>Atlas</span>
+        </div>
+
+        <div className="site-footer__colophon">
+          <span>© {new Date().getFullYear()} Celestial Atlas</span>
+          <span>{copy.rights}</span>
+          <span>51.5° N · 0.0°</span>
         </div>
       </div>
     </footer>

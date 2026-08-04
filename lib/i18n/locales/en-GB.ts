@@ -282,8 +282,17 @@ const pack = {
       clear: "Clear my data",
     },
     footer: {
+      kicker: "The sky keeps turning",
+      title: "Return whenever the pattern changes.",
       description:
         "Ancient celestial wisdom, mapped for the moment you arrived.",
+      chartAction: "Map your birth sky",
+      explore: "Explore",
+      yourAtlas: "Your atlas",
+      trust: "Trust and method",
+      language: "Language",
+      languageCopy: "Carry your chosen language throughout the atlas.",
+      rights: "All rights reserved.",
       collection: "Report collection",
       signIn: "Sign in",
       privacy: "Privacy",

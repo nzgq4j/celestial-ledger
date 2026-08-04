@@ -281,8 +281,17 @@ const pack = {
       clear: "Borrar mis datos",
     },
     footer: {
+      kicker: "El cielo sigue girando",
+      title: "Regresa cuando cambie el patrón.",
       description:
         "Sabiduría celeste ancestral, trazada para el momento de tu llegada.",
+      chartAction: "Trazar tu cielo natal",
+      explore: "Explorar",
+      yourAtlas: "Tu atlas",
+      trust: "Confianza y método",
+      language: "Idioma",
+      languageCopy: "Lleva el idioma elegido por todo el atlas.",
+      rights: "Todos los derechos reservados.",
       collection: "Colección de informes",
       signIn: "Iniciar sesión",
       privacy: "Privacidad",
