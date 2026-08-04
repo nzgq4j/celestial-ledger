@@ -725,6 +725,22 @@ a {
   color: var(--text-soft);
   line-height: 1.75;
 }
+.sample-report__applications {
+  margin-top: 1.5rem;
+  padding: clamp(1.1rem, 3vw, 1.6rem);
+  border: 1px solid color-mix(in srgb, var(--gold) 52%, var(--line));
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+.sample-report__applications h3 {
+  margin: 0 0 1rem;
+  color: var(--gold);
+  font:
+    500 1.15rem Georgia,
+    serif;
+}
+.sample-report__applications p:last-child {
+  margin-bottom: 0;
+}
 .sample-report__chapter blockquote {
   position: relative;
   margin: 1.35rem 0 0;
