@@ -35,6 +35,9 @@ type NarrativeCopy = {
   questions: (theme: string, secondTheme: string) => string[];
 };
 
+export const DAILY_READING_BLUF_MIN_WORDS = 425;
+export const DAILY_READING_BLUF_MAX_WORDS = 1_000;
+
 const english: NarrativeCopy = {
   methodology:
     "Tropical zodiac · equal natal houses when birth time is known · major transits at local noon",
@@ -329,9 +332,13 @@ export function buildDailyReadingContent(
     limitations: analysis.limitations,
   });
   const wordCount = bottomLineWordCount(content);
-  if (analysis.locale === "en-GB" && (wordCount < 425 || wordCount > 575))
+  if (
+    analysis.locale === "en-GB" &&
+    (wordCount < DAILY_READING_BLUF_MIN_WORDS ||
+      wordCount > DAILY_READING_BLUF_MAX_WORDS)
+  )
     throw new Error(
-      `BLUF word count ${wordCount} is outside the 425–575 contract.`,
+      `BLUF word count ${wordCount} is outside the ${DAILY_READING_BLUF_MIN_WORDS}–${DAILY_READING_BLUF_MAX_WORDS} contract.`,
     );
   return content;
 }

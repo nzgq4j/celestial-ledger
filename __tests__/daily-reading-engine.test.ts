@@ -7,6 +7,8 @@ import {
   localCivilNoonUtc,
 } from "@/lib/daily-readings/calculation";
 import {
+  DAILY_READING_BLUF_MAX_WORDS,
+  DAILY_READING_BLUF_MIN_WORDS,
   bottomLineWordCount,
   buildDailyReadingContent,
 } from "@/lib/daily-readings/content";
@@ -94,9 +96,42 @@ describe("registered daily reading foundation", () => {
 
     expect(dailyReadingContentSchema.parse(content)).toEqual(content);
     expect(content.bottomLineUpFront.sectionId).toBe("bottom-line-up-front");
-    expect(bottomLineWordCount(content)).toBeGreaterThanOrEqual(425);
-    expect(bottomLineWordCount(content)).toBeLessThanOrEqual(575);
+    expect(bottomLineWordCount(content)).toBeGreaterThanOrEqual(
+      DAILY_READING_BLUF_MIN_WORDS,
+    );
+    expect(bottomLineWordCount(content)).toBeLessThanOrEqual(
+      DAILY_READING_BLUF_MAX_WORDS,
+    );
     expect(content.sections[0].id).toBe("strategic-context");
+  });
+
+  it("allows a detailed BLUF of up to 1,000 words", async () => {
+    const natalChart = await calculateNatalChart(sampleBirthInput);
+    const analysis = buildDailyReadingAnalysis({
+      natalChart,
+      readingDate: "2026-08-05",
+      observationTimeZone: sampleBirthInput.place.timeZone,
+      locale: "en-GB",
+      calculatedAtUtc: generatedAt,
+    });
+    const detailedAnalysis = {
+      ...analysis,
+      themes: analysis.themes.map((theme, index) =>
+        index === 0
+          ? {
+              ...theme,
+              label:
+                "Purposeful communication, practical discernment, patient collaboration and accountable follow-through",
+            }
+          : theme,
+      ),
+    };
+
+    const content = buildDailyReadingContent(detailedAnalysis, readingId);
+    const wordCount = bottomLineWordCount(content);
+
+    expect(wordCount).toBeGreaterThan(575);
+    expect(wordCount).toBeLessThanOrEqual(DAILY_READING_BLUF_MAX_WORDS);
   });
 
   it("changes the cache key when a calculation input or versioned profile changes", () => {
