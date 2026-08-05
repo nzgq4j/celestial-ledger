@@ -44,7 +44,7 @@ export default async function DailyHoroscopesPage() {
                 <small>{item.theme}</small>
               </div>
             </div>
-            <p>{item.overview}</p>
+            <p className="horoscope-card__overview">{item.overview}</p>
             <HoroscopeDayArc
               compact
               heading={copy.dailyArc}
@@ -61,7 +61,10 @@ export default async function DailyHoroscopesPage() {
                 <dd>{item.question}</dd>
               </div>
             </dl>
-            <Link href={`/horoscopes/${item.slug}`}>
+            <Link
+              className="button-primary horoscope-card__action"
+              href={`/horoscopes/${item.slug}`}
+            >
               {copy.readFull} {item.sign} <span aria-hidden="true">→</span>
             </Link>
           </article>
