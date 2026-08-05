@@ -185,11 +185,21 @@ const shared = {
     wellbeing: (c) =>
       `Protect enough quiet to distinguish your own rhythm from the atmosphere around you. A small ritual connected with ${c.moonTopic} can restore steadiness today.`,
     opportunity: (c) =>
-      `Make one visible choice that supports ${c.sunTopic}; consistency will carry more weight than spectacle.`,
+      pick(c.variant, [
+        `Lead with ${c.signature.business}. One concrete move around ${c.sunTopic} can establish a direction that others understand and trust.`,
+        `A door opens through ${c.rulerTopic}. Meet the useful invitation already in front of you with ${c.signature.business}, then give it your full attention.`,
+        `Say yes to the part of ${c.sunTopic} that asks for genuine participation. ${c.signature.business} will carry the idea further than waiting for perfect conditions.`,
+        `Turn today’s awareness of ${c.moonTopic} into momentum. A timely conversation or practical gesture can make ${c.sunTopic} feel possible rather than distant.`,
+      ]),
     caution: (c) =>
       `Do not treat a passing mood as a final verdict, especially around ${c.moonTopic}.`,
     question: (c) =>
-      `What would a more intentional relationship with ${c.moonTopic} look like today?`,
+      pick(c.variant, [
+        `Where would ${c.signature.relating} change the pattern around ${c.moonTopic}?`,
+        `What are you ready to build in ${c.sunTopic} once you stop waiting for complete certainty?`,
+        `Which truth about ${c.rulerTopic} deserves a direct answer before the day closes?`,
+        `Where are you being invited to choose ${c.signature.business} instead of repeating a familiar habit?`,
+      ]),
     phases: (c) => [
       {
         period: "morning",
@@ -359,11 +369,21 @@ const shared = {
     wellbeing: (c) =>
       `Protege suficiente silencio para distinguir tu ritmo del ambiente. Un pequeño ritual relacionado con ${c.moonTopic} puede devolverte estabilidad.`,
     opportunity: (c) =>
-      `Haz una elección visible que apoye ${c.sunTopic}; la constancia tendrá más peso que el espectáculo.`,
+      pick(c.variant, [
+        `Avanza con ${c.signature.business}. Un movimiento concreto en ${c.sunTopic} puede fijar una dirección que los demás comprendan y apoyen.`,
+        `Se abre una puerta a través de ${c.rulerTopic}. Atiende la invitación útil que ya tienes delante y deja que tu forma natural de actuar se convierta en ventaja.`,
+        `Di que sí a la parte de ${c.sunTopic} que pide participación verdadera. ${c.signature.business} llevará la idea más lejos que esperar condiciones perfectas.`,
+        `Convierte la conciencia sobre ${c.moonTopic} en impulso. Una conversación o un gesto oportuno puede acercar ${c.sunTopic} a la realidad.`,
+      ]),
     caution: (c) =>
       `No conviertas un estado de ánimo pasajero en un veredicto definitivo sobre ${c.moonTopic}.`,
     question: (c) =>
-      `¿Cómo sería hoy una relación más consciente con ${c.moonTopic}?`,
+      pick(c.variant, [
+        `¿Dónde cambiaría el patrón de ${c.moonTopic} si practicaras ${c.signature.relating}?`,
+        `¿Qué estás preparado para construir en ${c.sunTopic} cuando dejes de esperar una certeza completa?`,
+        `¿Qué verdad sobre ${c.rulerTopic} merece una respuesta directa antes de terminar el día?`,
+        `¿Dónde se te invita a elegir ${c.signature.business} en lugar de repetir una costumbre conocida?`,
+      ]),
     phases: (c) => [
       {
         period: "morning",
@@ -537,11 +557,21 @@ const shared = {
     wellbeing: (c) =>
       `Préservez assez de calme pour distinguer votre rythme de l’atmosphère. Un petit rituel lié à ${c.moonTopic} peut rétablir votre stabilité.`,
     opportunity: (c) =>
-      `Faites un choix visible qui soutient ${c.sunTopic} ; la constance pèsera plus que le spectacle.`,
+      pick(c.variant, [
+        `Avancez avec ${c.signature.business}. Un geste concret autour de ${c.sunTopic} peut établir une direction que les autres comprennent et soutiennent.`,
+        `Une porte s’ouvre par ${c.rulerTopic}. Accordez votre attention à l’invitation utile déjà présente, puis faites de votre manière naturelle d’agir un avantage.`,
+        `Dites oui à la part de ${c.sunTopic} qui demande une participation réelle. ${c.signature.business} portera l’idée plus loin que l’attente de conditions parfaites.`,
+        `Transformez la conscience de ${c.moonTopic} en élan. Une conversation ou un geste opportun peut rapprocher ${c.sunTopic} de la réalité.`,
+      ]),
     caution: (c) =>
       `Ne transformez pas une humeur passagère en verdict sur ${c.moonTopic}.`,
     question: (c) =>
-      `À quoi ressemblerait aujourd’hui une relation plus consciente avec ${c.moonTopic} ?`,
+      pick(c.variant, [
+        `Que changerait ${c.signature.relating} dans le motif autour de ${c.moonTopic} ?`,
+        `Qu’êtes-vous prêt à construire dans ${c.sunTopic} lorsque vous cessez d’attendre une certitude totale ?`,
+        `Quelle vérité sur ${c.rulerTopic} mérite une réponse directe avant la fin du jour ?`,
+        `Où êtes-vous invité à choisir ${c.signature.business} plutôt qu’à répéter une habitude familière ?`,
+      ]),
     phases: (c) => [
       {
         period: "morning",
@@ -712,11 +742,21 @@ const shared = {
     wellbeing: (c) =>
       `Bewahre genug Ruhe, um deinen Rhythmus von der Umgebung zu unterscheiden. Ein kleines Ritual rund um ${c.moonTopic} kann Stabilität bringen.`,
     opportunity: (c) =>
-      `Triff eine sichtbare Entscheidung für ${c.sunTopic}; Beständigkeit wiegt mehr als Spektakel.`,
+      pick(c.variant, [
+        `Arbeite mit ${c.signature.business}. Eine konkrete Bewegung bei ${c.sunTopic} kann eine Richtung setzen, die andere verstehen und mittragen.`,
+        `Durch ${c.rulerTopic} öffnet sich eine Tür. Richte deine Aufmerksamkeit auf die nützliche Einladung, die bereits vor dir liegt, und mache deine natürliche Art zum Vorteil.`,
+        `Sage Ja zu dem Teil von ${c.sunTopic}, der echte Beteiligung verlangt. Mit ${c.signature.business} trägst du die Idee weiter als durch das Warten auf perfekte Bedingungen.`,
+        `Verwandle das heutige Bewusstsein für ${c.moonTopic} in Schwung. Ein rechtzeitiges Gespräch oder eine praktische Geste kann ${c.sunTopic} in greifbare Nähe rücken.`,
+      ]),
     caution: (c) =>
       `Behandle eine vorübergehende Stimmung bei ${c.moonTopic} nicht als endgültiges Urteil.`,
     question: (c) =>
-      `Wie würde heute ein bewussterer Umgang mit ${c.moonTopic} aussehen?`,
+      pick(c.variant, [
+        `Wo würde ${c.signature.relating} das Muster rund um ${c.moonTopic} verändern?`,
+        `Was möchtest du bei ${c.sunTopic} aufbauen, sobald du nicht mehr auf vollständige Gewissheit wartest?`,
+        `Welche Wahrheit über ${c.rulerTopic} verdient vor Tagesende eine direkte Antwort?`,
+        `Wo bist du eingeladen, mit ${c.signature.business} zu arbeiten, statt eine vertraute Gewohnheit zu wiederholen?`,
+      ]),
     phases: (c) => [
       {
         period: "morning",

@@ -45,6 +45,24 @@ describe("daily horoscopes", () => {
         sky.horoscopes.map((item) => item.bottomLine.split(/[.!?]/, 1)[0]),
       ).size,
     ).toBe(12);
+    expect(new Set(sky.horoscopes.map((item) => item.opportunity)).size).toBe(
+      12,
+    );
+    expect(new Set(sky.horoscopes.map((item) => item.question)).size).toBe(12);
+    expect(
+      new Set(
+        sky.horoscopes.map((item) =>
+          item.opportunity.split(/\s+/).slice(0, 2).join(" "),
+        ),
+      ).size,
+    ).toBeGreaterThanOrEqual(4);
+    expect(
+      new Set(
+        sky.horoscopes.map((item) =>
+          item.question.split(/\s+/).slice(0, 2).join(" "),
+        ),
+      ).size,
+    ).toBeGreaterThanOrEqual(4);
   });
 
   it("keeps every editorial section below 500 words", () => {
@@ -77,7 +95,7 @@ describe("daily horoscopes", () => {
     expect(aries.dayParts[0].guidance).toMatch(
       /temperatura|espacio|necesidad|Observa/,
     );
-    expect(aries.opportunity).toMatch(/^Haz/);
+    expect(aries.opportunity).toMatch(/^(Avanza|Se abre|Di que sí|Convierte)/);
     expect(aries.caution).toMatch(/^No conviertas/);
     expect(aries.question).toMatch(/^¿/);
     expect(aries.evidence.every((line) => !line.startsWith("Moon at"))).toBe(
