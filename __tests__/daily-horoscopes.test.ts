@@ -10,17 +10,54 @@ describe("daily horoscopes", () => {
     expect(new Set(sky.horoscopes.map((item) => item.sign)).size).toBe(12);
   });
 
-  it("provides substantive sections and calculated evidence", () => {
+  it("provides substantive sections, a day arc, and calculated evidence", () => {
     const virgo = horoscopeForSlug(
       "virgo",
       new Date("2026-08-03T09:00:00.000Z"),
     );
     expect(virgo?.overview.length).toBeGreaterThan(150);
-    expect(virgo?.relationships).toBeTruthy();
-    expect(virgo?.work).toBeTruthy();
+    expect(virgo?.bottomLine.length).toBeGreaterThan(450);
+    expect(virgo?.relationships.length).toBeGreaterThan(250);
+    expect(virgo?.business.length).toBeGreaterThan(250);
+    expect(virgo?.money.length).toBeGreaterThan(250);
+    expect(virgo?.work).toBe(virgo?.business);
     expect(virgo?.wellbeing).toBeTruthy();
+    expect(virgo?.dayParts.map((part) => part.period)).toEqual([
+      "morning",
+      "afternoon",
+      "evening",
+    ]);
+    expect(virgo?.dayParts.every((part) => part.guidance.length > 40)).toBe(
+      true,
+    );
     expect(virgo?.evidence).toHaveLength(4);
     expect(virgo?.evidence[0]).toMatch(/Moon at \d+°/);
+  });
+
+  it("gives the signs distinct voices without changing on refresh", () => {
+    const repeated = dailySkyFor(new Date("2026-08-03T20:00:00.000Z"));
+    expect(repeated.horoscopes.map((item) => item.bottomLine)).toEqual(
+      sky.horoscopes.map((item) => item.bottomLine),
+    );
+    expect(new Set(sky.horoscopes.map((item) => item.overview)).size).toBe(12);
+    expect(
+      new Set(
+        sky.horoscopes.map((item) => item.bottomLine.split(/[.!?]/, 1)[0]),
+      ).size,
+    ).toBe(12);
+  });
+
+  it("keeps every editorial section below 500 words", () => {
+    for (const reading of sky.horoscopes) {
+      for (const section of [
+        reading.bottomLine,
+        reading.relationships,
+        reading.business,
+        reading.money,
+      ]) {
+        expect(section.trim().split(/\s+/).length).toBeLessThanOrEqual(500);
+      }
+    }
   });
 
   it("rejects unsupported sign slugs", () => {
@@ -33,10 +70,13 @@ describe("daily horoscopes", () => {
     const spanish = dailySkyFor(new Date("2026-08-03T09:00:00.000Z"), "es-ES");
     const aries = spanish.horoscopes[0];
     expect(aries.sign).toBe("Aries");
-    expect(aries.overview).toMatch(/^La Luna/);
-    expect(aries.relationships).toMatch(/^En tus vínculos/);
-    expect(aries.work).toMatch(/^Dirige/);
-    expect(aries.wellbeing).toMatch(/^Protege/);
+    expect(aries.bottomLine).not.toBe(sky.horoscopes[0].bottomLine);
+    expect(aries.relationships).toContain("Luna");
+    expect(aries.business).toMatch(/profesional|negocios|Lidera|trabajo/);
+    expect(aries.money).toMatch(/dinero|financiera|cifras|pagarl/iu);
+    expect(aries.dayParts[0].guidance).toMatch(
+      /temperatura|espacio|necesidad|Observa/,
+    );
     expect(aries.opportunity).toMatch(/^Haz/);
     expect(aries.caution).toMatch(/^No conviertas/);
     expect(aries.question).toMatch(/^¿/);

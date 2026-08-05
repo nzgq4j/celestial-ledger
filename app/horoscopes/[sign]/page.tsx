@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { dailySkyFor, zodiacSlugs } from "@/lib/horoscopes/daily";
 import { getServerTranslationPack } from "@/lib/i18n/server";
+import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 
 export const dynamic = "force-dynamic";
 export function generateStaticParams() {
@@ -21,6 +22,11 @@ export default async function HoroscopeDetailPage({
     (item) => item.slug === slug.toLowerCase(),
   );
   if (!reading) notFound();
+  const periodLabels = {
+    morning: copy.morning,
+    afternoon: copy.afternoon,
+    evening: copy.evening,
+  };
   return (
     <main className="page-shell horoscope-detail">
       <Link className="horoscope-back" href="/horoscopes">
@@ -42,20 +48,29 @@ export default async function HoroscopeDetailPage({
       </header>
       <section className="horoscope-reading">
         <article className="horoscope-reading__lead">
-          <p>{reading.overview}</p>
+          <p className="section-kicker">{copy.bottomLine}</p>
+          <p>{reading.bottomLine}</p>
         </article>
-        <article>
-          <h2>{copy.relationships}</h2>
-          <p>{reading.relationships}</p>
-        </article>
-        <article>
-          <h2>{copy.work}</h2>
-          <p>{reading.work}</p>
-        </article>
-        <article>
-          <h2>{copy.wellbeing}</h2>
-          <p>{reading.wellbeing}</p>
-        </article>
+        <HoroscopeDayArc
+          heading={copy.dailyArc}
+          introduction={copy.dailyArcIntroduction}
+          labels={periodLabels}
+          parts={reading.dayParts}
+        />
+        <div className="horoscope-reading__chapters">
+          <article>
+            <h2>{copy.relationships}</h2>
+            <p>{reading.relationships}</p>
+          </article>
+          <article>
+            <h2>{copy.business}</h2>
+            <p>{reading.business}</p>
+          </article>
+          <article>
+            <h2>{copy.money}</h2>
+            <p>{reading.money}</p>
+          </article>
+        </div>
         <article className="horoscope-guidance">
           <div>
             <h2>{copy.opportunity}</h2>

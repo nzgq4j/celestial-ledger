@@ -79,12 +79,21 @@ export type DailyHoroscope = {
   displayDate: string;
   theme: string;
   overview: string;
+  bottomLine: string;
   relationships: string;
+  business: string;
+  money: string;
   work: string;
   wellbeing: string;
   opportunity: string;
   caution: string;
   question: string;
+  dayParts: Array<{
+    period: "morning" | "afternoon" | "evening";
+    theme: string;
+    guidance: string;
+    level: 1 | 2 | 3;
+  }>;
   evidence: string[];
 };
 
@@ -95,6 +104,17 @@ export type DailySky = {
   aspects: Aspect[];
   horoscopes: DailyHoroscope[];
 };
+
+function stableVariant(value: string) {
+  return [...value].reduce(
+    (total, character) => (total * 31 + character.charCodeAt(0)) >>> 0,
+    7,
+  );
+}
+
+function phaseLevel(value: number): 1 | 2 | 3 {
+  return ((value % 3) + 1) as 1 | 2 | 3;
+}
 
 export function dailySkyFor(
   dateInput = new Date(),
@@ -130,6 +150,10 @@ export function dailySkyFor(
     const rulerTopic = copy.topics[rulerHouse - 1];
     const localizedRuler = localizeAstroTerm(ruler, locale) as PlanetName;
     const localizedRulerSign = localizeAstroTerm(rulerPlacement.sign, locale);
+    const variantSeed = stableVariant(`${dateKey}:${sign}`);
+    const aspectPhrase = keyAspect
+      ? localizedAspectPhrase(keyAspect, locale)
+      : "";
     const context = {
       moonTopic,
       sunTopic,
@@ -137,7 +161,10 @@ export function dailySkyFor(
       ruler: localizedRuler,
       rulerSign: localizedRulerSign,
       retrograde: rulerPlacement.retrograde,
-      aspect: keyAspect,
+      aspectPhrase,
+      elementPrompt: copy.elements[signIndex % copy.elements.length],
+      variant: variantSeed % 4,
+      signature: copy.signatures[signIndex],
     };
     const theme = `${moonTopic[0].toUpperCase()}${moonTopic.slice(1)}`;
     const moonSign = localizeAstroTerm(moon.sign, locale);
@@ -178,6 +205,16 @@ export function dailySkyFor(
               ? "Kein enger Hauptaspekt bestimmt die heutige Momentaufnahme."
               : "No tight major aspect dominates the daily snapshot.",
     ];
+    const business = copy.business(context);
+    const phaseLevels = [
+      phaseLevel(moonHouse + signIndex + variantSeed),
+      phaseLevel(rulerHouse + signIndex + variantSeed),
+      phaseLevel(sunHouse + signIndex + variantSeed),
+    ] as const;
+    const dayParts = copy.phases(context).map((phase, index) => ({
+      ...phase,
+      level: phaseLevels[index],
+    }));
     return {
       sign: localizeAstroTerm(sign, locale),
       slug: sign.toLowerCase(),
@@ -185,16 +222,17 @@ export function dailySkyFor(
       date: dateKey,
       displayDate,
       theme,
-      overview: copy.overview(context, copy.elements[signIndex % 4]),
+      overview: copy.overview(context),
+      bottomLine: copy.bottomLine(context),
       relationships: copy.relationships(context),
-      work: copy.work(
-        context,
-        keyAspect ? localizedAspectPhrase(keyAspect, locale) : "",
-      ),
+      business,
+      money: copy.money(context),
+      work: business,
       wellbeing: copy.wellbeing(context),
       opportunity: copy.opportunity(context),
       caution: copy.caution(context),
       question: copy.question(context),
+      dayParts,
       evidence,
     };
   });

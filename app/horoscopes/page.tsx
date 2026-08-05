@@ -2,6 +2,7 @@ import Link from "next/link";
 import { dailySkyFor } from "@/lib/horoscopes/daily";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
+import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,11 @@ export default async function DailyHoroscopesPage() {
   const pack = await getServerTranslationPack();
   const copy = pack.messages.horoscopes;
   const sky = dailySkyFor(new Date(), pack.tag);
+  const periodLabels = {
+    morning: copy.morning,
+    afternoon: copy.afternoon,
+    evening: copy.evening,
+  };
   return (
     <main className="page-shell daily-horoscopes">
       <header className="horoscope-hero">
@@ -39,6 +45,12 @@ export default async function DailyHoroscopesPage() {
               </div>
             </div>
             <p>{item.overview}</p>
+            <HoroscopeDayArc
+              compact
+              heading={copy.dailyArc}
+              labels={periodLabels}
+              parts={item.dayParts}
+            />
             <dl>
               <div>
                 <dt>{copy.opportunity}</dt>
