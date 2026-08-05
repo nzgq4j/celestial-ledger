@@ -6,10 +6,16 @@ import { zodiacSlugs } from "@/lib/horoscopes/daily";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getAdminSettings();
   const base = settings.seo.canonicalBase;
-  const { data: posts } = await createAdminClient()
-    .from("blog_posts")
-    .select("slug,updated_at")
-    .eq("status", "published");
+  let posts: { slug: string; updated_at: string }[] | null = null;
+  try {
+    const result = await createAdminClient()
+      .from("blog_posts")
+      .select("slug,updated_at")
+      .eq("status", "published");
+    posts = result.data;
+  } catch {
+    // Build environments without runtime secrets still receive the static map.
+  }
   const paths = [
     "",
     "/horoscopes",

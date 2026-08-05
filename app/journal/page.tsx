@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Celestial Journal",
   description:

@@ -44,9 +44,15 @@ function object(value: Json | undefined): Record<string, Json | undefined> {
 }
 
 export async function getAdminSettings(): Promise<AdminSettings> {
-  const { data } = await createAdminClient()
-    .from("site_settings")
-    .select("key,value");
+  let data: { key: string; value: Json }[] | null = null;
+  try {
+    const result = await createAdminClient()
+      .from("site_settings")
+      .select("key,value");
+    data = result.data;
+  } catch {
+    return defaultAdminSettings;
+  }
   const map = new Map((data ?? []).map((row) => [row.key, object(row.value)]));
   const ai = map.get("ai.models") ?? {};
   const recaptcha = map.get("security.recaptcha") ?? {};
