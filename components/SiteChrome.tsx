@@ -47,6 +47,9 @@ export function SiteHeader() {
               {pack.messages.navigation.weekly}
             </Link>
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
+            <Link href="/membership">
+              {pack.messages.navigation.membership}
+            </Link>
             <Link href="/samples">{pack.messages.navigation.samples}</Link>
             <Link href="/journal">{pack.messages.navigation.journal}</Link>
           </div>
@@ -65,6 +68,9 @@ export function SiteHeader() {
               </Link>
               <Link href="/reports">
                 {pack.messages.navigation.privateReports}
+              </Link>
+              <Link href="/membership">
+                {pack.messages.navigation.membershipPlans}
               </Link>
               <Link href="/samples">
                 {pack.messages.navigation.sampleReports}
@@ -116,6 +122,7 @@ export function SiteFooter() {
             <Link href="/account">{navigation.library}</Link>
             <Link href="/#chart">{navigation.birthChart}</Link>
             <Link href="/reports">{copy.collection}</Link>
+            <Link href="/membership">{navigation.membershipPlans}</Link>
             <Link href="/auth/login">{copy.signIn}</Link>
           </nav>
           <nav aria-labelledby="footer-trust">

@@ -14,6 +14,7 @@ const pack = {
       horoscopes: "Horoscopes",
       weekly: "Weekly",
       reports: "Reports",
+      membership: "Membership",
       samples: "Samples",
       journal: "Journal",
       library: "My Celestial Atlas",
@@ -21,6 +22,7 @@ const pack = {
       dailyHoroscopes: "Daily horoscopes",
       weeklyReadings: "Weekly readings",
       privateReports: "Private reports",
+      membershipPlans: "Membership plans",
       sampleReports: "Sample reports",
     },
     preferences: {
@@ -77,6 +79,7 @@ const pack = {
       dailyReadingHistory: "Recent daily readings",
       myBirthCharts: "My birth charts",
       adminConsole: "Administration",
+      membership: "Membership",
       settings: "Settings",
       libraryKicker: "Your private library",
       readingsTitle: "Readings and reports",

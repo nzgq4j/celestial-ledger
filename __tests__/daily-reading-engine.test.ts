@@ -18,6 +18,7 @@ import {
 } from "@/lib/daily-readings/domain";
 import { resolveRegisteredDailyReadingEntitlement } from "@/lib/daily-readings/entitlement";
 import { projectLongitude } from "@/components/DailyReadingVisuals";
+import { buildDailyReadingDayArc } from "@/lib/daily-readings/day-arc";
 
 const readingId = "44bd14d1-cb20-4f63-88a0-6badcc14f632";
 const generatedAt = "2026-08-05T08:00:00.000Z";
@@ -62,6 +63,38 @@ describe("registered daily reading foundation", () => {
     expect(
       first.transits.every((transit) =>
         ["building", "exact", "separating"].includes(transit.state),
+      ),
+    ).toBe(true);
+  });
+
+  it("builds a morning, noon and evening arc from recorded evidence", async () => {
+    const natalChart = await calculateNatalChart(sampleBirthInput);
+    const analysis = buildDailyReadingAnalysis({
+      natalChart,
+      readingDate: "2026-08-05",
+      observationTimeZone: sampleBirthInput.place.timeZone,
+      locale: "en-GB",
+      calculatedAtUtc: generatedAt,
+    });
+    const phases = buildDailyReadingDayArc(analysis);
+    const evidenceIds = new Set(analysis.evidence.map((item) => item.id));
+
+    expect(phases.map((phase) => phase.period)).toEqual([
+      "morning",
+      "noon",
+      "evening",
+    ]);
+    expect(phases.map((phase) => phase.label)).toEqual([
+      "Morning",
+      "Noon",
+      "Evening",
+    ]);
+    expect(phases.every((phase) => phase.level >= 1 && phase.level <= 3)).toBe(
+      true,
+    );
+    expect(
+      phases.every((phase) =>
+        phase.evidenceIds?.every((id) => evidenceIds.has(id)),
       ),
     ).toBe(true);
   });

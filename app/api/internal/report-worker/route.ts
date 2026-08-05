@@ -83,6 +83,8 @@ export async function runNextReportJob() {
         : defaultLocale;
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      timeout: 100_000,
+      maxRetries: 0,
     });
     const prompt = recoveryThemes
       ? recoveryPrompt(evidence, recoveryThemes, reportLocale)

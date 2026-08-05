@@ -1,0 +1,517 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Celestial Atlas 18-Month Monetization Forecast",
+    "description": "A decision-ready operating contribution forecast for a 500-user starting base.",
+    "generatedAt": "2026-08-05T12:00:00Z",
+    "cards": [
+      {
+        "id": "revenue_card",
+        "description": "Gross revenue across the 18-month base case.",
+        "dataset": "summary_metrics",
+        "sourceId": "forecast_model",
+        "metrics": [
+          {
+            "label": "18M revenue",
+            "field": "revenue_18m",
+            "format": "currency"
+          }
+        ]
+      },
+      {
+        "id": "contribution_card",
+        "description": "Revenue after model, payment, hosting/operations, and advertising costs.",
+        "dataset": "summary_metrics",
+        "sourceId": "forecast_model",
+        "metrics": [
+          {
+            "label": "18M operating contribution",
+            "field": "contribution_18m",
+            "format": "currency"
+          }
+        ]
+      },
+      {
+        "id": "users_card",
+        "description": "Closing users in Month 18 after paid and organic additions and churn.",
+        "dataset": "summary_metrics",
+        "sourceId": "forecast_model",
+        "metrics": [
+          {
+            "label": "Month 18 users",
+            "field": "month_18_users",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "ai_card",
+        "description": "GPT-5 mini cost for long reports and new-user natal interpretations.",
+        "dataset": "summary_metrics",
+        "sourceId": "forecast_model",
+        "metrics": [
+          {
+            "label": "18M AI cost",
+            "field": "ai_cost_18m",
+            "format": "currency"
+          }
+        ]
+      },
+      {
+        "id": "breakeven_card",
+        "description": "Active users required to cover the $500 combined monthly fixed spend at base unit economics.",
+        "dataset": "summary_metrics",
+        "sourceId": "forecast_model",
+        "metrics": [
+          {
+            "label": "Break-even active users",
+            "field": "break_even_users",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "scenario_chart",
+        "title": "Operating contribution by scenario",
+        "subtitle": "18-month total, USD",
+        "type": "bar",
+        "dataset": "scenario_summary",
+        "sourceId": "forecast_model",
+        "valueFormat": "currency",
+        "encodings": {
+          "x": {
+            "field": "scenario",
+            "type": "nominal",
+            "label": "Scenario"
+          },
+          "y": {
+            "field": "contribution_18m",
+            "type": "quantitative",
+            "label": "18M contribution"
+          },
+          "tooltip": [
+            {
+              "field": "month_18_users",
+              "type": "quantitative",
+              "label": "Month 18 users",
+              "format": "number"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [],
+    "sources": [
+      {
+        "id": "forecast_model",
+        "label": "Celestial Atlas 18-month forecast model",
+        "path": "celestial-atlas-18-month-monetization-model.xlsx"
+      },
+      {
+        "id": "openai_pricing",
+        "label": "OpenAI GPT-5 mini pricing",
+        "path": "https://developers.openai.com/api/docs/models/gpt-5-mini"
+      },
+      {
+        "id": "stripe_pricing",
+        "label": "Stripe pricing",
+        "path": "https://stripe.com/pricing"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Celestial Atlas 18-Month Monetization Forecast"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "sourceId": "forecast_model",
+        "body": "## Executive Summary\n\n- **The revised $500 combined monthly expense ceiling materially improves the model.** The base case generates **$28,838** of gross revenue and **$18,005** of operating contribution over 18 months.\n- **The business is contribution-positive from Month 1.** Monthly contribution begins near **$946** and reaches about **$1,049** by Month 18.\n- **AI model cost is immaterial at this scale.** GPT-5 mini usage totals about **$18**, versus **$1815** of payment fees and **$9,000** of combined fixed spend.\n- **The main commercial risk is paid conversion and retention, not token spend.** The base case assumes a 20% paid mix, $20 paid CAC, 1% monthly organic additions, and 3% monthly churn."
+      },
+      {
+        "id": "metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "revenue_card",
+          "contribution_card",
+          "users_card",
+          "ai_card",
+          "breakeven_card"
+        ]
+      },
+      {
+        "id": "growth_finding",
+        "type": "markdown",
+        "sourceId": "forecast_model",
+        "body": "## Revenue clears the fixed-cost floor immediately\n\nWith $250 per month assigned to advertising, paid acquisition falls to 12.5 users per month at the assumed $20 CAC. The active base therefore grows modestly from 500 to about **538 users** by Month 18. Even with that slower growth, revenue remains comfortably above operating cost throughout the forecast.\n\nIf the user base stays completely flat at 500, the same tier mix and purchase assumptions still produce about **$27,718** of revenue and **$16,958** of contribution over 18 months. Growth adds upside, but it is not required for base contribution profitability."
+      },
+      {
+        "id": "cost_finding",
+        "type": "markdown",
+        "sourceId": "forecast_model",
+        "body": "## Hosting, advertising, and payment fees dominate the cost base\n\nOver 18 months, hosting/operations and advertising each cost **$4,500**. Payment processing adds about **$1,815**, while AI generation costs only about **$18**. The model therefore does not support weakening the paid tiers merely to save tokens.\n\nThe practical cost-control priority is transaction design: bundle low-price daily readings into credits, limit avoidable micro-transactions, and measure international-card and currency-conversion fees before expanding the forecast."
+      },
+      {
+        "id": "scenario_finding",
+        "type": "markdown",
+        "sourceId": "forecast_model",
+        "body": "## The downside remains positive, but its user base contracts\n\nThe Conservative case ends with about **399 users** because 4% monthly churn exceeds paid and organic additions. It still produces about **$9,579** of 18-month operating contribution under the reduced fixed-cost structure. The Upside case reaches about **693 users** and **$35,176** of contribution.\n\nThis makes retention the first launch gate: a profitable but shrinking user base is not a healthy long-term outcome."
+      },
+      {
+        "id": "scenario_chart_note",
+        "type": "markdown",
+        "body": "The three cases vary tier mix, CAC, organic additions, and churn while holding prices, purchase rates, model usage, and fixed monthly spend constant."
+      },
+      {
+        "id": "scenario_chart",
+        "type": "chart",
+        "chartId": "scenario_chart"
+      },
+      {
+        "id": "tier_finding",
+        "type": "markdown",
+        "sourceId": "forecast_model",
+        "body": "## Paid tiers carry the economics\n\nFree users contribute add-on and report revenue, but Personal and Premium memberships generate the recurring margin that covers the fixed operating base. The proposed prices remain cost-effective: neither AI usage nor the included Premium report credit creates meaningful margin pressure at the modeled usage levels.\n\nKeep report purchases à la carte for Personal, retain a quarterly standard-report credit for Premium, and use the $5 purchase as a multi-reading credit pack rather than a single reading."
+      },
+      {
+        "id": "recommendations",
+        "type": "markdown",
+        "body": "## Recommended next steps\n\n1. **Launch-test $9.99 Personal and $19.99 Premium** before changing entitlements; the present price ladder covers modeled variable costs comfortably.\n2. **Set commercial gates around conversion and retention:** paid mix, 30/60/90-day retention, tier migration, and churn by tier.\n3. **Instrument unit usage:** daily-reading frequency, pack attach rate, report attach rate, model tokens, retries, and email delivery cost.\n4. **Review the $250 advertising allocation after 60–90 days.** If CAC is above $20 or retention is below plan, do not scale spend until the funnel is repaired.\n5. **Complete the existing legal, licensing, security, and operational release gates before enabling paid reports.** This forecast is planning analysis, not release approval."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further questions\n\n- What paid conversion rate is realistic after a 30-day launch cohort?\n- Does Premium email delivery improve retention enough to justify its operational overhead?\n- How many users choose annual billing, and how does that change cash timing and payment fees?\n- What share of payments will incur international-card or currency-conversion charges?\n- Should the $250 advertising budget be concentrated on paid acquisition or partly reserved for creative and conversion testing?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and assumptions\n\nThis is an operating contribution forecast, not GAAP net income or cash flow. It excludes founder/staff compensation, customer support, legal/accounting, taxes, refunds and chargebacks, email delivery, monitoring, storage overages, app-store commissions, international-card and FX surcharges, and annual-plan cash timing. The $500 monthly expense ceiling is modeled as $250 hosting/operations plus $250 advertising; change those two workbook inputs if a different allocation is intended.\n\nDaily readings currently use deterministic/template logic and therefore carry no OpenAI token cost. Long reports and natal interpretations use GPT-5 mini planning allowances. OpenAI lists GPT-5 mini at $0.25 per million input tokens and $2.00 per million output tokens; Stripe assumptions use 2.9% plus $0.30 for domestic online cards and 0.7% of subscription billing volume. Actual usage and fees must replace these assumptions after launch."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-05T12:00:00Z",
+    "status": "ready",
+    "datasets": {
+      "summary_metrics": [
+        {
+          "starting_users": 500,
+          "month_18_users": 538.108083642871,
+          "revenue_18m": 28837.944110239336,
+          "contribution_18m": 18004.77756897168,
+          "ai_cost_18m": 18.308569835226642,
+          "break_even_users": 173.37056094958587,
+          "month_1_contribution": 945.6029825783332,
+          "month_18_contribution": 1049.3496190635037
+        }
+      ],
+      "monthly_trend": [
+        {
+          "month": "Aug 2026",
+          "series": "Revenue",
+          "value": 1543.7377199999999
+        },
+        {
+          "month": "Aug 2026",
+          "series": "Total cost",
+          "value": 598.1347374216666
+        },
+        {
+          "month": "Sep 2026",
+          "series": "Revenue",
+          "value": 1551.3601655999998
+        },
+        {
+          "month": "Sep 2026",
+          "series": "Total cost",
+          "value": 598.6189370565667
+        },
+        {
+          "month": "Oct 2026",
+          "series": "Revenue",
+          "value": 1558.8301622879999
+        },
+        {
+          "month": "Oct 2026",
+          "series": "Total cost",
+          "value": 599.0934526987687
+        },
+        {
+          "month": "Nov 2026",
+          "series": "Revenue",
+          "value": 1566.1507590422402
+        },
+        {
+          "month": "Nov 2026",
+          "series": "Total cost",
+          "value": 599.5584780281266
+        },
+        {
+          "month": "Dec 2026",
+          "series": "Revenue",
+          "value": 1573.3249438613952
+        },
+        {
+          "month": "Dec 2026",
+          "series": "Total cost",
+          "value": 600.0142028508974
+        },
+        {
+          "month": "Jan 2027",
+          "series": "Revenue",
+          "value": 1580.3556449841672
+        },
+        {
+          "month": "Jan 2027",
+          "series": "Total cost",
+          "value": 600.4608131772128
+        },
+        {
+          "month": "Feb 2027",
+          "series": "Revenue",
+          "value": 1587.2457320844842
+        },
+        {
+          "month": "Feb 2027",
+          "series": "Total cost",
+          "value": 600.8984912970019
+        },
+        {
+          "month": "Mar 2027",
+          "series": "Revenue",
+          "value": 1593.9980174427947
+        },
+        {
+          "month": "Mar 2027",
+          "series": "Total cost",
+          "value": 601.3274158543952
+        },
+        {
+          "month": "Apr 2027",
+          "series": "Revenue",
+          "value": 1600.6152570939382
+        },
+        {
+          "month": "Apr 2027",
+          "series": "Total cost",
+          "value": 601.7477619206406
+        },
+        {
+          "month": "May 2027",
+          "series": "Revenue",
+          "value": 1607.1001519520598
+        },
+        {
+          "month": "May 2027",
+          "series": "Total cost",
+          "value": 602.1597010655612
+        },
+        {
+          "month": "Jun 2027",
+          "series": "Revenue",
+          "value": 1613.455348913019
+        },
+        {
+          "month": "Jun 2027",
+          "series": "Total cost",
+          "value": 602.5634014275834
+        },
+        {
+          "month": "Jul 2027",
+          "series": "Revenue",
+          "value": 1619.6834419347588
+        },
+        {
+          "month": "Jul 2027",
+          "series": "Total cost",
+          "value": 602.959027782365
+        },
+        {
+          "month": "Aug 2027",
+          "series": "Revenue",
+          "value": 1625.786973096063
+        },
+        {
+          "month": "Aug 2027",
+          "series": "Total cost",
+          "value": 603.3467416100509
+        },
+        {
+          "month": "Sep 2027",
+          "series": "Revenue",
+          "value": 1631.7684336341415
+        },
+        {
+          "month": "Sep 2027",
+          "series": "Total cost",
+          "value": 603.7267011611832
+        },
+        {
+          "month": "Oct 2027",
+          "series": "Revenue",
+          "value": 1637.6302649614595
+        },
+        {
+          "month": "Oct 2027",
+          "series": "Total cost",
+          "value": 604.0990615212929
+        },
+        {
+          "month": "Nov 2027",
+          "series": "Revenue",
+          "value": 1643.37485966223
+        },
+        {
+          "month": "Nov 2027",
+          "series": "Total cost",
+          "value": 604.4639746742005
+        },
+        {
+          "month": "Dec 2027",
+          "series": "Revenue",
+          "value": 1649.0045624689851
+        },
+        {
+          "month": "Dec 2027",
+          "series": "Total cost",
+          "value": 604.8215895640498
+        },
+        {
+          "month": "Jan 2028",
+          "series": "Revenue",
+          "value": 1654.5216712196059
+        },
+        {
+          "month": "Jan 2028",
+          "series": "Total cost",
+          "value": 605.1720521561022
+        }
+      ],
+      "cost_composition": [
+        {
+          "cost": "Ops / hosting",
+          "value": 4500
+        },
+        {
+          "cost": "Advertising",
+          "value": 4500
+        },
+        {
+          "cost": "Payment fees",
+          "value": 1814.8579714324392
+        },
+        {
+          "cost": "AI model cost",
+          "value": 18.308569835226642
+        }
+      ],
+      "scenario_summary": [
+        {
+          "scenario": "Conservative",
+          "tier_mix": "85% / 12% / 3%",
+          "paid_cac": 25,
+          "organic_rate": 0.005,
+          "churn_rate": 0.04,
+          "month_18_users": 398.5599452701836,
+          "revenue_18m": 19854.462705297385,
+          "contribution_18m": 9578.764311623503,
+          "contribution_margin": 0.48244893119509025,
+          "month_18_contribution": 431.4558205576967
+        },
+        {
+          "scenario": "Base",
+          "tier_mix": "80% / 16% / 4%",
+          "paid_cac": 20,
+          "organic_rate": 0.01,
+          "churn_rate": 0.03,
+          "month_18_users": 538.108083642871,
+          "revenue_18m": 28837.944110239336,
+          "contribution_18m": 18004.77756897168,
+          "contribution_margin": 0.6243433131066656,
+          "month_18_contribution": 1049.3496190635037
+        },
+        {
+          "scenario": "Upside",
+          "tier_mix": "70% / 23% / 7%",
+          "paid_cac": 15,
+          "organic_rate": 0.015,
+          "churn_rate": 0.025,
+          "month_18_users": 693.0672783082306,
+          "revenue_18m": 47105.76734461399,
+          "contribution_18m": 35176.19142394153,
+          "contribution_margin": 0.7467491436155009,
+          "month_18_contribution": 2317.475370198961
+        }
+      ],
+      "tier_economics": [
+        {
+          "tier": "Free",
+          "share": 0.8,
+          "monthly_price": 0,
+          "monthly_revenue_per_user": 0.6998,
+          "variable_cost_per_user": 0.051256699999999995,
+          "key_entitlement": "1 natal chart; 1 primary daily reading/week"
+        },
+        {
+          "tier": "Personal",
+          "share": 0.16,
+          "monthly_price": 9.99,
+          "monthly_revenue_per_user": 10.679640000000001,
+          "variable_cost_per_user": 0.7025645599999999,
+          "key_entitlement": "2 charts; daily primary reading; 2 companion readings/month"
+        },
+        {
+          "tier": "Premium",
+          "share": 0.04,
+          "monthly_price": 19.99,
+          "monthly_revenue_per_user": 20.27984,
+          "variable_cost_per_user": 1.0540495266666665,
+          "key_entitlement": "5 charts; emailed primary reading; 10 companion readings/month; quarterly report credit"
+        }
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "forecast_model",
+      "path": "forecast_model.sql",
+      "query": {
+        "engine": "postgresql",
+        "language": "sql",
+        "sql": "-- Celestial Atlas 18-month forecast model, base case.\n-- Dialect: PostgreSQL-compatible recursive SQL.\n-- This query mirrors the formula-driven workbook and report snapshot.\n\nWITH RECURSIVE assumptions AS (\n  SELECT\n    500.0::numeric AS starting_users,\n    0.80::numeric AS free_mix,\n    0.16::numeric AS personal_mix,\n    0.04::numeric AS premium_mix,\n    9.99::numeric AS personal_price,\n    19.99::numeric AS premium_price,\n    250.0::numeric AS hosting,\n    250.0::numeric AS advertising,\n    20.0::numeric AS paid_cac,\n    0.01::numeric AS organic_rate,\n    0.03::numeric AS churn_rate,\n    5.0::numeric AS pack_price,\n    14.99::numeric AS report_price,\n    0.25::numeric AS model_input_price_per_million,\n    2.0::numeric AS model_output_price_per_million,\n    0.029::numeric AS card_rate,\n    0.30::numeric AS fixed_card_fee,\n    0.007::numeric AS billing_rate\n),\nmonths AS (\n  SELECT 1 AS month_number, DATE '2026-08-01' AS month_start, a.starting_users AS opening_users\n  FROM assumptions a\n  UNION ALL\n  SELECT\n    m.month_number + 1,\n    (m.month_start + INTERVAL '1 month')::date,\n    m.opening_users\n      + a.advertising / a.paid_cac\n      + m.opening_users * a.organic_rate\n      - m.opening_users * a.churn_rate\n  FROM months m\n  CROSS JOIN assumptions a\n  WHERE m.month_number < 18\n),\npopulation AS (\n  SELECT\n    m.*,\n    a.advertising / a.paid_cac AS paid_adds,\n    m.opening_users * a.organic_rate AS organic_adds,\n    m.opening_users * a.churn_rate AS churned_users,\n    m.opening_users\n      + a.advertising / a.paid_cac\n      + m.opening_users * a.organic_rate\n      - m.opening_users * a.churn_rate AS closing_users\n  FROM months m\n  CROSS JOIN assumptions a\n),\ntier_population AS (\n  SELECT\n    p.*,\n    (p.opening_users + p.closing_users) / 2.0 AS active_users,\n    ((p.opening_users + p.closing_users) / 2.0) * a.free_mix AS free_users,\n    ((p.opening_users + p.closing_users) / 2.0) * a.personal_mix AS personal_users,\n    ((p.opening_users + p.closing_users) / 2.0) * a.premium_mix AS premium_users\n  FROM population p\n  CROSS JOIN assumptions a\n),\nrevenue AS (\n  SELECT\n    t.*,\n    t.personal_users * a.personal_price + t.premium_users * a.premium_price AS subscription_revenue,\n    (t.free_users * 0.08 + t.personal_users * 0.03 + t.premium_users * 0.01) * a.pack_price AS pack_revenue,\n    t.free_users * 0.02 * a.report_price\n      + t.personal_users * 0.04 * a.report_price * 0.90\n      + t.premium_users * 0.02 * a.report_price * 0.80 AS report_revenue,\n    t.free_users * 0.02 + t.personal_users * 0.04 + t.premium_users * 0.02 AS paid_reports,\n    t.premium_users / 3.0 AS included_reports\n  FROM tier_population t\n  CROSS JOIN assumptions a\n),\neconomics AS (\n  SELECT\n    r.*,\n    r.subscription_revenue + r.pack_revenue + r.report_revenue AS total_revenue,\n    (r.paid_reports + r.included_reports)\n      * (((15000.0 / 1000000.0) * a.model_input_price_per_million\n      + (20000.0 / 1000000.0) * a.model_output_price_per_million) * 1.10)\n      + (r.paid_adds + r.organic_adds)\n      * (a.free_mix * 1.0 + a.personal_mix * 1.4 + a.premium_mix * 2.0)\n      * ((5000.0 / 1000000.0) * a.model_input_price_per_million\n      + (2000.0 / 1000000.0) * a.model_output_price_per_million) AS ai_cost,\n    r.subscription_revenue * (a.card_rate + a.billing_rate)\n      + (r.personal_users + r.premium_users) * a.fixed_card_fee\n      + r.pack_revenue * a.card_rate\n      + (r.free_users * 0.08 + r.personal_users * 0.03 + r.premium_users * 0.01) * a.fixed_card_fee\n      + r.report_revenue * a.card_rate\n      + r.paid_reports * a.fixed_card_fee AS payment_fees\n  FROM revenue r\n  CROSS JOIN assumptions a\n)\nSELECT\n  e.month_number,\n  e.month_start,\n  e.opening_users,\n  e.closing_users,\n  e.active_users,\n  e.subscription_revenue,\n  e.pack_revenue,\n  e.report_revenue,\n  e.total_revenue,\n  e.ai_cost,\n  e.payment_fees,\n  a.hosting,\n  a.advertising,\n  e.ai_cost + e.payment_fees + a.hosting + a.advertising AS total_cost,\n  e.total_revenue - e.ai_cost - e.payment_fees - a.hosting - a.advertising AS operating_contribution\nFROM economics e\nCROSS JOIN assumptions a\nORDER BY e.month_number;\n",
+        "description": "Formula-driven 18-month Celestial Atlas monetization model using the Assumptions, Monthly Forecast, and Scenario Analysis sheets, with an equivalent SQL reproducibility specification.",
+        "tables_used": ["Assumptions", "Monthly Forecast", "Scenario Analysis"],
+        "executed_at": "2026-08-05T12:00:00Z"
+      }
+    },
+    {
+      "id": "openai_pricing",
+      "query": {
+        "engine": "web",
+        "language": "html",
+        "url": "https://developers.openai.com/api/docs/models/gpt-5-mini",
+        "description": "Official GPT-5 mini token pricing.",
+        "executed_at": "2026-08-05T12:00:00Z"
+      }
+    },
+    {
+      "id": "stripe_pricing",
+      "query": {
+        "engine": "web",
+        "language": "html",
+        "url": "https://stripe.com/pricing",
+        "description": "Official Stripe payment and Billing pricing.",
+        "executed_at": "2026-08-05T12:00:00Z"
+      }
+    }
+  ]
+}

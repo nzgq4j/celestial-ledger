@@ -35,8 +35,8 @@ export default function WeeklyReadingsPage() {
           <p className="section-kicker">Subscription opening soon</p>
           <h2>Weekly Celestial Atlas</h2>
           <p>Monthly and annual membership options are being prepared.</p>
-          <Link href="/auth/login" className="button-primary">
-            Create My Celestial Atlas
+          <Link href="/membership" className="button-primary">
+            Compare memberships
           </Link>
           <small>
             Members will be the first invited when subscriptions open.

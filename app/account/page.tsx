@@ -199,6 +199,7 @@ export default async function AccountPage({
         <a href="#reports">{copy.myReadings}</a>
         <a href="#birth-profiles">{copy.myBirthCharts}</a>
         <a href="#account-settings">{copy.settings}</a>
+        <Link href="/membership">{copy.membership}</Link>
         {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
       </nav>
 

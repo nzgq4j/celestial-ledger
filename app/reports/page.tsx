@@ -111,6 +111,9 @@ export default function ReportsPage() {
         <Link href="/account" className="button-primary">
           Open My Celestial Atlas
         </Link>
+        <Link href="/membership" className="button-quiet">
+          Compare memberships
+        </Link>
       </section>
     </main>
   );

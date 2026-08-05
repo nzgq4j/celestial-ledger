@@ -3,12 +3,38 @@ import type { LocaleTag } from "@/lib/i18n/config";
 export function LocaleFlag({ locale }: { locale: LocaleTag }) {
   if (locale === "en-GB")
     return (
-      <svg viewBox="0 0 60 36" role="img" aria-label="United Kingdom flag">
-        <rect width="60" height="36" fill="#012169" />
-        <path d="M0 0 60 36M60 0 0 36" stroke="#fff" strokeWidth="8" />
-        <path d="M0 0 60 36M60 0 0 36" stroke="#c8102e" strokeWidth="4" />
-        <path d="M30 0v36M0 18h60" stroke="#fff" strokeWidth="12" />
-        <path d="M30 0v36M0 18h60" stroke="#c8102e" strokeWidth="7" />
+      <svg viewBox="0 0 60 36" role="img" aria-label="United States flag">
+        <rect width="60" height="36" fill="#fff" />
+        <path
+          fill="#b22234"
+          d="M0 0h60v2.77H0zm0 5.54h60v2.77H0zm0 5.54h60v2.77H0zm0 5.54h60v2.77H0zm0 5.54h60v2.77H0zm0 5.54h60v2.77H0zm0 5.54h60V36H0z"
+        />
+        <rect width="25" height="19.39" fill="#3c3b6e" />
+        <g fill="#fff">
+          <circle cx="3" cy="2.5" r="0.75" />
+          <circle cx="8" cy="2.5" r="0.75" />
+          <circle cx="13" cy="2.5" r="0.75" />
+          <circle cx="18" cy="2.5" r="0.75" />
+          <circle cx="23" cy="2.5" r="0.75" />
+          <circle cx="5.5" cy="6.5" r="0.75" />
+          <circle cx="10.5" cy="6.5" r="0.75" />
+          <circle cx="15.5" cy="6.5" r="0.75" />
+          <circle cx="20.5" cy="6.5" r="0.75" />
+          <circle cx="3" cy="10.5" r="0.75" />
+          <circle cx="8" cy="10.5" r="0.75" />
+          <circle cx="13" cy="10.5" r="0.75" />
+          <circle cx="18" cy="10.5" r="0.75" />
+          <circle cx="23" cy="10.5" r="0.75" />
+          <circle cx="5.5" cy="14.5" r="0.75" />
+          <circle cx="10.5" cy="14.5" r="0.75" />
+          <circle cx="15.5" cy="14.5" r="0.75" />
+          <circle cx="20.5" cy="14.5" r="0.75" />
+          <circle cx="3" cy="18" r="0.75" />
+          <circle cx="8" cy="18" r="0.75" />
+          <circle cx="13" cy="18" r="0.75" />
+          <circle cx="18" cy="18" r="0.75" />
+          <circle cx="23" cy="18" r="0.75" />
+        </g>
       </svg>
     );
   if (locale === "de-DE")

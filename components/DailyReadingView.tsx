@@ -3,6 +3,8 @@ import type {
   DailyReadingContent,
 } from "@/lib/daily-readings/domain";
 import { DailyReadingVisuals } from "@/components/DailyReadingVisuals";
+import { ReadingDayArc } from "@/components/reports/ReadingDayArc";
+import { buildDailyReadingDayArc } from "@/lib/daily-readings/day-arc";
 
 export function DailyReadingView({
   content,
@@ -19,6 +21,7 @@ export function DailyReadingView({
 }) {
   const evidenceMap = new Map(evidence.map((item) => [item.id, item]));
   const bluf = content.bottomLineUpFront;
+  const dayArc = buildDailyReadingDayArc(analysis);
   return (
     <article className="daily-reading-view">
       <header className="daily-reading-view__header">
@@ -44,8 +47,6 @@ export function DailyReadingView({
           </div>
         </dl>
       </header>
-
-      <DailyReadingVisuals analysis={analysis} />
 
       <section
         className="daily-reading-bluf"
@@ -73,6 +74,16 @@ export function DailyReadingView({
         <h3>Forward look</h3>
         <p>{bluf.forwardLook.narrative}</p>
       </section>
+
+      <ReadingDayArc
+        eyebrow="Morning · noon · evening"
+        title="The day meridian"
+        introduction="Carry the local-noon reading through the day in three deliberate movements: receive the signal, act where the pattern is strongest, and integrate what the day has revealed."
+        phases={dayArc}
+        note="The day meridian paces the recorded local-noon reading; the evidence references identify its source positions, transits and lunar phase."
+      />
+
+      <DailyReadingVisuals analysis={analysis} />
 
       <section
         className="daily-reading-themes"

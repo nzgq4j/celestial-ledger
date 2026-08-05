@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sampleChart, sampleIdentity } from "@/lib/samples";
+import { SampleReportBluf } from "@/components/samples/SampleReportBluf";
+import { SampleReportVisual } from "@/components/samples/SampleReportVisual";
+import { ReadingDayArc } from "@/components/reports/ReadingDayArc";
+import {
+  sampleReportPresentation,
+  type SampleReportKey,
+} from "@/lib/sample-reports/presentation";
 
 const editions = {
   "career-purpose": {
@@ -623,7 +630,7 @@ export default async function SampleReportPage({
   params: Promise<{ report: string }>;
 }) {
   const { report } = await params;
-  const reportKey = report as keyof typeof editions;
+  const reportKey = report as SampleReportKey;
   const edition = editions[reportKey];
   if (!edition) notFound();
   const chart = await sampleChart();
@@ -689,6 +696,7 @@ export default async function SampleReportPage({
     string,
   ])[];
   const companions = chapterCompanions[reportKey];
+  const presentation = sampleReportPresentation[reportKey];
   const chapterApplications = chapters.map((_, index) =>
     practicalApplications(
       practicalFocus[reportKey][index],
@@ -742,6 +750,13 @@ export default async function SampleReportPage({
           </div>
         </dl>
       </header>
+      <SampleReportBluf report={reportKey} />
+      <ReadingDayArc
+        introduction={presentation.dayArc.introduction}
+        phases={presentation.dayArc.phases}
+        note={presentation.dayArc.note}
+      />
+      <SampleReportVisual report={reportKey} chart={chart} />
       <div className="sample-report__folio">
         <nav aria-label="Report contents">
           <p className="section-kicker">In this edition</p>

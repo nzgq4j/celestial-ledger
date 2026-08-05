@@ -24,6 +24,7 @@ Celestial Atlas maps the sky at the moment of birth and follows the planetary tr
 
 ## Personal atlas
 
+- [Membership levels](${base}/membership): Compare Free, Personal, and Premium access to saved natal charts, personal daily readings, weekly readings, email delivery, and detailed reports.
 - [Personal astrology reports](${base}/reports): Private, evidence-linked natal-chart readings for vocation, purpose, renewal, and reflection.
 - [Sample astrology reports](${base}/samples): Complete sample editions showing the structure, evidence references, and interpretive voice of Celestial Atlas readings.
 - [Sample daily astrological reading](${base}/samples/daily-reading): A complete daily intelligence brief showing current transits to a natal chart, lunar phase, ranked themes, practical applications, and evidence traceability.

@@ -6,6 +6,7 @@ import type { NatalChart, ResolvedPlace } from "@/lib/types";
 import { NatalChartWheel } from "./NatalChartWheel";
 import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
+import { LandingPathways } from "@/components/LandingPathways";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -311,33 +312,8 @@ export default function HoroscopeApp({
             <p className="atlas-hero__privacy">{pack.messages.home.privacy}</p>
           </div>
         </div>
-        <div
-          className="atlas-hero__features"
-          aria-label={pack.messages.home.principlesLabel}
-        >
-          <article>
-            <span aria-hidden="true">&#10022;</span>
-            <div>
-              <h2>{pack.messages.home.personalisedTitle}</h2>
-              <p>{pack.messages.home.personalisedCopy}</p>
-            </div>
-          </article>
-          <article>
-            <span aria-hidden="true">&#9788;</span>
-            <div>
-              <h2>{pack.messages.home.depthTitle}</h2>
-              <p>{pack.messages.home.depthCopy}</p>
-            </div>
-          </article>
-          <article>
-            <span aria-hidden="true">&#9671;</span>
-            <div>
-              <h2>{pack.messages.home.methodTitle}</h2>
-              <p>{pack.messages.home.methodCopy}</p>
-            </div>
-          </article>
-        </div>
       </header>
+      <LandingPathways />
       <div
         id="chart"
         className="max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"

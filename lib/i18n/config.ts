@@ -16,6 +16,7 @@ export type TranslationPack = {
       horoscopes: string;
       weekly: string;
       reports: string;
+      membership: string;
       samples: string;
       journal: string;
       library: string;
@@ -23,6 +24,7 @@ export type TranslationPack = {
       dailyHoroscopes: string;
       weeklyReadings: string;
       privateReports: string;
+      membershipPlans: string;
       sampleReports: string;
     };
     preferences: {
@@ -115,7 +117,7 @@ export const localeRegistry: Record<
     name: "English",
     nativeName: "English",
     direction: "ltr",
-    flag: "🇬🇧",
+    flag: "🇺🇸",
     load: () => import("./locales/en-GB").then(({ default: pack }) => pack),
   },
   "es-ES": {

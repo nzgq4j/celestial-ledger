@@ -48,7 +48,6 @@ export function SitePreferences() {
             <LocaleFlag locale={locale} />
           </span>
           <span>{localeRegistry[locale].nativeName}</span>
-          <i aria-hidden="true">⌄</i>
         </button>
         {open && (
           <div
