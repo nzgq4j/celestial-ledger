@@ -78,6 +78,7 @@ export default async function HoroscopeDetailPage({
   const route = `/horoscopes/${reading.slug}`;
   const shareUrl = localizedPublicUrl(route, pack.tag);
   const imageUrl = `${SITE_URL}${route}/opengraph-image`;
+  const pinterestImageUrl = `${SITE_URL}${route}/pinterest-image`;
   const title = `${reading.sign} ${copy.dailyHoroscope} — ${reading.displayDate}`;
   const publishedAt = `${sky.date}T00:00:00.000Z`;
   return (
@@ -123,7 +124,7 @@ export default async function HoroscopeDetailPage({
         url={shareUrl}
         title={title}
         description={reading.bottomLine}
-        imageUrl={imageUrl}
+        imageUrl={pinterestImageUrl}
         heading={copy.shareReading}
         copyLabel={copy.copyLink}
         copiedLabel={copy.linkCopied}

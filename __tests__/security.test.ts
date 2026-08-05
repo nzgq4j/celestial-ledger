@@ -97,8 +97,21 @@ describe("API-key isolation", () => {
       "utf8",
     );
     expect(publicReading).toContain("SocialShareLinks");
+    expect(publicReading).toContain("pinterest-image");
     expect(shareLinks).toContain("Pinterest");
     expect(privateReading).not.toContain("SocialShareLinks");
+  });
+
+  it("serves Pinterest a portrait constellation image with a summary", () => {
+    const pinterestImage = fs.readFileSync(
+      "app/horoscopes/[sign]/pinterest-image/route.tsx",
+      "utf8",
+    );
+    expect(pinterestImage).toContain("width: 1000");
+    expect(pinterestImage).toContain("height: 1500");
+    expect(pinterestImage).toContain("constellations");
+    expect(pinterestImage).toContain("conciseSummary");
+    expect(pinterestImage).not.toContain("name.slice(0, 2)");
   });
 
   it("compares mutation origins to the request URL, not forwarded hosts", () => {
