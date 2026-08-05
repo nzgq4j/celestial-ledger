@@ -155,4 +155,4 @@ If application verification fails after release:
 
 ## Current baseline results
 
-At audit commit `60015a2`: typecheck passed, lint passed, 62 tests passed, production build passed after clearing an incompatible inherited `NODE_OPTIONS`, server ephemeris gate passed, licenses passed, and npm production audit reported zero vulnerabilities. Format check has one pre-existing failure in `public/preferences-init.js` that must be resolved before release validation can be green.
+For the foundation release: format, typecheck, lint, 68 tests, production build, server ephemeris gate, licenses, and the production dependency audit passed. The migration passed on a disposable Supabase branch, including transactional owner/cross-account RLS assertions, before production application and post-migration advisor review.

@@ -6,10 +6,10 @@
 - Added strict runtime schemas for analysis, evidence, signals, themes, BLUF-first content, API input and stored output.
 - Added deterministic rule-based synthesis and a 425–575-word Bottom Line Up Front contract for the English foundation output.
 - Added the `registered_daily_reading` capability derived from an authenticated account and an active owned birth profile; it does not consume a paid-report entitlement and remains separate from future account tiers.
-- Authored, but did not apply, an additive `daily_readings` Supabase migration with one-year expiry, owner-only RLS, service-only writes and reproducible cache uniqueness.
+- Applied the additive `daily_readings` Supabase migration after a disposable-branch dry run, transactional owner/cross-account RLS assertions, production preflight, Pro-plan backup confirmation, and post-migration advisor review.
 - Added authenticated create/list/get/delete endpoints, an account generator and history, a private evidence-linked viewer with print and confirmed deletion, and a public sample generated through the same schemas.
 - Added focused tests for time-zone resolution, deterministic output, evidence links, temporal state, unknown-time suppression, BLUF length, cache invalidation and entitlement enforcement.
-- Recorded exact-event search, full narrative localization, lunar sequencing, repeated passes, advanced visualization and production database validation as remaining work; no production migration was applied.
+- Recorded exact-event search, full narrative localization, lunar sequencing, repeated passes, and advanced visualization as remaining work.
 
 ## 2026-08-05 — Audit and implementation plan
 
