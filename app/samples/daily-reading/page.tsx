@@ -27,6 +27,7 @@ export default async function SampleDailyReadingPage() {
     <main className="page-shell sample-daily-reading">
       <DailyReadingView
         content={content}
+        analysis={analysis}
         evidence={analysis.evidence}
         profileLabel={sampleIdentity.name}
         sample

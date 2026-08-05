@@ -2,14 +2,17 @@ import type {
   DailyReadingAnalysis,
   DailyReadingContent,
 } from "@/lib/daily-readings/domain";
+import { DailyReadingVisuals } from "@/components/DailyReadingVisuals";
 
 export function DailyReadingView({
   content,
+  analysis,
   evidence,
   profileLabel,
   sample = false,
 }: {
   content: DailyReadingContent;
+  analysis: DailyReadingAnalysis;
   evidence: DailyReadingAnalysis["evidence"];
   profileLabel: string;
   sample?: boolean;
@@ -41,6 +44,8 @@ export function DailyReadingView({
           </div>
         </dl>
       </header>
+
+      <DailyReadingVisuals analysis={analysis} />
 
       <section
         className="daily-reading-bluf"

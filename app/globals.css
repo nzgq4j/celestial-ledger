@@ -3811,6 +3811,7 @@ th {
   gap: 1.5rem;
 }
 .daily-reading-view__header,
+.daily-reading-visuals,
 .daily-reading-bluf,
 .daily-reading-themes,
 .daily-reading-sections > section,
@@ -3863,6 +3864,7 @@ th {
   line-height: 1.45;
 }
 .daily-reading-bluf,
+.daily-reading-visuals,
 .daily-reading-themes,
 .daily-reading-questions,
 .daily-reading-technical {
@@ -3877,6 +3879,229 @@ th {
       transparent 34%
     ),
     var(--panel);
+}
+.daily-reading-visuals {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(125deg, rgba(201, 167, 93, 0.04), transparent 42%),
+    var(--panel);
+}
+.daily-reading-visuals::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 245, 215, 0.28) 0 1px,
+    transparent 1.5px
+  );
+  background-size: 4.7rem 4.7rem;
+  opacity: 0.18;
+}
+.daily-reading-visuals__heading,
+.daily-reading-visuals__grid {
+  position: relative;
+  z-index: 1;
+}
+.daily-reading-visuals__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 2rem;
+}
+.daily-reading-visuals__heading h2 {
+  margin: 0.45rem 0 0;
+  font:
+    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
+    serif;
+}
+.daily-reading-visuals__heading > p,
+.daily-sky-map figcaption,
+.daily-lunar-gauge p,
+.daily-transit-field li span {
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+.daily-reading-visuals__grid {
+  display: grid;
+  grid-template-columns: minmax(20rem, 0.9fr) minmax(22rem, 1.1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+.daily-sky-map {
+  width: min(100%, 34rem);
+  margin: 0 auto;
+}
+.daily-sky-map svg {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 1.2rem 2.4rem rgba(0, 0, 0, 0.3));
+}
+.daily-sky-map__outer,
+.daily-sky-map__inner {
+  fill: rgba(3, 9, 18, 0.58);
+  stroke: rgba(201, 167, 93, 0.58);
+  stroke-width: 0.35;
+}
+.daily-sky-map__inner {
+  fill: none;
+  stroke-opacity: 0.45;
+}
+.daily-sky-map__division,
+.daily-sky-map__axis,
+.daily-sky-map__position-line {
+  stroke: rgba(201, 167, 93, 0.35);
+  stroke-width: 0.25;
+}
+.daily-sky-map__sign {
+  fill: var(--muted);
+  font-size: 2.2px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  letter-spacing: 0.08em;
+}
+.daily-sky-map__position {
+  fill: var(--surface-deep);
+  stroke: var(--gold);
+  stroke-width: 0.45;
+}
+.daily-sky-map__glyph {
+  fill: var(--paper);
+  font-size: 3.8px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.daily-sky-map__core {
+  fill: var(--gold);
+}
+.daily-sky-map__axis {
+  stroke: var(--paper);
+  stroke-width: 0.35;
+}
+.daily-sky-map figcaption {
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  font-size: 0.82rem;
+  text-align: center;
+}
+.daily-reading-visuals__data {
+  display: grid;
+  gap: 1.25rem;
+}
+.daily-lunar-gauge,
+.daily-transit-field {
+  border: 1px solid var(--line);
+  background: rgba(3, 9, 18, 0.66);
+}
+.daily-lunar-gauge {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.25rem;
+}
+.daily-lunar-gauge__orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.daily-lunar-gauge__orb svg {
+  width: 7rem;
+  transform: rotate(-90deg);
+}
+.daily-lunar-gauge__orb circle {
+  fill: rgba(201, 167, 93, 0.06);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+.daily-lunar-gauge__orb .daily-lunar-gauge__value {
+  fill: none;
+  stroke: var(--gold);
+  stroke-linecap: round;
+}
+.daily-lunar-gauge__orb strong {
+  position: absolute;
+  color: var(--paper);
+  font:
+    400 1.15rem Georgia,
+    serif;
+}
+.daily-lunar-gauge h3,
+.daily-transit-field h3 {
+  margin: 0.3rem 0;
+  font:
+    400 1.35rem Georgia,
+    serif;
+}
+.daily-lunar-gauge code,
+.daily-transit-field code {
+  color: var(--muted);
+  font-size: 0.63rem;
+  overflow-wrap: anywhere;
+}
+.daily-transit-field {
+  padding: 1.25rem;
+}
+.daily-transit-field__title {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.daily-transit-field__title > span {
+  color: var(--gold);
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.daily-transit-field ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.daily-transit-field li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(6rem, 0.45fr);
+  gap: 0.45rem 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.daily-transit-field li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.daily-transit-field li strong,
+.daily-transit-field li span {
+  display: block;
+}
+.daily-transit-field li strong {
+  color: var(--paper);
+  font-size: 0.88rem;
+}
+.daily-transit-field li span {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+}
+.daily-transit-field__bar {
+  height: 0.35rem;
+  align-self: center;
+  overflow: hidden;
+  background: var(--line);
+}
+.daily-transit-field__bar span {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(90deg, #8b6b2c, #f4d58a);
+}
+.daily-transit-field li code {
+  grid-column: 1 / -1;
 }
 .daily-reading-bluf h2,
 .daily-reading-themes h2,
@@ -3976,6 +4201,7 @@ th {
   padding: clamp(1.4rem, 3vw, 2.25rem);
 }
 .daily-reading-sections > section:first-child,
+.daily-reading-sections > #recent-past,
 .daily-reading-sections > section:nth-child(3),
 .daily-reading-sections > section:nth-last-child(-n + 2) {
   grid-column: 1 / -1;
@@ -4043,6 +4269,8 @@ th {
 @media (max-width: 760px) {
   .daily-reading-generator__controls,
   .daily-reading-view__header,
+  .daily-reading-visuals__heading,
+  .daily-reading-visuals__grid,
   .daily-reading-priorities,
   .daily-reading-sections,
   .daily-theme-list > article {
@@ -4063,6 +4291,7 @@ th {
     display: none !important;
   }
   .daily-reading-view__header,
+  .daily-reading-visuals,
   .daily-reading-bluf,
   .daily-reading-themes,
   .daily-reading-sections > section,

@@ -17,11 +17,19 @@ import {
   dailyReadingContentSchema,
 } from "@/lib/daily-readings/domain";
 import { resolveRegisteredDailyReadingEntitlement } from "@/lib/daily-readings/entitlement";
+import { projectLongitude } from "@/components/DailyReadingVisuals";
 
 const readingId = "44bd14d1-cb20-4f63-88a0-6badcc14f632";
 const generatedAt = "2026-08-05T08:00:00.000Z";
 
 describe("registered daily reading foundation", () => {
+  it("projects recorded zodiac longitudes onto the report sky map", () => {
+    expect(projectLongitude(0, 40)).toEqual({ x: 50, y: 10 });
+    expect(projectLongitude(90, 40)).toEqual({ x: 90, y: 50 });
+    expect(projectLongitude(180, 40)).toEqual({ x: 50, y: 90 });
+    expect(projectLongitude(270, 40)).toEqual({ x: 10, y: 50 });
+  });
+
   it("resolves the reading civil date in its IANA time zone", () => {
     expect(
       localCivilNoonUtc("2026-08-05", "America/Chicago").toISOString(),
