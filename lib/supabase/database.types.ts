@@ -233,6 +233,89 @@ export type Database = {
         };
         Relationships: [];
       };
+      daily_readings: {
+        Row: {
+          analysis: Json;
+          birth_profile_id: string;
+          cache_key: string;
+          calculation_version: string;
+          capability: string;
+          content: Json;
+          created_at: string;
+          ephemeris_version: string;
+          evidence: Json;
+          expires_at: string;
+          failure_code: string | null;
+          generated_at: string;
+          id: string;
+          locale: string;
+          method_version: string;
+          observation_time_zone: string;
+          reading_date: string;
+          rule_version: string;
+          schema_version: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          analysis: Json;
+          birth_profile_id: string;
+          cache_key: string;
+          calculation_version: string;
+          capability?: string;
+          content: Json;
+          created_at?: string;
+          ephemeris_version: string;
+          evidence: Json;
+          expires_at?: string;
+          failure_code?: string | null;
+          generated_at?: string;
+          id?: string;
+          locale: string;
+          method_version: string;
+          observation_time_zone: string;
+          reading_date: string;
+          rule_version: string;
+          schema_version: string;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          analysis?: Json;
+          birth_profile_id?: string;
+          cache_key?: string;
+          calculation_version?: string;
+          capability?: string;
+          content?: Json;
+          created_at?: string;
+          ephemeris_version?: string;
+          evidence?: Json;
+          expires_at?: string;
+          failure_code?: string | null;
+          generated_at?: string;
+          id?: string;
+          locale?: string;
+          method_version?: string;
+          observation_time_zone?: string;
+          reading_date?: string;
+          rule_version?: string;
+          schema_version?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "daily_readings_birth_profile_id_fkey";
+            columns: ["birth_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "birth_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       entitlements: {
         Row: {
           consumed_at: string | null;

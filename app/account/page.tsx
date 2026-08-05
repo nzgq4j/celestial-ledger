@@ -4,6 +4,7 @@ import { AccountSettings } from "@/components/AccountSettings";
 import { BirthProfileList } from "@/components/BirthProfileList";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { AccountReportList } from "@/components/AccountReportList";
+import { DailyReadingGenerator } from "@/components/DailyReadingGenerator";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
@@ -43,6 +44,7 @@ export default async function AccountPage({
     profileResult,
     birthProfileResult,
     reportResult,
+    dailyReadingResult,
     productResult,
     entitlementResult,
   ] = await Promise.all([
@@ -62,6 +64,11 @@ export default async function AccountPage({
       .select("id, report_type, status, locale, expires_at, created_at")
       .order("created_at", { ascending: false }),
     supabase
+      .from("daily_readings")
+      .select("id,reading_date,locale,generated_at")
+      .order("reading_date", { ascending: false })
+      .limit(32),
+    supabase
       .from("products")
       .select("report_type, name, description, unit_amount, currency")
       .order("unit_amount", { ascending: false }),
@@ -74,6 +81,7 @@ export default async function AccountPage({
   const profile = profileResult.data;
   const birthProfiles = birthProfileResult.data ?? [];
   const reports = reportResult.data ?? [];
+  const dailyReadings = dailyReadingResult.data ?? [];
   const products = productResult.data ?? [];
   const entitlements = entitlementResult.data ?? [];
   const reportLocale =
@@ -170,8 +178,10 @@ export default async function AccountPage({
           {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
         </span>
         <span>
-          <strong>{reports.length}</strong>{" "}
-          {reports.length === 1 ? copy.privateReading : copy.privateReadings}
+          <strong>{reports.length + dailyReadings.length}</strong>{" "}
+          {reports.length + dailyReadings.length === 1
+            ? copy.privateReading
+            : copy.privateReadings}
         </span>
         <span>
           <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
@@ -185,11 +195,37 @@ export default async function AccountPage({
       )}
 
       <nav className="account-jump-links" aria-label={copy.accountSections}>
+        <a href="#daily-reading">{copy.myDailyReading}</a>
         <a href="#reports">{copy.myReadings}</a>
         <a href="#birth-profiles">{copy.myBirthCharts}</a>
         <a href="#account-settings">{copy.settings}</a>
         {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
       </nav>
+
+      <section
+        className="dashboard-panel dashboard-panel--daily"
+        id="daily-reading"
+      >
+        <div className="dashboard-panel__heading">
+          <div>
+            <p className="section-kicker">{copy.dailyReadingKicker}</p>
+            <h2>{copy.dailyReadingTitle}</h2>
+          </div>
+          <span className="dashboard-panel__meta">
+            {copy.registeredUserEntitlement}
+          </span>
+        </div>
+        <p className="dashboard-panel__introduction">
+          {copy.dailyReadingDescription}
+        </p>
+        <DailyReadingGenerator
+          profiles={birthProfiles.map((item) => ({
+            id: item.id,
+            label: item.label,
+          }))}
+          existingReadings={dailyReadings}
+        />
+      </section>
 
       <section
         className="dashboard-panel dashboard-panel--reports"

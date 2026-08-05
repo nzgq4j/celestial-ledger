@@ -87,6 +87,27 @@ Golden fixtures must come from independent authoritative sources or a reviewed r
 - Expiry cleanup removes content/evidence without exposing payloads in audit logs.
 - Supabase security and performance advisors have no unresolved material daily-reading findings.
 
+## Production recovery procedure
+
+The migration is additive: it creates only `public.daily_readings` plus indexes,
+policies, grants, comments, and its update trigger. It does not alter existing
+birth profiles, reports, orders, products, or entitlements.
+
+If application verification fails after release:
+
+1. Roll the Vercel production alias back to the immediately preceding deployment.
+2. Leave `public.daily_readings` in place while investigating; the prior
+   application does not reference it, so this is the lowest-risk recovery path.
+3. Record the table row count, latest `created_at`, RLS state, policies, and grants.
+4. If the table must be removed and contains rows, export those rows through an
+   administrator connection before changing the schema.
+5. Apply a new reviewed forward migration containing
+   `drop table if exists public.daily_readings;`. Dropping the table also removes
+   its indexes, trigger, policies, grants, and comments. Do not rewrite or delete
+   the applied migration-history record.
+6. Re-run the account, public sample, report-library, authentication, RLS, and
+   advisor checks after either recovery path.
+
 ## API and security tests
 
 - All endpoints require a verified session and owner resource.
@@ -134,4 +155,4 @@ Golden fixtures must come from independent authoritative sources or a reviewed r
 
 ## Current baseline results
 
-At audit commit `60015a2`: typecheck passed, lint passed, 62 tests passed, production build passed after clearing an incompatible inherited `NODE_OPTIONS`, server ephemeris gate passed, licenses passed, and npm production audit reported zero vulnerabilities. Format check has one pre-existing failure in `public/preferences-init.js` that must be resolved before release validation can be green.
+For the foundation release: format, typecheck, lint, 68 tests, production build, server ephemeris gate, licenses, and the production dependency audit passed. The migration passed on a disposable Supabase branch, including transactional owner/cross-account RLS assertions, before production application and post-migration advisor review.

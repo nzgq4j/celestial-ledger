@@ -8,16 +8,17 @@
     var locale = localStorage.getItem("celestial-atlas-locale");
     if (!supported.includes(locale)) {
       var browserLanguages = navigator.languages || [navigator.language];
-      locale = browserLanguages
-        .map(function (value) {
-          var language = String(value || "").toLowerCase();
-          if (language.startsWith("es")) return "es-ES";
-          if (language.startsWith("fr")) return "fr-FR";
-          if (language.startsWith("de")) return "de-DE";
-          if (language.startsWith("en")) return "en-GB";
-          return null;
-        })
-        .find(Boolean) || "en-GB";
+      locale =
+        browserLanguages
+          .map(function (value) {
+            var language = String(value || "").toLowerCase();
+            if (language.startsWith("es")) return "es-ES";
+            if (language.startsWith("fr")) return "fr-FR";
+            if (language.startsWith("de")) return "de-DE";
+            if (language.startsWith("en")) return "en-GB";
+            return null;
+          })
+          .find(Boolean) || "en-GB";
       localStorage.setItem("celestial-atlas-locale", locale);
     }
     if (supported.includes(locale)) {

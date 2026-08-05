@@ -3732,3 +3732,351 @@ th {
     transition: none;
   }
 }
+
+/* Registered daily reading */
+.dashboard-panel--daily {
+  border-color: color-mix(in srgb, var(--gold) 52%, var(--line));
+  background:
+    linear-gradient(135deg, rgba(201, 167, 93, 0.07), transparent 42%),
+    var(--panel);
+}
+.dashboard-panel__introduction {
+  max-width: 52rem;
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.daily-reading-generator {
+  display: grid;
+  gap: 1.25rem;
+}
+.daily-reading-generator__controls {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.4fr) minmax(11rem, 0.8fr) auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+}
+.daily-reading-generator label {
+  display: grid;
+  gap: 0.45rem;
+}
+.daily-reading-generator label span,
+.daily-reading-history h3 {
+  color: var(--gold);
+  font:
+    0.7rem ui-monospace,
+    monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.daily-reading-generator select,
+.daily-reading-generator input {
+  min-height: 3rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--ivory);
+}
+.daily-reading-history {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.daily-reading-history ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.daily-reading-history a {
+  display: block;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  color: var(--paper);
+}
+.daily-reading-page,
+.sample-daily-reading {
+  max-width: 76rem;
+}
+.daily-reading-actions {
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.daily-reading-view {
+  display: grid;
+  gap: 1.5rem;
+}
+.daily-reading-view__header,
+.daily-reading-bluf,
+.daily-reading-themes,
+.daily-reading-sections > section,
+.daily-reading-questions,
+.daily-reading-technical {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.daily-reading-view__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.42fr);
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background:
+    linear-gradient(90deg, rgba(3, 9, 18, 0.94), rgba(3, 9, 18, 0.52)),
+    url("/hero1.png") center / cover;
+}
+.daily-reading-view__header h1 {
+  max-width: 18ch;
+  margin: 0.6rem 0 1rem;
+  font:
+    400 clamp(2.4rem, 6vw, 5.25rem) / 0.98 Georgia,
+    serif;
+}
+.daily-reading-view__header > div > p:last-child {
+  color: var(--gold);
+}
+.daily-reading-view__header dl,
+.daily-reading-technical dl {
+  margin: 0;
+}
+.daily-reading-view__header dl div,
+.daily-reading-technical dl div {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.daily-reading-view dt,
+.daily-reading-technical dt {
+  color: var(--gold);
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.daily-reading-view dd,
+.daily-reading-technical dd {
+  margin: 0.35rem 0 0;
+  color: var(--text-soft);
+  line-height: 1.45;
+}
+.daily-reading-bluf,
+.daily-reading-themes,
+.daily-reading-questions,
+.daily-reading-technical {
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+.daily-reading-bluf {
+  border-color: var(--gold);
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(201, 167, 93, 0.13),
+      transparent 34%
+    ),
+    var(--panel);
+}
+.daily-reading-bluf h2,
+.daily-reading-themes h2,
+.daily-reading-questions h2 {
+  margin: 0.55rem 0 1.4rem;
+  font:
+    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
+    serif;
+}
+.daily-reading-bluf > p,
+.daily-reading-bluf aside p,
+.daily-reading-priorities p,
+.daily-reading-sections p,
+.daily-reading-sections li,
+.daily-reading-questions li,
+.daily-reading-technical li {
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+.daily-reading-bluf > h3 {
+  margin: 2rem 0 0.5rem;
+  color: var(--gold);
+  font:
+    400 1.25rem Georgia,
+    serif;
+}
+.daily-reading-priorities {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.daily-reading-priorities article,
+.daily-reading-bluf aside {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+}
+.daily-reading-priorities h3,
+.daily-reading-bluf aside h3 {
+  margin: 0 0 0.6rem;
+  color: var(--paper);
+  font:
+    400 1.15rem Georgia,
+    serif;
+}
+.daily-theme-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+.daily-theme-list > article {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+}
+.daily-theme-list h3 {
+  margin: 0 0 0.3rem;
+  font:
+    400 1.2rem Georgia,
+    serif;
+}
+.daily-theme-list span {
+  color: var(--gold);
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.daily-theme-list dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+.daily-theme-list dl div {
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--line);
+}
+.daily-theme-list dt {
+  font-size: 0.65rem;
+}
+.daily-theme-list dd {
+  color: var(--paper);
+}
+.daily-reading-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.daily-reading-sections > section {
+  padding: clamp(1.4rem, 3vw, 2.25rem);
+}
+.daily-reading-sections > section:first-child,
+.daily-reading-sections > section:nth-child(3),
+.daily-reading-sections > section:nth-last-child(-n + 2) {
+  grid-column: 1 / -1;
+}
+.daily-reading-sections h2 {
+  margin: 0 0 1rem;
+  font:
+    400 clamp(1.65rem, 3vw, 2.3rem) / 1.1 Georgia,
+    serif;
+}
+.daily-reading-applications {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 2px solid var(--gold);
+  background: rgba(201, 167, 93, 0.06);
+}
+.daily-reading-applications h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.daily-reading-applications ul {
+  margin-bottom: 0;
+}
+.daily-reading-sections details,
+.daily-reading-technical details {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+.daily-reading-sections summary,
+.daily-reading-technical summary {
+  cursor: pointer;
+  color: var(--gold);
+}
+.daily-reading-evidence {
+  padding: 0;
+  list-style: none;
+}
+.daily-reading-evidence li {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.daily-reading-evidence code {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.sample-daily-reading__cta {
+  margin-top: 1.5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--gold);
+  background: var(--surface-deep);
+}
+.sample-daily-reading__cta h2 {
+  margin: 0.5rem 0;
+  font:
+    400 clamp(1.8rem, 4vw, 3rem) / 1 Georgia,
+    serif;
+}
+
+@media (max-width: 760px) {
+  .daily-reading-generator__controls,
+  .daily-reading-view__header,
+  .daily-reading-priorities,
+  .daily-reading-sections,
+  .daily-theme-list > article {
+    grid-template-columns: 1fr;
+  }
+  .daily-reading-sections > section {
+    grid-column: auto !important;
+  }
+  .daily-theme-list dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media print {
+  .daily-reading-actions,
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+  .daily-reading-view__header,
+  .daily-reading-bluf,
+  .daily-reading-themes,
+  .daily-reading-sections > section,
+  .daily-reading-questions,
+  .daily-reading-technical {
+    break-inside: avoid;
+    border-color: #777;
+    background: #fff;
+    color: #111;
+  }
+  .daily-reading-view p,
+  .daily-reading-view li,
+  .daily-reading-view dd,
+  .daily-reading-view code {
+    color: #222 !important;
+  }
+}
