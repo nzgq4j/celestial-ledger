@@ -129,7 +129,7 @@ describe("API-key isolation", () => {
     expect(landscapeImage).not.toContain("name.slice(0, 2)");
   });
 
-  it("uses branded share icons with accessible text labels", () => {
+  it("uses branded icon-only share controls with accessible labels", () => {
     const shareLinks = fs.readFileSync(
       "components/SocialShareLinks.tsx",
       "utf8",
@@ -140,8 +140,16 @@ describe("API-key isolation", () => {
     expect(shareLinks).toContain('icon: "bluesky"');
     expect(shareLinks).toContain('icon: "pinterest"');
     expect(shareLinks).toContain('icon: "instagram"');
+    expect(shareLinks).toContain('icon: "whatsapp"');
+    expect(shareLinks).toContain('icon: "slack"');
+    expect(shareLinks).toContain("#horoscope #astrology");
+    expect(shareLinks).toContain("wa.me/?text=");
+    expect(shareLinks).toContain("app.slack.com/client");
     expect(shareLinks).toContain("bsky.app/intent/compose");
-    expect(shareLinks).toContain("Open portrait image for Instagram");
+    expect(shareLinks).toContain(
+      "Open portrait image and copy caption for Instagram",
+    );
+    expect(shareLinks).not.toContain("<span>{link.label}</span>");
     expect(shareLinks).toContain('aria-hidden="true"');
   });
 

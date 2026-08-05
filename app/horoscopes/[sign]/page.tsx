@@ -122,6 +122,7 @@ export default async function HoroscopeDetailPage({
       </header>
       <SocialShareLinks
         url={shareUrl}
+        sign={reading.sign}
         title={title}
         description={reading.bottomLine}
         landscapeImageUrl={imageUrl}

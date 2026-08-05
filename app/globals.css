@@ -3399,20 +3399,21 @@ input:focus-visible {
   gap: 0.55rem;
 }
 .social-share .button-quiet {
+  width: 2.9rem;
+  min-width: 2.9rem;
   min-height: 2.8rem;
-  padding: 0.7rem 0.95rem;
-  font-size: 0.76rem;
+  padding: 0.7rem;
+  border-radius: 50%;
 }
 .social-share__link {
   display: inline-flex;
-  gap: 0.55rem;
   align-items: center;
   justify-content: center;
 }
 .social-share__icon {
   display: inline-flex;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.3rem;
+  height: 1.3rem;
   color: var(--gold);
 }
 .social-share__icon svg {
@@ -3432,6 +3433,9 @@ input:focus-visible {
 }
 .social-share__link--instagram .social-share__icon {
   color: #e4405f;
+}
+.social-share__link--whatsapp .social-share__icon {
+  color: #25d366;
 }
 .social-share__link--x .social-share__icon {
   color: var(--paper);
