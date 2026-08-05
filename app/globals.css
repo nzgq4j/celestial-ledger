@@ -3427,6 +3427,12 @@ input:focus-visible {
 .social-share__link--pinterest .social-share__icon {
   color: #e60023;
 }
+.social-share__link--bluesky .social-share__icon {
+  color: #1185fe;
+}
+.social-share__link--instagram .social-share__icon {
+  color: #e4405f;
+}
 .social-share__link--x .social-share__icon {
   color: var(--paper);
 }

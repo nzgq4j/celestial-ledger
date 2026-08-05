@@ -124,7 +124,8 @@ export default async function HoroscopeDetailPage({
         url={shareUrl}
         title={title}
         description={reading.bottomLine}
-        imageUrl={pinterestImageUrl}
+        landscapeImageUrl={imageUrl}
+        portraitImageUrl={pinterestImageUrl}
         heading={copy.shareReading}
         copyLabel={copy.copyLink}
         copiedLabel={copy.linkCopied}
