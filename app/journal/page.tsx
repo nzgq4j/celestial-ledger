@@ -1,12 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
+export const metadata = createPageMetadata({
   title: "Celestial Journal",
   description:
-    "Astrological essays, celestial patterns, and practical guidance from Celestial Atlas.",
-};
+    "Astrological essays on natal symbolism, planetary transits, houses, aspects, numerology, and practical guidance from Celestial Atlas.",
+  path: "/journal",
+  keywords: ["astrology journal", "astrology essays", "planetary cycles"],
+});
 
 export default async function JournalPage() {
   const { data: posts } = await (
@@ -30,6 +34,19 @@ export default async function JournalPage() {
       <section className="journal-grid">
         {(posts ?? []).map((post) => (
           <article key={post.id}>
+            <Link
+              className="journal-card__image"
+              href={`/journal/${post.slug}`}
+              aria-label={`Read ${post.title}`}
+            >
+              <Image
+                src={`/journal/${post.slug}/opengraph-image`}
+                alt={`${post.title} featured celestial illustration`}
+                width={1200}
+                height={630}
+                sizes="(max-width: 760px) 100vw, 50vw"
+              />
+            </Link>
             <p className="section-kicker">
               {post.published_at
                 ? new Date(post.published_at).toLocaleDateString("en-GB", {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sampleChart, sampleIdentity } from "@/lib/samples";
@@ -8,6 +9,7 @@ import {
   sampleReportPresentation,
   type SampleReportKey,
 } from "@/lib/sample-reports/presentation";
+import { createPageMetadata } from "@/lib/seo";
 
 const editions = {
   "career-purpose": {
@@ -624,6 +626,22 @@ export function generateStaticParams() {
   return Object.keys(editions).map((report) => ({ report }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ report: string }>;
+}): Promise<Metadata> {
+  const { report } = await params;
+  const edition = editions[report as SampleReportKey];
+  if (!edition) return {};
+  return createPageMetadata({
+    title: `${edition.title} — Sample Astrology Report`,
+    description: edition.intro,
+    path: `/samples/${report}`,
+    keywords: ["sample astrology report", `${report} astrology reading`],
+  });
+}
+
 export default async function SampleReportPage({
   params,
 }: {
@@ -864,7 +882,7 @@ export default async function SampleReportPage({
         </table>
       </section>
       <aside>
-        <p className="eyebrow">Your chart will tell a different story</p>
+        <p className="eyebrow">Now, let your own chart speak</p>
         <h2>Begin with the sky at your own first breath.</h2>
         <Link href="/#chart" className="button-primary">
           Create my free natal chart

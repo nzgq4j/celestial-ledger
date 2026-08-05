@@ -259,6 +259,9 @@ const pack = {
       questionForDay: "Question for the day",
       whyReading: "Why this reading",
       celestialEvidence: "Today’s celestial evidence",
+      shareReading: "Share this reading",
+      copyLink: "Copy link",
+      linkCopied: "Link copied",
       calculationNote:
         "Calculated for 12:00 UTC using Astronomy Engine and interpreted through a tropical, whole-sign Sun-chart layer.",
     },

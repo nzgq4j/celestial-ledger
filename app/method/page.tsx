@@ -1,10 +1,18 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Our astrological method — Celestial Atlas",
+export const metadata = createPageMetadata({
+  title: "Our Astrological Method",
   description:
     "How Celestial Atlas reads the Western tropical zodiac, planetary placements, equal houses, aspects, and the living pattern of a natal chart.",
-};
+  path: "/method",
+  keywords: [
+    "astrology method",
+    "ephemeris",
+    "tropical zodiac",
+    "equal houses",
+  ],
+});
 
 export default function MethodPage() {
   return (

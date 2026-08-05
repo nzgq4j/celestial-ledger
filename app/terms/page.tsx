@@ -1,4 +1,12 @@
-export const metadata = { title: "Terms — Celestial Atlas" };
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Terms of Use",
+  description:
+    "Terms governing Celestial Atlas natal charts, astrology readings, accounts, purchases, acceptable use, and intellectual property.",
+  path: "/terms",
+  keywords: ["Celestial Atlas terms"],
+});
 
 export default function TermsPage() {
   return (

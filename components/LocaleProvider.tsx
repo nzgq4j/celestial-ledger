@@ -16,7 +16,6 @@ import {
   type TranslationPack,
 } from "@/lib/i18n/config";
 import englishPack from "@/lib/i18n/locales/en-GB";
-import { useRouter } from "next/navigation";
 
 const localeStorageKey = "celestial-atlas-locale";
 
@@ -28,26 +27,35 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const [locale, setLocale] = useState<LocaleTag>(defaultLocale);
-  const [pack, setPack] = useState<TranslationPack>(englishPack);
+export function LocaleProvider({
+  children,
+  initialLocale = defaultLocale,
+  initialPack = englishPack,
+}: {
+  children: React.ReactNode;
+  initialLocale?: LocaleTag;
+  initialPack?: TranslationPack;
+}) {
+  const [locale, setLocale] = useState<LocaleTag>(initialLocale);
+  const [pack, setPack] = useState<TranslationPack>(initialPack);
 
-  const selectLocale = useCallback(
-    async (tag: LocaleTag) => {
-      const nextPack = await localeRegistry[tag].load();
-      setLocale(tag);
-      setPack(nextPack);
-      localStorage.setItem(localeStorageKey, tag);
-      document.cookie = `${localeStorageKey}=${encodeURIComponent(tag)}; Path=/; Max-Age=31536000; SameSite=Lax`;
-      document.documentElement.lang = tag;
-      document.documentElement.dir = nextPack.direction;
-      router.refresh();
-    },
-    [router],
-  );
+  const selectLocale = useCallback(async (tag: LocaleTag) => {
+    const nextPack = await localeRegistry[tag].load();
+    setLocale(tag);
+    setPack(nextPack);
+    localStorage.setItem(localeStorageKey, tag);
+    document.cookie = `${localeStorageKey}=${encodeURIComponent(tag)}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    document.documentElement.lang = tag;
+    document.documentElement.dir = nextPack.direction;
+  }, []);
 
   useEffect(() => {
+    const explicit = new URLSearchParams(window.location.search).get("lang");
+    if (explicit && isLocaleTag(explicit)) {
+      localStorage.setItem(localeStorageKey, explicit);
+      document.cookie = `${localeStorageKey}=${encodeURIComponent(explicit)}; Path=/; Max-Age=31536000; SameSite=Lax`;
+      return;
+    }
     const stored = localStorage.getItem(localeStorageKey);
     if (!stored || !isLocaleTag(stored)) return;
     let active = true;

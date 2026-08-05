@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Weekly astrology readings — Celestial Atlas",
-};
+export const metadata = createPageMetadata({
+  title: "Weekly Astrology Readings",
+  description:
+    "Follow the week’s planetary transits as they meet your natal chart, with personal themes for timing, attention, relationships, work, and possibility.",
+  path: "/weekly-readings",
+  keywords: ["weekly astrology", "weekly horoscope", "weekly transits"],
+});
 
 export default function WeeklyReadingsPage() {
   return (

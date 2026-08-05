@@ -30,7 +30,12 @@ export function SitePreferences() {
   async function changeLocale(tag: LocaleTag) {
     await selectLocale(tag);
     setOpen(false);
-    router.refresh();
+    const url = new URL(window.location.href);
+    const hadExplicitLocale = url.searchParams.has("lang");
+    url.searchParams.delete("lang");
+    if (hadExplicitLocale)
+      router.replace(`${url.pathname}${url.search}${url.hash}`);
+    else router.refresh();
   }
 
   return (

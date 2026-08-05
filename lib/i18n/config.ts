@@ -103,6 +103,8 @@ export type TranslationPack = {
 
 export const defaultLocale: LocaleTag = "en-GB";
 
+export const localeRequestHeader = "x-celestial-locale";
+
 export const localeRegistry: Record<
   LocaleTag,
   {

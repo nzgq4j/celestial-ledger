@@ -5,13 +5,10 @@ export const PRIVATE_RESPONSE_HEADERS = {
 
 export function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
-  if (!origin) return true;
-  const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  if (!host) return false;
-  const protocol = request.headers.get("x-forwarded-proto") ?? "https";
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (!origin) return fetchSite !== "cross-site";
   try {
-    return new URL(origin).origin === `${protocol}://${host}`;
+    return new URL(origin).origin === new URL(request.url).origin;
   } catch {
     return false;
   }

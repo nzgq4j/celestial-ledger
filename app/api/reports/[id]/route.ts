@@ -3,14 +3,22 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSameOrigin, PRIVATE_RESPONSE_HEADERS } from "@/lib/api-security";
 import { after } from "next/server";
 import { runNextReportJob } from "@/app/api/internal/report-worker/route";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
+const reportIdSchema = z.string().uuid();
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params;
+  const parsedId = reportIdSchema.safeParse((await context.params).id);
+  if (!parsedId.success)
+    return Response.json(
+      { error: "Report not found." },
+      { status: 404, headers: PRIVATE_RESPONSE_HEADERS },
+    );
+  const id = parsedId.data;
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   if (!auth?.claims?.sub)
@@ -53,7 +61,13 @@ export async function POST(
       { error: "Cross-origin requests are not allowed." },
       { status: 403, headers: PRIVATE_RESPONSE_HEADERS },
     );
-  const { id } = await context.params;
+  const parsedId = reportIdSchema.safeParse((await context.params).id);
+  if (!parsedId.success)
+    return Response.json(
+      { error: "Report not found." },
+      { status: 404, headers: PRIVATE_RESPONSE_HEADERS },
+    );
+  const id = parsedId.data;
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   const userId = auth?.claims?.sub;
@@ -90,10 +104,21 @@ export async function POST(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params;
+  if (!isSameOrigin(request))
+    return Response.json(
+      { error: "Cross-origin requests are not allowed." },
+      { status: 403, headers: PRIVATE_RESPONSE_HEADERS },
+    );
+  const parsedId = reportIdSchema.safeParse((await context.params).id);
+  if (!parsedId.success)
+    return Response.json(
+      { error: "Report not found." },
+      { status: 404, headers: PRIVATE_RESPONSE_HEADERS },
+    );
+  const id = parsedId.data;
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   if (!auth?.claims?.sub)

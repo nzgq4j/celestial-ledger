@@ -1,7 +1,15 @@
 import HoroscopeApp from "@/components/HoroscopeApp";
 import { createClient } from "@/lib/supabase/server";
+import { createPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+export const metadata = createPageMetadata({
+  title: "Free Birth Chart & Personal Astrology Readings",
+  description:
+    "Create your natal chart, explore daily and weekly astrology, and follow planetary transits through private, evidence-linked Celestial Atlas readings.",
+  path: "/",
+  keywords: ["free birth chart", "personal natal chart", "astrology reading"],
+});
 
 export default async function Page() {
   const supabase = await createClient();

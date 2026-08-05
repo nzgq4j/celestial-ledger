@@ -1,4 +1,8 @@
-export const metadata = { title: "Verify your email — Celestial Atlas" };
+import { privatePageMetadata } from "@/lib/seo";
+
+export const metadata = privatePageMetadata(
+  "Verify your email — Celestial Atlas",
+);
 
 export default function CheckEmailPage() {
   return (

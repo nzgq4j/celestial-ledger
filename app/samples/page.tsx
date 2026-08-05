@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { sampleChart, sampleIdentity } from "@/lib/samples";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Sample astrology reports — Celestial Atlas",
+export const metadata = createPageMetadata({
+  title: "Sample Astrology Reports",
   description:
     "Explore complete sample editions of Celestial Atlas natal reports and weekly readings.",
-};
+  path: "/samples",
+  keywords: ["sample astrology report", "sample natal reading"],
+});
 
 export default async function SamplesPage() {
   const chart = await sampleChart();

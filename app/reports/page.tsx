@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Personal astrology readings — Celestial Atlas",
+export const metadata = createPageMetadata({
+  title: "Personal Astrology Reports",
   description:
     "Explore private astrology readings for vocation, renewal, and the future patterns unfolding through your natal chart.",
-};
+  path: "/reports",
+  keywords: ["personal astrology report", "career astrology", "natal report"],
+});
 
 const reports = [
   {

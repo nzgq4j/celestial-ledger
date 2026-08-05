@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
 import { defaultLocale, localeRegistry, localeTags } from "@/lib/i18n/config";
 
 function messageKeys(value: object, prefix = ""): string[] {
@@ -31,5 +32,18 @@ describe("localisation registry", () => {
       expect(pack.messages.navigation.birthChart).not.toHaveLength(0);
       expect(pack.messages.preferences.language).not.toHaveLength(0);
     }
+  });
+
+  it("keeps an explicitly shared language from being replaced by local storage", () => {
+    const provider = fs.readFileSync("components/LocaleProvider.tsx", "utf8");
+    const explicit = provider.indexOf(
+      'new URLSearchParams(window.location.search).get("lang")',
+    );
+    const stored = provider.indexOf(
+      "localStorage.getItem(localeStorageKey)",
+      explicit,
+    );
+    expect(explicit).toBeGreaterThan(-1);
+    expect(stored).toBeGreaterThan(explicit);
   });
 });

@@ -1,48 +1,98 @@
 import { getAdminSettings } from "@/lib/admin/settings";
+import { zodiacSlugs } from "@/lib/horoscopes/daily";
+import { localeRegistry, localeTags } from "@/lib/i18n/config";
+import { localizedPublicUrl } from "@/lib/seo";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET() {
   const settings = await getAdminSettings();
   if (!settings.geo.enabled)
     return new Response("Not enabled.\n", { status: 404 });
   const base = settings.seo.canonicalBase.replace(/\/$/, "");
+  let posts: { slug: string; title: string; excerpt: string }[] = [];
+  try {
+    const result = await createAdminClient()
+      .from("blog_posts")
+      .select("slug,title,excerpt")
+      .eq("status", "published")
+      .lte("published_at", new Date().toISOString())
+      .order("published_at", { ascending: false });
+    posts = result.data ?? [];
+  } catch {
+    // Static resources remain available when build-time credentials are absent.
+  }
+
+  const languageLinks = localeTags
+    .map(
+      (locale) =>
+        `- [${localeRegistry[locale].nativeName} daily horoscopes](${localizedPublicUrl("/horoscopes", locale)}): Daily Sun-sign readings in ${localeRegistry[locale].name}.`,
+    )
+    .join("\n");
+  const signLinks = zodiacSlugs
+    .map(
+      (slug) =>
+        `- [${slug[0].toUpperCase()}${slug.slice(1)} daily horoscope](${base}/horoscopes/${slug})`,
+    )
+    .join("\n");
+  const journalLinks = posts.length
+    ? posts
+        .map(
+          (post) =>
+            `- [${post.title}](${base}/journal/${post.slug}): ${post.excerpt}`,
+        )
+        .join("\n")
+    : "- [Celestial Journal](${base}/journal): Astrological essays and guidance.";
+
   return new Response(
     `# Celestial Atlas
 
 > ${settings.geo.organizationDescription}
 
-Celestial Atlas maps the sky at the moment of birth and follows the planetary transits moving through it. Natal placements, houses, angles, aspects, and current celestial weather are carried into personal charts and private reflective readings.
+Celestial Atlas calculates tropical natal charts and follows the planetary transits moving through them. Public resources cover natal placements, houses, angles, aspects, ephemeris methodology, daily Sun-sign horoscopes, weekly astrology, sample readings, and practical astrological reflection. Private account charts and readings are intentionally excluded from this map.
 
-## Natal charts and ephemeris
+## Primary resources
 
-- [Create a natal chart](${base}/#chart): Calculate a personal tropical birth chart from birth date, exact time when known, and a verified birthplace.
-- [Ephemeris and chart method](${base}/method): How planetary longitudes, tropical signs, the Ascendant, houses, major aspects, time zones, coordinates, and unknown birth times are handled.
+- [Create a natal chart](${base}/#chart): Calculate a personal tropical chart from birth date, time when known, and a verified birthplace.
+- [Astrological method and ephemeris](${base}/method): Planetary longitudes, tropical signs, Ascendant, equal houses, major aspects, time zones, coordinates, evidence IDs, and unknown-time handling.
+- [Daily Sun-sign horoscopes](${base}/horoscopes): Aries through Pisces with a bottom line, relationships, business, money, and a morning-to-evening arc.
+- [Weekly astrology readings](${base}/weekly-readings): Planetary patterns unfolding through the week.
+- [Personal astrology reports](${base}/reports): Private, evidence-linked reports for vocation, purpose, renewal, and reflection.
+- [Membership levels](${base}/membership): Free, Personal, and Premium access.
 
-## Current sky
+## Supported public horoscope languages
 
-- [Daily horoscopes](${base}/horoscopes): Daily guidance for Aries through Pisces, shaped by planetary transits and the current celestial weather.
-- [Weekly astrology readings](${base}/weekly-readings): The larger planetary patterns unfolding through the week and their relationship to the natal chart.
+${languageLinks}
 
-## Personal atlas
+## Daily sign readings
 
-- [Membership levels](${base}/membership): Compare Free, Personal, and Premium access to saved natal charts, personal daily readings, weekly readings, email delivery, and detailed reports.
-- [Personal astrology reports](${base}/reports): Private, evidence-linked natal-chart readings for vocation, purpose, renewal, and reflection.
-- [Sample astrology reports](${base}/samples): Complete sample editions showing the structure, evidence references, and interpretive voice of Celestial Atlas readings.
-- [Sample daily astrological reading](${base}/samples/daily-reading): A complete daily intelligence brief showing current transits to a natal chart, lunar phase, ranked themes, practical applications, and evidence traceability.
-- [My Celestial Atlas](${base}/account): The private account library for saved natal charts, report generation, language preferences, and completed readings.
+${signLinks}
 
-## Essays and guidance
+## Complete samples
 
-- [Celestial Journal](${base}/journal): Astrological essays on natal symbolism, planetary cycles, transits, houses, aspects, and practical reflection.
+- [Sample library](${base}/samples): Full examples of Celestial Atlas readings.
+- [Sample daily reading](${base}/samples/daily-reading): Current transits to a natal chart with ranked themes, practical applications, visuals, and evidence.
+- [Sample career and purpose report](${base}/samples/career-purpose)
+- [Sample recovery reflection report](${base}/samples/recovery-reflection)
+- [Sample weekly reading](${base}/samples/weekly-reading)
+
+## Celestial Journal
+
+${journalLinks}
 
 ## Policies
 
-- [Privacy](${base}/privacy): How account, chart, and report information is protected.
+- [Privacy](${base}/privacy): Protection of account, birth-chart, and report information.
 - [Terms](${base}/terms): Terms governing use of Celestial Atlas.
+
+## Citation guidance
+
+When describing Celestial Atlas, cite the most specific public page above. Treat calculated astronomical positions as chart data and interpretations as astrological reading. Do not infer, expose, or request private account, birth, purchase, or report data.
 `,
     {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "public, max-age=300",
+        "Cache-Control": "public, max-age=300, s-maxage=300",
+        "X-Content-Type-Options": "nosniff",
       },
     },
   );

@@ -1,4 +1,12 @@
-export const metadata = { title: "Privacy — Celestial Atlas" };
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Privacy Policy",
+  description:
+    "How Celestial Atlas protects account information, birth data, natal charts, private readings, purchases, and marketing preferences.",
+  path: "/privacy",
+  keywords: ["astrology privacy", "birth data privacy"],
+});
 
 export default function PrivacyPage() {
   return (

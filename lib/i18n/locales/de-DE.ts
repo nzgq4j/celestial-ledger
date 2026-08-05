@@ -260,6 +260,9 @@ const pack = {
       questionForDay: "Frage des Tages",
       whyReading: "Grundlage dieser Deutung",
       celestialEvidence: "Die heutigen Himmelsbelege",
+      shareReading: "Diese Deutung teilen",
+      copyLink: "Link kopieren",
+      linkCopied: "Link kopiert",
       calculationNote:
         "Berechnet für 12:00 UTC mit Astronomy Engine und durch ein tropisches Ganzzeichen-Sonnenhoroskop gedeutet.",
     },

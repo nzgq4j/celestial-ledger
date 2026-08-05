@@ -262,6 +262,9 @@ const pack = {
       questionForDay: "Question du jour",
       whyReading: "Les fondements de cette lecture",
       celestialEvidence: "Les éléments célestes du jour",
+      shareReading: "Partager cette lecture",
+      copyLink: "Copier le lien",
+      linkCopied: "Lien copié",
       calculationNote:
         "Calculé pour 12 h 00 UTC avec Astronomy Engine et interprété selon une carte solaire tropicale en signes entiers.",
     },

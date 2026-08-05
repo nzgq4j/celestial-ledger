@@ -2,8 +2,9 @@ import { isDemoMode } from "@/lib/supabase/config";
 import { AuthForm } from "@/components/AuthForm";
 import { signInWithGoogle } from "@/app/auth/actions";
 import Link from "next/link";
+import { privatePageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Sign in — Celestial Atlas" };
+export const metadata = privatePageMetadata("Sign in — Celestial Atlas");
 
 export default async function LoginPage({
   searchParams,

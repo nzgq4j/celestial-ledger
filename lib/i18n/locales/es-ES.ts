@@ -255,6 +255,9 @@ const pack = {
       questionForDay: "Pregunta del día",
       whyReading: "El origen de esta lectura",
       celestialEvidence: "Evidencias celestes de hoy",
+      shareReading: "Comparte esta lectura",
+      copyLink: "Copiar enlace",
+      linkCopied: "Enlace copiado",
       calculationNote:
         "Calculado para las 12:00 UTC con Astronomy Engine e interpretado mediante una carta solar tropical de signos completos.",
     },

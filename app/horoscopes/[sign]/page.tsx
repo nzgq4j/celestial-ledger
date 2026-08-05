@@ -1,21 +1,69 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { dailySkyFor, zodiacSlugs } from "@/lib/horoscopes/daily";
+import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
+import { SocialShareLinks } from "@/components/SocialShareLinks";
+import { StructuredData } from "@/components/StructuredData";
+import {
+  createPageMetadata,
+  localizedAlternates,
+  localizedPublicUrl,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export function generateStaticParams() {
   return zodiacSlugs.map((sign) => ({ sign }));
 }
 
+type HoroscopeDetailProps = {
+  params: Promise<{ sign: string }>;
+  searchParams: Promise<{ lang?: string }>;
+};
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: HoroscopeDetailProps): Promise<Metadata> {
+  const [{ sign: value }, { lang }] = await Promise.all([params, searchParams]);
+  const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
+  const pack = await getServerTranslationPack(requestedLocale);
+  const sky = dailySkyFor(new Date(), pack.tag);
+  const reading = sky.horoscopes.find(
+    (item) => item.slug === value.toLowerCase(),
+  );
+  if (!reading) return {};
+  const route = `/horoscopes/${reading.slug}`;
+  const path = localizedPublicUrl(route, pack.tag);
+  const publishedAt = `${sky.date}T00:00:00.000Z`;
+  const metadata = createPageMetadata({
+    title: `${reading.sign} ${pack.messages.horoscopes.dailyHoroscope} — ${reading.displayDate}`,
+    description: reading.bottomLine,
+    path,
+    locale: pack.tag,
+    type: "article",
+    image: `${route}/opengraph-image`,
+    publishedTime: publishedAt,
+    modifiedTime: publishedAt,
+    keywords: [`${reading.sign} horoscope`, `${reading.sign} daily reading`],
+  });
+  return {
+    ...metadata,
+    alternates: { canonical: path, languages: localizedAlternates(route) },
+  };
+}
+
 export default async function HoroscopeDetailPage({
   params,
-}: {
-  params: Promise<{ sign: string }>;
-}) {
-  const { sign: slug } = await params;
-  const pack = await getServerTranslationPack();
+  searchParams,
+}: HoroscopeDetailProps) {
+  const [{ sign: slug }, { lang }] = await Promise.all([params, searchParams]);
+  const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
+  const pack = await getServerTranslationPack(requestedLocale);
   const copy = pack.messages.horoscopes;
   const sky = dailySkyFor(new Date(), pack.tag);
   const reading = sky.horoscopes.find(
@@ -27,9 +75,34 @@ export default async function HoroscopeDetailPage({
     afternoon: copy.afternoon,
     evening: copy.evening,
   };
+  const route = `/horoscopes/${reading.slug}`;
+  const shareUrl = localizedPublicUrl(route, pack.tag);
+  const imageUrl = `${SITE_URL}${route}/opengraph-image`;
+  const title = `${reading.sign} ${copy.dailyHoroscope} — ${reading.displayDate}`;
+  const publishedAt = `${sky.date}T00:00:00.000Z`;
   return (
     <main className="page-shell horoscope-detail">
-      <Link className="horoscope-back" href="/horoscopes">
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: title,
+          description: reading.bottomLine,
+          image: [imageUrl],
+          datePublished: publishedAt,
+          dateModified: publishedAt,
+          inLanguage: pack.tag,
+          mainEntityOfPage: shareUrl,
+          author: { "@type": "Organization", name: SITE_NAME },
+          publisher: { "@type": "Organization", name: SITE_NAME },
+        }}
+      />
+      <Link
+        className="horoscope-back"
+        href={
+          pack.tag === "en-GB" ? "/horoscopes" : `/horoscopes?lang=${pack.tag}`
+        }
+      >
         ← {copy.allHoroscopes}
       </Link>
       <header>
@@ -46,6 +119,15 @@ export default async function HoroscopeDetailPage({
           <p>{reading.theme}</p>
         </div>
       </header>
+      <SocialShareLinks
+        url={shareUrl}
+        title={title}
+        description={reading.bottomLine}
+        imageUrl={imageUrl}
+        heading={copy.shareReading}
+        copyLabel={copy.copyLink}
+        copiedLabel={copy.linkCopied}
+      />
       <section className="horoscope-reading">
         <article className="horoscope-reading__lead">
           <p className="section-kicker">{copy.bottomLine}</p>

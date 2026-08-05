@@ -3,12 +3,15 @@ import { sampleChart, sampleIdentity } from "@/lib/samples";
 import { buildDailyReadingAnalysis } from "@/lib/daily-readings/calculation";
 import { buildDailyReadingContent } from "@/lib/daily-readings/content";
 import { DailyReadingView } from "@/components/DailyReadingView";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Sample daily astrological reading — Celestial Atlas",
+export const metadata = createPageMetadata({
+  title: "Sample Daily Astrological Reading",
   description:
     "Read a complete evidence-linked sample of the registered-user Celestial Atlas daily reading.",
-};
+  path: "/samples/daily-reading",
+  keywords: ["sample daily astrology reading", "daily transit report"],
+});
 
 export default async function SampleDailyReadingPage() {
   const natalChart = await sampleChart();

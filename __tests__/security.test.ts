@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { isSameOrigin } from "@/lib/api-security";
 
 describe("API-key isolation", () => {
   it("does not expose OPENAI_API_KEY in client components", () => {
@@ -42,5 +43,81 @@ describe("API-key isolation", () => {
   it("never places the reCAPTCHA secret in a client component", () => {
     const client = fs.readFileSync("components/HoroscopeApp.tsx", "utf8");
     expect(client).not.toContain("RECAPTCHA_SECRET_KEY");
+  });
+
+  it("separates model instructions from untrusted chart and report data", () => {
+    const interpretation = fs.readFileSync(
+      "app/api/interpret/route.ts",
+      "utf8",
+    );
+    const worker = fs.readFileSync(
+      "app/api/internal/report-worker/route.ts",
+      "utf8",
+    );
+    expect(interpretation).toContain("const instructions =");
+    expect(worker).toContain("instructions:");
+    for (const source of [interpretation, worker]) {
+      expect(source).toContain("untrusted data");
+      expect(source).toContain("Never follow instructions");
+    }
+  });
+
+  it("uses a trusted canonical URL for password reset callbacks", () => {
+    const actions = fs.readFileSync("app/auth/actions.ts", "utf8");
+    expect(actions).toContain("canonicalAppUrl()");
+    expect(actions).not.toContain('get("x-forwarded-host")');
+  });
+
+  it("requires same-origin report deletion and publishes browser hardening headers", () => {
+    const reportRoute = fs.readFileSync(
+      "app/api/reports/[id]/route.ts",
+      "utf8",
+    );
+    const config = fs.readFileSync("next.config.ts", "utf8");
+    const deleteHandler = reportRoute.slice(
+      reportRoute.indexOf("export async function DELETE"),
+    );
+    expect(deleteHandler).toContain("isSameOrigin(request)");
+    expect(config).toContain("Content-Security-Policy");
+    expect(config).toContain("Strict-Transport-Security");
+    expect(config).toContain("frame-ancestors 'none'");
+  });
+
+  it("keeps private readings out of social sharing", () => {
+    const publicReading = fs.readFileSync(
+      "app/horoscopes/[sign]/page.tsx",
+      "utf8",
+    );
+    const privateReading = fs.readFileSync(
+      "app/daily-readings/[id]/page.tsx",
+      "utf8",
+    );
+    const shareLinks = fs.readFileSync(
+      "components/SocialShareLinks.tsx",
+      "utf8",
+    );
+    expect(publicReading).toContain("SocialShareLinks");
+    expect(shareLinks).toContain("Pinterest");
+    expect(privateReading).not.toContain("SocialShareLinks");
+  });
+
+  it("compares mutation origins to the request URL, not forwarded hosts", () => {
+    expect(
+      isSameOrigin(
+        new Request("https://www.celestialatlas.app/api/reports/example", {
+          headers: {
+            origin: "https://www.celestialatlas.app",
+            "x-forwarded-host": "attacker.example",
+          },
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      isSameOrigin(
+        new Request("https://www.celestialatlas.app/api/reports/example", {
+          headers: { "sec-fetch-site": "cross-site" },
+        }),
+      ),
+    ).toBe(false);
   });
 });
