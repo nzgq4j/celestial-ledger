@@ -1,5 +1,17 @@
 # Daily reading decisions
 
+## D033 — Registered account is the release-one entitlement boundary
+
+Release one derives `registered_daily_reading` from a verified authenticated user plus an active birth profile owned by that user. It does not reuse or consume paid report entitlements. This keeps authorization server authoritative while leaving subscription tiers and usage allowances to the separately planned capability system.
+
+## D034 — Ship the deterministic foundation before model narrative
+
+The first implementation slice persists a schema-validated deterministic analysis and deterministic narrative. A language model may later improve expression only after the full Stage A payload, strict output validation, localization, cost tracking and failure recovery are complete. The model will never calculate or alter astronomical facts.
+
+## D035 — The public sample uses the production domain pipeline
+
+The daily sample is generated from a fixed sample natal chart, fixed reading date and the same analysis/content schemas as private readings. It contains no real user data and prevents the sample page from drifting into a separate hard-coded product.
+
 ## DR-ADR-001 — Audit before implementation
 
 Status: accepted.

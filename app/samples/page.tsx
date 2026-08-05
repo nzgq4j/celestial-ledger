@@ -49,6 +49,17 @@ export default async function SamplesPage() {
             <small>Seven days of transits meeting the natal chart.</small>
           </div>
         </Link>
+        <Link href="/samples/daily-reading">
+          <span>IV</span>
+          <div>
+            <p>Registered-user sample</p>
+            <h2>Daily Astrological Reading</h2>
+            <small>
+              Current transits, lunar phase, ranked themes, practical guidance
+              and evidence.
+            </small>
+          </div>
+        </Link>
       </section>
     </main>
   );

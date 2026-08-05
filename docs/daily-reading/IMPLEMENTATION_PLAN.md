@@ -1,6 +1,23 @@
 # Daily reading implementation plan
 
-No task below is authorized by this audit alone. Production database tasks require the controls in `docs/daily-reading/TEST_PLAN.md` and explicit approval.
+Implementation began with user authorization on 5 August 2026. Production database application remains separately gated by the controls in `docs/daily-reading/TEST_PLAN.md`, a recoverable backup, isolated dry run, and explicit deployment approval.
+
+## Active implementation slice
+
+| Task      | Status                             | Implemented in this slice                                                                                                                                                 | Remaining gate                                                                    |
+| --------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| DR-001    | Complete for foundation            | Added deterministic daily engine fixtures covering civil-noon time-zone resolution, evidence stability, phase/state output, unknown-time suppression, BLUF and cache keys | Broader golden fixtures for exact events and DST boundaries                       |
+| DR-002    | Complete for foundation            | Added strict Zod domain, analysis, evidence, theme and content schemas with cross-reference validation                                                                    | Extend schemas for ingress, station, lunar sequence and repeated passes           |
+| DR-003    | Partial                            | Added timestamped current positions, speed/motion, lunar phase and provenance using the retained Astronomy Engine                                                         | Exact event search, ingresses, stations and void-of-course Moon                   |
+| DR-004    | Partial                            | Added server-only transit-to-natal major aspects with orb, strength and applying/exact/separating classification                                                          | Exactness windows and repeated-pass linking                                       |
+| DR-007    | Partial                            | Added explicit repository-versioned planetary rule families, practical applications and deterministic theme clustering                                                    | Editorial rule expansion and contradiction scoring                                |
+| DR-009    | Partial                            | Added a validated deterministic analysis payload, timelines and limitations                                                                                               | Full lunar sequence, 72-hour events and opportunity/risk matrix                   |
+| DR-010    | Partial                            | Added schema-validated content, BLUF-first presentation and the 425–575 English BLUF validator                                                                            | Complete narrative localization and per-section length expansion                  |
+| DR-012    | Authored, not applied              | Added an additive `daily_readings` migration with one-year expiry, owner-only RLS, cache uniqueness and service-only writes                                               | Backup, isolated migration dry run, advisor review and manual production approval |
+| DR-014    | Implemented against pending schema | Added authenticated create/list/get/delete APIs with same-origin mutation checks, strict input, owned-profile entitlement and reproducible cache reuse                    | Database integration/BOLA tests after isolated migration application              |
+| DR-015    | Implemented against pending schema | Added an account generator, reading history, registered-user entitlement label and localized account controls                                                             | Browser accessibility and translated narrative QA                                 |
+| DR-016    | Implemented against pending schema | Added private no-store/noindex viewer, print, confirmed deletion, evidence disclosure and technical appendix                                                              | Browser/E2E validation after database dry run                                     |
+| DR-SAMPLE | Complete for foundation            | Added a public daily-reading sample generated from the same canonical analysis and content schema                                                                         | Expand alongside the production engine rather than hard-code a parallel sample    |
 
 ## Ordered tasks
 
