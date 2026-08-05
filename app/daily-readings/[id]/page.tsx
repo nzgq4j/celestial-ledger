@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
+  dailyReadingAnalysisSchema,
   dailyReadingContentSchema,
   dailyEvidenceSchema,
 } from "@/lib/daily-readings/domain";
@@ -24,7 +25,7 @@ export default async function DailyReadingPage({
   if (typeof auth?.claims?.sub !== "string") redirect("/auth/login");
   const { data: reading, error } = await supabase
     .from("daily_readings")
-    .select("id,birth_profile_id,content,evidence")
+    .select("id,birth_profile_id,analysis,content,evidence")
     .eq("id", id)
     .single();
   if (error || !reading) notFound();
@@ -34,14 +35,16 @@ export default async function DailyReadingPage({
     .eq("id", reading.birth_profile_id)
     .single();
   const content = dailyReadingContentSchema.safeParse(reading.content);
+  const analysis = dailyReadingAnalysisSchema.safeParse(reading.analysis);
   const evidence = dailyEvidenceSchema.array().safeParse(reading.evidence);
-  if (!content.success || !evidence.success) notFound();
+  if (!analysis.success || !content.success || !evidence.success) notFound();
 
   return (
     <main className="page-shell private-report daily-reading-page">
       <DailyReadingActions readingId={reading.id} />
       <DailyReadingView
         content={content.data}
+        analysis={analysis.data}
         evidence={evidence.data}
         profileLabel={profile?.label ?? "Birth chart"}
       />
