@@ -3399,9 +3399,36 @@ input:focus-visible {
   gap: 0.55rem;
 }
 .social-share .button-quiet {
-  min-height: 2.45rem;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.68rem;
+  min-height: 2.8rem;
+  padding: 0.7rem 0.95rem;
+  font-size: 0.76rem;
+}
+.social-share__link {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  justify-content: center;
+}
+.social-share__icon {
+  display: inline-flex;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--gold);
+}
+.social-share__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+.social-share__link--facebook .social-share__icon {
+  color: #1877f2;
+}
+.social-share__link--pinterest .social-share__icon {
+  color: #e60023;
+}
+.social-share__link--x .social-share__icon {
+  color: var(--paper);
 }
 .horoscope-reading {
   max-width: 60rem;

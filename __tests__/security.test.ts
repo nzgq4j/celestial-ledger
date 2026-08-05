@@ -111,7 +111,21 @@ describe("API-key isolation", () => {
     expect(pinterestImage).toContain("height: 1500");
     expect(pinterestImage).toContain("constellations");
     expect(pinterestImage).toContain("conciseSummary");
+    expect(pinterestImage).toContain("/hero1.png");
+    expect(pinterestImage).toContain("celestialatlas.app");
     expect(pinterestImage).not.toContain("name.slice(0, 2)");
+  });
+
+  it("uses branded share icons with accessible text labels", () => {
+    const shareLinks = fs.readFileSync(
+      "components/SocialShareLinks.tsx",
+      "utf8",
+    );
+    expect(shareLinks).toContain('viewBox="0 0 24 24"');
+    expect(shareLinks).toContain('icon: "facebook"');
+    expect(shareLinks).toContain('icon: "x"');
+    expect(shareLinks).toContain('icon: "pinterest"');
+    expect(shareLinks).toContain('aria-hidden="true"');
   });
 
   it("compares mutation origins to the request URL, not forwarded hosts", () => {
