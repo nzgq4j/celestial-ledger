@@ -35,6 +35,7 @@ const publicRoutes = [
   { path: "/journal", changeFrequency: "weekly", priority: 0.8 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/contact", changeFrequency: "yearly", priority: 0.4 },
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

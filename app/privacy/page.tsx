@@ -13,7 +13,13 @@ export default function PrivacyPage() {
     <main className="legal-page page-shell">
       <p className="eyebrow">Celestial Atlas</p>
       <h1>Privacy policy</h1>
-      <p>Last updated: 3 August 2026</p>
+      <p>
+        When you contact us, we store your name, email address, contact reason,
+        and message privately so authorised administrators can respond. A
+        notification is sent to the administrative mailbox. Do not include birth
+        data, passwords, or payment card details in a contact message.
+      </p>
+      <p>Last updated: 6 August 2026</p>
       <h2>Free chart and mailing list</h2>
       <p>
         Birth information is used to calculate the chart you request. It is not

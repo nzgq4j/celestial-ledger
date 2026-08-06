@@ -5,6 +5,7 @@ import { getAdminSettings } from "@/lib/admin/settings";
 export async function verifyRecaptcha(
   token: string | undefined,
   remoteIp?: string,
+  expectedAction = "marketing_subscribe",
 ) {
   const settings = await getAdminSettings();
   if (!settings.recaptcha.enabled) return true;
@@ -29,7 +30,7 @@ export async function verifyRecaptcha(
   };
   return (
     result.success === true &&
-    (result.action === undefined || result.action === "marketing_subscribe") &&
+    (result.action === undefined || result.action === expectedAction) &&
     (result.score === undefined || result.score >= 0.5)
   );
 }

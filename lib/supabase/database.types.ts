@@ -119,6 +119,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      contact_messages: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          reason: string;
+          message: string;
+          notification_status: string;
+          notification_id: string | null;
+          notification_attempted_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          reason: string;
+          message: string;
+          notification_status?: string;
+          notification_id?: string | null;
+          notification_attempted_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          reason?: string;
+          message?: string;
+          notification_status?: string;
+          notification_id?: string | null;
+          notification_attempted_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       blog_posts: {
         Row: {
           id: string;

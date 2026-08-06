@@ -4936,7 +4936,6 @@ th {
     transition: none;
   }
 }
-
 /* Registered daily reading */
 .dashboard-panel--daily {
   border-color: color-mix(in srgb, var(--gold) 52%, var(--line));
@@ -5513,5 +5512,86 @@ th {
   .daily-reading-view dd,
   .daily-reading-view code {
     color: #222 !important;
+  }
+}
+
+.contact-page {
+  max-width: 860px;
+  padding-block: 5rem;
+}
+.contact-page header {
+  max-width: 680px;
+  margin-bottom: 2rem;
+}
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--line, #d8ccb0);
+  background: rgba(255, 255, 255, 0.62);
+}
+.contact-form label {
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--line, #b9ad95);
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+.contact-form__message,
+.contact-form__status {
+  grid-column: 1 / -1;
+}
+.contact-form__honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.contact-page__privacy {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.admin-contact-list {
+  display: grid;
+  gap: 1rem;
+}
+.admin-contact-list article {
+  padding: 1.25rem;
+  border: 1px solid rgba(188, 161, 95, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+}
+.admin-contact-list header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.admin-contact-list header div {
+  display: grid;
+  gap: 0.2rem;
+}
+.admin-contact-list p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .contact-form {
+    grid-template-columns: 1fr;
+  }
+  .contact-form > * {
+    grid-column: 1;
+  }
+  .admin-contact-list header {
+    display: grid;
   }
 }

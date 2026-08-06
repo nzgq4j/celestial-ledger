@@ -130,7 +130,7 @@ export function SiteFooter() {
             <Link href="/method">{copy.method}</Link>
             <Link href="/privacy">{copy.privacy}</Link>
             <Link href="/terms">{copy.terms}</Link>
-            <span>{copy.privateByDesign}</span>
+            <Link href="/contact">Contact</Link>
           </nav>
           <div className="site-footer__language">
             <h3>{copy.language}</h3>
@@ -148,7 +148,7 @@ export function SiteFooter() {
         <div className="site-footer__colophon">
           <span>© {new Date().getFullYear()} Celestial Atlas</span>
           <span>{copy.rights}</span>
-          <span>51.5° N · 0.0°</span>
+          <span>33.20430, -87.52750</span>
         </div>
       </div>
     </footer>

@@ -32,6 +32,7 @@ export default async function AdminPage({
     reportsResult,
     postsResult,
     auditResult,
+    contactResult,
     params,
   ] = await Promise.all([
     getAdminSettings(),
@@ -47,6 +48,11 @@ export default async function AdminPage({
       .select("id,action,setting_key,created_at")
       .order("created_at", { ascending: false })
       .limit(12),
+    admin
+      .from("contact_messages")
+      .select("id,name,email,reason,message,notification_status,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50),
     searchParams,
   ]);
   const roleMap = new Map(
@@ -108,6 +114,7 @@ export default async function AdminPage({
         <a href="#integrations">Integrations</a>
         <a href="#discovery">SEO & GEO</a>
         <a href="#journal">Journal</a>
+        <a href="#contact-messages">Contact</a>
       </nav>
 
       <section className="admin-section" id="overview">
@@ -481,6 +488,37 @@ export default async function AdminPage({
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="admin-section" id="contact-messages">
+        <div className="admin-section__heading">
+          <p className="eyebrow">Private correspondence</p>
+          <h2>Contact messages</h2>
+          <p>Recent messages submitted through the public contact form.</p>
+        </div>
+        <div className="admin-contact-list">
+          {(contactResult.data ?? []).map((item) => (
+            <article key={item.id}>
+              <header>
+                <div>
+                  <strong>{item.name}</strong>
+                  <a href={`mailto:${item.email}`}>{item.email}</a>
+                </div>
+                <div>
+                  <span>{item.reason.replaceAll("_", " ")}</span>
+                  <time>
+                    {new Date(item.created_at).toLocaleString("en-GB")}
+                  </time>
+                </div>
+              </header>
+              <p>{item.message}</p>
+              <small>
+                Notification: {item.notification_status.replaceAll("_", " ")}
+              </small>
+            </article>
+          ))}
+          {!contactResult.data?.length && <p>No contact messages yet.</p>}
         </div>
       </section>
 
