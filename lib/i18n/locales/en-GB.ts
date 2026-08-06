@@ -317,10 +317,9 @@ const pack = {
       clear: "Clear my data",
     },
     footer: {
-      kicker: "The sky keeps turning",
-      title: "Return whenever the pattern changes.",
-      description:
-        "Ancient celestial wisdom, mapped for the moment you arrived.",
+      kicker: "Go deeper than your horoscope.",
+      title: "Stop reading your sign. Start reading your chart.",
+      description: "Full natal analysis, personalized to the minute.",
       chartAction: "Map your birth sky",
       explore: "Explore",
       yourAtlas: "Your atlas",

@@ -99,8 +99,8 @@ export function SiteFooter() {
         <div className="site-footer__lead">
           <Image src="/celestialatlas-logo.png" alt="" width="58" height="58" />
           <div>
-            <p className="eyebrow">{copy.kicker}</p>
             <h2>{copy.title}</h2>
+            <p>{copy.kicker}</p>
             <p>{copy.description}</p>
           </div>
           <Link href="/#chart" className="site-footer__chart-link">
