@@ -32,6 +32,30 @@ const schema = z
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
+function smtpErrorDetails(error: unknown) {
+  if (!(error instanceof Error)) return { type: "UnknownError" };
+  const smtp = error as Error & {
+    code?: unknown;
+    command?: unknown;
+    responseCode?: unknown;
+    errno?: unknown;
+    syscall?: unknown;
+  };
+  return {
+    type: error.name,
+    message: error.message.slice(0, 300),
+    code: typeof smtp.code === "string" ? smtp.code : undefined,
+    command: typeof smtp.command === "string" ? smtp.command : undefined,
+    responseCode:
+      typeof smtp.responseCode === "number" ? smtp.responseCode : undefined,
+    errno:
+      typeof smtp.errno === "string" || typeof smtp.errno === "number"
+        ? smtp.errno
+        : undefined,
+    syscall: typeof smtp.syscall === "string" ? smtp.syscall : undefined,
+  };
+}
+
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ error: "ORIGIN_REJECTED" }, 403);
   try {
@@ -65,9 +89,10 @@ export async function POST(request: Request) {
       id: data.id,
       ...parsed.data,
     }).catch((error: unknown) => {
-      console.error("[contact] SMTP notification failed", {
-        type: error instanceof Error ? error.name : "UnknownError",
-      });
+      console.error(
+        "[contact] SMTP notification failed",
+        smtpErrorDetails(error),
+      );
       return { status: "failed" as const };
     });
     await admin
