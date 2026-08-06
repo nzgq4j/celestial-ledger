@@ -12,12 +12,16 @@ declare global {
 }
 
 async function recaptchaToken() {
-  const script = document.querySelector<HTMLScriptElement>(
-    'script[src*="recaptcha/api.js"]',
-  );
-  const siteKey = script
-    ? new URL(script.src).searchParams.get("render")
-    : null;
+  const deadline = Date.now() + 5000;
+  let siteKey: string | null = null;
+  while (Date.now() < deadline) {
+    const script = document.querySelector<HTMLScriptElement>(
+      'script[src*="recaptcha/api.js"]',
+    );
+    siteKey = script ? new URL(script.src).searchParams.get("render") : null;
+    if (siteKey && window.grecaptcha) break;
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
   if (!siteKey || !window.grecaptcha) return undefined;
   await new Promise<void>((resolve) => window.grecaptcha!.ready(resolve));
   return window.grecaptcha.execute(siteKey, { action: "contact_submit" });

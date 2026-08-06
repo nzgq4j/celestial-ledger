@@ -10,7 +10,13 @@ export async function verifyRecaptcha(
   const settings = await getAdminSettings();
   if (!settings.recaptcha.enabled) return true;
   const secret = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secret || !token) return false;
+  if (!secret || !token) {
+    console.warn("[recaptcha] Verification unavailable", {
+      reason: !secret ? "missing_secret" : "missing_token",
+      expectedAction,
+    });
+    return false;
+  }
   const body = new URLSearchParams({ secret, response: token });
   if (remoteIp) body.set("remoteip", remoteIp);
   const response = await fetch(
@@ -22,15 +28,33 @@ export async function verifyRecaptcha(
       cache: "no-store",
     },
   );
-  if (!response.ok) return false;
+  if (!response.ok) {
+    console.warn("[recaptcha] Verification request failed", {
+      status: response.status,
+      expectedAction,
+    });
+    return false;
+  }
   const result = (await response.json()) as {
     success?: boolean;
     score?: number;
     action?: string;
+    hostname?: string;
+    "error-codes"?: string[];
   };
-  return (
+  const accepted =
     result.success === true &&
     (result.action === undefined || result.action === expectedAction) &&
-    (result.score === undefined || result.score >= 0.5)
-  );
+    (result.score === undefined || result.score >= 0.5);
+  if (!accepted) {
+    console.warn("[recaptcha] Verification rejected", {
+      success: result.success === true,
+      score: result.score,
+      action: result.action,
+      expectedAction,
+      hostname: result.hostname,
+      errorCodes: result["error-codes"] ?? [],
+    });
+  }
+  return accepted;
 }
