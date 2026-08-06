@@ -1,5 +1,7 @@
 import "server-only";
 
+import nodemailer from "nodemailer";
+
 const notificationTo = "admin@celestialatlas.app";
 
 export async function sendContactNotification(input: {
@@ -9,35 +11,43 @@ export async function sendContactNotification(input: {
   reason: string;
   message: string;
 }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.CONTACT_NOTIFICATION_FROM;
-  if (!apiKey || !from) return { status: "not_configured" as const };
+  const password = process.env.MAIL_PWD;
+  if (!password) return { status: "not_configured" as const };
+  const host = process.env.MAIL_HOST ?? "mail.celestialatlas.app";
+  const port = Number(process.env.MAIL_PORT ?? "465");
+  if (!Number.isInteger(port) || port < 1 || port > 65535)
+    return { status: "not_configured" as const };
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `contact-${input.id}`,
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    requireTLS: port !== 465,
+    auth: {
+      user: process.env.MAIL_USER ?? "support",
+      pass: password,
     },
-    body: JSON.stringify({
-      from,
-      to: [notificationTo],
-      reply_to: input.email,
-      subject: `Celestial Atlas contact: ${input.reason}`,
-      text: [
-        `Name: ${input.name}`,
-        `Email: ${input.email}`,
-        `Reason: ${input.reason}`,
-        `Message ID: ${input.id}`,
-        "",
-        input.message,
-      ].join("\n"),
-      tags: [{ name: "category", value: "contact_notification" }],
-    }),
-    cache: "no-store",
+    tls: { servername: host },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
   });
-  if (!response.ok) return { status: "failed" as const };
-  const result = (await response.json()) as { id?: string };
-  return { status: "sent" as const, id: result.id };
+  const result = await transporter.sendMail({
+    from:
+      process.env.MAIL_FROM ??
+      "Celestial Atlas Support <support@celestialatlas.app>",
+    to: notificationTo,
+    replyTo: input.email,
+    subject: `Celestial Atlas contact: ${input.reason}`,
+    text: [
+      `Name: ${input.name}`,
+      `Email: ${input.email}`,
+      `Reason: ${input.reason}`,
+      `Message ID: ${input.id}`,
+      "",
+      input.message,
+    ].join("\n"),
+    headers: { "X-Contact-Message-ID": input.id },
+  });
+  return { status: "sent" as const, id: result.messageId };
 }
