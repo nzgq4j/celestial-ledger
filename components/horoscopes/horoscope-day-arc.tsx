@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { DailyHoroscope } from "@/lib/horoscopes/daily";
 
 type Period = DailyHoroscope["dayParts"][number]["period"];
@@ -31,10 +30,7 @@ export function HoroscopeDayArc({
       )}
       <ol>
         {parts.map((part) => (
-          <li
-            key={part.period}
-            style={{ "--arc-level": part.level } as CSSProperties}
-          >
+          <li key={part.period} data-period={part.period}>
             <span className="horoscope-day-arc__signal" aria-hidden="true">
               <span />
             </span>

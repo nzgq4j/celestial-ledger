@@ -3236,21 +3236,23 @@ input:focus-visible {
   align-items: flex-end;
   justify-content: center;
 }
+.horoscope-day-arc li[data-period="afternoon"] .horoscope-day-arc__signal {
+  transform: translateY(-1.4rem);
+}
 .horoscope-day-arc__signal::before {
   width: 1px;
-  height: calc(0.7rem + var(--arc-level) * 0.62rem);
+  height: 1rem;
   background: linear-gradient(transparent, var(--gold));
   content: "";
 }
 .horoscope-day-arc__signal > span {
-  width: calc(0.4rem + var(--arc-level) * 0.12rem);
-  height: calc(0.4rem + var(--arc-level) * 0.12rem);
-  margin-left: calc(-0.2rem - var(--arc-level) * 0.06rem);
+  width: 0.72rem;
+  height: 0.72rem;
+  margin-left: -0.36rem;
   border: 1px solid var(--gold);
   border-radius: 50%;
   background: var(--paper);
-  box-shadow: 0 0 calc(0.5rem + var(--arc-level) * 0.2rem)
-    color-mix(in srgb, var(--gold) 55%, transparent);
+  box-shadow: 0 0 0.75rem color-mix(in srgb, var(--gold) 55%, transparent);
 }
 .horoscope-day-arc li p {
   margin: 0.75rem 0 0.35rem;
@@ -3291,6 +3293,11 @@ input:focus-visible {
 }
 .horoscope-day-arc--compact .horoscope-day-arc__signal {
   height: 3.6rem;
+}
+.horoscope-day-arc--compact
+  li[data-period="afternoon"]
+  .horoscope-day-arc__signal {
+  transform: translateY(-0.95rem);
 }
 .horoscope-day-arc--compact li p {
   margin-top: 0.45rem;
@@ -3684,6 +3691,7 @@ input:focus-visible {
   .horoscope-day-arc--compact .horoscope-day-arc__signal {
     height: auto;
     align-items: center;
+    transform: none;
   }
   .horoscope-day-arc__signal::before {
     display: none;
