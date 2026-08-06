@@ -226,7 +226,7 @@ export async function GET(
       width: 1000,
       height: 1500,
       headers: {
-        "Cache-Control": "public, max-age=300, s-maxage=300",
+        "Cache-Control": "public, max-age=0, must-revalidate",
       },
     },
   );

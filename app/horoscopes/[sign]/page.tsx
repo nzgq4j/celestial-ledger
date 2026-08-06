@@ -5,6 +5,7 @@ import { dailySkyFor, zodiacSlugs } from "@/lib/horoscopes/daily";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
+import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { StructuredData } from "@/components/StructuredData";
 import {
@@ -83,6 +84,7 @@ export default async function HoroscopeDetailPage({
   const publishedAt = `${sky.date}T00:00:00.000Z`;
   return (
     <main className="page-shell horoscope-detail">
+      <HoroscopeMidnightRefresh />
       <StructuredData
         data={{
           "@context": "https://schema.org",

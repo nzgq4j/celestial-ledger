@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { dailySkyFor, horoscopeForSlug } from "@/lib/horoscopes/daily";
+import {
+  horoscopeUtcDateKey,
+  millisecondsUntilNextUtcMidnight,
+} from "@/lib/horoscopes/rollover";
 
 describe("daily horoscopes", () => {
   const sky = dailySkyFor(new Date("2026-08-03T09:00:00.000Z"));
@@ -65,6 +69,41 @@ describe("daily horoscopes", () => {
     ).toBeGreaterThanOrEqual(4);
   });
 
+  it("rolls every horoscope to new wording at midnight UTC", () => {
+    const before = dailySkyFor(new Date("2026-08-05T23:59:59.999Z"));
+    const after = dailySkyFor(new Date("2026-08-06T00:00:00.000Z"));
+
+    expect(before.date).toBe("2026-08-05");
+    expect(after.date).toBe("2026-08-06");
+    for (const [index, reading] of before.horoscopes.entries()) {
+      const nextReading = after.horoscopes[index];
+      expect(nextReading.slug).toBe(reading.slug);
+      expect(nextReading.overview).not.toBe(reading.overview);
+      expect(nextReading.bottomLine).not.toBe(reading.bottomLine);
+      expect(nextReading.relationships).not.toBe(reading.relationships);
+      expect(nextReading.business).not.toBe(reading.business);
+      expect(nextReading.money).not.toBe(reading.money);
+      expect(nextReading.opportunity).not.toBe(reading.opportunity);
+      expect(nextReading.question).not.toBe(reading.question);
+      expect(nextReading.dayParts).not.toEqual(reading.dayParts);
+    }
+  });
+
+  it("uses the GMT calendar boundary for rollover timing", () => {
+    expect(horoscopeUtcDateKey(new Date("2026-08-05T23:59:59.999Z"))).toBe(
+      "2026-08-05",
+    );
+    expect(horoscopeUtcDateKey(new Date("2026-08-06T00:00:00.000Z"))).toBe(
+      "2026-08-06",
+    );
+    expect(
+      millisecondsUntilNextUtcMidnight(Date.parse("2026-08-05T23:59:59.999Z")),
+    ).toBe(1);
+    expect(
+      millisecondsUntilNextUtcMidnight(Date.parse("2026-08-05T12:00:00.000Z")),
+    ).toBe(43_200_000);
+  });
+
   it("keeps every editorial section below 500 words", () => {
     for (const reading of sky.horoscopes) {
       for (const section of [
@@ -89,7 +128,7 @@ describe("daily horoscopes", () => {
     const aries = spanish.horoscopes[0];
     expect(aries.sign).toBe("Aries");
     expect(aries.bottomLine).not.toBe(sky.horoscopes[0].bottomLine);
-    expect(aries.relationships).toContain("Luna");
+    expect(aries.relationships).toMatch(/relacional|Luna|vínculos|conexión/iu);
     expect(aries.business).toMatch(/profesional|negocios|Lidera|trabajo/);
     expect(aries.money).toMatch(/dinero|financiera|cifras|pagarl/iu);
     expect(aries.dayParts[0].guidance).toMatch(

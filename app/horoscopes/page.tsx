@@ -5,6 +5,7 @@ import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
+import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
 import {
   createPageMetadata,
   localizedAlternates,
@@ -57,6 +58,7 @@ export default async function DailyHoroscopesPage({
   };
   return (
     <main className="page-shell daily-horoscopes">
+      <HoroscopeMidnightRefresh />
       <header className="horoscope-hero">
         <div>
           <p className="eyebrow">

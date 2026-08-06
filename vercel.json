@@ -4,6 +4,10 @@
     {
       "path": "/api/internal/report-worker",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/internal/horoscope-rollover",
+      "schedule": "0 0 * * *"
     }
   ]
 }

@@ -4,6 +4,7 @@ import type { Aspect, Placement, PlanetName } from "@/lib/types";
 import { longitudeToZodiac, SIGNS } from "@/lib/zodiac";
 import { defaultLocale, type LocaleTag } from "@/lib/i18n/config";
 import { dailyCopy, localizedAspectPhrase } from "@/lib/horoscopes/copy";
+import { horoscopeUtcDateKey } from "@/lib/horoscopes/rollover";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 
 export const zodiacSlugs = SIGNS.map((sign) => sign.toLowerCase());
@@ -112,6 +113,10 @@ function stableVariant(value: string) {
   );
 }
 
+function utcDayNumber(dateKey: string) {
+  return Math.floor(Date.parse(`${dateKey}T00:00:00.000Z`) / 86_400_000);
+}
+
 function phaseLevel(value: number): 1 | 2 | 3 {
   return ((value % 3) + 1) as 1 | 2 | 3;
 }
@@ -121,8 +126,9 @@ export function dailySkyFor(
   locale: LocaleTag = defaultLocale,
 ): DailySky {
   const copy = dailyCopy(locale);
-  const dateKey = dateInput.toISOString().slice(0, 10);
+  const dateKey = horoscopeUtcDateKey(dateInput);
   const date = new Date(`${dateKey}T12:00:00.000Z`);
+  const dayNumber = utcDayNumber(dateKey);
   const placements = bodies.map((body) => placement(body, date));
   const aspects = detectAspects(placements)
     .filter((aspect) => aspect.orb <= 4)
@@ -150,7 +156,10 @@ export function dailySkyFor(
     const rulerTopic = copy.topics[rulerHouse - 1];
     const localizedRuler = localizeAstroTerm(ruler, locale) as PlanetName;
     const localizedRulerSign = localizeAstroTerm(rulerPlacement.sign, locale);
-    const variantSeed = stableVariant(`${dateKey}:${sign}`);
+    // Advancing the UTC calendar date always advances the editorial variant.
+    // Sign-specific offsets retain distinct voices without allowing refreshes
+    // within the same GMT day to produce different wording.
+    const variantSeed = dayNumber + stableVariant(sign);
     const aspectPhrase = keyAspect
       ? localizedAspectPhrase(keyAspect, locale)
       : "";
