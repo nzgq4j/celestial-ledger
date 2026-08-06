@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import "./globals.css";
@@ -128,6 +129,7 @@ export default async function RootLayout({
           {children}
           <SiteFooter />
         </LocaleProvider>
+        <Analytics />
       </body>
     </html>
   );
