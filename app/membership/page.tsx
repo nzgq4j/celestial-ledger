@@ -1,6 +1,7 @@
 import { MembershipExperience } from "@/components/MembershipExperience";
 import { createClient } from "@/lib/supabase/server";
 import { createPageMetadata } from "@/lib/seo";
+import { commerceFlags } from "@/lib/commerce/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -15,5 +16,10 @@ export const metadata = createPageMetadata({
 export default async function MembershipPage() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
-  return <MembershipExperience signedIn={Boolean(data.user)} />;
+  return (
+    <MembershipExperience
+      signedIn={Boolean(data.user)}
+      subscriptionsEnabled={commerceFlags().subscriptions}
+    />
+  );
 }

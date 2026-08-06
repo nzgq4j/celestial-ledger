@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { recoveryThemes, type RecoveryTheme } from "@/lib/reports/recovery";
+import { careerThemes, type CareerTheme } from "@/lib/reports/career";
 import { useLocale } from "@/components/LocaleProvider";
 import { localeRegistry, localeTags, type LocaleTag } from "@/lib/i18n/config";
 
@@ -24,9 +25,11 @@ export function GenerateReportButton({
   const [busy, setBusy] = useState(false);
   const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [themes, setThemes] = useState<RecoveryTheme[]>([]);
+  const [careerSelections, setCareerSelections] = useState<CareerTheme[]>([]);
   const [reportLocale, setReportLocale] = useState(defaultLocale);
   const [useDefaultLocale, setUseDefaultLocale] = useState(true);
   const isRecovery = reportType === "recovery_reflection";
+  const isCareer = reportType === "career_purpose";
   const { pack } = useLocale();
   const copy = pack.messages.account;
   const themeCopy: Record<RecoveryTheme, [string, string]> = {
@@ -36,6 +39,14 @@ export function GenerateReportButton({
     daily_rhythms: [copy.dailyRhythms, copy.dailyRhythmsDetail],
     boundaries: [copy.boundaries, copy.boundariesDetail],
     renewal: [copy.renewal, copy.renewalDetail],
+  };
+  const careerThemeCopy: Record<CareerTheme, [string, string]> = {
+    direction_purpose: [copy.careerDirection, copy.careerDirectionDetail],
+    strengths_talents: [copy.careerStrengths, copy.careerStrengthsDetail],
+    leadership_visibility: [copy.careerLeadership, copy.careerLeadershipDetail],
+    work_environment: [copy.careerEnvironment, copy.careerEnvironmentDetail],
+    growth_change: [copy.careerGrowth, copy.careerGrowthDetail],
+    value_compensation: [copy.careerValue, copy.careerValueDetail],
   };
   async function generate() {
     if (!profileId) return setStatus(copy.saveProfileFirst);
@@ -50,6 +61,7 @@ export function GenerateReportButton({
           birthProfileId: profileId,
           ...(!useDefaultLocale ? { locale: reportLocale } : {}),
           ...(isRecovery ? { adultConfirmed, recoveryThemes: themes } : {}),
+          ...(isCareer ? { careerThemes: careerSelections } : {}),
         }),
       });
       const payload = await response.json();
@@ -155,12 +167,40 @@ export function GenerateReportButton({
           </label>
         </fieldset>
       )}
+      {isCareer && (
+        <fieldset className="recovery-compass career-compass">
+          <legend>{copy.chooseCareerThemes}</legend>
+          <p>{copy.chooseCareerThemesCopy}</p>
+          <div className="recovery-compass__themes">
+            {careerThemes.map((theme) => (
+              <label key={theme.id}>
+                <input
+                  type="checkbox"
+                  checked={careerSelections.includes(theme.id)}
+                  onChange={(event) =>
+                    setCareerSelections((current) =>
+                      event.target.checked
+                        ? [...current, theme.id]
+                        : current.filter((item) => item !== theme.id),
+                    )
+                  }
+                />
+                <span>
+                  <strong>{careerThemeCopy[theme.id][0]}</strong>
+                  <small>{careerThemeCopy[theme.id][1]}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <button
         type="button"
         className="button-primary"
         disabled={
           busy ||
           !profiles.length ||
+          (isCareer && careerSelections.length === 0) ||
           (isRecovery && (!adultConfirmed || themes.length === 0))
         }
         onClick={generate}

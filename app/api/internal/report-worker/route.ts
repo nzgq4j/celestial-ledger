@@ -7,6 +7,8 @@ import {
   careerPrompt,
   careerReportJsonSchema,
   careerReportSchema,
+  careerThemeSchema,
+  careerThemes as careerThemeOptions,
   validateEvidenceLinks,
 } from "@/lib/reports/career";
 import {
@@ -72,6 +74,19 @@ export async function runNextReportJob() {
       job.report_type === "recovery_reflection"
         ? recoveryThemeSchema.array().min(1).max(6).parse(job.recovery_themes)
         : undefined;
+    const careerThemes =
+      job.report_type === "career_purpose"
+        ? (() => {
+            const parsed = careerThemeSchema
+              .array()
+              .min(1)
+              .max(6)
+              .safeParse(job.recovery_themes);
+            return parsed.success
+              ? parsed.data
+              : careerThemeOptions.map((theme) => theme.id);
+          })()
+        : undefined;
     const { chart, evidence } =
       job.report_type === "recovery_reflection"
         ? await buildRecoveryEvidence(birthInput)
@@ -88,7 +103,7 @@ export async function runNextReportJob() {
     });
     const prompt = recoveryThemes
       ? recoveryPrompt(evidence, recoveryThemes, reportLocale)
-      : careerPrompt(evidence, reportLocale);
+      : careerPrompt(evidence, careerThemes!, reportLocale);
     let report;
     let draftError: unknown;
     for (let attempt = 0; attempt < 2; attempt += 1) {

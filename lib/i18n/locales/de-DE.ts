@@ -146,6 +146,24 @@ const pack = {
       chooseThemes: "Wähle deine Reflexionsthemen",
       chooseThemesCopy:
         "Wähle die Lebensbereiche, die dein Geburtshoroskop beleuchten soll.",
+      chooseCareerThemes: "Wähle deine beruflichen Reflexionsthemen",
+      chooseCareerThemesCopy:
+        "Wähle die beruflichen Fragen, die diese Deutung besonders vertiefen soll.",
+      careerDirection: "Richtung & Sinn",
+      careerDirectionDetail: "Bedeutung, Beitrag und lohnenswerte Arbeit",
+      careerStrengths: "Stärken & Talente",
+      careerStrengthsDetail:
+        "Natürliche Fähigkeiten und entwicklungswerte Kompetenzen",
+      careerLeadership: "Führung & Sichtbarkeit",
+      careerLeadershipDetail: "Autorität, Anerkennung und dein Führungsstil",
+      careerEnvironment: "Arbeitsumfeld",
+      careerEnvironmentDetail:
+        "Bedingungen, Kultur und Rhythmen für deine beste Arbeit",
+      careerGrowth: "Wachstum & Wandel",
+      careerGrowthDetail: "Berufliche Übergänge, Lernen und Neuerfindung",
+      careerValue: "Wert & Vergütung",
+      careerValueDetail:
+        "Wie du Wert, Austausch und nachhaltige Belohnung definierst",
       adultConfirmation: "Ich bestätige, dass ich mindestens 18 Jahre alt bin.",
       saveProfileFirst:
         "Speichere ein Geburtsprofil, bevor du diesen Bericht erstellst.",

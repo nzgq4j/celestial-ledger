@@ -5,8 +5,55 @@ import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
 export const CAREER_SCHEMA_VERSION = "career-1";
-export const CAREER_PROMPT_VERSION = "career-1";
+export const CAREER_PROMPT_VERSION = "career-2";
 export const CAREER_SAFETY_VERSION = "reflection-1";
+
+export const careerThemeSchema = z.enum([
+  "direction_purpose",
+  "strengths_talents",
+  "leadership_visibility",
+  "work_environment",
+  "growth_change",
+  "value_compensation",
+]);
+export type CareerTheme = z.infer<typeof careerThemeSchema>;
+
+export const careerThemes = [
+  {
+    id: "direction_purpose",
+    label: "Direction & purpose",
+    detail: "Meaning, contribution and the work worth pursuing",
+  },
+  {
+    id: "strengths_talents",
+    label: "Strengths & talents",
+    detail: "Natural abilities and skills worth developing",
+  },
+  {
+    id: "leadership_visibility",
+    label: "Leadership & visibility",
+    detail: "Authority, recognition and how you take the lead",
+  },
+  {
+    id: "work_environment",
+    label: "Work environment",
+    detail: "Conditions, culture and rhythms that support your best work",
+  },
+  {
+    id: "growth_change",
+    label: "Growth & change",
+    detail: "Career transitions, learning and reinvention",
+  },
+  {
+    id: "value_compensation",
+    label: "Value & compensation",
+    detail: "How you define worth, exchange and sustainable reward",
+  },
+] as const satisfies readonly {
+  id: CareerTheme;
+  label: string;
+  detail: string;
+}[];
 
 const evidenceReference = z.string().regex(/^(placement|angle|house|aspect):/);
 const sectionSchema = z
@@ -160,8 +207,12 @@ export async function buildCareerEvidence(input: BirthInput) {
 
 export function careerPrompt(
   evidence: CareerEvidenceBundle,
+  themes: CareerTheme[],
   locale: LocaleTag = "en-GB",
 ) {
+  const selectedThemes = careerThemes
+    .filter((theme) => themes.includes(theme.id))
+    .map((theme) => `${theme.id}: ${theme.label} — ${theme.detail}`);
   return `Write a Career and Purpose reflection using only the immutable evidence bundle below.
 
 Rules:
@@ -169,11 +220,15 @@ ${reportLanguageInstruction(locale)}
 - Astrology is symbolic reflection, not scientifically validated prediction.
 - Never invent or recalculate chart facts. Every section must cite only supplied evidence IDs.
 - Discuss motivations, values, contribution, work environments, tensions, and reflective questions.
+- Centre the report on the selected career reflection themes. Give every selected theme dedicated, substantive attention; other sections may connect supporting chart patterns without displacing those priorities.
 - Do not predict employment, income, promotion, success, status, or outcomes.
 - Do not provide medical, legal, financial, or mental-health advice.
 - Use measured, non-deterministic language. Explain technical terms briefly.
 - If timeKnown is false, do not make house-, angle-, vocation-axis-, or exact-timing claims.
 - The disclaimer must explicitly describe the report as reflective rather than predictive.
+
+Selected career reflection themes:
+${selectedThemes.join("\n")}
 
 Immutable evidence bundle:\n${JSON.stringify(evidence)}`;
 }

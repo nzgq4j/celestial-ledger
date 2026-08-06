@@ -99,6 +99,8 @@ Before implementation, confirm subscription prices, annual-plan policy, $5 credi
 7. Price reports through products and entitlements rather than hard-coded UI rules, including member discounts and Premium credits.
 8. Do not allow the language model to calculate or modify astronomical facts or visual coordinates; every claim and mark must retain immutable evidence IDs.
 
+9. Add native, server-generated PDF downloads for private readings and reports; do not rely on browser printing or print-to-PDF. Track the detailed requirements as `DR-B003` in `docs/daily-reading/BACKLOG.md`.
+
 ## Priority 3 — Administration console improvements
 
 ### Membership and customer operations

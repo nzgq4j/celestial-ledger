@@ -11,6 +11,7 @@ import {
   CAREER_PROMPT_VERSION,
   CAREER_SAFETY_VERSION,
   CAREER_SCHEMA_VERSION,
+  careerThemeSchema,
 } from "@/lib/reports/career";
 import {
   RECOVERY_PROMPT_VERSION,
@@ -31,6 +32,7 @@ const inputSchema = z
     birthProfileId: z.string().uuid(),
     adultConfirmed: z.boolean().optional(),
     recoveryThemes: z.array(recoveryThemeSchema).min(1).max(6).optional(),
+    careerThemes: z.array(careerThemeSchema).min(1).max(6).optional(),
     locale: z.enum(localeTags).optional(),
   })
   .strict()
@@ -78,12 +80,18 @@ export async function POST(request: Request) {
     const reportLocale =
       input.locale ?? profileSettings?.report_locale ?? "en-GB";
     const isRecovery = reportType === "recovery_reflection";
+    const isCareer = reportType === "career_purpose";
     if (isRecovery && (!input.adultConfirmed || !input.recoveryThemes?.length))
       return json(
         {
           error:
             "Confirm you are 18 or older and choose at least one reflection theme.",
         },
+        422,
+      );
+    if (isCareer && !input.careerThemes?.length)
+      return json(
+        { error: "Choose at least one career reflection theme." },
         422,
       );
     if (isRecovery) {
@@ -109,7 +117,7 @@ export async function POST(request: Request) {
       p_safety_version: isRecovery
         ? RECOVERY_SAFETY_VERSION
         : CAREER_SAFETY_VERSION,
-      p_recovery_themes: isRecovery ? input.recoveryThemes : null,
+      p_recovery_themes: isRecovery ? input.recoveryThemes : input.careerThemes,
       p_locale: reportLocale,
     };
     const { data, error } = input.entitlementId

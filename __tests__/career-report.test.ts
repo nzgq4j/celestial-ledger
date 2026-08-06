@@ -24,10 +24,11 @@ describe("career report evidence", () => {
       timeUnknown: false,
       place: birthplace,
     });
-    const prompt = careerPrompt(evidence, "es-ES");
+    const prompt = careerPrompt(evidence, ["direction_purpose"], "es-ES");
     expect(prompt).toContain("Spanish as used in Spain (es-ES)");
     expect(prompt).toContain("placement:sun");
     expect(prompt).toContain("Preserve supplied evidence IDs exactly");
+    expect(prompt).toContain("direction_purpose: Direction & purpose");
   });
 
   it("builds stable evidence IDs from a server calculation", async () => {

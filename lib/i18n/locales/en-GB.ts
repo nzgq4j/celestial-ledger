@@ -146,6 +146,25 @@ const pack = {
       chooseThemes: "Choose your reflection themes",
       chooseThemesCopy:
         "Select the areas you want your natal chart to illuminate.",
+      chooseCareerThemes: "Choose your career reflection themes",
+      chooseCareerThemesCopy:
+        "Select the professional questions you want this reading to explore most deeply.",
+      careerDirection: "Direction & purpose",
+      careerDirectionDetail:
+        "Meaning, contribution and the work worth pursuing",
+      careerStrengths: "Strengths & talents",
+      careerStrengthsDetail: "Natural abilities and skills worth developing",
+      careerLeadership: "Leadership & visibility",
+      careerLeadershipDetail:
+        "Authority, recognition and how you take the lead",
+      careerEnvironment: "Work environment",
+      careerEnvironmentDetail:
+        "Conditions, culture and rhythms that support your best work",
+      careerGrowth: "Growth & change",
+      careerGrowthDetail: "Career transitions, learning and reinvention",
+      careerValue: "Value & compensation",
+      careerValueDetail:
+        "How you define worth, exchange and sustainable reward",
       adultConfirmation: "I confirm that I am 18 or older.",
       saveProfileFirst: "Save a birth profile before generating this report.",
       reportFailed: "The report could not be queued.",

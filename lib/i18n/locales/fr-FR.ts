@@ -148,6 +148,26 @@ const pack = {
       chooseThemes: "Choisissez vos thèmes de réflexion",
       chooseThemesCopy:
         "Sélectionnez les domaines que votre thème natal doit éclairer.",
+      chooseCareerThemes: "Choisissez vos thèmes de réflexion professionnelle",
+      chooseCareerThemesCopy:
+        "Sélectionnez les questions professionnelles que cette lecture doit explorer en priorité.",
+      careerDirection: "Direction et vocation",
+      careerDirectionDetail:
+        "Sens, contribution et travail qui mérite d’être poursuivi",
+      careerStrengths: "Forces et talents",
+      careerStrengthsDetail: "Aptitudes naturelles et compétences à développer",
+      careerLeadership: "Leadership et visibilité",
+      careerLeadershipDetail:
+        "Autorité, reconnaissance et manière de prendre les devants",
+      careerEnvironment: "Environnement de travail",
+      careerEnvironmentDetail:
+        "Conditions, culture et rythmes favorables à votre meilleur travail",
+      careerGrowth: "Évolution et changement",
+      careerGrowthDetail:
+        "Transitions professionnelles, apprentissage et réinvention",
+      careerValue: "Valeur et rémunération",
+      careerValueDetail:
+        "Votre manière de définir la valeur, l’échange et une récompense durable",
       adultConfirmation: "Je confirme avoir 18 ans ou plus.",
       saveProfileFirst:
         "Enregistrez un profil natal avant de générer ce rapport.",

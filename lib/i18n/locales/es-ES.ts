@@ -143,6 +143,26 @@ const pack = {
       chooseThemes: "Elige tus temas de reflexión",
       chooseThemesCopy:
         "Selecciona las áreas que quieres que ilumine tu carta natal.",
+      chooseCareerThemes: "Elige tus temas de reflexión profesional",
+      chooseCareerThemesCopy:
+        "Selecciona las cuestiones profesionales que quieres que esta lectura explore con mayor profundidad.",
+      careerDirection: "Dirección y propósito",
+      careerDirectionDetail:
+        "Sentido, contribución y el trabajo que merece la pena perseguir",
+      careerStrengths: "Fortalezas y talentos",
+      careerStrengthsDetail:
+        "Capacidades naturales y habilidades que merece la pena desarrollar",
+      careerLeadership: "Liderazgo y visibilidad",
+      careerLeadershipDetail: "Autoridad, reconocimiento y tu forma de liderar",
+      careerEnvironment: "Entorno de trabajo",
+      careerEnvironmentDetail:
+        "Condiciones, cultura y ritmos que favorecen tu mejor trabajo",
+      careerGrowth: "Crecimiento y cambio",
+      careerGrowthDetail:
+        "Transiciones profesionales, aprendizaje y reinvención",
+      careerValue: "Valor y compensación",
+      careerValueDetail:
+        "Cómo defines el valor, el intercambio y una recompensa sostenible",
       adultConfirmation: "Confirmo que tengo 18 años o más.",
       saveProfileFirst: "Guarda un perfil natal antes de generar este informe.",
       reportFailed: "No se pudo poner el informe en cola.",

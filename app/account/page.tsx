@@ -10,6 +10,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { commerceFlags } from "@/lib/commerce/flags";
+import { BillingPortalButton } from "@/components/BillingPortalButton";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -33,6 +35,7 @@ export default async function AccountPage({
   if (authError || !authData.user) redirect("/auth/login");
 
   const adminClient = createAdminClient();
+  const commerce = commerceFlags();
   const { data: adminRole } = await adminClient
     .from("admin_roles")
     .select("role")
@@ -111,6 +114,19 @@ export default async function AccountPage({
     report_locale_failed: copy.reportLocaleFailed,
   };
   const notice = params.notice ? notices[params.notice] : undefined;
+  const subscription = commerce.subscriptions
+    ? (
+        await adminClient
+          .from("account_subscriptions")
+          .select(
+            "plan_key,status,current_period_end,cancel_at_period_end,grace_ends_at",
+          )
+          .eq("user_id", authData.user.id)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      ).data
+    : null;
   const latestReport = reports[0];
   const nextStep = readyEntitlements.length
     ? {
@@ -202,6 +218,30 @@ export default async function AccountPage({
         <Link href="/membership">{copy.membership}</Link>
         {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
       </nav>
+
+      {commerce.subscriptions && (
+        <section className="dashboard-panel" id="billing">
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">Membership &amp; billing</p>
+              <h2>
+                {subscription
+                  ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
+                  : "Free"}
+              </h2>
+            </div>
+            <span className="dashboard-panel__meta">
+              {subscription?.status ?? "active"}
+            </span>
+          </div>
+          <p className="dashboard-panel__introduction">
+            {subscription?.current_period_end
+              ? `${subscription.cancel_at_period_end ? "Access ends" : "Next billing date"} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
+              : "Your account currently uses the Free plan."}
+          </p>
+          {subscription && <BillingPortalButton />}
+        </section>
+      )}
 
       <section
         className="dashboard-panel dashboard-panel--daily"

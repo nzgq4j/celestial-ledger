@@ -6,10 +6,17 @@ import {
   membershipCopy,
   type MembershipTierId,
 } from "@/lib/membership/content";
+import { SubscriptionButton } from "@/components/SubscriptionButton";
 
 const tierIds: MembershipTierId[] = ["free", "personal", "premium"];
 
-export function MembershipExperience({ signedIn }: { signedIn: boolean }) {
+export function MembershipExperience({
+  signedIn,
+  subscriptionsEnabled,
+}: {
+  signedIn: boolean;
+  subscriptionsEnabled: boolean;
+}) {
   const { locale } = useLocale();
   const copy = membershipCopy[locale].page;
   const accountPath = signedIn ? "/account" : "/auth/login";
@@ -73,14 +80,18 @@ export function MembershipExperience({ signedIn }: { signedIn: boolean }) {
                   ))}
                 </ul>
               </div>
-              <Link
-                href={accountPath}
-                className={
-                  tierId === "personal" ? "button-primary" : "button-quiet"
-                }
-              >
-                {signedIn ? copy.signedInAction : tier.action}
-              </Link>
+              {subscriptionsEnabled && signedIn && tierId !== "free" ? (
+                <SubscriptionButton planKey={tierId} />
+              ) : (
+                <Link
+                  href={accountPath}
+                  className={
+                    tierId === "personal" ? "button-primary" : "button-quiet"
+                  }
+                >
+                  {signedIn ? copy.signedInAction : tier.action}
+                </Link>
+              )}
             </article>
           );
         })}

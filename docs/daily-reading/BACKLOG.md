@@ -97,6 +97,48 @@ Add accessible visual explanations of the deterministic analytical payload so us
 - Account-level capability entitlement decision if advanced visualizations vary by level.
 - Browser accessibility and visual-regression test tooling.
 
+## DR-B003 — Native PDF export
+
+### Objective
+
+Let an authenticated owner download a complete, professionally laid-out PDF of a private daily reading or detailed report. The application must generate and return a real PDF document; browser printing and `window.print()` are not an acceptable implementation of this capability.
+
+### Scope to design
+
+- Server-side PDF generation from the same validated reading, report, evidence, localization, and visualization data used by the private viewer.
+- A dedicated authenticated download endpoint with owner authorization, `no-store`, safe filenames, and an `application/pdf` response.
+- Stable page composition, typography, headers, footers, page numbers, section breaks, tables, charts, and evidence references independent of browser print behavior.
+- Localized PDF content and metadata for every supported report language.
+- Accessible document structure where supported by the selected PDF renderer, including reading order, headings, alternative text, and usable contrast.
+- Deterministic rendering or versioned templates so regenerated PDFs can be traced to their source report and renderer version.
+- Resource, timeout, memory, and output-size limits suitable for server execution.
+
+### Architecture constraints
+
+- Do not treat browser print-to-PDF, print CSS, or `window.print()` as native PDF export.
+- Generate PDFs only from server-authoritative stored content and immutable evidence; never accept report content or birth data from the browser for rendering.
+- Keep private source data and generated files out of URLs, logs, analytics, public storage, and metadata.
+- Authorize every request against the owning account. Generated artifacts inherit the source record's deletion and one-year expiry requirements.
+- The language model must not calculate facts, alter evidence, or invent chart coordinates during PDF generation.
+- Any cached PDF must be private, encrypted at rest, short-lived or lifecycle-bound to its source, and invalidated when the source is deleted.
+
+### Acceptance criteria
+
+- Downloading produces a valid PDF file without opening the browser print dialog.
+- Cross-account, expired, deleted, and unauthenticated requests are denied.
+- PDF content matches the validated source schemas and retains evidence-to-claim and evidence-to-mark traceability.
+- English, German, Spanish, and French fixtures render without clipped, missing, or overlapping content.
+- Multi-page reports preserve headings, tables, visualizations, page numbers, and sensible page breaks.
+- Automated tests cover authorization, response headers, filename safety, renderer failures, timeouts, size limits, deletion, and representative visual regression fixtures.
+- The renderer and its transitive dependencies pass security, license, deployment-runtime, and maintenance review before implementation.
+
+### Dependencies
+
+- Stable report and daily-reading schemas and renderer-neutral visualization contracts.
+- Selection and proof-of-concept of a server-compatible PDF renderer for the Vercel runtime.
+- Final PDF information design and localized typography/font licensing.
+- Entitlement decision if PDF downloads become a paid capability.
+
 ## Recommended sequencing
 
 1. Complete and stabilize the deterministic daily-reading analytical payload.
@@ -104,3 +146,4 @@ Add accessible visual explanations of the deterministic analytical payload so us
 3. Implement one accessible evidence-linked transit timeline as the visualization reference pattern.
 4. Validate its data contract, accessibility, localization, print behavior, and performance.
 5. Expand to the remaining visualizations only where each materially improves understanding.
+6. Implement native PDF export after the report layouts and renderer-neutral visualization contracts are stable.

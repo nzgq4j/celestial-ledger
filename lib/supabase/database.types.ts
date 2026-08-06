@@ -352,6 +352,123 @@ export type Database = {
           },
         ];
       };
+      commerce_plans: {
+        Row: {
+          active: boolean;
+          billing_interval: string | null;
+          catalog_version: number;
+          created_at: string;
+          currency: string | null;
+          name: string;
+          plan_key: string;
+          rank: number;
+          stripe_price_id: string | null;
+          stripe_product_id: string | null;
+          unit_amount: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          active?: boolean;
+          billing_interval?: string | null;
+          catalog_version?: number;
+          created_at?: string;
+          currency?: string | null;
+          name: string;
+          plan_key: string;
+          rank: number;
+          stripe_price_id?: string | null;
+          stripe_product_id?: string | null;
+          unit_amount?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          billing_interval?: string | null;
+          catalog_version?: number;
+          created_at?: string;
+          currency?: string | null;
+          name?: string;
+          plan_key?: string;
+          rank?: number;
+          stripe_price_id?: string | null;
+          stripe_product_id?: string | null;
+          unit_amount?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      billing_customers: {
+        Row: {
+          created_at: string;
+          id: string;
+          stripe_customer_id: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          stripe_customer_id: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          stripe_customer_id?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      account_subscriptions: {
+        Row: {
+          billing_customer_id: string;
+          cancel_at_period_end: boolean;
+          created_at: string;
+          current_period_end: string | null;
+          current_period_start: string | null;
+          grace_ends_at: string | null;
+          id: string;
+          last_stripe_event_created: number;
+          plan_key: string;
+          status: string;
+          stripe_subscription_id: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          billing_customer_id: string;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          grace_ends_at?: string | null;
+          id?: string;
+          last_stripe_event_created?: number;
+          plan_key: string;
+          status: string;
+          stripe_subscription_id: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          billing_customer_id?: string;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          grace_ends_at?: string | null;
+          id?: string;
+          last_stripe_event_created?: number;
+          plan_key?: string;
+          status?: string;
+          stripe_subscription_id?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       entitlements: {
         Row: {
           consumed_at: string | null;
@@ -793,6 +910,23 @@ export type Database = {
           p_payment_intent_id?: string | null;
           p_report_type?: string | null;
           p_user_id?: string | null;
+        };
+        Returns: string;
+      };
+      process_subscription_event: {
+        Args: {
+          p_cancel_at_period_end?: boolean;
+          p_current_period_end?: string | null;
+          p_current_period_start?: string | null;
+          p_event_created: number;
+          p_event_id: string;
+          p_event_type: string;
+          p_grace_ends_at?: string | null;
+          p_plan_key: string;
+          p_status: string;
+          p_stripe_customer_id: string;
+          p_stripe_subscription_id: string;
+          p_user_id: string;
         };
         Returns: string;
       };
