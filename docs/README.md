@@ -2,7 +2,9 @@
 
 This directory records the controls required to evolve the free natal-chart prototype into a private paid-report product.
 
-Current status: **deterministic calculation foundation validated for 1800–2050**. Astronomy Engine passes the Node and planetary gates; USNO-backed angle fixtures cover equal houses, DST boundaries, high latitudes, unknown times, historical second-based offsets, cusp boundaries, and motion reversals. Production paid reports remain blocked by the later identity, commerce, safety, security, and operations controls.
+Current status: **the public and registered-user foundation is deployed; membership commerce remains gated**. Astronomy Engine is validated for 1800–2050, registered-user daily readings and private report workflows are operational, the four-language account experience and role-protected administration console are present, and the public horoscope/discovery/social-sharing system is live. The latest production build is `4fd8535`, with 96 tests, typecheck, lint, and the Next.js production build passing. Production membership billing and paid-report expansion still require the documented commerce, database, safety, security, and operations approvals.
+
+The build accomplishments and next-session plan for Stripe, memberships, detailed reports, and administration improvements are recorded in [`roadmap/session-handoff-2026-08-06.md`](roadmap/session-handoff-2026-08-06.md).
 
 The committed launch sequence and directional professional-ephemeris extensions are separated in [`roadmap/ephemeris-backlog.md`](roadmap/ephemeris-backlog.md). Long-term extensions do not expand the initial report release scope.
 
