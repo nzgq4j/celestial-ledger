@@ -4731,6 +4731,10 @@ th {
   letter-spacing: -0.045em;
 }
 
+.site-footer__lead h2 span {
+  display: block;
+}
+
 .site-footer__lead p:last-child {
   max-width: 40rem;
   margin: 0;

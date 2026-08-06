@@ -93,13 +93,18 @@ export function SiteFooter() {
   const { pack } = useLocale();
   const copy = pack.messages.footer;
   const navigation = pack.messages.navigation;
+  const titleLines = copy.title.split(/(?<=\.)\s+/);
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__lead">
           <Image src="/celestialatlas-logo.png" alt="" width="58" height="58" />
           <div>
-            <h2>{copy.title}</h2>
+            <h2>
+              {titleLines.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </h2>
             <p>{copy.kicker}</p>
             <p>{copy.description}</p>
           </div>
