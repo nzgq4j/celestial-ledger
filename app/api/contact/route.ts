@@ -3,6 +3,7 @@ import {
   isSameOrigin,
   PRIVATE_RESPONSE_HEADERS,
   readLimitedJson,
+  RequestPayloadError,
 } from "@/lib/api-security";
 import { sendContactNotification } from "@/lib/contact-email";
 import { verifyRecaptcha } from "@/lib/recaptcha";
@@ -53,12 +54,22 @@ export async function POST(request: Request) {
       })
       .select("id")
       .single();
-    if (error || !data) throw error ?? new Error("CONTACT_INSERT_FAILED");
+    if (error || !data) {
+      console.error("[contact] Insert failed", {
+        code: error?.code ?? "CONTACT_INSERT_FAILED",
+      });
+      throw error ?? new Error("CONTACT_INSERT_FAILED");
+    }
 
     const delivery = await sendContactNotification({
       id: data.id,
       ...parsed.data,
-    }).catch(() => ({ status: "failed" as const }));
+    }).catch((error: unknown) => {
+      console.error("[contact] SMTP notification failed", {
+        type: error instanceof Error ? error.name : "UnknownError",
+      });
+      return { status: "failed" as const };
+    });
     await admin
       .from("contact_messages")
       .update({
@@ -68,7 +79,12 @@ export async function POST(request: Request) {
       })
       .eq("id", data.id);
     return json({ submitted: true }, 201);
-  } catch {
+  } catch (error) {
+    if (error instanceof RequestPayloadError)
+      return json({ error: "INVALID_MESSAGE" }, 400);
+    console.error("[contact] Submission failed", {
+      type: error instanceof Error ? error.name : "UnknownError",
+    });
     return json({ error: "CONTACT_FAILED" }, 500);
   }
 }

@@ -24,9 +24,9 @@ async function recaptchaToken() {
 }
 
 export function ContactForm() {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
-    "idle",
-  );
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "sent" | "captcha" | "invalid" | "error"
+  >("idle");
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("sending");
@@ -40,10 +40,15 @@ export function ContactForm() {
         recaptchaToken: await recaptchaToken(),
       }),
     });
+    const result = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
     if (response.ok) {
       form.reset();
       setStatus("sent");
-    } else setStatus("error");
+    } else if (result.error === "CAPTCHA_REJECTED") setStatus("captcha");
+    else if (result.error === "INVALID_MESSAGE") setStatus("invalid");
+    else setStatus("error");
   }
   return (
     <form className="contact-form" onSubmit={submit}>
@@ -90,8 +95,16 @@ export function ContactForm() {
       <button className="button-primary" disabled={status === "sending"}>
         {status === "sending" ? "Sending…" : "Send message"}
       </button>
-      <p className="contact-form__status" role="status">
+      <p
+        className="contact-form__status"
+        role="status"
+        data-success={status === "sent"}
+      >
         {status === "sent" && "Thank you. Your message has been received."}
+        {status === "captcha" &&
+          "Verification could not be completed. Refresh the page and try again."}
+        {status === "invalid" &&
+          "Check each field and make sure your message is at least 10 characters."}
         {status === "error" &&
           "Your message could not be sent. Please try again."}
       </p>

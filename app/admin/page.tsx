@@ -266,6 +266,12 @@ export default async function AdminPage({
                 ? "configured"
                 : "not configured"}
             </p>
+            {!process.env.RECAPTCHA_SECRET_KEY && (
+              <p className="integration-state">
+                Add RECAPTCHA_SECRET_KEY to the Vercel environment before
+                enabling protection.
+              </p>
+            )}
             <label className="admin-check">
               <input
                 type="checkbox"
