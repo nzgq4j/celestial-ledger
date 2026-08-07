@@ -18,15 +18,36 @@ export function NatalInterpretation({ text }: { text: string }) {
       .split(/\n\s*\n+/)
       .map((paragraph) => paragraph.replace(/^#{1,3}\s*/, "").trim())
       .filter(Boolean);
+    const headingId = `natal-interpretation-${index + 1}`;
     return (
-      <section key={`${heading}-${index}`} className="interpretation-section">
-        <p className="interpretation-section__index">
-          {String(index + 1).padStart(2, "0")}
-        </p>
-        <div>
-          <h2>{heading}</h2>
+      <section
+        key={`${heading}-${index}`}
+        className="interpretation-section"
+        aria-labelledby={headingId}
+      >
+        <header className="interpretation-section__header">
+          <p className="interpretation-section__index">
+            Chapter {String(index + 1).padStart(2, "0")}
+          </p>
+          <span className="interpretation-section__stars" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </header>
+        <div className="interpretation-section__body">
+          <h2 id={headingId}>{heading}</h2>
           {paragraphs.map((paragraph, paragraphIndex) => (
-            <p key={paragraphIndex}>{paragraph}</p>
+            <p
+              key={paragraphIndex}
+              className={
+                paragraphIndex === 0
+                  ? "interpretation-section__lead"
+                  : undefined
+              }
+            >
+              {paragraph}
+            </p>
           ))}
         </div>
       </section>

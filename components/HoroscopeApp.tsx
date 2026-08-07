@@ -46,7 +46,6 @@ export default function HoroscopeApp({
   const [searching, setSearching] = useState(false);
   const [ambiguity, setAmbiguity] = useState<"earlier" | "later" | undefined>();
   const [saveStatus, setSaveStatus] = useState("");
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!interpretationLoading) {
@@ -207,41 +206,6 @@ export default function HoroscopeApp({
     setError("");
     setAmbiguity(undefined);
     setSaveStatus("");
-  }
-
-  async function saveChart(chartToSave = chart) {
-    if (!chartToSave) return;
-    setSaving(true);
-    setSaveStatus("");
-    try {
-      const response = await fetch("/api/birth-profiles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          label: "My birth chart",
-          birthInput: chartToSave.input,
-        }),
-      });
-      const payload = await response.json();
-      if (response.status === 401) {
-        setSaveStatus("Sign in to save this chart privately.");
-        return;
-      }
-      if (!response.ok) throw new Error(payload.error);
-      setSaveStatus(
-        account
-          ? pack.messages.chartForm.accountSaved
-          : "Saved privately. You can manage it from your account.",
-      );
-    } catch (caught) {
-      setSaveStatus(
-        caught instanceof Error
-          ? caught.message
-          : "The chart could not be saved.",
-      );
-    } finally {
-      setSaving(false);
-    }
   }
 
   return (
@@ -597,21 +561,6 @@ export default function HoroscopeApp({
                 celestial patterns belong to your natal map.
               </MeaningNote>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                {account && saving && (
-                  <p role="status" className="text-sm text-[#d7bd7b]">
-                    {pack.messages.chartForm.accountSaving}
-                  </p>
-                )}
-                {!account && (
-                  <button
-                    type="button"
-                    onClick={() => saveChart()}
-                    disabled={saving}
-                    className="rounded-lg border border-[#536177] px-4 py-2"
-                  >
-                    {saving ? "Saving…" : "Save privately"}
-                  </button>
-                )}
                 {saveStatus && (
                   <p role="status" className="text-sm text-[#d7bd7b]">
                     {saveStatus}
@@ -619,22 +568,6 @@ export default function HoroscopeApp({
                 )}
               </div>
             </section>
-            {!account && (
-              <aside className="chart-account-cta">
-                <div>
-                  <p className="section-kicker">Keep your atlas</p>
-                  <h2>Save this chart to a private account</h2>
-                  <p>
-                    Create a verified account to keep your natal chart, manage
-                    private reports, and return without entering your birth data
-                    again.
-                  </p>
-                </div>
-                <Link href="/auth/login" className="button-primary">
-                  Create my account
-                </Link>
-              </aside>
-            )}
             <section className="panel p-5">
               <h2 className="text-xl gold mb-3">Planetary placements</h2>
               <MeaningNote>
@@ -813,6 +746,26 @@ export default function HoroscopeApp({
                 </p>
               )}
             </section>
+            {!account && (
+              <aside className="chart-account-cta chart-account-cta--closing">
+                <div>
+                  <p className="section-kicker">Keep this reading</p>
+                  <h2>Return to this sky whenever you need it</h2>
+                  <p>
+                    Save the complete chart and interpretation privately, then
+                    revisit them from your personal atlas.
+                  </p>
+                </div>
+                <div className="chart-account-cta__actions">
+                  <Link href="/auth/login" className="button-primary">
+                    Save this chart
+                  </Link>
+                  <Link href="/auth/create-account" className="text-link">
+                    Create a free account <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              </aside>
+            )}
           </div>
         )}
         <section className="chart-method-notes">
