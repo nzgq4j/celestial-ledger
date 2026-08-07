@@ -5042,8 +5042,7 @@ th {
 }
 .membership-tier__identity > p:last-child,
 .membership-comparison header > p:last-child,
-.membership-path p,
-.membership-release-note > p:last-child {
+.membership-path p {
   color: var(--text-soft);
   line-height: 1.65;
 }
@@ -5201,17 +5200,6 @@ th {
 .membership-path > .button-primary {
   justify-self: start;
 }
-.membership-release-note {
-  max-width: 55rem;
-  margin-top: 2rem;
-  padding: 1.25rem 1.5rem;
-  border-left: 1px solid var(--gold);
-  background: rgba(201, 167, 93, 0.045);
-}
-.membership-release-note p {
-  margin: 0;
-}
-
 @media (max-width: 980px) {
   .membership-hero,
   .membership-path {

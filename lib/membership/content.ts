@@ -52,8 +52,6 @@ type MembershipCopy = {
     pathAction: string;
     signedInAction: string;
     reportsAction: string;
-    noteTitle: string;
-    note: string;
   };
 };
 
@@ -219,8 +217,6 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       pathAction: "Create my free account",
       signedInAction: "Open My Celestial Atlas",
       reportsAction: "Read the sample reports",
-      noteTitle: "Opening with clear boundaries",
-      note: "The membership structure is published for planning and early interest. Subscription checkout and paid-report entitlements will open only after the remaining commerce, safety, security and operations release controls are approved.",
     },
   },
   "es-ES": {
@@ -384,8 +380,6 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       pathAction: "Crear mi cuenta gratis",
       signedInAction: "Abrir Mi Atlas Celeste",
       reportsAction: "Leer los informes de muestra",
-      noteTitle: "Una apertura con límites claros",
-      note: "La estructura se publica para planificación e interés inicial. El pago y los informes de pago abrirán cuando se aprueben los controles restantes de comercio, seguridad y operaciones.",
     },
   },
   "fr-FR": {
@@ -550,8 +544,6 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       pathAction: "Créer mon compte gratuit",
       signedInAction: "Ouvrir Mon Atlas Céleste",
       reportsAction: "Lire les rapports exemples",
-      noteTitle: "Une ouverture aux limites claires",
-      note: "La structure est publiée pour la planification et l’intérêt initial. Le paiement et les rapports payants ouvriront après validation des contrôles restants de commerce, de sécurité et d’exploitation.",
     },
   },
   "de-DE": {
@@ -716,8 +708,6 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       pathAction: "Kostenloses Konto erstellen",
       signedInAction: "Meinen Himmelsatlas öffnen",
       reportsAction: "Beispielberichte lesen",
-      noteTitle: "Ein Start mit klaren Grenzen",
-      note: "Die Struktur wird zur Planung und für frühes Interesse veröffentlicht. Bezahlung und kostenpflichtige Berichte öffnen erst nach Freigabe der verbleibenden Handels-, Sicherheits- und Betriebskontrollen.",
     },
   },
 };

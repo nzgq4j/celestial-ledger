@@ -155,11 +155,6 @@ export function MembershipExperience({
           {signedIn ? copy.signedInAction : copy.pathAction}
         </Link>
       </section>
-
-      <aside className="membership-release-note">
-        <p className="section-kicker">{copy.noteTitle}</p>
-        <p>{copy.note}</p>
-      </aside>
     </main>
   );
 }

@@ -41,7 +41,6 @@ describe("membership discovery experience", () => {
     for (const locale of localeTags) {
       expect(membershipCopy[locale].page.preview).not.toHaveLength(0);
       expect(membershipCopy[locale].page.unavailable).not.toHaveLength(0);
-      expect(membershipCopy[locale].page.note).not.toHaveLength(0);
     }
     expect(membershipCopy["en-GB"].page.preview).toContain(
       "Paid memberships are open",
