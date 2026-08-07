@@ -63,6 +63,14 @@ export async function POST(request: Request) {
       );
     const admin = createAdminClient();
     const planKey = await effectivePlanKeyForUser(userId);
+    if (planKey === "premium")
+      return json(
+        {
+          error: "This report is included with Premium membership.",
+          actionUrl: "/account#reports",
+        },
+        409,
+      );
     const { count: birthProfileCount } = await admin
       .from("birth_profiles")
       .select("id", { count: "exact", head: true })

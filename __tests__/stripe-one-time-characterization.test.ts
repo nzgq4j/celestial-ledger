@@ -7,6 +7,8 @@ const subscriptionCheckout = fs.readFileSync(
   "app/api/stripe/subscription-checkout/route.ts",
   "utf8",
 );
+const account = fs.readFileSync("app/account/page.tsx", "utf8");
+const reportQueue = fs.readFileSync("app/api/reports/route.ts", "utf8");
 const fulfilment = fs.readFileSync(
   "supabase/migrations/20260802232350_stripe_fulfilment.sql",
   "utf8",
@@ -135,5 +137,21 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(webhook).toContain(
       "session.amount_subtotal ?? session.amount_total ?? undefined",
     );
+  });
+
+  it("includes standard reports with Premium without opening Checkout", () => {
+    expect(account).toContain('commercePlanKey === "premium"');
+    expect(account).toContain("Included with Premium");
+    expect(checkout).toContain(
+      "This report is included with Premium membership.",
+    );
+    expect(reportQueue).toContain("effectivePlanKeyForUser(userId)");
+    expect(reportQueue).toContain('planKey !== "premium"');
+  });
+
+  it("resolves portal plan switches from the active catalogue price", () => {
+    expect(webhook).toContain('.from("commerce_plans")');
+    expect(webhook).toContain('.eq("stripe_price_id", priceId)');
+    expect(webhook).toContain("cataloguePlan?.plan_key");
   });
 });

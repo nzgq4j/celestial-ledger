@@ -25,13 +25,13 @@ export function DailyReadingActions({ readingId }: { readingId: string }) {
   return (
     <>
       <div className="report-viewer-actions daily-reading-actions">
-        <button
+        <a
           className="button-secondary"
-          type="button"
-          onClick={() => window.print()}
+          href={`/api/daily-readings/${readingId}/pdf`}
+          download
         >
-          Print
-        </button>
+          Download PDF
+        </a>
         <button
           className="button-danger"
           type="button"

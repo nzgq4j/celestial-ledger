@@ -83,7 +83,7 @@ describe("API-key isolation", () => {
     expect(config).toContain("frame-ancestors 'none'");
   });
 
-  it("keeps private readings out of social sharing", () => {
+  it("offers deliberate sharing controls on public and private readings", () => {
     const publicReading = fs.readFileSync(
       "app/horoscopes/[sign]/page.tsx",
       "utf8",
@@ -99,7 +99,8 @@ describe("API-key isolation", () => {
     expect(publicReading).toContain("SocialShareLinks");
     expect(publicReading).toContain("pinterest-image");
     expect(shareLinks).toContain("Pinterest");
-    expect(privateReading).not.toContain("SocialShareLinks");
+    expect(privateReading).toContain("SocialShareLinks");
+    expect(privateReading).not.toContain("profileLabel}");
   });
 
   it("serves Pinterest a portrait constellation image with a summary", () => {

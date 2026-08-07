@@ -22,6 +22,8 @@ import {
 import { isDemoMode } from "@/lib/supabase/config";
 import { runNextReportJob } from "@/app/api/internal/report-worker/route";
 import { localeTags } from "@/lib/i18n/config";
+import { commerceFlags } from "@/lib/commerce/flags";
+import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -72,6 +74,14 @@ export async function POST(request: Request) {
         "career_purpose" | "recovery_reflection";
     }
     if (!reportType) return json({ error: "Choose a report type." }, 422);
+    if (!input.entitlementId && commerceFlags().checkout) {
+      const planKey = await effectivePlanKeyForUser(userId);
+      if (planKey !== "premium")
+        return json(
+          { error: "This report requires Premium membership or purchase." },
+          403,
+        );
+    }
     const { data: profileSettings } = await admin
       .from("profiles")
       .select("report_locale")

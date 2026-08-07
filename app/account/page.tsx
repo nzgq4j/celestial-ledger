@@ -369,7 +369,19 @@ export default async function AccountPage({
                         (candidate) =>
                           candidate.report_type === product.report_type,
                       );
-                      return price ? (
+                      return commercePlanKey === "premium" ? (
+                        <div>
+                          <strong>Included with Premium</strong>
+                          <GenerateReportButton
+                            reportType={product.report_type}
+                            profiles={birthProfiles.map((item) => ({
+                              id: item.id,
+                              label: item.label,
+                            }))}
+                            defaultLocale={reportLocale}
+                          />
+                        </div>
+                      ) : price ? (
                         <CheckoutButton
                           reportType={product.report_type}
                           priceLabel={new Intl.NumberFormat(pack.tag, {

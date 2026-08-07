@@ -7,6 +7,10 @@ import {
 } from "@/lib/daily-readings/domain";
 import { DailyReadingView } from "@/components/DailyReadingView";
 import { DailyReadingActions } from "@/components/DailyReadingActions";
+import { SocialShareLinks } from "@/components/SocialShareLinks";
+import { SITE_URL } from "@/lib/seo";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -19,7 +23,13 @@ export default async function DailyReadingPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const parsedId = z
+    .string()
+    .uuid()
+    .safeParse((await params).id);
+  if (!parsedId.success) notFound();
+  const id = parsedId.data;
+  const pack = await getServerTranslationPack();
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   if (typeof auth?.claims?.sub !== "string") redirect("/auth/login");
@@ -47,6 +57,17 @@ export default async function DailyReadingPage({
         analysis={analysis.data}
         evidence={evidence.data}
         profileLabel={profile?.label ?? "Birth chart"}
+      />
+      <SocialShareLinks
+        url={`${SITE_URL}/daily-readings/${reading.id}`}
+        sign="DailyReading"
+        title={`Celestial Atlas daily reading: ${content.data.header.headline}`}
+        description={content.data.bottomLineUpFront.overview.narrative}
+        landscapeImageUrl={`${SITE_URL}/opengraph-image`}
+        portraitImageUrl={`${SITE_URL}/opengraph-image`}
+        heading={pack.messages.horoscopes.shareReading}
+        copyLabel={pack.messages.horoscopes.copyLink}
+        copiedLabel={pack.messages.horoscopes.linkCopied}
       />
     </main>
   );

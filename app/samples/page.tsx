@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { sampleChart, sampleIdentity } from "@/lib/samples";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
@@ -10,19 +9,16 @@ export const metadata = createPageMetadata({
   keywords: ["sample astrology report", "sample natal reading"],
 });
 
-export default async function SamplesPage() {
-  const chart = await sampleChart();
-  const sun = chart.placements.find((item) => item.name === "Sun");
-  const moon = chart.placements.find((item) => item.name === "Moon");
+export default function SamplesPage() {
   return (
     <main className="page-shell sample-library">
       <header className="sample-library__hero">
         <p className="eyebrow">Open the sample folio</p>
         <h1>See what your private atlas will reveal.</h1>
         <p>
-          These complete sample editions are drawn from one calculated natal
-          sky: {sampleIdentity.born}, {sampleIdentity.place}. The chart begins
-          with a {sun?.sign} Sun and {moon?.sign} Moon.
+          Each edition reflects the depth, structure, and practical guidance of
+          a typical Celestial Atlas reading. Your own report will be shaped by
+          the distinct patterns held in your natal chart.
         </p>
       </header>
       <section className="sample-editions">

@@ -30,7 +30,7 @@ describe("membership discovery experience", () => {
     expect(tiers.personal.features).toContain("2 saved natal charts");
     expect(tiers.premium.features).toContain("5 saved natal charts");
     expect(tiers.premium.features).toContain(
-      "1 standard detailed-report credit each quarter",
+      "Career and Recovery detailed reports included",
     );
     expect(
       new Set(Object.values(tiers).map((tier) => tier.features.join("|"))).size,

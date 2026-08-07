@@ -138,7 +138,17 @@ async function reconcileSubscription(event: Stripe.Event) {
   const subscription = await subscriptionForEvent(event);
   if (!subscription) return;
   const userId = subscription.metadata.user_id;
-  const planKey = subscriptionPlanKey(subscription);
+  const priceId = subscription.items.data[0]?.price.id;
+  const admin = createAdminClient();
+  const { data: cataloguePlan } = priceId
+    ? await admin
+        .from("commerce_plans")
+        .select("plan_key")
+        .eq("stripe_price_id", priceId)
+        .eq("active", true)
+        .maybeSingle()
+    : { data: null };
+  const planKey = cataloguePlan?.plan_key ?? subscriptionPlanKey(subscription);
   const customerId = stripeId(subscription.customer);
   if (!userId || !planKey || !customerId) return "subscription_mismatch";
   const period = subscriptionPeriod(subscription);
@@ -146,27 +156,24 @@ async function reconcileSubscription(event: Stripe.Event) {
     subscription.status === "past_due"
       ? new Date(event.created * 1000 + 7 * 24 * 60 * 60 * 1000).toISOString()
       : null;
-  const { data, error } = await createAdminClient().rpc(
-    "process_subscription_event",
-    {
-      p_event_id: event.id,
-      p_event_type: event.type,
-      p_event_created: event.created,
-      p_user_id: userId,
-      p_plan_key: planKey,
-      p_stripe_customer_id: customerId,
-      p_stripe_subscription_id: subscription.id,
-      p_status: subscription.status,
-      p_current_period_start: period.start
-        ? new Date(period.start * 1000).toISOString()
-        : null,
-      p_current_period_end: period.end
-        ? new Date(period.end * 1000).toISOString()
-        : null,
-      p_cancel_at_period_end: subscription.cancel_at_period_end,
-      p_grace_ends_at: graceEndsAt,
-    },
-  );
+  const { data, error } = await admin.rpc("process_subscription_event", {
+    p_event_id: event.id,
+    p_event_type: event.type,
+    p_event_created: event.created,
+    p_user_id: userId,
+    p_plan_key: planKey,
+    p_stripe_customer_id: customerId,
+    p_stripe_subscription_id: subscription.id,
+    p_status: subscription.status,
+    p_current_period_start: period.start
+      ? new Date(period.start * 1000).toISOString()
+      : null,
+    p_current_period_end: period.end
+      ? new Date(period.end * 1000).toISOString()
+      : null,
+    p_cancel_at_period_end: subscription.cancel_at_period_end,
+    p_grace_ends_at: graceEndsAt,
+  });
   if (error) throw error;
   if (event.type === "invoice.paid") {
     const invoice = event.data.object as Stripe.Invoice;
