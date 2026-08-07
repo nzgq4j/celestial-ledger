@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { dailySkyFor, zodiacSlugs } from "@/lib/horoscopes/daily";
+import { zodiacSlugs } from "@/lib/horoscopes/daily";
+import { publishedDailySky } from "@/lib/horoscopes/generated";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
@@ -33,7 +34,7 @@ export async function generateMetadata({
   const [{ sign: value }, { lang }] = await Promise.all([params, searchParams]);
   const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
   const pack = await getServerTranslationPack(requestedLocale);
-  const sky = dailySkyFor(new Date(), pack.tag);
+  const sky = await publishedDailySky(new Date(), pack.tag);
   const reading = sky.horoscopes.find(
     (item) => item.slug === value.toLowerCase(),
   );
@@ -66,7 +67,7 @@ export default async function HoroscopeDetailPage({
   const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
   const pack = await getServerTranslationPack(requestedLocale);
   const copy = pack.messages.horoscopes;
-  const sky = dailySkyFor(new Date(), pack.tag);
+  const sky = await publishedDailySky(new Date(), pack.tag);
   const reading = sky.horoscopes.find(
     (item) => item.slug === slug.toLowerCase(),
   );

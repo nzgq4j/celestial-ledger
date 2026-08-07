@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { dailySkyFor } from "@/lib/horoscopes/daily";
+import { publishedDailySky } from "@/lib/horoscopes/generated";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
@@ -25,7 +25,7 @@ export async function generateMetadata({
   const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
   const pack = await getServerTranslationPack(requestedLocale);
   const copy = pack.messages.horoscopes;
-  const sky = dailySkyFor(new Date(), pack.tag);
+  const sky = await publishedDailySky(new Date(), pack.tag);
   const path = localizedPublicUrl("/horoscopes", pack.tag);
   const metadata = createPageMetadata({
     title: `${copy.title} — ${sky.displayDate}`,
@@ -50,7 +50,7 @@ export default async function DailyHoroscopesPage({
   const requestedLocale = lang && isLocaleTag(lang) ? lang : undefined;
   const pack = await getServerTranslationPack(requestedLocale);
   const copy = pack.messages.horoscopes;
-  const sky = dailySkyFor(new Date(), pack.tag);
+  const sky = await publishedDailySky(new Date(), pack.tag);
   const periodLabels = {
     morning: copy.morning,
     afternoon: copy.afternoon,
@@ -66,7 +66,7 @@ export default async function DailyHoroscopesPage({
           </p>
           <h1>{copy.title}</h1>
         </div>
-        <p>{copy.introduction}</p>
+        <p>{sky.summary ?? copy.introduction}</p>
       </header>
       <section className="daily-sky-strip" aria-label={copy.todaysSky}>
         {sky.placements.slice(0, 5).map((item) => (

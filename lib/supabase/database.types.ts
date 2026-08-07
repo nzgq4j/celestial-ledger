@@ -679,6 +679,66 @@ export type Database = {
           },
         ];
       };
+      daily_horoscope_editions: {
+        Row: {
+          calculation_version: string;
+          created_at: string;
+          daily_summary: string | null;
+          editorial_plan: Json | null;
+          edition_date: string;
+          evidence: Json;
+          failure_code: string | null;
+          generated_at: string | null;
+          id: string;
+          locale: string;
+          model_version: string | null;
+          prompt_version: string;
+          published_at: string | null;
+          readings: Json | null;
+          status: string;
+          updated_at: string;
+          validation: Json | null;
+        };
+        Insert: {
+          calculation_version: string;
+          created_at?: string;
+          daily_summary?: string | null;
+          editorial_plan?: Json | null;
+          edition_date: string;
+          evidence: Json;
+          failure_code?: string | null;
+          generated_at?: string | null;
+          id?: string;
+          locale: string;
+          model_version?: string | null;
+          prompt_version: string;
+          published_at?: string | null;
+          readings?: Json | null;
+          status?: string;
+          updated_at?: string;
+          validation?: Json | null;
+        };
+        Update: {
+          calculation_version?: string;
+          created_at?: string;
+          daily_summary?: string | null;
+          editorial_plan?: Json | null;
+          edition_date?: string;
+          evidence?: Json;
+          failure_code?: string | null;
+          generated_at?: string | null;
+          id?: string;
+          locale?: string;
+          model_version?: string | null;
+          prompt_version?: string;
+          published_at?: string | null;
+          readings?: Json | null;
+          status?: string;
+          updated_at?: string;
+          validation?: Json | null;
+        };
+        Relationships: [];
+      };
       marketing_subscribers: {
         Row: {
           consent_source: string;

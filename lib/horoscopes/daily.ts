@@ -101,6 +101,7 @@ export type DailyHoroscope = {
 export type DailySky = {
   date: string;
   displayDate: string;
+  summary?: string;
   placements: Placement[];
   aspects: Aspect[];
   horoscopes: DailyHoroscope[];
