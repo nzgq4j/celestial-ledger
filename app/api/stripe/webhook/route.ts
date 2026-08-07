@@ -67,7 +67,9 @@ async function reconcileInput(
         typeof session.payment_intent === "string"
           ? session.payment_intent
           : session.payment_intent?.id,
-      amount: session.amount_total ?? undefined,
+      // Validate the immutable catalogue subtotal. The total can be lower when
+      // Stripe applies an approved promotion code, including a 100% discount.
+      amount: session.amount_subtotal ?? session.amount_total ?? undefined,
       currency: session.currency ?? undefined,
     };
   }

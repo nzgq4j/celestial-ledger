@@ -130,4 +130,10 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(subscriptionCheckout).toContain("allow_promotion_codes: true");
     expect(checkout).toContain("allow_promotion_codes: true");
   });
+
+  it("validates the catalogue subtotal when a promotion reduces the total", () => {
+    expect(webhook).toContain(
+      "session.amount_subtotal ?? session.amount_total ?? undefined",
+    );
+  });
 });
