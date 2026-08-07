@@ -45,5 +45,10 @@ describe("membership discovery experience", () => {
     expect(membershipCopy["en-GB"].page.preview).toContain(
       "Paid memberships are open",
     );
+    expect(
+      membershipCopy["en-GB"].page.path
+        .map((step) => step.description)
+        .join(" "),
+    ).not.toContain("launch list");
   });
 });

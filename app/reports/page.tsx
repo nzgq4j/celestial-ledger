@@ -13,7 +13,10 @@ const reports = [
   {
     status: "Available now",
     title: "Career and Purpose",
-    price: "Complimentary during preview",
+    price: "US$15 one-time",
+    memberNote: "Member pricing or a report credit may apply in your atlas.",
+    delivery:
+      "Generated privately in several minutes · Downloadable PDF · Available for one year",
     promise:
       "Discover the work your chart is calling you toward—and the gifts, tensions, and deeper motives that shape a meaningful path.",
     reveals: [
@@ -27,7 +30,10 @@ const reports = [
   {
     status: "Available now",
     title: "Recovery Reflection",
-    price: "Complimentary during preview",
+    price: "US$5 one-time",
+    memberNote: "Member pricing or a report credit may apply in your atlas.",
+    delivery:
+      "Generated privately in several minutes · Downloadable PDF · Available for one year",
     promise:
       "Return to the inner compass of your natal sky through a private reading of grounding, self-trust, boundaries, relationships, and renewal.",
     reveals: [
@@ -42,6 +48,8 @@ const reports = [
     status: "In development",
     title: "Future Trends",
     price: "A twelve-month atlas",
+    memberNote: null,
+    delivery: null,
     promise:
       "Follow the changing sky as it meets your natal chart, revealing seasons of movement, consolidation, encounter, and transformation.",
     reveals: [
@@ -82,6 +90,14 @@ export default function ReportsPage() {
               </div>
               <h2>{report.title}</h2>
               <p>{report.promise}</p>
+              {report.memberNote && (
+                <p className="report-edition__member-note">
+                  {report.memberNote}
+                </p>
+              )}
+              {report.delivery && (
+                <p className="report-edition__delivery">{report.delivery}</p>
+              )}
               <ul className="report-edition__reveals">
                 {report.reveals.map((item) => (
                   <li key={item}>{item}</li>
@@ -95,7 +111,7 @@ export default function ReportsPage() {
                 )}
                 {report.status === "Available now" && (
                   <Link href="/account#reports" className="button-primary">
-                    Create this report
+                    View purchase options
                   </Link>
                 )}
               </div>
@@ -103,6 +119,15 @@ export default function ReportsPage() {
           </article>
         ))}
       </section>
+
+      <aside className="report-checkout-note" aria-label="How purchasing works">
+        <strong>Purchase one report at a time.</strong>
+        <p>
+          Celestial Atlas uses direct Stripe checkout rather than a shopping
+          cart. Your account applies any eligible member price or report credit
+          before checkout begins.
+        </p>
+      </aside>
 
       <section className="privacy-note">
         <p className="eyebrow">Private by design</p>

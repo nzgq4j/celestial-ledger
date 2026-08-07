@@ -210,7 +210,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         {
           title: "Choose your reading rhythm",
           description:
-            "Stay with Free or join the launch list for Personal or Premium access.",
+            "Stay with Free or choose Personal or Premium whenever you want a wider reading rhythm.",
         },
       ],
       pathAction: "Create my free account",
@@ -372,7 +372,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         {
           title: "Elige tu ritmo",
           description:
-            "Continúa con Gratis o únete a la lista de Personal o Premium.",
+            "Continúa con Gratis o elige Personal o Premium cuando quieras ampliar tu ritmo de lecturas.",
         },
       ],
       pathAction: "Crear mi cuenta gratis",
@@ -535,7 +535,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         {
           title: "Choisissez votre rythme",
           description:
-            "Restez en Gratuit ou rejoignez la liste Personnel ou Premium.",
+            "Restez en Gratuit ou choisissez Personnel ou Premium lorsque vous souhaitez élargir votre rythme de lecture.",
         },
       ],
       pathAction: "Créer mon compte gratuit",
@@ -698,7 +698,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         {
           title: "Wähle deinen Leserhythmus",
           description:
-            "Bleibe bei Kostenlos oder tritt der Personal- oder Premium-Liste bei.",
+            "Bleibe bei Kostenlos oder wähle Personal oder Premium, sobald du deinen Leserhythmus erweitern möchtest.",
         },
       ],
       pathAction: "Kostenloses Konto erstellen",

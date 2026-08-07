@@ -94,7 +94,9 @@ const pack = {
       availableUntil: "Verfügbar bis",
       noReports:
         "Noch keine Berichte. Wähle unten einen aus, wenn du bereit bist.",
-      complimentary: "Während der Vorschau kostenlos",
+      complimentary: "In deinem Konto verfügbar",
+      reportDelivery:
+        "Privat erstellt · PDF-Download · Ein Jahr lang verfügbar",
       createNatalChart: "Geburtshoroskop erstellen",
       careerDescription:
         "Erkunde die planetaren Signaturen deiner Berufung, deines Ehrgeizes und deines unverwechselbaren Beitrags.",

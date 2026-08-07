@@ -93,7 +93,9 @@ const pack = {
       noUnusedPurchases: "No tienes informes adquiridos pendientes de usar.",
       availableUntil: "Disponible hasta",
       noReports: "Aún no hay informes. Elige uno abajo cuando estés listo.",
-      complimentary: "Gratuito durante la vista previa",
+      complimentary: "Disponible en tu cuenta",
+      reportDelivery:
+        "Generado de forma privada · PDF descargable · Disponible durante un año",
       createNatalChart: "Crear carta natal",
       careerDescription:
         "Explora las firmas planetarias que dan forma a tu vocación, ambición y contribución singular.",

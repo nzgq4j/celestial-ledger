@@ -756,6 +756,11 @@ a {
 .site-nav a:hover {
   color: var(--ivory);
 }
+.site-nav__desktop > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
 .site-nav__desktop {
   display: flex;
   align-items: center;
@@ -1594,7 +1599,7 @@ a {
   display: flex;
   align-items: center;
   gap: 0.48rem;
-  min-height: 2.2rem;
+  min-height: 2.75rem;
   border: 1px solid var(--control-border);
   border-radius: 999px;
   background: var(--control-bg);
@@ -1889,6 +1894,21 @@ a {
   line-height: 1.7;
   margin-top: 1rem;
 }
+.report-edition .report-edition__member-note {
+  margin-top: 0.75rem;
+  color: var(--ivory);
+  font-weight: 600;
+}
+.report-edition .report-edition__delivery,
+.compact-products__delivery {
+  display: block;
+  margin-top: 0.65rem;
+  color: var(--muted);
+  font:
+    0.72rem/1.55 ui-monospace,
+    monospace;
+  letter-spacing: 0.03em;
+}
 .report-edition small {
   display: block;
   color: #7f8997;
@@ -1920,6 +1940,23 @@ a {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 1.25rem;
+}
+.report-checkout-note {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.35fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.25rem 0;
+  border-block: 1px solid var(--line);
+}
+.report-checkout-note strong {
+  color: var(--gold);
+}
+.report-checkout-note p {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.65;
 }
 .privacy-note {
   margin-top: 5rem;
@@ -1953,6 +1990,11 @@ a {
 }
 .button-quiet {
   border: 1px solid #536177;
+}
+.auth-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
 }
 .private-library {
   max-width: 64rem;
@@ -4392,6 +4434,10 @@ input:focus-visible {
   .method-page__actions {
     display: grid;
   }
+  .report-checkout-note {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
   .privacy-note {
     margin-top: 3rem;
     padding-left: 1.2rem;
@@ -5422,6 +5468,9 @@ th {
 }
 
 .site-footer__directory a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   border-bottom: 1px solid transparent;
   transition:
     border-color 160ms ease,

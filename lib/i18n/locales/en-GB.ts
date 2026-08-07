@@ -95,7 +95,9 @@ const pack = {
       noUnusedPurchases: "You have no purchased reports waiting to be used.",
       availableUntil: "Available until",
       noReports: "No reports yet. Choose a report below when you are ready.",
-      complimentary: "Complimentary during preview",
+      complimentary: "Available in your account",
+      reportDelivery:
+        "Generated privately · Downloadable PDF · Available for one year",
       createNatalChart: "Create natal chart",
       careerDescription:
         "Explore the planetary signatures shaping your vocation, ambition, and distinctive contribution.",

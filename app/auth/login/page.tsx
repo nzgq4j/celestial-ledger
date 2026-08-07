@@ -48,11 +48,14 @@ export default async function LoginPage({
         </div>
         <AuthForm mode="login" disabled={demoMode} />
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
-          <Link className="gold underline" href="/auth/forgot-password">
+          <Link
+            className="auth-secondary-link gold underline"
+            href="/auth/forgot-password"
+          >
             Forgot your password?
           </Link>
           <Link
-            className="rounded-lg border border-[#536177] px-4 py-2 font-semibold text-[#f1e5cd]"
+            className="auth-secondary-link rounded-lg border border-[#536177] px-4 py-2 font-semibold text-[#f1e5cd]"
             href="/auth/create-account"
           >
             Create an account

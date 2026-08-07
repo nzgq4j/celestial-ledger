@@ -95,7 +95,9 @@ const pack = {
       availableUntil: "Disponible jusqu’au",
       noReports:
         "Aucun rapport pour le moment. Choisissez-en un ci-dessous lorsque vous êtes prêt.",
-      complimentary: "Offert pendant l’aperçu",
+      complimentary: "Disponible dans votre compte",
+      reportDelivery:
+        "Généré en privé · PDF téléchargeable · Disponible pendant un an",
       createNatalChart: "Créer un thème natal",
       careerDescription:
         "Explorez les signatures planétaires qui façonnent votre vocation, votre ambition et votre contribution singulière.",

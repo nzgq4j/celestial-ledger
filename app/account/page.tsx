@@ -451,6 +451,9 @@ export default async function AccountPage({
                         ? copy.recoveryDescription
                         : copy.careerDescription}
                     </p>
+                    <small className="compact-products__delivery">
+                      {copy.reportDelivery}
+                    </small>
                   </div>
                   <div className="compact-products__action compact-products__action--complimentary">
                     {commerce.checkout && birthProfiles.length ? (
