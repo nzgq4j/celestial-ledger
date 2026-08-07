@@ -117,7 +117,7 @@ export async function runNextReportJob() {
           input:
             attempt === 0
               ? prompt
-              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and ensure every narrative contains at least 750 complete words. Do not shorten later sections.`,
+              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and write 850-950 complete words in every narrative. Count conservatively and do not shorten later sections.`,
           text: {
             format: {
               type: "json_schema",

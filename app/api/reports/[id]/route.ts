@@ -149,11 +149,25 @@ export async function DELETE(
       { error: "Unauthorized." },
       { status: 401, headers: PRIVATE_RESPONSE_HEADERS },
     );
+  const admin = createAdminClient();
+  const { data: report } = await admin
+    .from("reports")
+    .select("entitlement_id,status")
+    .eq("id", id)
+    .eq("user_id", auth.claims.sub as string)
+    .maybeSingle();
   const { error } = await supabase.from("reports").delete().eq("id", id);
   if (error)
     return Response.json(
       { error: "The report could not be deleted." },
       { status: 409, headers: PRIVATE_RESPONSE_HEADERS },
     );
+  if (report && report.status !== "completed")
+    await admin
+      .from("entitlements")
+      .update({ status: "unused", consumed_at: null })
+      .eq("id", report.entitlement_id)
+      .eq("user_id", auth.claims.sub as string)
+      .neq("status", "consumed");
   return new Response(null, { status: 204, headers: PRIVATE_RESPONSE_HEADERS });
 }
