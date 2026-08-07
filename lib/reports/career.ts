@@ -113,7 +113,7 @@ export const careerReportJsonSchema = {
           title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: careerThemeSchema.options },
           bottomLine: { type: "string", minLength: 1, maxLength: 1200 },
-          narrative: { type: "string", minLength: 3000, maxLength: 12000 },
+          narrative: { type: "string", minLength: 5200, maxLength: 12000 },
           bringIntoLife: { type: "string", minLength: 1, maxLength: 2400 },
           evidenceIds: {
             type: "array",

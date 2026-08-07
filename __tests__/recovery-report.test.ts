@@ -61,7 +61,7 @@ describe("Recovery Reflection safety and evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 3000, maxLength: 12000 });
+    ).toMatchObject({ minLength: 5200, maxLength: 12000 });
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties
         .reflectionQuestions.items,

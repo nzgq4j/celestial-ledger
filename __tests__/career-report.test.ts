@@ -21,7 +21,7 @@ describe("career report evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       careerReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 3000, maxLength: 12000 });
+    ).toMatchObject({ minLength: 5200, maxLength: 12000 });
     expect(careerReportJsonSchema.properties.disclaimer).toMatchObject({
       minLength: 1,
       maxLength: 400,

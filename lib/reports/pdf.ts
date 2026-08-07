@@ -26,6 +26,13 @@ export type PdfReport = {
   disclaimer?: string;
   evidenceTitle: string;
   evidence: string[];
+  visualEvidence?: Array<{
+    id: string;
+    label: string;
+    kind: "placement" | "angle" | "house" | "aspect";
+    body1?: string;
+    body2?: string;
+  }>;
   generatedAt: string;
   labels?: {
     bottomLine: string;
@@ -148,6 +155,123 @@ export async function buildReportPdf(report: PdfReport) {
     y -= options.gap ?? 7;
   };
 
+  const drawEvidenceConstellation = () => {
+    const visual = report.visualEvidence ?? [];
+    const nodes = visual
+      .filter((item) => item.kind === "placement" || item.kind === "angle")
+      .slice(0, 14);
+    if (!nodes.length) return;
+    newPage();
+    text(report.evidenceTitle.toUpperCase(), {
+      font: sansBold,
+      size: 8,
+      color: gold,
+      gap: 6,
+    });
+    text("The chart behind this reading", {
+      font: serifBold,
+      size: 22,
+      gap: 7,
+    });
+    text(
+      "A visual index of the immutable placements and aspects referenced in this report.",
+      { font: sans, size: 9, color: muted, gap: 18 },
+    );
+
+    const centreX = PAGE_WIDTH / 2;
+    const centreY = 470;
+    const radius = 176;
+    const positions = new Map<
+      string,
+      { x: number; y: number; label: string }
+    >();
+    nodes.forEach((node, index) => {
+      const angle = Math.PI / 2 - (index / nodes.length) * Math.PI * 2;
+      positions.set(node.id, {
+        x: centreX + Math.cos(angle) * radius,
+        y: centreY + Math.sin(angle) * radius,
+        label: node.label,
+      });
+    });
+
+    const byBody = new Map<string, { x: number; y: number }>();
+    for (const node of nodes) {
+      const position = positions.get(node.id)!;
+      const body = node.id.startsWith("placement:")
+        ? node.id.slice("placement:".length).replaceAll("-", " ")
+        : undefined;
+      if (body) byBody.set(body.toLowerCase(), position);
+    }
+    visual
+      .filter((item) => item.kind === "aspect" && item.body1 && item.body2)
+      .forEach((aspect) => {
+        const from = byBody.get(aspect.body1!.toLowerCase());
+        const to = byBody.get(aspect.body2!.toLowerCase());
+        if (!from || !to) return;
+        page.drawLine({
+          start: from,
+          end: to,
+          thickness: 0.65,
+          color: rgb(0.64, 0.7, 0.78),
+          opacity: 0.48,
+        });
+      });
+
+    page.drawCircle({
+      x: centreX,
+      y: centreY,
+      size: radius + 18,
+      borderColor: gold,
+      borderWidth: 0.8,
+      opacity: 0.55,
+    });
+    page.drawCircle({
+      x: centreX,
+      y: centreY,
+      size: 42,
+      borderColor: gold,
+      borderWidth: 1,
+    });
+    page.drawText("CA", {
+      x: centreX - 11,
+      y: centreY - 5,
+      size: 14,
+      font: serifBold,
+      color: gold,
+    });
+    positions.forEach((position) => {
+      page.drawCircle({
+        x: position.x,
+        y: position.y,
+        size: 5.5,
+        color: navy,
+        borderColor: gold,
+        borderWidth: 1.2,
+      });
+      const label = safeText(position.label);
+      const shortLabel = label.length > 30 ? `${label.slice(0, 27)}...` : label;
+      const labelWidth = sans.widthOfTextAtSize(shortLabel, 7.2);
+      page.drawText(shortLabel, {
+        x: Math.max(
+          MARGIN,
+          Math.min(
+            PAGE_WIDTH - MARGIN - labelWidth,
+            position.x - labelWidth / 2,
+          ),
+        ),
+        y: position.y + (position.y >= centreY ? 11 : -17),
+        size: 7.2,
+        font: sans,
+        color: ink,
+      });
+    });
+    y = 210;
+    text(
+      "Gold nodes mark placements or chart angles. Fine connecting lines mark calculated aspects between the bodies shown; no relationship is inferred beyond the recorded chart evidence.",
+      { font: sans, size: 8, color: muted, gap: 0 },
+    );
+  };
+
   newPage();
   page.drawRectangle({
     x: 0,
@@ -250,6 +374,7 @@ export async function buildReportPdf(report: PdfReport) {
   text(report.closing, { font: serifBold, size: 13, gap: 12 });
   if (report.disclaimer)
     text(report.disclaimer, { font: sans, size: 8, color: muted });
+  drawEvidenceConstellation();
   if (report.evidence.length) {
     newPage();
     text(report.evidenceTitle.toUpperCase(), {

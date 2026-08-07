@@ -81,6 +81,17 @@ export async function GET(
     evidence: evidence.items.map(
       (item) => `${item.id} - ${localizeEvidenceLabel(item, locale)}`,
     ),
+    visualEvidence: evidence.items.map((item) => ({
+      id: item.id,
+      label: localizeEvidenceLabel(item, locale),
+      kind: item.kind,
+      ...(item.kind === "aspect" && typeof item.data.body1 === "string"
+        ? { body1: item.data.body1 }
+        : {}),
+      ...(item.kind === "aspect" && typeof item.data.body2 === "string"
+        ? { body2: item.data.body2 }
+        : {}),
+    })),
     generatedAt: new Date(report.completed_at ?? Date.now()).toLocaleDateString(
       locale,
     ),

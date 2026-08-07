@@ -18,11 +18,30 @@ describe("private report PDF", () => {
       closing: "A final reflection.",
       evidenceTitle: "Evidence constellation",
       evidence: ["placement:test - Example chart factor"],
+      visualEvidence: [
+        {
+          id: "placement:sun",
+          label: "Sun in Leo",
+          kind: "placement",
+        },
+        {
+          id: "placement:moon",
+          label: "Moon in Taurus",
+          kind: "placement",
+        },
+        {
+          id: "aspect:1",
+          label: "Sun square Moon",
+          kind: "aspect",
+          body1: "Sun",
+          body2: "Moon",
+        },
+      ],
       generatedAt: "7 August 2026",
     });
     expect(Buffer.from(bytes).subarray(0, 5).toString()).toBe("%PDF-");
     const document = await PDFDocument.load(bytes);
-    expect(document.getPageCount()).toBeGreaterThan(1);
+    expect(document.getPageCount()).toBeGreaterThan(2);
     expect(document.getTitle()).toBe("A private celestial reading");
   });
 });
