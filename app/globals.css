@@ -4721,7 +4721,7 @@ th {
 }
 
 .site-footer__lead h2 {
-  max-width: 14ch;
+  max-width: none;
   margin: 0.35rem 0 0.65rem;
   color: var(--ivory);
   font:
@@ -4733,6 +4733,13 @@ th {
 
 .site-footer__lead h2 span {
   display: block;
+  white-space: nowrap;
+}
+
+.site-footer__lead h2 .site-footer__title-accent {
+  display: inline;
+  color: var(--gold);
+  font-weight: inherit;
 }
 
 .site-footer__lead p:last-child {
@@ -4909,6 +4916,10 @@ th {
 
   .site-footer__lead > img {
     width: 3.4rem;
+  }
+
+  .site-footer__lead h2 span {
+    white-space: normal;
   }
 
   .site-footer__directory {

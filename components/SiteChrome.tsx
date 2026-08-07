@@ -101,9 +101,25 @@ export function SiteFooter() {
           <Image src="/celestialatlas-logo.png" alt="" width="58" height="58" />
           <div>
             <h2>
-              {titleLines.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
+              {titleLines.map((line) => {
+                const parts = line.split(/(\bchart\b)/i);
+                return (
+                  <span key={line}>
+                    {parts.map((part, index) =>
+                      /^chart$/i.test(part) ? (
+                        <strong
+                          className="site-footer__title-accent"
+                          key={`${part}-${index}`}
+                        >
+                          {part}
+                        </strong>
+                      ) : (
+                        part
+                      ),
+                    )}
+                  </span>
+                );
+              })}
             </h2>
             <p>{copy.kicker}</p>
             <p>{copy.description}</p>
