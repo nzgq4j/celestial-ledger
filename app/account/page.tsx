@@ -203,16 +203,16 @@ export default async function AccountPage({
           </span>
           <div>
             <p>Celestial Atlas</p>
-            <strong>Member observatory</strong>
-            <small>Your private workspace</small>
+            <strong>{copy.dashboardWorkspaceName}</strong>
+            <small>{copy.dashboardWorkspaceCopy}</small>
           </div>
         </div>
 
         <nav className="account-sidebar__nav">
-          <p>Workspace</p>
+          <p>{copy.workspaceLabel}</p>
           <a href="#overview" className="account-sidebar__active">
             <span aria-hidden="true">01</span>
-            Overview
+            {copy.overview}
           </a>
           <a href="#daily-reading">
             <span aria-hidden="true">02</span>
@@ -230,11 +230,11 @@ export default async function AccountPage({
             <span aria-hidden="true">04</span>
             {copy.myBirthCharts}
           </a>
-          <p>Account</p>
+          <p>{copy.accountLabel}</p>
           {commerce.subscriptions && (
             <a href="#billing">
               <span aria-hidden="true">05</span>
-              Membership &amp; billing
+              {copy.membershipBilling}
             </a>
           )}
           <a href="#account-settings">
@@ -250,44 +250,52 @@ export default async function AccountPage({
         </nav>
 
         <div className="account-sidebar__plan">
-          <p>Current orbit</p>
+          <p>{copy.currentOrbit}</p>
           <strong>
-            {commercePlanKey[0].toUpperCase() + commercePlanKey.slice(1)}
+            {commercePlanKey === "free"
+              ? copy.freePlan
+              : commercePlanKey[0].toUpperCase() + commercePlanKey.slice(1)}
           </strong>
-          <Link href="/membership">View membership</Link>
+          <Link href="/membership">{copy.viewMembership}</Link>
         </div>
       </aside>
 
       <div className="account-workspace">
         <header className="account-command-bar">
           <div>
-            <p>Private observatory</p>
-            <strong>My Celestial Atlas</strong>
+            <p>{copy.privateObservatory}</p>
+            <strong>{copy.dashboardTitle}</strong>
           </div>
           <div
             className="account-command-bar__signals"
             aria-label="Account summary"
           >
             <span>
-              <small>Charts</small>
+              <small>{copy.chartsLabel}</small>
               <strong>{birthProfiles.length}</strong>
             </span>
             <span>
-              <small>Readings</small>
+              <small>{copy.readingsLabel}</small>
               <strong>{reports.length + dailyReadings.length}</strong>
             </span>
             <span>
-              <small>Ready</small>
+              <small>{copy.readyLabel}</small>
               <strong>{readyEntitlements.length}</strong>
             </span>
           </div>
-          <div className="account-command-bar__profile">
-            <span aria-hidden="true">
-              {displayName.slice(0, 1).toUpperCase()}
-            </span>
-            <div>
-              <strong>{displayName}</strong>
-              <small>{authData.user.email}</small>
+          <div className="account-command-bar__actions">
+            <Link href="/" className="account-command-bar__return">
+              <span aria-hidden="true">←</span>
+              {copy.backToSite}
+            </Link>
+            <div className="account-command-bar__profile">
+              <span aria-hidden="true">
+                {displayName.slice(0, 1).toUpperCase()}
+              </span>
+              <div>
+                <strong>{displayName}</strong>
+                <small>{authData.user.email}</small>
+              </div>
             </div>
           </div>
         </header>
@@ -296,7 +304,7 @@ export default async function AccountPage({
           <header className="account-hero" id="overview">
             <div className="account-hero__welcome">
               <p className="eyebrow">{copy.heroKicker}</p>
-              <h1>Your private sky.</h1>
+              <h1>{copy.privateSkyTitle}</h1>
               <p>{copy.heroCopy}</p>
             </div>
             <div className="account-hero__orbit" aria-hidden="true">
@@ -365,21 +373,21 @@ export default async function AccountPage({
           <section className="dashboard-panel" id="billing">
             <div className="dashboard-panel__heading">
               <div>
-                <p className="section-kicker">Membership &amp; billing</p>
+                <p className="section-kicker">{copy.membershipBilling}</p>
                 <h2>
                   {subscription
                     ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
-                    : "Free"}
+                    : copy.freePlan}
                 </h2>
               </div>
               <span className="dashboard-panel__meta">
-                {subscription?.status ?? "active"}
+                {subscription?.status ?? copy.activeStatus}
               </span>
             </div>
             <p className="dashboard-panel__introduction">
               {subscription?.current_period_end
-                ? `${subscription.cancel_at_period_end ? "Access ends" : "Next billing date"} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
-                : "Your account currently uses the Free plan."}
+                ? `${subscription.cancel_at_period_end ? copy.accessEnds : copy.nextBillingDate} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
+                : copy.freePlanDescription}
             </p>
             {subscription && <BillingPortalButton />}
           </section>
@@ -532,7 +540,7 @@ export default async function AccountPage({
                           />
                         ) : commercePlanKey === "premium" ? (
                           <div>
-                            <strong>Included with Premium</strong>
+                            <strong>{copy.includedWithPremium}</strong>
                             <GenerateReportButton
                               reportType={product.report_type}
                               profiles={birthProfiles.map((item) => ({
@@ -552,7 +560,7 @@ export default async function AccountPage({
                             creditAvailable={availableReportCredits > 0}
                           />
                         ) : (
-                          <strong>Currently unavailable</strong>
+                          <strong>{copy.currentlyUnavailable}</strong>
                         );
                       })()
                     ) : birthProfiles.length ? (

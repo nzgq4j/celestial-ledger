@@ -3805,6 +3805,35 @@ body:has(.account-dashboard) > .meridian {
   gap: 0.7rem;
   min-width: 0;
 }
+.account-command-bar__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+}
+.account-command-bar__return {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.55rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(32, 215, 230, 0.34);
+  border-radius: 0.75rem;
+  color: var(--atlas-cyan);
+  font-size: 0.72rem;
+  font-weight: 750;
+  white-space: nowrap;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.account-command-bar__return:hover {
+  border-color: var(--atlas-cyan);
+  background: rgba(32, 215, 230, 0.08);
+  transform: translateX(-0.12rem);
+}
 .account-command-bar__profile > span {
   order: 2;
   display: grid;
@@ -4027,6 +4056,10 @@ body:has(.account-dashboard) > .meridian {
   }
   .account-command-bar__profile {
     justify-content: flex-start;
+  }
+  .account-command-bar__actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
   .account-command-bar__profile > span {
     order: 0;
