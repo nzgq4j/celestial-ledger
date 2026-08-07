@@ -4,34 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { localeRegistry, localeTags, type LocaleTag } from "@/lib/i18n/config";
 import { useLocale } from "@/components/LocaleProvider";
 import { useRouter } from "next/navigation";
-import {
-  englishFlagRegion,
-  LocaleFlag,
-  type EnglishFlagRegion,
-} from "@/components/LocaleFlag";
 
 export function SitePreferences() {
   const { locale, pack, selectLocale } = useLocale();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [englishRegion, setEnglishRegion] = useState<EnglishFlagRegion>("GB");
   const pickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function updateEnglishRegion() {
-      setEnglishRegion(
-        englishFlagRegion(
-          navigator.languages?.length
-            ? navigator.languages
-            : [navigator.language],
-        ),
-      );
-    }
-    updateEnglishRegion();
-    window.addEventListener("languagechange", updateEnglishRegion);
-    return () =>
-      window.removeEventListener("languagechange", updateEnglishRegion);
-  }, []);
 
   useEffect(() => {
     function close(event: MouseEvent) {
@@ -70,9 +48,6 @@ export function SitePreferences() {
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
         >
-          <span className="locale-flag">
-            <LocaleFlag locale={locale} englishRegion={englishRegion} />
-          </span>
           <span>{localeRegistry[locale].nativeName}</span>
         </button>
         {open && (
@@ -90,9 +65,6 @@ export function SitePreferences() {
                 lang={tag}
                 onClick={() => void changeLocale(tag)}
               >
-                <span className="locale-flag">
-                  <LocaleFlag locale={tag} englishRegion={englishRegion} />
-                </span>
                 <span>{localeRegistry[tag].nativeName}</span>
                 {tag === locale && <i aria-hidden="true">✓</i>}
               </button>
