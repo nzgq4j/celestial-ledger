@@ -4,8 +4,8 @@ import { calculateNatalChart } from "@/lib/chart";
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
-export const CAREER_SCHEMA_VERSION = "career-1";
-export const CAREER_PROMPT_VERSION = "career-2";
+export const CAREER_SCHEMA_VERSION = "career-2";
+export const CAREER_PROMPT_VERSION = "career-3";
 export const CAREER_SAFETY_VERSION = "reflection-1";
 
 export const careerThemeSchema = z.enum([
@@ -59,6 +59,8 @@ const evidenceReference = z.string().regex(/^(placement|angle|house|aspect):/);
 const sectionSchema = z
   .object({
     title: z.string().min(1).max(100),
+    // Optional when reading career-1 reports; career-2 generation requires it.
+    theme: careerThemeSchema.optional(),
     narrative: z.string().min(1).max(1800),
     evidenceIds: z.array(evidenceReference).min(1).max(8),
     reflectionQuestions: z.array(z.string().min(1).max(240)).max(3),
@@ -69,7 +71,7 @@ export const careerReportSchema = z
   .object({
     title: z.string().min(1).max(120),
     introduction: z.string().min(1).max(1200),
-    sections: z.array(sectionSchema).min(4).max(7),
+    sections: z.array(sectionSchema).min(1).max(6),
     closing: z.string().min(1).max(1000),
     disclaimer: z.string().min(1).max(400),
   })
@@ -85,14 +87,21 @@ export const careerReportJsonSchema = {
     introduction: { type: "string" },
     sections: {
       type: "array",
-      minItems: 4,
-      maxItems: 7,
+      minItems: 1,
+      maxItems: 6,
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["title", "narrative", "evidenceIds", "reflectionQuestions"],
+        required: [
+          "title",
+          "theme",
+          "narrative",
+          "evidenceIds",
+          "reflectionQuestions",
+        ],
         properties: {
           title: { type: "string" },
+          theme: { type: "string", enum: careerThemeSchema.options },
           narrative: { type: "string" },
           evidenceIds: {
             type: "array",
@@ -220,7 +229,8 @@ ${reportLanguageInstruction(locale)}
 - Astrology is symbolic reflection, not scientifically validated prediction.
 - Never invent or recalculate chart facts. Every section must cite only supplied evidence IDs.
 - Discuss motivations, values, contribution, work environments, tensions, and reflective questions.
-- Centre the report on the selected career reflection themes. Give every selected theme dedicated, substantive attention; other sections may connect supporting chart patterns without displacing those priorities.
+- Write exactly one section for each selected theme, set its theme field to that theme ID, and do not add sections for unselected themes.
+- Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
 - Do not predict employment, income, promotion, success, status, or outcomes.
 - Do not provide medical, legal, financial, or mental-health advice.
 - Use measured, non-deterministic language. Explain technical terms briefly.
@@ -236,9 +246,26 @@ Immutable evidence bundle:\n${JSON.stringify(evidence)}`;
 export function validateEvidenceLinks(
   report: CareerReport,
   evidence: CareerEvidenceBundle,
+  themes?: CareerTheme[],
 ) {
   const valid = new Set(evidence.items.map((item) => item.id));
-  for (const section of report.sections)
+  const selectedThemes = themes ? new Set(themes) : undefined;
+  const reportedThemes = new Set<CareerTheme>();
+  for (const section of report.sections) {
+    if (selectedThemes) {
+      if (!section.theme || !selectedThemes.has(section.theme))
+        throw new Error("UNSELECTED_CAREER_THEME");
+      if (reportedThemes.has(section.theme))
+        throw new Error("DUPLICATE_CAREER_THEME");
+      reportedThemes.add(section.theme);
+    }
     for (const id of section.evidenceIds)
       if (!valid.has(id)) throw new Error(`UNKNOWN_EVIDENCE_ID:${id}`);
+  }
+  if (
+    selectedThemes &&
+    (reportedThemes.size !== selectedThemes.size ||
+      [...selectedThemes].some((theme) => !reportedThemes.has(theme)))
+  )
+    throw new Error("MISSING_CAREER_THEME");
 }

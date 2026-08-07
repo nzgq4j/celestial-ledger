@@ -29,9 +29,21 @@ Migration `20260804084858_add_report_locale.sql` is additive. Before applying it
 - Confirm another authenticated user cannot read or change that preference or report.
 - Confirm the generated prompt names the requested language and preserves evidence IDs.
 
+### Theme-contract correction
+
+Migration `20260807072000_allow_career_report_themes.sql` replaces only the
+service-role queue function. Before production application, capture a managed
+backup, dry-run it on a disposable branch, and obtain manual approval. Verify
+that a career report with one and several selected themes queues successfully,
+invalid career or recovery theme IDs roll back the transaction, and recovery
+adult-confirmation and birth-profile ownership checks remain enforced.
+
 ## Forward recovery
 
 If application generation fails after release, deploy the previous application
 commit while leaving the nullable profile column and defaulted report column in
 place. Follow with a new forward migration to restore the previous queue-function
 signatures if required. Do not drop locale data during incident recovery.
+If the theme-contract migration needs correction, leave queued and completed
+rows intact and deploy a forward migration that replaces `queue_paid_report`
+with the reviewed function body. Do not rewrite stored report theme snapshots.

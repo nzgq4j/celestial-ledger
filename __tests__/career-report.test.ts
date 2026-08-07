@@ -76,6 +76,7 @@ describe("career report evidence", () => {
       introduction: "A reflective introduction.",
       sections: Array.from({ length: 4 }, (_, i) => ({
         title: `Section ${i + 1}`,
+        theme: "direction_purpose",
         narrative: "A measured reflection.",
         evidenceIds: [i === 0 ? "placement:not-real" : "placement:sun"],
         reflectionQuestions: [],
@@ -86,5 +87,47 @@ describe("career report evidence", () => {
     expect(() => validateEvidenceLinks(report, evidence)).toThrow(
       "UNKNOWN_EVIDENCE_ID",
     );
+  });
+
+  it("requires exactly one generated section per selected theme", async () => {
+    const { evidence } = await buildCareerEvidence({
+      date: "1990-01-15",
+      time: "12:00",
+      timeUnknown: false,
+      place: birthplace,
+    });
+    const section = (theme: "direction_purpose" | "strengths_talents") => ({
+      title: theme,
+      theme,
+      narrative: `A measured reflection about ${theme}.`,
+      evidenceIds: ["placement:sun"],
+      reflectionQuestions: [],
+    });
+    const base = {
+      title: "Career and Purpose",
+      introduction: "A reflective introduction.",
+      closing: "A reflective close.",
+      disclaimer: "This is symbolic reflection, not prediction.",
+    };
+    const valid = careerReportSchema.parse({
+      ...base,
+      sections: [section("direction_purpose"), section("strengths_talents")],
+    });
+    expect(() =>
+      validateEvidenceLinks(valid, evidence, [
+        "direction_purpose",
+        "strengths_talents",
+      ]),
+    ).not.toThrow();
+    const duplicate = careerReportSchema.parse({
+      ...base,
+      sections: [section("direction_purpose"), section("direction_purpose")],
+    });
+    expect(() =>
+      validateEvidenceLinks(duplicate, evidence, [
+        "direction_purpose",
+        "strengths_talents",
+      ]),
+    ).toThrow("DUPLICATE_CAREER_THEME");
   });
 });

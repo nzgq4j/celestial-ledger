@@ -65,6 +65,36 @@ describe("Recovery Reflection safety and evidence", () => {
     ).not.toThrow();
   });
 
+  it("accepts one selected theme without padding the report", async () => {
+    const bundle = await evidence();
+    const single = recoveryReportSchema.parse({
+      title: "The Returning Ground",
+      introduction: "A focused reflection.",
+      sections: [
+        {
+          title: "Grounding",
+          theme: "grounding",
+          narrative: "The Sun offers a steady centre.",
+          evidenceIds: ["placement:sun"],
+          reflectionQuestions: ["What helps you return to centre?"],
+        },
+      ],
+      closing: "Carry this point of orientation with you.",
+    });
+    expect(() =>
+      validateRecoveryReport(single, bundle, ["grounding"]),
+    ).not.toThrow();
+  });
+
+  it("rejects duplicate selected themes", async () => {
+    const bundle = await evidence();
+    const duplicate = report();
+    duplicate.sections[1].theme = "grounding";
+    expect(() =>
+      validateRecoveryReport(duplicate, bundle, ["grounding", "renewal"]),
+    ).toThrow("DUPLICATE_RECOVERY_THEME");
+  });
+
   it("rejects an unselected theme or fabricated chart evidence", async () => {
     const bundle = await evidence();
     expect(() =>

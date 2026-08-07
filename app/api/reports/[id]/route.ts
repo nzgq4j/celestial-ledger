@@ -29,7 +29,7 @@ export async function GET(
   const { data, error } = await supabase
     .from("reports")
     .select(
-      "id, report_type, status, schema_version, model_version, output, failure_code, completed_at, expires_at, report_evidence(evidence)",
+      "id, report_type, status, schema_version, model_version, output, failure_code, started_at, completed_at, expires_at, report_evidence(evidence)",
     )
     .eq("id", id)
     .single();
@@ -38,6 +38,29 @@ export async function GET(
       { error: "Report not found." },
       { status: 404, headers: PRIVATE_RESPONSE_HEADERS },
     );
+  if (
+    data.status === "generating" &&
+    data.started_at &&
+    Date.now() - new Date(data.started_at).getTime() > 6 * 60 * 1000
+  ) {
+    const admin = createAdminClient();
+    const { data: recovered } = await admin
+      .from("reports")
+      .update({
+        status: "failed",
+        failure_code: "WORKER_TIMEOUT",
+        next_attempt_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("user_id", auth.claims.sub as string)
+      .eq("status", "generating")
+      .select("status,failure_code")
+      .maybeSingle();
+    if (recovered) {
+      data.status = recovered.status;
+      data.failure_code = recovered.failure_code;
+    }
+  }
   const summary = new URL(request.url).searchParams.has("summary");
   return Response.json(
     summary

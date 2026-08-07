@@ -140,7 +140,7 @@ export async function runNextReportJob() {
           report = recoveryReport;
         } else {
           const careerReport = careerReportSchema.parse(rawReport);
-          validateEvidenceLinks(careerReport, evidence);
+          validateEvidenceLinks(careerReport, evidence, careerThemes);
           report = careerReport;
         }
         break;

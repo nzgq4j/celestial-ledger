@@ -7,8 +7,8 @@ import {
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
-export const RECOVERY_SCHEMA_VERSION = "recovery-1";
-export const RECOVERY_PROMPT_VERSION = "recovery-1";
+export const RECOVERY_SCHEMA_VERSION = "recovery-2";
+export const RECOVERY_PROMPT_VERSION = "recovery-2";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([
@@ -73,7 +73,7 @@ export const recoveryReportSchema = z
   .object({
     title: z.string().min(1).max(120),
     introduction: z.string().min(1).max(1200),
-    sections: z.array(recoverySectionSchema).min(2).max(6),
+    sections: z.array(recoverySectionSchema).min(1).max(6),
     closing: z.string().min(1).max(1000),
   })
   .strict();
@@ -88,7 +88,7 @@ export const recoveryReportJsonSchema = {
     introduction: { type: "string" },
     sections: {
       type: "array",
-      minItems: 2,
+      minItems: 1,
       maxItems: 6,
       items: {
         type: "object",
@@ -141,7 +141,8 @@ Voice and craft:
 ${reportLanguageInstruction(locale)}
 - Write from inside astrology: mystical, compassionate, confident and specific.
 - Reveal constructive patterns without forced optimism, shame or fatalism.
-- Use only the selected themes, with one section per theme.
+- Use only the selected themes, with exactly one section per theme and no additional sections.
+- Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
 - Never invent or recalculate chart facts. Every section must cite supplied evidence IDs.
 - If timeKnown is false, do not use houses, angles or exact-time claims.
 
@@ -177,6 +178,7 @@ export function validateRecoveryReport(
 ) {
   const validEvidence = new Set(evidence.items.map((item) => item.id));
   const selectedThemes = new Set(themes);
+  const reportedThemes = new Set<RecoveryTheme>();
   const combined = [
     report.title,
     report.introduction,
@@ -192,7 +194,15 @@ export function validateRecoveryReport(
   for (const section of report.sections) {
     if (!selectedThemes.has(section.theme))
       throw new Error("UNSELECTED_RECOVERY_THEME");
+    if (reportedThemes.has(section.theme))
+      throw new Error("DUPLICATE_RECOVERY_THEME");
+    reportedThemes.add(section.theme);
     for (const id of section.evidenceIds)
       if (!validEvidence.has(id)) throw new Error(`UNKNOWN_EVIDENCE_ID:${id}`);
   }
+  if (
+    reportedThemes.size !== selectedThemes.size ||
+    [...selectedThemes].some((theme) => !reportedThemes.has(theme))
+  )
+    throw new Error("MISSING_RECOVERY_THEME");
 }
