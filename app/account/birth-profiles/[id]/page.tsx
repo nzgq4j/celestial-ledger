@@ -47,7 +47,9 @@ export default async function BirthProfilePage({
           Stored privately until{" "}
           {new Date(profile.expires_at).toLocaleDateString("en-GB")}.
         </small>
-        <NatalChartActions />
+        <NatalChartActions
+          downloadHref={`/api/birth-profiles/${profile.id}/pdf`}
+        />
       </header>
       <NatalChartWheel chart={chart} />
       {profile.natal_reading && (

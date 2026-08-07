@@ -1,16 +1,10 @@
-"use client";
-
-export function NatalChartActions() {
+export function NatalChartActions({ downloadHref }: { downloadHref: string }) {
   return (
     <div className="natal-chart-actions" aria-label="Natal chart actions">
-      <button
-        type="button"
-        className="button-primary"
-        onClick={() => window.print()}
-      >
+      <a className="button-primary" href={downloadHref} download>
         <span aria-hidden="true">&#8595;</span>
-        Print or save PDF
-      </button>
+        Download PDF
+      </a>
     </div>
   );
 }

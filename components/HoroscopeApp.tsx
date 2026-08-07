@@ -9,7 +9,6 @@ import { useLocale } from "@/components/LocaleProvider";
 import { LandingPathways } from "@/components/LandingPathways";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
 import { ZodiacConstellationStrip } from "@/components/ZodiacConstellationStrip";
-import { NatalChartActions } from "@/components/NatalChartActions";
 
 function MeaningNote({ children }: { children: React.ReactNode }) {
   return (
@@ -504,7 +503,6 @@ export default function HoroscopeApp({
 
         {chart && (
           <div className="natal-chart-result">
-            <NatalChartActions />
             <section className="big-three-section" aria-label="Big Three">
               <div className="grid md:grid-cols-3 gap-4">
                 {[
