@@ -259,44 +259,100 @@ export default async function AccountPage({
       </aside>
 
       <div className="account-workspace">
-        <header className="account-hero" id="overview">
-          <div className="account-hero__welcome">
-            <p className="eyebrow">{copy.heroKicker}</p>
-            <h1>
-              {copy.welcome}, {displayName}
-            </h1>
-            <p>{copy.heroCopy}</p>
+        <header className="account-command-bar">
+          <div>
+            <p>Private observatory</p>
+            <strong>My Celestial Atlas</strong>
           </div>
-          <div className="account-hero__orbit" aria-hidden="true">
-            <i />
-            <i />
-            <i />
+          <div
+            className="account-command-bar__signals"
+            aria-label="Account summary"
+          >
+            <span>
+              <small>Charts</small>
+              <strong>{birthProfiles.length}</strong>
+            </span>
+            <span>
+              <small>Readings</small>
+              <strong>{reports.length + dailyReadings.length}</strong>
+            </span>
+            <span>
+              <small>Ready</small>
+              <strong>{readyEntitlements.length}</strong>
+            </span>
+          </div>
+          <div className="account-command-bar__profile">
+            <span aria-hidden="true">
+              {displayName.slice(0, 1).toUpperCase()}
+            </span>
+            <div>
+              <strong>{displayName}</strong>
+              <small>{authData.user.email}</small>
+            </div>
           </div>
         </header>
 
-        <section className="atlas-next-step" aria-labelledby="next-step-title">
-          <div>
-            <p className="section-kicker">{nextStep.kicker}</p>
-            <h2 id="next-step-title">{nextStep.title}</h2>
-            <p>{nextStep.copy}</p>
-          </div>
-          <Link href={nextStep.href} className="button-primary">
-            {nextStep.action}
-          </Link>
-        </section>
+        <div className="account-activity-grid">
+          <header className="account-hero" id="overview">
+            <div className="account-hero__welcome">
+              <p className="eyebrow">{copy.heroKicker}</p>
+              <h1>
+                {copy.welcome}, {displayName}
+              </h1>
+              <p>{copy.heroCopy}</p>
+            </div>
+            <div className="account-hero__orbit" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </div>
+          </header>
+
+          <section
+            className="atlas-next-step"
+            aria-labelledby="next-step-title"
+          >
+            <div>
+              <p className="section-kicker">{nextStep.kicker}</p>
+              <h2 id="next-step-title">{nextStep.title}</h2>
+              <p>{nextStep.copy}</p>
+            </div>
+            <Link href={nextStep.href} className="button-primary">
+              {nextStep.action}
+            </Link>
+          </section>
+        </div>
 
         <div className="account-stats" aria-label={copy.accountSummary}>
           <span>
+            <i
+              className="account-stat-icon account-stat-icon--cyan"
+              aria-hidden="true"
+            >
+              ✦
+            </i>
             <strong>{birthProfiles.length}</strong>{" "}
             {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
           </span>
           <span>
+            <i
+              className="account-stat-icon account-stat-icon--violet"
+              aria-hidden="true"
+            >
+              ◌
+            </i>
             <strong>{reports.length + dailyReadings.length}</strong>{" "}
             {reports.length + dailyReadings.length === 1
               ? copy.privateReading
               : copy.privateReadings}
           </span>
           <span>
+            <i
+              className="account-stat-icon account-stat-icon--coral"
+              aria-hidden="true"
+            >
+              ↗
+            </i>
             <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
           </span>
         </div>
