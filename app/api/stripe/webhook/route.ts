@@ -166,6 +166,45 @@ async function reconcileSubscription(event: Stripe.Event) {
     },
   );
   if (error) throw error;
+  if (event.type === "invoice.paid") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const payments = await stripeClient().invoicePayments.list({
+      invoice: invoice.id,
+      status: "paid",
+      limit: 10,
+    });
+    const paymentIntentId = payments.data
+      .map((payment) => stripeId(payment.payment.payment_intent))
+      .find(Boolean);
+    if (!paymentIntentId) return `${data}:payment_mismatch`;
+    const { data: creditResult, error: creditError } =
+      await createAdminClient().rpc("record_paid_subscription_invoice", {
+        p_stripe_invoice_id: invoice.id,
+        p_stripe_payment_intent_id: paymentIntentId,
+        p_stripe_subscription_id: subscription.id,
+        p_user_id: userId,
+        p_paid_at: new Date(event.created * 1000).toISOString(),
+      });
+    if (creditError) throw creditError;
+    return `${data}:${creditResult}`;
+  }
+  return data;
+}
+
+async function reverseRefundedSubscriptionInvoice(event: Stripe.Event) {
+  if (event.type !== "charge.refunded") return;
+  const charge = event.data.object as Stripe.Charge;
+  if (!charge.refunded) return;
+  const paymentIntentId = stripeId(charge.payment_intent);
+  if (!paymentIntentId) return;
+  const { data, error } = await createAdminClient().rpc(
+    "reverse_paid_subscription_invoice",
+    {
+      p_stripe_payment_intent_id: paymentIntentId,
+      p_reversed_at: new Date(event.created * 1000).toISOString(),
+    },
+  );
+  if (error) throw error;
   return data;
 }
 
@@ -188,6 +227,9 @@ export async function POST(request: Request) {
     return json({ received: true, handled: false, disabled: true });
 
   if (flags.subscriptions) {
+    const reversalResult = await reverseRefundedSubscriptionInvoice(event);
+    if (reversalResult && reversalResult !== "not_subscription_invoice")
+      return json({ received: true, result: reversalResult });
     const subscriptionResult = await reconcileSubscription(event);
     if (subscriptionResult)
       return json({ received: true, result: subscriptionResult });

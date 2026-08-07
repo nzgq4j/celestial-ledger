@@ -27,6 +27,19 @@ create table public.plan_capabilities (
   primary key (plan_key, capability_key)
 );
 
+create table public.report_prices (
+  report_type text not null references public.products(report_type) on delete restrict,
+  plan_key text not null references public.commerce_plans(plan_key) on delete restrict,
+  stripe_price_id text not null unique,
+  currency text not null check (currency ~ '^[a-z]{3}$'),
+  unit_amount integer not null check (unit_amount > 0),
+  active boolean not null default false,
+  catalog_version integer not null default 1 check (catalog_version > 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (report_type, plan_key, catalog_version)
+);
+
 create table public.billing_customers (
   id uuid primary key default gen_random_uuid(),
   user_id uuid unique references auth.users(id) on delete set null,
@@ -109,7 +122,34 @@ create index account_credits_available_idx
 on public.account_credits(user_id, credit_key, expires_at)
 where quantity_remaining > 0;
 
+create table public.credit_report_eligibility (
+  credit_key text not null check (credit_key ~ '^[a-z][a-z0-9_.]{2,95}$'),
+  report_type text not null references public.products(report_type) on delete restrict,
+  max_standard_amount integer not null check (max_standard_amount > 0),
+  currency text not null check (currency ~ '^[a-z]{3}$'),
+  primary key (credit_key, report_type)
+);
+
+create table public.subscription_paid_invoices (
+  stripe_invoice_id text primary key,
+  stripe_payment_intent_id text unique,
+  stripe_subscription_id text not null,
+  user_id uuid references auth.users(id) on delete set null,
+  paid_at timestamptz not null,
+  reversed_at timestamptz,
+  created_at timestamptz not null default now()
+);
+create index subscription_paid_invoices_count_idx
+on public.subscription_paid_invoices(stripe_subscription_id, paid_at);
+
+alter table public.orders
+  add column stripe_price_id text,
+  add column pricing_plan_key text references public.commerce_plans(plan_key) on delete restrict,
+  add column credit_id uuid references public.account_credits(id) on delete restrict;
+
 create trigger commerce_plans_set_updated_at before update on public.commerce_plans
+for each row execute function private.set_updated_at();
+create trigger report_prices_set_updated_at before update on public.report_prices
 for each row execute function private.set_updated_at();
 create trigger billing_customers_set_updated_at before update on public.billing_customers
 for each row execute function private.set_updated_at();
@@ -122,16 +162,21 @@ for each row execute function private.set_updated_at();
 
 alter table public.commerce_plans enable row level security;
 alter table public.plan_capabilities enable row level security;
+alter table public.report_prices enable row level security;
 alter table public.billing_customers enable row level security;
 alter table public.account_subscriptions enable row level security;
 alter table public.capability_grants enable row level security;
 alter table public.capability_usage enable row level security;
 alter table public.account_credits enable row level security;
+alter table public.credit_report_eligibility enable row level security;
+alter table public.subscription_paid_invoices enable row level security;
 
 revoke all on public.commerce_plans, public.plan_capabilities, public.billing_customers,
   public.account_subscriptions, public.capability_grants, public.capability_usage,
-  public.account_credits from public, anon, authenticated;
-grant select on public.commerce_plans, public.plan_capabilities to anon, authenticated;
+  public.account_credits, public.report_prices, public.credit_report_eligibility,
+  public.subscription_paid_invoices from public, anon, authenticated;
+grant select on public.commerce_plans, public.plan_capabilities, public.report_prices
+to anon, authenticated;
 
 create policy commerce_plans_select_active on public.commerce_plans
 for select to anon, authenticated using (active);
@@ -143,6 +188,8 @@ for select to anon, authenticated using (
     where p.plan_key = plan_capabilities.plan_key and p.active
   )
 );
+create policy report_prices_select_active on public.report_prices
+for select to anon, authenticated using (active);
 
 insert into public.commerce_plans(
   plan_key, name, rank, active, stripe_product_id, stripe_price_id,
@@ -150,8 +197,8 @@ insert into public.commerce_plans(
 )
 values
   ('free', 'Free', 0, true, null, null, null, 0, null),
-  ('personal', 'Personal', 10, false, 'prod_V1c4EeWPK7MDoI', 'price_1U1YqGLq4GnupuQQH6QoGmMg', 'usd', 999, 'month'),
-  ('premium', 'Premium', 20, false, 'prod_V1c4PNfI7z4O49', 'price_1U1YqSLq4GnupuQQp8LxuEdG', 'usd', 1999, 'month');
+  ('personal', 'Personal', 10, false, 'prod_V1mGzJYIyklaXH', 'price_1U1ii4Lq4GnupuQQly91BydM', 'usd', 999, 'month'),
+  ('premium', 'Premium', 20, false, 'prod_V1mG2ikID4WWAV', 'price_1U1ihsLq4GnupuQQWdv4sdCg', 'usd', 1999, 'month');
 
 insert into public.plan_capabilities(plan_key, capability_key, allowance, period) values
   ('free', 'birth_profiles.saved', 1, 'none'),
@@ -166,6 +213,22 @@ insert into public.plan_capabilities(plan_key, capability_key, allowance, period
   ('premium', 'weekly_reading.primary', null, 'none'),
   ('premium', 'report.discount_percent', 20, 'none'),
   ('premium', 'report.standard_credit', 1, 'quarter');
+
+insert into public.report_prices(
+  report_type, plan_key, stripe_price_id, currency, unit_amount, active, catalog_version
+) values
+  ('recovery_reflection', 'free', 'price_1U1iiCLq4GnupuQQMRwT9cDT', 'usd', 500, false, 1),
+  ('recovery_reflection', 'personal', 'price_1U1iiCLq4GnupuQQSai1Gjy4', 'usd', 450, false, 1),
+  ('recovery_reflection', 'premium', 'price_1U1iiCLq4GnupuQQlSJzplCn', 'usd', 400, false, 1),
+  ('career_purpose', 'free', 'price_1U1iiKLq4GnupuQQ6EqcnPDK', 'usd', 1500, false, 1),
+  ('career_purpose', 'personal', 'price_1U1iiKLq4GnupuQQ956LN1AZ', 'usd', 1350, false, 1),
+  ('career_purpose', 'premium', 'price_1U1iiKLq4GnupuQQtk88MZ7B', 'usd', 1200, false, 1);
+
+insert into public.credit_report_eligibility(
+  credit_key, report_type, max_standard_amount, currency
+) values
+  ('report.standard', 'recovery_reflection', 1500, 'usd'),
+  ('report.standard', 'career_purpose', 1500, 'usd');
 
 create or replace function public.consume_capability(
   p_user_id uuid,
@@ -195,6 +258,15 @@ begin
     return 'duplicate';
   end if;
 
+  if exists (
+    select 1 from public.admin_roles
+    where user_id = p_user_id and role = 'site_admin'
+  ) then
+    insert into public.capability_usage(user_id, capability_key, quantity, period_start, period_end, idempotency_key, source_reference)
+    values (p_user_id, p_capability_key, p_quantity, p_period_start, p_period_end, p_idempotency_key, p_source_reference);
+    return 'consumed';
+  end if;
+
   perform pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_capability_key || ':' || p_period_start::text, 0));
 
   select s.plan_key into v_plan_key
@@ -216,7 +288,9 @@ begin
   where g.user_id = p_user_id and g.capability_key = p_capability_key and g.status = 'active'
     and g.starts_at <= now() and (g.ends_at is null or g.ends_at > now());
 
-  if not v_plan_has_capability and not v_has_grant then return 'denied'; end if;
+  if not coalesce(v_plan_has_capability, false) and not coalesce(v_has_grant, false) then
+    return 'denied';
+  end if;
   if (v_plan_has_capability and v_allowance is null) or v_unlimited_grant then v_allowance := null;
   elsif v_grant_allowance is not null then v_allowance := greatest(coalesce(v_allowance, 0), v_grant_allowance);
   end if;
@@ -331,6 +405,166 @@ grant execute on function public.process_subscription_event(
   text, text, bigint, uuid, text, text, text, text, timestamptz, timestamptz, boolean, timestamptz
 ) to service_role;
 
+create or replace function public.record_paid_subscription_invoice(
+  p_stripe_invoice_id text,
+  p_stripe_payment_intent_id text,
+  p_stripe_subscription_id text,
+  p_user_id uuid,
+  p_paid_at timestamptz
+)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_paid_periods integer;
+begin
+  perform pg_advisory_xact_lock(hashtextextended('paid-invoice:' || p_stripe_subscription_id, 0));
+
+  if exists (
+    select 1 from public.subscription_paid_invoices
+    where stripe_invoice_id = p_stripe_invoice_id
+  ) then return 'duplicate'; end if;
+
+  if not exists (
+    select 1 from public.account_subscriptions
+    where stripe_subscription_id = p_stripe_subscription_id
+      and user_id = p_user_id
+      and plan_key = 'premium'
+      and status in ('active','trialing')
+  ) then return 'ineligible'; end if;
+
+  insert into public.subscription_paid_invoices(
+    stripe_invoice_id, stripe_payment_intent_id, stripe_subscription_id, user_id, paid_at
+  ) values (
+    p_stripe_invoice_id, p_stripe_payment_intent_id, p_stripe_subscription_id, p_user_id, p_paid_at
+  );
+
+  select count(*)::integer into v_paid_periods
+  from public.subscription_paid_invoices
+  where stripe_subscription_id = p_stripe_subscription_id
+    and reversed_at is null;
+
+  if v_paid_periods % 3 = 0 then
+    insert into public.account_credits(
+      user_id, credit_key, quantity_total, quantity_remaining, source_type,
+      source_reference, granted_at, expires_at
+    ) values (
+      p_user_id, 'report.standard', 1, 1, 'subscription',
+      p_stripe_invoice_id, p_paid_at, p_paid_at + interval '12 months'
+    );
+    return 'credit_granted';
+  end if;
+  return 'recorded';
+end;
+$$;
+
+revoke all on function public.record_paid_subscription_invoice(text, text, text, uuid, timestamptz)
+from public, anon, authenticated;
+grant execute on function public.record_paid_subscription_invoice(text, text, text, uuid, timestamptz)
+to service_role;
+
+create or replace function public.reverse_paid_subscription_invoice(
+  p_stripe_payment_intent_id text,
+  p_reversed_at timestamptz
+)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_invoice_id text;
+  v_reversed_at timestamptz;
+begin
+  select stripe_invoice_id, reversed_at into v_invoice_id, v_reversed_at
+  from public.subscription_paid_invoices
+  where stripe_payment_intent_id = p_stripe_payment_intent_id
+  for update;
+  if not found then return 'not_subscription_invoice'; end if;
+  if v_reversed_at is not null then return 'duplicate'; end if;
+
+  update public.subscription_paid_invoices
+  set reversed_at = coalesce(reversed_at, p_reversed_at)
+  where stripe_invoice_id = v_invoice_id;
+  update public.account_credits
+  set quantity_remaining = 0
+  where source_type = 'subscription'
+    and source_reference = v_invoice_id
+    and quantity_remaining = quantity_total;
+  return 'reversed';
+end;
+$$;
+
+revoke all on function public.reverse_paid_subscription_invoice(text, timestamptz)
+from public, anon, authenticated;
+grant execute on function public.reverse_paid_subscription_invoice(text, timestamptz)
+to service_role;
+
+create or replace function public.redeem_report_credit(
+  p_user_id uuid,
+  p_report_type text,
+  p_idempotency_key text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_credit public.account_credits%rowtype;
+  v_order_id uuid;
+  v_entitlement_id uuid;
+begin
+  perform pg_advisory_xact_lock(hashtextextended('report-credit:' || p_user_id::text, 0));
+
+  select e.id into v_entitlement_id
+  from public.orders o
+  join public.entitlements e on e.order_id = o.id
+  where o.user_id = p_user_id and o.idempotency_key = p_idempotency_key;
+  if v_entitlement_id is not null then return v_entitlement_id; end if;
+
+  select c.* into v_credit
+  from public.account_credits c
+  join public.credit_report_eligibility e on e.credit_key = c.credit_key
+  join public.report_prices rp
+    on rp.report_type = e.report_type and rp.plan_key = 'free' and rp.catalog_version = 1
+  where c.user_id = p_user_id
+    and c.quantity_remaining > 0
+    and (c.expires_at is null or c.expires_at > now())
+    and e.report_type = p_report_type
+    and rp.unit_amount <= e.max_standard_amount
+    and rp.currency = e.currency
+  order by c.expires_at asc nulls last, c.granted_at asc
+  limit 1
+  for update of c;
+  if not found then raise exception using errcode = 'P0001', message = 'REPORT_CREDIT_UNAVAILABLE'; end if;
+
+  update public.account_credits
+  set quantity_remaining = quantity_remaining - 1
+  where id = v_credit.id;
+
+  insert into public.orders(
+    user_id, report_type, status, idempotency_key, amount_total, currency,
+    pricing_plan_key, credit_id
+  ) values (
+    p_user_id, p_report_type, 'paid', p_idempotency_key, 0, 'usd',
+    'premium', v_credit.id
+  ) returning id into v_order_id;
+
+  insert into public.entitlements(user_id, order_id, report_type)
+  values (p_user_id, v_order_id, p_report_type)
+  returning id into v_entitlement_id;
+  return v_entitlement_id;
+end;
+$$;
+
+revoke all on function public.redeem_report_credit(uuid, text, text)
+from public, anon, authenticated;
+grant execute on function public.redeem_report_credit(uuid, text, text)
+to service_role;
+
 comment on table public.billing_customers is 'Minimal Stripe customer mapping. Never expose provider IDs to browser clients.';
 comment on table public.account_subscriptions is 'Normalized webhook-authoritative subscription state.';
 comment on table public.capability_usage is 'Atomic, idempotent capability allowance consumption without private content.';
@@ -338,3 +572,9 @@ comment on function public.consume_capability(uuid, text, integer, timestamptz, 
 is 'Service-role-only atomic capability consumption. Unknown capabilities deny by default.';
 comment on function public.process_subscription_event(text, text, bigint, uuid, text, text, text, text, timestamptz, timestamptz, boolean, timestamptz)
 is 'Service-role-only idempotent and out-of-order-safe Stripe subscription normalization.';
+comment on function public.record_paid_subscription_invoice(text, text, text, uuid, timestamptz)
+is 'Service-role-only idempotent Premium paid-period ledger and quarterly report-credit issuer.';
+comment on function public.reverse_paid_subscription_invoice(text, timestamptz)
+is 'Service-role-only paid-period reversal for fully refunded subscription payments; revokes an unused issued credit.';
+comment on function public.redeem_report_credit(uuid, text, text)
+is 'Service-role-only atomic report-credit redemption into a purchased report entitlement.';

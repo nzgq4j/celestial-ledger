@@ -3,12 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export function CheckoutButton({ reportType }: { reportType: string }) {
+export function CheckoutButton({
+  reportType,
+  priceLabel,
+  creditAvailable = false,
+}: {
+  reportType: string;
+  priceLabel?: string;
+  creditAvailable?: boolean;
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [actionUrl, setActionUrl] = useState("");
 
-  async function checkout() {
+  async function checkout(useCredit = false) {
     setBusy(true);
     setError("");
     setActionUrl("");
@@ -16,9 +24,18 @@ export function CheckoutButton({ reportType }: { reportType: string }) {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reportType }),
+        body: JSON.stringify({
+          reportType,
+          ...(useCredit
+            ? { useCredit: true, idempotencyKey: crypto.randomUUID() }
+            : {}),
+        }),
       });
       const payload = await response.json();
+      if (response.ok && payload.usedCredit && payload.actionUrl) {
+        window.location.assign(payload.actionUrl);
+        return;
+      }
       if (!response.ok || typeof payload.url !== "string") {
         if (typeof payload.actionUrl === "string")
           setActionUrl(payload.actionUrl);
@@ -37,14 +54,28 @@ export function CheckoutButton({ reportType }: { reportType: string }) {
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={checkout}
-        disabled={busy}
-        className="rounded-lg bg-[#c9a75d] px-4 py-2 font-semibold text-[#07111f]"
-      >
-        {busy ? "Opening Stripe…" : "Purchase"}
-      </button>
+      <div className="checkout-actions">
+        <button
+          type="button"
+          onClick={() => checkout(false)}
+          disabled={busy}
+          className="button-primary"
+        >
+          {busy
+            ? "Opening Stripe…"
+            : `Purchase${priceLabel ? ` · ${priceLabel}` : ""}`}
+        </button>
+        {creditAvailable && (
+          <button
+            type="button"
+            onClick={() => checkout(true)}
+            disabled={busy}
+            className="button-quiet"
+          >
+            Use report credit
+          </button>
+        )}
+      </div>
       {error && (
         <div role="alert" className="checkout-guidance">
           <p>{error}</p>

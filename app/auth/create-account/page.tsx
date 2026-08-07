@@ -1,12 +1,14 @@
-import { isDemoMode } from "@/lib/supabase/config";
+import Link from "next/link";
 import { AuthForm } from "@/components/AuthForm";
 import { GoogleAuthForm } from "@/components/GoogleAuthForm";
-import Link from "next/link";
+import { isDemoMode } from "@/lib/supabase/config";
 import { privatePageMetadata } from "@/lib/seo";
 
-export const metadata = privatePageMetadata("Sign in — Celestial Atlas");
+export const metadata = privatePageMetadata(
+  "Create an account — Celestial Atlas",
+);
 
-export default async function LoginPage({
+export default async function CreateAccountPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
@@ -19,26 +21,23 @@ export default async function LoginPage({
         <p className="gold text-xs uppercase tracking-[.22em]">
           Celestial Atlas
         </p>
-        <h1 className="mt-2 text-3xl font-semibold">Sign in</h1>
+        <h1 className="mt-2 text-3xl font-semibold">Create your account</h1>
         <p className="mt-3 text-[#b9b2a3]">
-          Sign in with a verified email and password to manage saved birth
-          profiles and reports.
+          Keep your natal charts and readings in a private, verified account.
         </p>
         {demoMode ? (
           <p className="mt-4 rounded-lg border border-[#536177] bg-[#081524] p-3">
-            Preview demo mode is active. Authentication and production data
-            access are disabled.
+            Preview demo mode is active. Account creation is disabled.
           </p>
         ) : error ? (
           <p
             role="alert"
             className="mt-4 rounded-lg border border-[#8b5b53] bg-[#2b1718] p-3"
           >
-            Authentication could not be completed. Check your details and try
-            again.
+            Your account could not be created. Check your details and try again.
           </p>
         ) : null}
-        <GoogleAuthForm mode="login" disabled={demoMode} />
+        <GoogleAuthForm mode="create" disabled={demoMode} />
         <div className="my-6 flex items-center gap-3" aria-hidden="true">
           <span className="h-px flex-1 bg-[#2c394c]" />
           <span className="text-xs uppercase tracking-[.18em] text-[#8f98a6]">
@@ -46,18 +45,13 @@ export default async function LoginPage({
           </span>
           <span className="h-px flex-1 bg-[#2c394c]" />
         </div>
-        <AuthForm mode="login" disabled={demoMode} />
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
-          <Link className="gold underline" href="/auth/forgot-password">
-            Forgot your password?
+        <AuthForm mode="create" disabled={demoMode} />
+        <p className="mt-5 text-sm text-[#b9b2a3]">
+          Already have an account?{" "}
+          <Link className="gold underline" href="/auth/login">
+            Sign in
           </Link>
-          <Link
-            className="rounded-lg border border-[#536177] px-4 py-2 font-semibold text-[#f1e5cd]"
-            href="/auth/create-account"
-          >
-            Create an account
-          </Link>
-        </div>
+        </p>
       </section>
     </main>
   );

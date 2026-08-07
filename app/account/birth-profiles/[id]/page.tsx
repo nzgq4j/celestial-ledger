@@ -4,6 +4,7 @@ import { z } from "zod";
 import { NatalChartWheel } from "@/components/NatalChartWheel";
 import { createClient } from "@/lib/supabase/server";
 import type { NatalChart } from "@/lib/types";
+import { NatalInterpretation } from "@/components/NatalInterpretation";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -27,7 +28,9 @@ export default async function BirthProfilePage({
 
   const { data: profile } = await supabase
     .from("birth_profiles")
-    .select("id,label,display_name,expires_at,chart")
+    .select(
+      "id,label,display_name,expires_at,chart,natal_reading,natal_reading_model_version,natal_reading_prompt_version,natal_reading_generated_at",
+    )
     .eq("id", parsedId.data)
     .maybeSingle();
   if (!profile?.chart) notFound();
@@ -45,6 +48,22 @@ export default async function BirthProfilePage({
         </small>
       </header>
       <NatalChartWheel chart={chart} />
+      {profile.natal_reading && (
+        <section className="panel p-5 mt-6">
+          <p className="eyebrow">Saved natal reading</p>
+          <div className="prose mt-4">
+            <NatalInterpretation text={profile.natal_reading} />
+          </div>
+          {profile.natal_reading_generated_at && (
+            <small>
+              Generated{" "}
+              {new Date(profile.natal_reading_generated_at).toLocaleDateString(
+                "en-GB",
+              )}
+            </small>
+          )}
+        </section>
+      )}
       <div className="mt-6">
         <Link className="button-quiet" href="/account">
           Return to My Celestial Atlas

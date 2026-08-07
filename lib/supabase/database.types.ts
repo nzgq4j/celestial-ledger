@@ -219,6 +219,10 @@ export type Database = {
           label: string;
           latitude: number;
           longitude: number;
+          natal_reading: string | null;
+          natal_reading_generated_at: string | null;
+          natal_reading_model_version: string | null;
+          natal_reading_prompt_version: string | null;
           region: string | null;
           time_unknown: boolean;
           time_zone: string;
@@ -240,6 +244,10 @@ export type Database = {
           label: string;
           latitude: number;
           longitude: number;
+          natal_reading?: string | null;
+          natal_reading_generated_at?: string | null;
+          natal_reading_model_version?: string | null;
+          natal_reading_prompt_version?: string | null;
           region?: string | null;
           time_unknown?: boolean;
           time_zone: string;
@@ -261,6 +269,10 @@ export type Database = {
           label?: string;
           latitude?: number;
           longitude?: number;
+          natal_reading?: string | null;
+          natal_reading_generated_at?: string | null;
+          natal_reading_model_version?: string | null;
+          natal_reading_prompt_version?: string | null;
           region?: string | null;
           time_unknown?: boolean;
           time_zone?: string;
@@ -397,6 +409,78 @@ export type Database = {
         };
         Relationships: [];
       };
+      plan_capabilities: {
+        Row: {
+          allowance: number | null;
+          capability_key: string;
+          configuration: Json;
+          period: string;
+          plan_key: string;
+        };
+        Insert: {
+          allowance?: number | null;
+          capability_key: string;
+          configuration?: Json;
+          period: string;
+          plan_key: string;
+        };
+        Update: {
+          allowance?: number | null;
+          capability_key?: string;
+          configuration?: Json;
+          period?: string;
+          plan_key?: string;
+        };
+        Relationships: [];
+      };
+      capability_grants: {
+        Row: {
+          allowance: number | null;
+          capability_key: string;
+          created_at: string;
+          ends_at: string | null;
+          id: string;
+          period: string;
+          priority: number;
+          source_reference: string | null;
+          source_type: string;
+          starts_at: string;
+          status: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          allowance?: number | null;
+          capability_key: string;
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          period: string;
+          priority?: number;
+          source_reference?: string | null;
+          source_type: string;
+          starts_at?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          allowance?: number | null;
+          capability_key?: string;
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          period?: string;
+          priority?: number;
+          source_reference?: string | null;
+          source_type?: string;
+          starts_at?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       billing_customers: {
         Row: {
           created_at: string;
@@ -464,6 +548,84 @@ export type Database = {
           plan_key?: string;
           status?: string;
           stripe_subscription_id?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      report_prices: {
+        Row: {
+          active: boolean;
+          catalog_version: number;
+          created_at: string;
+          currency: string;
+          plan_key: string;
+          report_type: string;
+          stripe_price_id: string;
+          unit_amount: number;
+          updated_at: string;
+        };
+        Insert: {
+          active?: boolean;
+          catalog_version?: number;
+          created_at?: string;
+          currency: string;
+          plan_key: string;
+          report_type: string;
+          stripe_price_id: string;
+          unit_amount: number;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          catalog_version?: number;
+          created_at?: string;
+          currency?: string;
+          plan_key?: string;
+          report_type?: string;
+          stripe_price_id?: string;
+          unit_amount?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      account_credits: {
+        Row: {
+          created_at: string;
+          credit_key: string;
+          expires_at: string | null;
+          granted_at: string;
+          id: string;
+          quantity_remaining: number;
+          quantity_total: number;
+          source_reference: string | null;
+          source_type: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          credit_key: string;
+          expires_at?: string | null;
+          granted_at?: string;
+          id?: string;
+          quantity_remaining: number;
+          quantity_total: number;
+          source_reference?: string | null;
+          source_type: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          credit_key?: string;
+          expires_at?: string | null;
+          granted_at?: string;
+          id?: string;
+          quantity_remaining?: number;
+          quantity_total?: number;
+          source_reference?: string | null;
+          source_type?: string;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -565,40 +727,49 @@ export type Database = {
       orders: {
         Row: {
           amount_total: number | null;
+          credit_id: string | null;
           created_at: string;
           currency: string | null;
           id: string;
           idempotency_key: string;
+          pricing_plan_key: string | null;
           report_type: string;
           status: string;
           stripe_checkout_session_id: string | null;
           stripe_payment_intent_id: string | null;
+          stripe_price_id: string | null;
           updated_at: string;
           user_id: string | null;
         };
         Insert: {
           amount_total?: number | null;
+          credit_id?: string | null;
           created_at?: string;
           currency?: string | null;
           id?: string;
           idempotency_key: string;
+          pricing_plan_key?: string | null;
           report_type: string;
           status?: string;
           stripe_checkout_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
+          stripe_price_id?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
         Update: {
           amount_total?: number | null;
+          credit_id?: string | null;
           created_at?: string;
           currency?: string | null;
           id?: string;
           idempotency_key?: string;
+          pricing_plan_key?: string | null;
           report_type?: string;
           status?: string;
           stripe_checkout_session_id?: string | null;
           stripe_payment_intent_id?: string | null;
+          stripe_price_id?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -926,6 +1097,31 @@ export type Database = {
           p_status: string;
           p_stripe_customer_id: string;
           p_stripe_subscription_id: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
+      record_paid_subscription_invoice: {
+        Args: {
+          p_paid_at: string;
+          p_stripe_invoice_id: string;
+          p_stripe_payment_intent_id: string;
+          p_stripe_subscription_id: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
+      reverse_paid_subscription_invoice: {
+        Args: {
+          p_reversed_at: string;
+          p_stripe_payment_intent_id: string;
+        };
+        Returns: string;
+      };
+      redeem_report_credit: {
+        Args: {
+          p_idempotency_key: string;
+          p_report_type: string;
           p_user_id: string;
         };
         Returns: string;

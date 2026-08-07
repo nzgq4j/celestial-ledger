@@ -10,6 +10,8 @@ import {
   PRIVATE_RESPONSE_HEADERS,
   readLimitedJson,
 } from "@/lib/api-security";
+import { commerceFlags } from "@/lib/commerce/flags";
+import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,12 +22,20 @@ const schema = z
       "recovery_reflection",
       "future_trends",
     ]),
+    useCredit: z.boolean().optional(),
+    idempotencyKey: z.string().uuid().optional(),
   })
   .strict();
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
 export async function POST(request: Request) {
+  const flags = commerceFlags();
+  if (!flags.checkout)
+    return json(
+      { error: "Report purchases are not currently available." },
+      403,
+    );
   if (isDemoMode())
     return json({ error: "Checkout is disabled in preview demo mode." }, 403);
   if (!isSameOrigin(request))
@@ -37,7 +47,11 @@ export async function POST(request: Request) {
     return json({ error: "Sign in before purchasing a report." }, 401);
 
   try {
-    const { reportType } = schema.parse(await readLimitedJson(request, 1_024));
+    const {
+      reportType,
+      useCredit,
+      idempotencyKey: creditIdempotencyKey,
+    } = schema.parse(await readLimitedJson(request, 1_024));
     if (
       !(["career_purpose", "recovery_reflection"] as const).includes(
         reportType as "career_purpose" | "recovery_reflection",
@@ -48,6 +62,7 @@ export async function POST(request: Request) {
         409,
       );
     const admin = createAdminClient();
+    const planKey = await effectivePlanKeyForUser(userId);
     const { count: birthProfileCount } = await admin
       .from("birth_profiles")
       .select("id", { count: "exact", head: true })
@@ -62,16 +77,47 @@ export async function POST(request: Request) {
         },
         409,
       );
-    const { data: product } = await admin
-      .from("products")
-      .select("report_type, stripe_price_id, unit_amount, currency, active")
-      .eq("report_type", reportType)
-      .single();
+    if (useCredit) {
+      if (!creditIdempotencyKey)
+        return json({ error: "A credit redemption key is required." }, 422);
+      const { data: entitlementId, error: creditError } = await admin.rpc(
+        "redeem_report_credit",
+        {
+          p_user_id: userId,
+          p_report_type: reportType,
+          p_idempotency_key: creditIdempotencyKey,
+        },
+      );
+      if (creditError || !entitlementId)
+        return json({ error: "No eligible report credit is available." }, 409);
+      return json({
+        entitlementId,
+        usedCredit: true,
+        actionUrl: "/account#reports",
+      });
+    }
+
+    const [{ data: product }, { data: price }] = await Promise.all([
+      admin
+        .from("products")
+        .select("report_type,active")
+        .eq("report_type", reportType)
+        .single(),
+      admin
+        .from("report_prices")
+        .select("stripe_price_id,unit_amount,currency,active,catalog_version")
+        .eq("report_type", reportType)
+        .eq("plan_key", planKey)
+        .eq("active", true)
+        .order("catalog_version", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
     if (
       !product?.active ||
-      !product.stripe_price_id ||
-      product.unit_amount === null ||
-      !product.currency
+      !price?.active ||
+      !price.stripe_price_id ||
+      !price.currency
     )
       return json(
         { error: "This report is not currently available for purchase." },
@@ -84,7 +130,7 @@ export async function POST(request: Request) {
 
     const { data: pendingOrder } = await admin
       .from("orders")
-      .select("id, stripe_checkout_session_id")
+      .select("id,stripe_checkout_session_id,stripe_price_id")
       .eq("user_id", userId)
       .eq("report_type", reportType)
       .eq("status", "pending")
@@ -95,14 +141,28 @@ export async function POST(request: Request) {
       const existingSession = await stripeClient().checkout.sessions.retrieve(
         pendingOrder.stripe_checkout_session_id,
       );
-      if (existingSession.status === "open" && existingSession.url)
+      if (
+        pendingOrder.stripe_price_id === price.stripe_price_id &&
+        existingSession.status === "open" &&
+        existingSession.url
+      )
         return json({ url: existingSession.url, reused: true });
-      if (existingSession.status === "expired")
-        await admin
-          .from("orders")
-          .update({ status: "expired" })
-          .eq("id", pendingOrder.id)
-          .eq("status", "pending");
+      if (existingSession.status === "open")
+        await stripeClient().checkout.sessions.expire(existingSession.id);
+      await admin
+        .from("orders")
+        .update({ status: "expired" })
+        .eq("id", pendingOrder.id)
+        .eq("status", "pending");
+    } else if (pendingOrder) {
+      // A prior request can fail between creating the local order and attaching
+      // its Stripe session. Release the one-pending-order constraint so retrying
+      // Checkout is safe and deterministic.
+      await admin
+        .from("orders")
+        .update({ status: "failed" })
+        .eq("id", pendingOrder.id)
+        .eq("status", "pending");
     }
 
     const idempotencyKey = randomUUID();
@@ -112,8 +172,10 @@ export async function POST(request: Request) {
         user_id: userId,
         report_type: reportType,
         idempotency_key: idempotencyKey,
-        amount_total: product.unit_amount,
-        currency: product.currency,
+        amount_total: price.unit_amount,
+        currency: price.currency,
+        stripe_price_id: price.stripe_price_id,
+        pricing_plan_key: planKey,
       })
       .select("id")
       .single();
@@ -126,14 +188,17 @@ export async function POST(request: Request) {
         order_id: order.id,
         user_id: userId,
         report_type: reportType,
+        pricing_plan_key: planKey,
+        catalog_version: String(price.catalog_version),
       };
       const session = await stripeClient().checkout.sessions.create(
         {
           mode: "payment",
-          line_items: [{ price: product.stripe_price_id, quantity: 1 }],
+          line_items: [{ price: price.stripe_price_id, quantity: 1 }],
           client_reference_id: order.id,
           metadata,
           payment_intent_data: { metadata },
+          automatic_tax: { enabled: flags.automaticTax },
           success_url: `${appUrl}/account?checkout=return`,
           cancel_url: `${appUrl}/account?checkout=cancelled`,
         },

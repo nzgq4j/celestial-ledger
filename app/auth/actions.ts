@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/supabase/config";
 
-function credentials(formData: FormData) {
+function credentials(formData: FormData, errorPath: string) {
   const email = formData.get("email");
   const password = formData.get("password");
   if (typeof email !== "string" || typeof password !== "string") {
-    redirect("/auth/login?error=invalid_credentials");
+    redirect(`${errorPath}?error=invalid_credentials`);
   }
   return { email: email.trim(), password };
 }
@@ -22,8 +22,8 @@ function canonicalAppUrl() {
   return "https://www.celestialatlas.app";
 }
 
-export async function signInWithGoogle() {
-  if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
+async function continueWithGoogle(errorPath: string) {
+  if (isDemoMode()) redirect(`${errorPath}?error=preview_disabled`);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -31,37 +31,41 @@ export async function signInWithGoogle() {
       redirectTo: `${canonicalAppUrl()}/auth/callback`,
     },
   });
-  if (error || !data.url) redirect("/auth/login?error=oauth_failed");
+  if (error || !data.url) redirect(`${errorPath}?error=oauth_failed`);
   redirect(data.url);
+}
+
+export async function signInWithGoogle() {
+  return continueWithGoogle("/auth/login");
+}
+
+export async function createAccountWithGoogle() {
+  return continueWithGoogle("/auth/create-account");
 }
 
 export async function signIn(formData: FormData) {
   if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(
-    credentials(formData),
+    credentials(formData, "/auth/login"),
   );
   if (error) redirect("/auth/login?error=sign_in_failed");
   redirect("/account");
 }
 
 export async function signUp(formData: FormData) {
-  if (isDemoMode()) redirect("/auth/login?error=preview_disabled");
+  if (isDemoMode()) redirect("/auth/create-account?error=preview_disabled");
   const supabase = await createClient();
-  const signupCredentials = credentials(formData);
+  const signupCredentials = credentials(formData, "/auth/create-account");
   if (signupCredentials.password.length < 12)
-    redirect("/auth/login?error=weak_password");
-  const displayName = formData.get("display_name");
-  const normalizedName =
-    typeof displayName === "string" ? displayName.trim().slice(0, 50) : "";
+    redirect("/auth/create-account?error=weak_password");
   const { error } = await supabase.auth.signUp({
     ...signupCredentials,
     options: {
       emailRedirectTo: canonicalAppUrl(),
-      data: normalizedName.length >= 2 ? { display_name: normalizedName } : {},
     },
   });
-  if (error) redirect("/auth/login?error=sign_up_failed");
+  if (error) redirect("/auth/create-account?error=sign_up_failed");
   redirect("/auth/check-email");
 }
 

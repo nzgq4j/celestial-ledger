@@ -84,7 +84,6 @@ export async function POST(request: Request) {
     metadata,
     subscription_data: { metadata },
     automatic_tax: { enabled: flags.automaticTax },
-    allow_promotion_codes: true,
     success_url: `${appUrl}/account?checkout=subscription_return`,
     cancel_url: `${appUrl}/membership?checkout=cancelled`,
   });

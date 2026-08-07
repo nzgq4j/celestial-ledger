@@ -12,6 +12,8 @@ import { isLocaleTag } from "@/lib/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { commerceFlags } from "@/lib/commerce/flags";
 import { BillingPortalButton } from "@/components/BillingPortalButton";
+import { CheckoutButton } from "@/components/CheckoutButton";
+import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -127,6 +129,32 @@ export default async function AccountPage({
           .maybeSingle()
       ).data
     : null;
+  const commercePlanKey = commerce.checkout
+    ? await effectivePlanKeyForUser(authData.user.id)
+    : "free";
+  const [{ data: reportPrices }, { data: reportCredits }] = commerce.checkout
+    ? await Promise.all([
+        adminClient
+          .from("report_prices")
+          .select("report_type,unit_amount,currency")
+          .eq("plan_key", commercePlanKey)
+          .eq("active", true)
+          .order("catalog_version", { ascending: false }),
+        adminClient
+          .from("account_credits")
+          .select("quantity_remaining,expires_at")
+          .eq("user_id", authData.user.id)
+          .eq("credit_key", "report.standard")
+          .gt("quantity_remaining", 0),
+      ])
+    : [{ data: [] }, { data: [] }];
+  const availableReportCredits = (reportCredits ?? []).reduce(
+    (total, credit) =>
+      !credit.expires_at || new Date(credit.expires_at) > new Date()
+        ? total + credit.quantity_remaining
+        : total,
+    0,
+  );
   const latestReport = reports[0];
   const nextStep = readyEntitlements.length
     ? {
@@ -335,16 +363,37 @@ export default async function AccountPage({
                   </p>
                 </div>
                 <div className="compact-products__action compact-products__action--complimentary">
-                  <strong>{copy.complimentary}</strong>
-                  {birthProfiles.length ? (
-                    <GenerateReportButton
-                      reportType={product.report_type}
-                      profiles={birthProfiles.map((item) => ({
-                        id: item.id,
-                        label: item.label,
-                      }))}
-                      defaultLocale={reportLocale}
-                    />
+                  {commerce.checkout && birthProfiles.length ? (
+                    (() => {
+                      const price = reportPrices?.find(
+                        (candidate) =>
+                          candidate.report_type === product.report_type,
+                      );
+                      return price ? (
+                        <CheckoutButton
+                          reportType={product.report_type}
+                          priceLabel={new Intl.NumberFormat(pack.tag, {
+                            style: "currency",
+                            currency: price.currency.toUpperCase(),
+                          }).format(price.unit_amount / 100)}
+                          creditAvailable={availableReportCredits > 0}
+                        />
+                      ) : (
+                        <strong>Currently unavailable</strong>
+                      );
+                    })()
+                  ) : birthProfiles.length ? (
+                    <>
+                      <strong>{copy.complimentary}</strong>
+                      <GenerateReportButton
+                        reportType={product.report_type}
+                        profiles={birthProfiles.map((item) => ({
+                          id: item.id,
+                          label: item.label,
+                        }))}
+                        defaultLocale={reportLocale}
+                      />
+                    </>
                   ) : (
                     <Link href="/#chart" className="button-primary">
                       {copy.createNatalChart}

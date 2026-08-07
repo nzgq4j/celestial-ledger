@@ -12,9 +12,24 @@ import {
 import { HistoricalTimeError } from "@/lib/time";
 import { z } from "zod";
 import { getConfiguredModel } from "@/lib/admin/settings";
+import { createClient } from "@/lib/supabase/server";
+import type { Json } from "@/lib/supabase/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const NATAL_INTERPRETATION_PROMPT_VERSION = "natal-interpretation-1";
+
+const requestSchema = z
+  .object({
+    birthInput: chartRequestSchema.shape.birthInput,
+    saveToAccount: z.boolean().optional(),
+    label: z.string().trim().min(1).max(80).optional(),
+  })
+  .strict()
+  .refine((input) => !input.saveToAccount || input.label, {
+    message: "A label is required when saving a chart.",
+    path: ["label"],
+  });
 
 function extractResponseText(response: unknown): string {
   if (!response || typeof response !== "object") return "";
@@ -65,9 +80,14 @@ export async function POST(request: Request) {
       { status: 503 },
     );
   let chart;
+  let saveToAccount = false;
+  let label: string | undefined;
   try {
     const body = await readLimitedJson(request, CHART_REQUEST_MAX_BYTES);
-    const { birthInput } = chartRequestSchema.parse(body);
+    const parsed = requestSchema.parse(body);
+    const { birthInput } = parsed;
+    saveToAccount = parsed.saveToAccount ?? false;
+    label = parsed.label;
     chart = await calculateNatalChart(birthInput);
   } catch (error) {
     if (error instanceof RequestPayloadError)
@@ -145,8 +165,9 @@ Formatting requirements:
 
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const model = await getConfiguredModel("interpretation");
     const response = await client.responses.create({
-      model: await getConfiguredModel("interpretation"),
+      model,
       instructions,
       input: JSON.stringify({
         displayInformation: display,
@@ -163,8 +184,53 @@ Formatting requirements:
         },
         { status: 502, headers: { "Cache-Control": "private, no-store" } },
       );
+    let birthProfile: { id: string } | null = null;
+    if (saveToAccount && label) {
+      const supabase = await createClient();
+      const { data: auth } = await supabase.auth.getClaims();
+      const userId = auth?.claims?.sub;
+      if (typeof userId !== "string")
+        return Response.json(
+          { error: "Sign in to save this natal reading." },
+          { status: 401, headers: { "Cache-Control": "private, no-store" } },
+        );
+      const { data: saved, error: saveError } = await supabase
+        .from("birth_profiles")
+        .insert({
+          user_id: userId,
+          label,
+          birth_date: chart.input.date,
+          birth_time: chart.input.time ?? null,
+          time_unknown: chart.input.timeUnknown,
+          disambiguation: chart.input.disambiguation ?? null,
+          city: chart.input.place.city,
+          region: chart.input.place.region ?? null,
+          country: chart.input.place.country,
+          display_name: chart.input.place.displayName,
+          latitude: chart.input.place.latitude,
+          longitude: chart.input.place.longitude,
+          time_zone: chart.input.place.timeZone,
+          chart: chart as unknown as Json,
+          calculation_version: chart.calculation.calculationVersion,
+          natal_reading: interpretation,
+          natal_reading_model_version: model,
+          natal_reading_prompt_version: NATAL_INTERPRETATION_PROMPT_VERSION,
+          natal_reading_generated_at: new Date().toISOString(),
+        })
+        .select("id")
+        .single();
+      if (saveError || !saved)
+        return Response.json(
+          {
+            error:
+              "The reading was generated but could not be saved to your account.",
+          },
+          { status: 500, headers: { "Cache-Control": "private, no-store" } },
+        );
+      birthProfile = saved;
+    }
     return Response.json(
-      { interpretation },
+      { interpretation, birthProfile },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (error: any) {

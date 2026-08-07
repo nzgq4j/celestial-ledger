@@ -7,6 +7,7 @@ import { NatalChartWheel } from "./NatalChartWheel";
 import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
 import { LandingPathways } from "@/components/LandingPathways";
+import { NatalInterpretation } from "@/components/NatalInterpretation";
 
 const ZODIAC_SYMBOLS = [
   "♈",
@@ -22,42 +23,6 @@ const ZODIAC_SYMBOLS = [
   "♒",
   "♓",
 ] as const;
-
-function interpretationMarkup(text: string) {
-  const normalized = text
-    .replace(/\r\n/g, "\n")
-    .replace(/\s+(?=(?:#{1,3}\s*)?\d{1,2}\.\s+[A-Z])/g, "\n")
-    .trim();
-  const sections = normalized
-    .split(/\n(?=(?:#{1,3}\s*)?\d{1,2}\.\s+)/)
-    .filter(Boolean);
-
-  return sections.map((section, i) => {
-    const lines = section.trim().split("\n");
-    const first = lines.shift() ?? "Chart interpretation";
-    const heading = first
-      .replace(/^#{1,3}\s*/, "")
-      .replace(/^\d{1,2}\.\s*/, "");
-    const body = lines.join("\n").trim();
-    const paragraphs = (body || (sections.length === 1 ? normalized : ""))
-      .split(/\n\s*\n+/)
-      .map((paragraph) => paragraph.replace(/^#{1,3}\s*/, "").trim())
-      .filter(Boolean);
-    return (
-      <section key={`${heading}-${i}`} className="interpretation-section">
-        <p className="interpretation-section__index">
-          {String(i + 1).padStart(2, "0")}
-        </p>
-        <div>
-          <h2>{heading}</h2>
-          {paragraphs.map((paragraph, j) => (
-            <p key={j}>{paragraph}</p>
-          ))}
-        </div>
-      </section>
-    );
-  });
-}
 
 function MeaningNote({ children }: { children: React.ReactNode }) {
   return (
@@ -199,13 +164,17 @@ export default function HoroscopeApp({
       if (!chartResponse.ok) throw new Error(chartPayload.error);
       const result = chartPayload.chart as NatalChart;
       setChart(result);
-      if (account) await saveChart(result);
       setInterpretationLoading(true);
       try {
         const r = await fetch("/api/interpret", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ birthInput }),
+          body: JSON.stringify({
+            birthInput,
+            ...(account
+              ? { saveToAccount: true, label: "My birth chart" }
+              : {}),
+          }),
         });
         const j = await r.json();
         if (!r.ok) throw new Error(j.error);
@@ -215,6 +184,8 @@ export default function HoroscopeApp({
           );
         setInterpretationProgress(100);
         setInterpretation(j.interpretation.trim());
+        if (account && j.birthProfile?.id)
+          setSaveStatus(pack.messages.chartForm.accountSaved);
       } catch (e) {
         setInterpretationError(
           e instanceof Error
@@ -844,7 +815,7 @@ export default function HoroscopeApp({
                 </div>
               ) : interpretation ? (
                 <div className="prose mt-4">
-                  {interpretationMarkup(interpretation)}
+                  <NatalInterpretation text={interpretation} />
                 </div>
               ) : interpretationError ? (
                 <div
