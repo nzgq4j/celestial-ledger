@@ -176,6 +176,7 @@ const pack = {
       reportFailed: "The report could not be queued.",
       queueing: "Queueing…",
       generateReport: "Generate report",
+      produceReport: "Produce report",
       grounding: "Grounding",
       groundingDetail: "Steadiness and returning to centre",
       relationships: "Relationships",

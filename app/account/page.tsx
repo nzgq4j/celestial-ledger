@@ -455,11 +455,25 @@ export default async function AccountPage({
                   <div className="compact-products__action compact-products__action--complimentary">
                     {commerce.checkout && birthProfiles.length ? (
                       (() => {
+                        const outstandingEntitlement = readyEntitlements.find(
+                          (entitlement) =>
+                            entitlement.report_type === product.report_type,
+                        );
                         const price = reportPrices?.find(
                           (candidate) =>
                             candidate.report_type === product.report_type,
                         );
-                        return commercePlanKey === "premium" ? (
+                        return outstandingEntitlement ? (
+                          <GenerateReportButton
+                            entitlementId={outstandingEntitlement.id}
+                            reportType={product.report_type}
+                            profiles={birthProfiles.map((item) => ({
+                              id: item.id,
+                              label: item.label,
+                            }))}
+                            defaultLocale={reportLocale}
+                          />
+                        ) : commercePlanKey === "premium" ? (
                           <div>
                             <strong>Included with Premium</strong>
                             <GenerateReportButton

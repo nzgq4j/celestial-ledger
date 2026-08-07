@@ -180,6 +180,7 @@ const pack = {
       reportFailed: "Le rapport n’a pas pu être mis en attente.",
       queueing: "Préparation…",
       generateReport: "Générer le rapport",
+      produceReport: "Créer le rapport",
       grounding: "Ancrage",
       groundingDetail: "Stabilité et retour au centre",
       relationships: "Relations",

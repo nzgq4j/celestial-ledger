@@ -176,6 +176,7 @@ const pack = {
       reportFailed: "Der Bericht konnte nicht eingereiht werden.",
       queueing: "Wird vorbereitet…",
       generateReport: "Bericht erstellen",
+      produceReport: "Bericht anfertigen",
       grounding: "Erdung",
       groundingDetail: "Beständigkeit und Rückkehr zur Mitte",
       relationships: "Beziehungen",

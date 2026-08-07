@@ -174,6 +174,7 @@ const pack = {
       reportFailed: "No se pudo poner el informe en cola.",
       queueing: "Preparando…",
       generateReport: "Generar informe",
+      produceReport: "Crear informe",
       grounding: "Arraigo",
       groundingDetail: "Estabilidad y regreso al centro",
       relationships: "Relaciones",

@@ -205,7 +205,11 @@ export function GenerateReportButton({
         }
         onClick={generate}
       >
-        {busy ? copy.queueing : copy.generateReport}
+        {busy
+          ? copy.queueing
+          : entitlementId
+            ? copy.produceReport
+            : copy.generateReport}
       </button>
       {status && (
         <p role="status" className="text-sm text-[#d7bd7b]">

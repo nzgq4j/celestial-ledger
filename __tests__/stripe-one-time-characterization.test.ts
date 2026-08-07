@@ -166,6 +166,8 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(account).toContain('item.status === "unused"');
     expect(account).toContain('item.status === "queued"');
     expect(account).toContain("<GenerateReportButton");
+    expect(account).toContain("outstandingEntitlement");
+    expect(account).toContain("entitlementId={outstandingEntitlement.id}");
   });
 
   it("resolves portal plan switches from the active catalogue price", () => {
