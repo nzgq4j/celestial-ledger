@@ -12,7 +12,7 @@ export default async function UpdatePasswordPage({
 }) {
   const { error } = await searchParams;
   return (
-    <main className="mx-auto min-h-screen max-w-xl px-5 py-16">
+    <main className="auth-page mx-auto min-h-screen max-w-xl px-5 py-16">
       <section className="panel p-6 md:p-8">
         <p className="gold text-xs uppercase tracking-[.22em]">
           Celestial Atlas

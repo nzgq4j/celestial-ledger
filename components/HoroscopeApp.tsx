@@ -237,7 +237,7 @@ export default function HoroscopeApp({
       <LandingPathways />
       <div
         id="chart"
-        className="max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
+        className="chart-workspace max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
       >
         <section
           className="chart-introduction"

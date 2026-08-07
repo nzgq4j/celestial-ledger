@@ -7984,3 +7984,429 @@ body:has(.account-dashboard) .account-workspace {
     white-space: normal;
   }
 }
+
+/* Site-wide proportion system: consistent shells, rhythm, controls, and density. */
+:root {
+  --layout-shell: 90rem;
+  --layout-wide: 78rem;
+  --layout-reading: 62rem;
+  --layout-prose: 48rem;
+  --layout-gutter: clamp(1rem, 3vw, 2rem);
+  --space-page-block: clamp(3rem, 7vw, 6rem);
+  --space-section: clamp(2.75rem, 6vw, 5rem);
+  --space-panel: clamp(1.25rem, 3vw, 2rem);
+  --space-grid: clamp(0.9rem, 2vw, 1.5rem);
+  --radius-panel: 1rem;
+  --control-height: 3rem;
+  --copy-leading: 1.7;
+}
+
+.site-header__inner,
+.site-footer__inner {
+  width: min(100% - (var(--layout-gutter) * 2), var(--layout-shell));
+  max-width: var(--layout-shell);
+  margin-inline: auto;
+}
+
+.page-shell:not(.account-dashboard) {
+  width: min(100%, var(--layout-wide));
+  max-width: var(--layout-wide);
+  min-height: 70vh;
+  margin-inline: auto;
+  padding: var(--space-page-block) var(--layout-gutter);
+}
+
+:is(
+  .report-collection,
+  .sample-library,
+  .weekly-offer,
+  .method-page,
+  .membership-page,
+  .journal-page,
+  .daily-horoscopes,
+  .horoscope-detail,
+  .contact-page,
+  .sample-daily-reading
+) {
+  display: grid;
+  align-content: start;
+  gap: var(--space-section);
+}
+
+:is(
+  .collection-hero,
+  .sample-library__hero,
+  .weekly-offer > header,
+  .method-page__hero,
+  .membership-hero,
+  .journal-hero,
+  .horoscope-hero,
+  .horoscope-detail > header,
+  .contact-page > header,
+  .sample-daily-reading > header
+) {
+  width: 100%;
+  max-width: none;
+  min-height: clamp(17rem, 34vw, 27rem);
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  align-items: end;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(
+      circle at 86% 10%,
+      rgba(79, 183, 197, 0.09),
+      transparent 22rem
+    ),
+    linear-gradient(145deg, rgba(13, 26, 43, 0.94), rgba(5, 11, 19, 0.96));
+}
+
+:is(.collection-hero, .membership-hero, .horoscope-detail > header) {
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+:is(
+  .collection-hero h1,
+  .sample-library__hero h1,
+  .weekly-offer h1,
+  .method-page__hero h1,
+  .membership-hero h1,
+  .journal-hero h1,
+  .horoscope-hero h1,
+  .horoscope-detail h1,
+  .contact-page h1,
+  .sample-daily-reading h1
+) {
+  max-width: 15ch;
+  margin: 0.55rem 0 1rem;
+  font-size: clamp(2.65rem, 5vw, 4.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  white-space: normal;
+}
+
+:is(
+    .collection-hero,
+    .sample-library__hero,
+    .weekly-offer > header,
+    .method-page__hero,
+    .membership-hero__copy,
+    .journal-hero,
+    .horoscope-hero,
+    .horoscope-detail > header,
+    .contact-page > header,
+    .sample-daily-reading > header
+  )
+  p:last-child {
+  max-width: 44rem;
+  line-height: var(--copy-leading);
+}
+
+.atlas-hero__inner,
+.landing-pathways,
+.chart-workspace {
+  width: min(100% - (var(--layout-gutter) * 2), var(--layout-wide));
+  max-width: var(--layout-wide);
+  margin-inline: auto;
+}
+
+.atlas-hero__inner {
+  min-height: clamp(34rem, 68vh, 48rem);
+  padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+.atlas-hero__content {
+  width: min(100%, 48rem);
+}
+
+.atlas-hero h1 {
+  font-size: clamp(3.4rem, 7vw, 7rem);
+  line-height: 0.9;
+}
+
+.landing-pathways {
+  margin-block: var(--space-page-block);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+.chart-workspace {
+  padding: var(--space-page-block) 0;
+}
+
+.chart-workspace > * + * {
+  margin-top: var(--space-grid);
+}
+
+.chart-introduction {
+  gap: clamp(2rem, 5vw, 4rem);
+  padding: 0;
+}
+
+.chart-input-panel,
+.natal-chart-result > section,
+.natal-chart-result > div,
+.interpretation-section,
+.generation-progress {
+  padding: var(--space-panel);
+  border-radius: var(--radius-panel);
+}
+
+:is(
+  .sample-editions,
+  .report-catalog,
+  .membership-tiers,
+  .membership-comparison,
+  .membership-path,
+  .method-page__principles,
+  .method-page__reading,
+  .journal-grid,
+  .horoscope-grid,
+  .weekly-offer__grid,
+  .sample-report-bluf,
+  .sample-report-visual,
+  .reading-day-arc,
+  .contact-form
+) {
+  margin-block: 0;
+}
+
+:is(
+  .sample-editions,
+  .method-page__principles,
+  .journal-grid,
+  .horoscope-grid
+) {
+  gap: var(--space-grid);
+}
+
+:is(
+  .sample-editions > article,
+  .method-page__principles article,
+  .journal-grid article,
+  .horoscope-grid > article,
+  .weekly-offer__grid > section,
+  .weekly-offer__grid > aside,
+  .membership-comparison,
+  .membership-path,
+  .sample-report-bluf,
+  .sample-report-visual,
+  .reading-day-arc,
+  .contact-form,
+  .panel
+) {
+  border-radius: var(--radius-panel);
+}
+
+.report-edition {
+  grid-template-columns: 4rem minmax(0, 1fr);
+  padding: clamp(1.75rem, 4vw, 3rem) 0;
+}
+
+.report-edition h2 {
+  max-width: 24ch;
+  font-size: clamp(1.9rem, 3vw, 3rem);
+}
+
+.report-edition p,
+.journal-entry__body,
+.legal-page > :not(h1):not(h2),
+.report-narrative p,
+.report-narrative li {
+  max-width: 72ch;
+  line-height: var(--copy-leading);
+}
+
+.private-report,
+.sample-report,
+.journal-entry,
+.legal-page {
+  width: min(100%, var(--layout-reading));
+  max-width: var(--layout-reading);
+}
+
+.legal-page {
+  width: min(100%, var(--layout-prose));
+  max-width: var(--layout-prose);
+}
+
+.report-viewer-heading,
+.journal-entry > header,
+.sample-report > header,
+.private-report > header {
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.report-viewer-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 17rem);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  padding-top: clamp(2rem, 5vw, 4rem);
+}
+
+.report-narrative > section {
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.membership-tiers,
+.membership-comparison,
+.membership-path {
+  margin-top: 0;
+}
+
+.membership-tier {
+  grid-template-columns:
+    4rem minmax(12rem, 0.7fr) minmax(8rem, 0.28fr) minmax(17rem, 1fr)
+    auto;
+  gap: var(--space-grid);
+  padding: clamp(1.5rem, 3vw, 2.25rem) var(--space-panel);
+}
+
+:is(.button-primary, .button-quiet, button:not(.language-selector__button)) {
+  min-height: var(--control-height);
+  padding: 0.75rem 1.25rem;
+}
+
+:is(
+  .input,
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea
+) {
+  min-height: var(--control-height);
+}
+
+.auth-page {
+  position: relative;
+  display: grid;
+  width: min(100% - (var(--layout-gutter) * 2), 64rem);
+  max-width: 64rem;
+  grid-template-columns: minmax(18rem, 0.8fr) minmax(22rem, 1.2fr);
+  align-items: stretch;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 5rem) 0;
+}
+
+.auth-page::before {
+  display: grid;
+  place-items: center start;
+  min-height: 34rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: var(--radius-panel) 0 0 var(--radius-panel);
+  background:
+    radial-gradient(
+      circle at 50% 32%,
+      rgba(79, 183, 197, 0.2),
+      transparent 9rem
+    ),
+    linear-gradient(155deg, rgba(20, 42, 66, 0.96), rgba(5, 11, 19, 0.98));
+  color: var(--gold);
+  font:
+    400 clamp(1.8rem, 4vw, 3rem) / 1 Georgia,
+    serif;
+  content: "Your sky, held privately.";
+}
+
+.auth-page > .panel {
+  display: grid;
+  align-content: center;
+  min-height: 34rem;
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
+}
+
+@media (max-width: 900px) {
+  :is(
+    .collection-hero,
+    .membership-hero,
+    .horoscope-detail > header,
+    .chart-introduction
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  .membership-tier {
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  }
+
+  .membership-tier__features {
+    grid-column: 2 / -1;
+  }
+
+  .membership-tier > :is(.button-primary, .button-quiet) {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --space-page-block: 2.75rem;
+    --space-section: 2.5rem;
+    --space-panel: 1.15rem;
+  }
+
+  .page-shell:not(.account-dashboard) {
+    padding-inline: 1rem;
+  }
+
+  :is(
+    .collection-hero,
+    .sample-library__hero,
+    .weekly-offer > header,
+    .method-page__hero,
+    .membership-hero,
+    .journal-hero,
+    .horoscope-hero,
+    .horoscope-detail > header,
+    .contact-page > header,
+    .sample-daily-reading > header
+  ) {
+    min-height: 0;
+    padding: 1.25rem;
+  }
+
+  .report-edition {
+    grid-template-columns: 1fr;
+  }
+
+  .report-edition__index {
+    padding: 0;
+  }
+
+  .report-viewer-grid,
+  .membership-tier,
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .membership-tier > *,
+  .membership-tier__features,
+  .membership-tier > :is(.button-primary, .button-quiet) {
+    grid-column: 1;
+  }
+
+  .auth-page {
+    width: min(100% - 2rem, 36rem);
+    padding-block: 2rem;
+  }
+
+  .auth-page::before {
+    min-height: 10rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  }
+
+  .auth-page > .panel {
+    min-height: 0;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+  }
+}
