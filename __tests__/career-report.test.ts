@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCareerEvidence,
   careerPrompt,
+  careerReportJsonSchema,
   careerReportSchema,
   validateEvidenceLinks,
 } from "@/lib/reports/career";
@@ -17,6 +18,16 @@ const birthplace = {
 };
 
 describe("career report evidence", () => {
+  it("binds provider text lengths to the runtime validation limits", () => {
+    expect(
+      careerReportJsonSchema.properties.sections.items.properties.narrative,
+    ).toMatchObject({ minLength: 1, maxLength: 1800 });
+    expect(careerReportJsonSchema.properties.disclaimer).toMatchObject({
+      minLength: 1,
+      maxLength: 400,
+    });
+  });
+
   it("binds the requested report language without altering evidence IDs", async () => {
     const { evidence } = await buildCareerEvidence({
       date: "1990-01-15",

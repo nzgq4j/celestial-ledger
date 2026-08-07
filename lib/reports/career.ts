@@ -83,8 +83,8 @@ export const careerReportJsonSchema = {
   additionalProperties: false,
   required: ["title", "introduction", "sections", "closing", "disclaimer"],
   properties: {
-    title: { type: "string" },
-    introduction: { type: "string" },
+    title: { type: "string", minLength: 1, maxLength: 120 },
+    introduction: { type: "string", minLength: 1, maxLength: 1200 },
     sections: {
       type: "array",
       minItems: 1,
@@ -100,14 +100,14 @@ export const careerReportJsonSchema = {
           "reflectionQuestions",
         ],
         properties: {
-          title: { type: "string" },
+          title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: careerThemeSchema.options },
-          narrative: { type: "string" },
+          narrative: { type: "string", minLength: 1, maxLength: 1800 },
           evidenceIds: {
             type: "array",
             minItems: 1,
             maxItems: 8,
-            items: { type: "string" },
+            items: { type: "string", minLength: 1, maxLength: 240 },
           },
           reflectionQuestions: {
             type: "array",
@@ -117,8 +117,8 @@ export const careerReportJsonSchema = {
         },
       },
     },
-    closing: { type: "string" },
-    disclaimer: { type: "string" },
+    closing: { type: "string", minLength: 1, maxLength: 1000 },
+    disclaimer: { type: "string", minLength: 1, maxLength: 400 },
   },
 } as const;
 

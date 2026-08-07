@@ -58,6 +58,16 @@ describe("Recovery Reflection safety and evidence", () => {
     });
   });
 
+  it("binds provider text lengths to the runtime validation limits", () => {
+    expect(
+      recoveryReportJsonSchema.properties.sections.items.properties.narrative,
+    ).toMatchObject({ minLength: 1, maxLength: 1800 });
+    expect(
+      recoveryReportJsonSchema.properties.sections.items.properties
+        .reflectionQuestions.items,
+    ).toMatchObject({ minLength: 1, maxLength: 240 });
+  });
+
   it("accepts selected reviewed themes linked to natal evidence", async () => {
     const bundle = await evidence();
     expect(() =>

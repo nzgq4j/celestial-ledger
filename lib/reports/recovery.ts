@@ -84,8 +84,8 @@ export const recoveryReportJsonSchema = {
   additionalProperties: false,
   required: ["title", "introduction", "sections", "closing"],
   properties: {
-    title: { type: "string" },
-    introduction: { type: "string" },
+    title: { type: "string", minLength: 1, maxLength: 120 },
+    introduction: { type: "string", minLength: 1, maxLength: 1200 },
     sections: {
       type: "array",
       minItems: 1,
@@ -101,14 +101,14 @@ export const recoveryReportJsonSchema = {
           "reflectionQuestions",
         ],
         properties: {
-          title: { type: "string" },
+          title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: recoveryThemeSchema.options },
-          narrative: { type: "string" },
+          narrative: { type: "string", minLength: 1, maxLength: 1800 },
           evidenceIds: {
             type: "array",
             minItems: 1,
             maxItems: 8,
-            items: { type: "string" },
+            items: { type: "string", minLength: 1, maxLength: 240 },
           },
           reflectionQuestions: {
             type: "array",
@@ -119,7 +119,7 @@ export const recoveryReportJsonSchema = {
         },
       },
     },
-    closing: { type: "string" },
+    closing: { type: "string", minLength: 1, maxLength: 1000 },
   },
 } as const;
 
