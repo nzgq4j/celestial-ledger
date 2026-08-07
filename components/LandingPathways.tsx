@@ -10,6 +10,7 @@ const symbols = ["☉", "☽", "✦"] as const;
 export function LandingPathways() {
   const { locale } = useLocale();
   const copy = membershipCopy[locale].landing;
+  const titleLines = copy.title.split(/(?<=\.)\s+/);
   return (
     <section
       className="landing-pathways"
@@ -18,7 +19,11 @@ export function LandingPathways() {
       <header>
         <div>
           <p className="section-kicker">{copy.kicker}</p>
-          <h2 id="landing-pathways-title">{copy.title}</h2>
+          <h2 id="landing-pathways-title">
+            {titleLines.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </h2>
         </div>
         <p>{copy.introduction}</p>
       </header>

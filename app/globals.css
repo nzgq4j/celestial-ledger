@@ -28,6 +28,8 @@
   --body-end: #050b13;
   --control-bg: #081524;
   --control-border: #536177;
+  --display-page: clamp(2.75rem, 3.7vw, 4.25rem);
+  --display-section: clamp(1.85rem, 2.6vw, 2.55rem);
 }
 
 /* Administration observatory */
@@ -6143,5 +6145,92 @@ th {
   }
   .admin-contact-list header {
     display: grid;
+  }
+}
+
+/* Editorial type scale: the homepage keeps the grand celestial gesture;
+   interior and generated pages stay readable, composed, and desktop-stable. */
+:is(
+  .admin-hero h1,
+  .admin-editor-page h1,
+  .journal-hero h1,
+  .journal-entry h1,
+  .sample-library__hero h1,
+  .weekly-offer h1,
+  .sample-report h1,
+  .collection-hero h1,
+  .method-page__hero h1,
+  .library-heading h1,
+  .report-viewer-heading h1,
+  .private-report > h1,
+  .generation-progress h1,
+  .horoscope-hero h1,
+  .horoscope-detail h1,
+  .membership-hero h1,
+  .daily-reading-view__header h1
+) {
+  font-size: var(--display-page);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.report-viewer-heading {
+  max-width: 68rem;
+}
+
+:is(
+  .report-narrative h2,
+  .sample-report-bluf > h2,
+  .reading-day-arc h2,
+  .sample-report-visual h2,
+  .daily-reading-bluf h2,
+  .daily-reading-themes h2,
+  .daily-reading-questions h2
+) {
+  font-size: var(--display-section);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.landing-pathways > header {
+  grid-template-columns: 1fr;
+  gap: 1.35rem;
+}
+
+.landing-pathways > header h2 {
+  max-width: none;
+  font-size: clamp(2.75rem, 4.4vw, 4rem);
+  line-height: 1.02;
+  text-wrap: initial;
+}
+
+.landing-pathways > header h2 span {
+  display: block;
+  white-space: nowrap;
+}
+
+.landing-pathways > header > p {
+  max-width: 48rem;
+}
+
+@media (min-width: 1100px) {
+  .report-viewer-heading .report-title--compact {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --display-page: clamp(2.45rem, 12vw, 3.7rem);
+    --display-section: clamp(1.7rem, 8vw, 2.35rem);
+  }
+
+  .landing-pathways > header h2 {
+    font-size: clamp(2.35rem, 11vw, 3.25rem);
+  }
+
+  .landing-pathways > header h2 span {
+    white-space: normal;
   }
 }

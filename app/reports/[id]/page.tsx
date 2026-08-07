@@ -93,7 +93,13 @@ export default async function ReportPage({
         <p className="eyebrow">
           {isRecovery ? copy.recoveryPrivateEdition : copy.careerPrivateEdition}
         </p>
-        <h1>{output.data.title}</h1>
+        <h1
+          className={
+            output.data.title.length <= 45 ? "report-title--compact" : undefined
+          }
+        >
+          {output.data.title}
+        </h1>
         <p>{output.data.introduction}</p>
         {evidence.uncertainty.map((note) => (
           <aside key={note}>{copy.unknownTimeEvidence}</aside>
