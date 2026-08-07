@@ -10,6 +10,7 @@ type Profile = {
   display_name: string;
   time_unknown: boolean;
   expires_at: string;
+  natal_reading_generated_at: string | null;
 };
 
 export function BirthProfileList({
@@ -78,6 +79,13 @@ export function BirthProfileList({
               {copy.heldUntil}{" "}
               {new Date(profile.expires_at).toLocaleDateString(locale)}
             </small>
+            <span
+              className={`birth-profile-card__reading-status ${profile.natal_reading_generated_at ? "is-complete" : ""}`}
+            >
+              {profile.natal_reading_generated_at
+                ? "Full interpretation saved"
+                : "Chart saved without interpretation"}
+            </span>
           </div>
           <div className="birth-profile-card__actions">
             <Link

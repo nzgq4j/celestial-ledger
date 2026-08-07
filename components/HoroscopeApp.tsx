@@ -9,6 +9,7 @@ import { useLocale } from "@/components/LocaleProvider";
 import { LandingPathways } from "@/components/LandingPathways";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
 import { ZodiacConstellationStrip } from "@/components/ZodiacConstellationStrip";
+import { NatalChartActions } from "@/components/NatalChartActions";
 
 function MeaningNote({ children }: { children: React.ReactNode }) {
   return (
@@ -303,7 +304,10 @@ export default function HoroscopeApp({
             </div>
           </dl>
         </section>
-        <section className="panel p-5 md:p-7" aria-labelledby="birth-heading">
+        <section
+          className="panel p-5 md:p-7 chart-input-panel"
+          aria-labelledby="birth-heading"
+        >
           <p className="section-kicker">
             {account
               ? pack.messages.chartForm.accountKicker
@@ -535,7 +539,8 @@ export default function HoroscopeApp({
         </section>
 
         {chart && (
-          <>
+          <div className="natal-chart-result">
+            <NatalChartActions />
             <section className="big-three-section" aria-label="Big Three">
               <div className="grid md:grid-cols-3 gap-4">
                 {[
@@ -808,7 +813,7 @@ export default function HoroscopeApp({
                 </p>
               )}
             </section>
-          </>
+          </div>
         )}
         <section className="chart-method-notes">
           <article>

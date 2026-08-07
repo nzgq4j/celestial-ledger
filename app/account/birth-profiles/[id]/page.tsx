@@ -5,6 +5,7 @@ import { NatalChartWheel } from "@/components/NatalChartWheel";
 import { createClient } from "@/lib/supabase/server";
 import type { NatalChart } from "@/lib/types";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
+import { NatalChartActions } from "@/components/NatalChartActions";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -46,11 +47,18 @@ export default async function BirthProfilePage({
           Stored privately until{" "}
           {new Date(profile.expires_at).toLocaleDateString("en-GB")}.
         </small>
+        <NatalChartActions />
       </header>
       <NatalChartWheel chart={chart} />
       {profile.natal_reading && (
-        <section className="panel p-5 mt-6">
-          <p className="eyebrow">Saved natal reading</p>
+        <section className="panel p-5 mt-6 natal-reading-full">
+          <div className="natal-reading-full__heading">
+            <div>
+              <p className="eyebrow">Saved natal reading</p>
+              <h2>Full natal interpretation</h2>
+            </div>
+            <span>Complete reading</span>
+          </div>
           <div className="prose mt-4">
             <NatalInterpretation text={profile.natal_reading} />
           </div>

@@ -2412,6 +2412,108 @@ a {
 .zodiac-constellations .star-glow {
   fill: rgba(201, 167, 93, 0.13);
 }
+.natal-chart-actions {
+  display: flex;
+  margin-top: 1.25rem;
+}
+.natal-chart-actions .button-primary {
+  gap: 0.55rem;
+  cursor: pointer;
+}
+.natal-reading-full__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.natal-reading-full__heading h2 {
+  margin: 0.3rem 0 0;
+  color: var(--paper);
+  font:
+    400 clamp(1.6rem, 3vw, 2.2rem) Georgia,
+    serif;
+}
+.natal-reading-full__heading > span,
+.birth-profile-card__reading-status {
+  color: var(--muted);
+  font:
+    650 0.68rem/1.2 Arial,
+    sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.natal-reading-full__heading > span,
+.birth-profile-card__reading-status.is-complete {
+  color: var(--gold);
+}
+.birth-profile-card__reading-status {
+  display: block;
+  width: fit-content;
+  margin-top: 0.65rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #3d4b5f;
+}
+.birth-profile-card__reading-status.is-complete {
+  border-color: rgba(201, 167, 93, 0.45);
+  background: rgba(201, 167, 93, 0.06);
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 13mm 16mm;
+  }
+  .natal-chart-actions,
+  .private-report > .mt-6,
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+  .natal-chart-result > .natal-chart-actions {
+    display: none !important;
+  }
+  body:has(.natal-chart-result) .chart-introduction,
+  body:has(.natal-chart-result) .chart-input-panel,
+  body:has(.natal-chart-result) .chart-method-notes {
+    display: none !important;
+  }
+  .natal-chart-result {
+    display: block !important;
+  }
+  .natal-chart-result > section,
+  .natal-chart-result > article,
+  .natal-chart-result > div {
+    break-inside: avoid;
+  }
+  .private-report {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .private-report .report-viewer-heading,
+  .private-report .panel,
+  .private-report .natal-chart-shell,
+  .private-report .natal-reading-full {
+    border-color: #9b8a62 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+  .private-report *,
+  .private-report .gold,
+  .private-report .eyebrow {
+    color: #17130c !important;
+  }
+  .private-report svg {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .private-report .interpretation-section {
+    break-inside: avoid;
+  }
+  .private-report .natal-reading-full {
+    break-before: page;
+  }
+}
 @media (max-width: 760px) {
   .zodiac-constellations {
     grid-template-columns: repeat(6, 2.15rem);

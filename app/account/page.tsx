@@ -61,7 +61,7 @@ export default async function AccountPage({
     supabase
       .from("birth_profiles")
       .select(
-        "id, label, birth_date, display_name, time_unknown, expires_at, created_at",
+        "id, label, birth_date, display_name, time_unknown, expires_at, created_at, natal_reading_generated_at",
       )
       .order("created_at", { ascending: false }),
     supabase
