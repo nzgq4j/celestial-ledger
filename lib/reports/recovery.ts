@@ -114,7 +114,7 @@ export const recoveryReportJsonSchema = {
             type: "array",
             minItems: 1,
             maxItems: 3,
-            items: { type: "string" },
+            items: { type: "string", minLength: 1, maxLength: 240 },
           },
         },
       },

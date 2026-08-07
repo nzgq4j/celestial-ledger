@@ -112,7 +112,7 @@ export const careerReportJsonSchema = {
           reflectionQuestions: {
             type: "array",
             maxItems: 3,
-            items: { type: "string" },
+            items: { type: "string", minLength: 1, maxLength: 240 },
           },
         },
       },
