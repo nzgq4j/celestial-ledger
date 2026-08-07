@@ -81,6 +81,7 @@ export async function POST(request: Request) {
     mode: "subscription",
     customer: customer.stripe_customer_id,
     line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
+    allow_promotion_codes: true,
     metadata,
     subscription_data: { metadata },
     automatic_tax: { enabled: flags.automaticTax },

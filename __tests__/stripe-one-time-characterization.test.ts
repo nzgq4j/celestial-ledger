@@ -124,9 +124,10 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(entitlements).toContain("quantity_remaining = 0");
   });
 
-  it("uses fixed membership prices without arbitrary public promotion codes", () => {
+  it("uses fixed membership prices and permits Stripe promotion codes", () => {
     expect(subscriptionCheckout).toContain('mode: "subscription"');
     expect(subscriptionCheckout).toContain("price: plan.stripe_price_id");
-    expect(subscriptionCheckout).not.toContain("allow_promotion_codes");
+    expect(subscriptionCheckout).toContain("allow_promotion_codes: true");
+    expect(checkout).toContain("allow_promotion_codes: true");
   });
 });

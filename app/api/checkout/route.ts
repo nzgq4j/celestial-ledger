@@ -195,6 +195,7 @@ export async function POST(request: Request) {
         {
           mode: "payment",
           line_items: [{ price: price.stripe_price_id, quantity: 1 }],
+          allow_promotion_codes: true,
           client_reference_id: order.id,
           metadata,
           payment_intent_data: { metadata },
