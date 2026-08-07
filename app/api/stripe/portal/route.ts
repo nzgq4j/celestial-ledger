@@ -19,8 +19,11 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: auth, error } = await supabase.auth.getClaims();
   const userId = auth?.claims?.sub;
+  const email = auth?.claims?.email;
   if (error || typeof userId !== "string")
     return json({ error: "Sign in required." }, 401);
+  if (typeof email !== "string" || !email.trim())
+    return json({ error: "Your account email could not be verified." }, 422);
   const { data: customer } = await createAdminClient()
     .from("billing_customers")
     .select("stripe_customer_id")
@@ -31,6 +34,9 @@ export async function POST(request: Request) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!appUrl)
     return json({ error: "Billing return URL is not configured." }, 500);
+  await stripeClient().customers.update(customer.stripe_customer_id, {
+    email,
+  });
   const session = await stripeClient().billingPortal.sessions.create({
     customer: customer.stripe_customer_id,
     return_url: `${appUrl}/account`,

@@ -24,8 +24,11 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: auth, error: authError } = await supabase.auth.getClaims();
   const userId = auth?.claims?.sub;
+  const email = auth?.claims?.email;
   if (authError || typeof userId !== "string")
     return json({ error: "Sign in before choosing a membership." }, 401);
+  if (typeof email !== "string" || !email.trim())
+    return json({ error: "Your account email could not be verified." }, 422);
 
   const parsed = schema.safeParse(await readLimitedJson(request, 1_024));
   if (!parsed.success) return json({ error: "Invalid membership plan." }, 422);
@@ -57,6 +60,7 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!customer) {
     const stripeCustomer = await stripeClient().customers.create({
+      email,
       metadata: { application: "celestial_atlas", user_id: userId },
     });
     const result = await admin
@@ -67,6 +71,13 @@ export async function POST(request: Request) {
     if (result.error || !result.data)
       return json({ error: "Billing profile could not be initialized." }, 500);
     customer = result.data;
+  } else {
+    // Checkout reads contact information from an attached Customer. Keep the
+    // billing record aligned with the authenticated account so upgrades never
+    // open with an empty or unrelated email field.
+    await stripeClient().customers.update(customer.stripe_customer_id, {
+      email,
+    });
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;

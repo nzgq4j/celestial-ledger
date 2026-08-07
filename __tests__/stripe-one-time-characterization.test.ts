@@ -7,6 +7,7 @@ const subscriptionCheckout = fs.readFileSync(
   "app/api/stripe/subscription-checkout/route.ts",
   "utf8",
 );
+const billingPortal = fs.readFileSync("app/api/stripe/portal/route.ts", "utf8");
 const account = fs.readFileSync("app/account/page.tsx", "utf8");
 const reportQueue = fs.readFileSync("app/api/reports/route.ts", "utf8");
 const fulfilment = fs.readFileSync(
@@ -131,6 +132,16 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(subscriptionCheckout).toContain("price: plan.stripe_price_id");
     expect(subscriptionCheckout).toContain("allow_promotion_codes: true");
     expect(checkout).toContain("allow_promotion_codes: true");
+  });
+
+  it("prefills Stripe Checkout from the authenticated account email", () => {
+    expect(subscriptionCheckout).toContain("auth?.claims?.email");
+    expect(subscriptionCheckout).toContain("customers.update");
+    expect(subscriptionCheckout).toContain("email,");
+    expect(billingPortal).toContain("auth?.claims?.email");
+    expect(billingPortal).toContain("customers.update");
+    expect(checkout).toContain("auth?.claims?.email");
+    expect(checkout).toContain("customer_email: email");
   });
 
   it("validates the catalogue subtotal when a promotion reduces the total", () => {

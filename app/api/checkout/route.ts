@@ -43,8 +43,11 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: auth, error: authError } = await supabase.auth.getClaims();
   const userId = auth?.claims?.sub;
+  const email = auth?.claims?.email;
   if (authError || typeof userId !== "string")
     return json({ error: "Sign in before purchasing a report." }, 401);
+  if (typeof email !== "string" || !email.trim())
+    return json({ error: "Your account email could not be verified." }, 422);
 
   try {
     const {
@@ -202,6 +205,7 @@ export async function POST(request: Request) {
       const session = await stripeClient().checkout.sessions.create(
         {
           mode: "payment",
+          customer_email: email,
           line_items: [{ price: price.stripe_price_id, quantity: 1 }],
           allow_promotion_codes: true,
           client_reference_id: order.id,
