@@ -43,14 +43,27 @@ export function SiteHeader() {
             <Link href="/horoscopes">
               {pack.messages.navigation.horoscopes}
             </Link>
-            <Link href="/weekly-readings">
-              {pack.messages.navigation.weekly}
-            </Link>
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
-            <Link href="/membership">
-              {pack.messages.navigation.membership}
-            </Link>
-            <Link href="/samples">{pack.messages.navigation.samples}</Link>
+            <details className="site-nav-group">
+              <summary>
+                {pack.messages.navigation.membership}
+                <span aria-hidden="true" />
+              </summary>
+              <div className="site-nav-group__menu">
+                <Link href="/membership">
+                  <strong>{pack.messages.navigation.membership}</strong>
+                  <small>Plans and benefits</small>
+                </Link>
+                <Link href="/weekly-readings">
+                  <strong>{pack.messages.navigation.weekly}</strong>
+                  <small>Your seven-day sky</small>
+                </Link>
+                <Link href="/samples">
+                  <strong>{pack.messages.navigation.samples}</strong>
+                  <small>Explore complete editions</small>
+                </Link>
+              </div>
+            </details>
             <Link href="/journal">{pack.messages.navigation.journal}</Link>
           </div>
           <details className="mobile-nav" ref={mobileMenu}>
@@ -63,18 +76,21 @@ export function SiteHeader() {
               <Link href="/horoscopes">
                 {pack.messages.navigation.dailyHoroscopes}
               </Link>
-              <Link href="/weekly-readings">
-                {pack.messages.navigation.weeklyReadings}
-              </Link>
               <Link href="/reports">
                 {pack.messages.navigation.privateReports}
               </Link>
-              <Link href="/membership">
-                {pack.messages.navigation.membershipPlans}
-              </Link>
-              <Link href="/samples">
-                {pack.messages.navigation.sampleReports}
-              </Link>
+              <div className="mobile-nav__group">
+                <span>{pack.messages.navigation.membership}</span>
+                <Link href="/membership">
+                  {pack.messages.navigation.membershipPlans}
+                </Link>
+                <Link href="/weekly-readings">
+                  {pack.messages.navigation.weeklyReadings}
+                </Link>
+                <Link href="/samples">
+                  {pack.messages.navigation.sampleReports}
+                </Link>
+              </div>
               <Link href="/journal">{pack.messages.navigation.journal}</Link>
               <Link href="/account">{pack.messages.navigation.library}</Link>
             </div>

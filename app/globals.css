@@ -766,6 +766,77 @@ a {
   align-items: center;
   gap: 1.15rem;
 }
+.site-nav-group {
+  position: relative;
+}
+.site-nav-group summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+}
+.site-nav-group summary::-webkit-details-marker {
+  display: none;
+}
+.site-nav-group summary > span {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-0.12rem) rotate(45deg);
+  transition: transform 160ms ease;
+}
+.site-nav-group[open] summary,
+.site-nav-group summary:hover,
+.site-nav-group summary:focus-visible {
+  color: var(--ivory);
+}
+.site-nav-group[open] summary > span {
+  transform: translateY(0.1rem) rotate(225deg);
+}
+.site-nav-group summary:focus-visible {
+  border-radius: 0.25rem;
+  outline: 2px solid var(--gold);
+  outline-offset: 0.2rem;
+}
+.site-nav-group__menu {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  display: grid;
+  width: 15rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: rgba(7, 17, 31, 0.98);
+  box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.38);
+  transform: translateX(-50%);
+}
+.site-nav-group__menu a {
+  display: grid;
+  gap: 0.12rem;
+  min-height: 3.6rem;
+  align-content: center;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+}
+.site-nav-group__menu a:hover,
+.site-nav-group__menu a:focus-visible {
+  background: rgba(201, 167, 93, 0.1);
+  outline: none;
+}
+.site-nav-group__menu strong {
+  color: var(--paper);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+.site-nav-group__menu small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
 .mobile-nav {
   display: none;
   position: relative;
@@ -830,6 +901,21 @@ a {
   border-radius: 0.45rem;
   background: var(--surface);
   color: var(--gold);
+}
+.mobile-nav__group {
+  display: grid;
+  border-block: 1px solid var(--line);
+  background: rgba(201, 167, 93, 0.035);
+}
+.mobile-nav__group > span {
+  padding: 0.75rem 1rem 0.35rem;
+  color: var(--gold);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.mobile-nav__group a {
+  padding-left: 1.35rem;
 }
 .site-nav__account {
   border: 1px solid var(--control-border);
