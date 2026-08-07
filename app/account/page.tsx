@@ -190,255 +190,306 @@ export default async function AccountPage({
 
   return (
     <main className="page-shell private-library account-dashboard">
-      <header className="account-hero">
-        <div className="account-hero__welcome">
-          <p className="eyebrow">{copy.heroKicker}</p>
-          <h1>
-            {copy.welcome}, {displayName}
-          </h1>
-          <p>{copy.heroCopy}</p>
+      <aside className="account-sidebar" aria-label={copy.accountSections}>
+        <div className="account-sidebar__identity">
+          <span className="account-sidebar__seal" aria-hidden="true">
+            <i />
+          </span>
+          <div>
+            <p>{copy.heroKicker}</p>
+            <strong>{displayName}</strong>
+            <small>{authData.user.email}</small>
+          </div>
         </div>
-        <div className="account-hero__orbit" aria-hidden="true">
-          <i />
-          <i />
-          <i />
+
+        <nav className="account-sidebar__nav">
+          <p>Workspace</p>
+          <a href="#overview" className="account-sidebar__active">
+            <span aria-hidden="true">01</span>
+            Overview
+          </a>
+          <a href="#daily-reading">
+            <span aria-hidden="true">02</span>
+            {copy.myDailyReading}
+          </a>
+          <a href="#reports">
+            <span aria-hidden="true">03</span>
+            {copy.myReadings}
+          </a>
+          <a href="#birth-profiles">
+            <span aria-hidden="true">04</span>
+            {copy.myBirthCharts}
+          </a>
+          <p>Account</p>
+          {commerce.subscriptions && (
+            <a href="#billing">
+              <span aria-hidden="true">05</span>
+              Membership &amp; billing
+            </a>
+          )}
+          <a href="#account-settings">
+            <span aria-hidden="true">06</span>
+            {copy.settings}
+          </a>
+          {adminRole && (
+            <Link href="/admin">
+              <span aria-hidden="true">07</span>
+              {copy.adminConsole}
+            </Link>
+          )}
+        </nav>
+
+        <div className="account-sidebar__plan">
+          <p>Current orbit</p>
+          <strong>
+            {commercePlanKey[0].toUpperCase() + commercePlanKey.slice(1)}
+          </strong>
+          <Link href="/membership">View membership</Link>
         </div>
-      </header>
+      </aside>
 
-      <section className="atlas-next-step" aria-labelledby="next-step-title">
-        <div>
-          <p className="section-kicker">{nextStep.kicker}</p>
-          <h2 id="next-step-title">{nextStep.title}</h2>
-          <p>{nextStep.copy}</p>
+      <div className="account-workspace">
+        <header className="account-hero" id="overview">
+          <div className="account-hero__welcome">
+            <p className="eyebrow">{copy.heroKicker}</p>
+            <h1>
+              {copy.welcome}, {displayName}
+            </h1>
+            <p>{copy.heroCopy}</p>
+          </div>
+          <div className="account-hero__orbit" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+        </header>
+
+        <section className="atlas-next-step" aria-labelledby="next-step-title">
+          <div>
+            <p className="section-kicker">{nextStep.kicker}</p>
+            <h2 id="next-step-title">{nextStep.title}</h2>
+            <p>{nextStep.copy}</p>
+          </div>
+          <Link href={nextStep.href} className="button-primary">
+            {nextStep.action}
+          </Link>
+        </section>
+
+        <div className="account-stats" aria-label={copy.accountSummary}>
+          <span>
+            <strong>{birthProfiles.length}</strong>{" "}
+            {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
+          </span>
+          <span>
+            <strong>{reports.length + dailyReadings.length}</strong>{" "}
+            {reports.length + dailyReadings.length === 1
+              ? copy.privateReading
+              : copy.privateReadings}
+          </span>
+          <span>
+            <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
+          </span>
         </div>
-        <Link href={nextStep.href} className="button-primary">
-          {nextStep.action}
-        </Link>
-      </section>
 
-      <div className="account-stats" aria-label={copy.accountSummary}>
-        <span>
-          <strong>{birthProfiles.length}</strong>{" "}
-          {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
-        </span>
-        <span>
-          <strong>{reports.length + dailyReadings.length}</strong>{" "}
-          {reports.length + dailyReadings.length === 1
-            ? copy.privateReading
-            : copy.privateReadings}
-        </span>
-        <span>
-          <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
-        </span>
-      </div>
+        {notice && (
+          <p className="account-notice" role="status">
+            {notice}
+          </p>
+        )}
 
-      {notice && (
-        <p className="account-notice" role="status">
-          {notice}
-        </p>
-      )}
+        {commerce.subscriptions && (
+          <section className="dashboard-panel" id="billing">
+            <div className="dashboard-panel__heading">
+              <div>
+                <p className="section-kicker">Membership &amp; billing</p>
+                <h2>
+                  {subscription
+                    ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
+                    : "Free"}
+                </h2>
+              </div>
+              <span className="dashboard-panel__meta">
+                {subscription?.status ?? "active"}
+              </span>
+            </div>
+            <p className="dashboard-panel__introduction">
+              {subscription?.current_period_end
+                ? `${subscription.cancel_at_period_end ? "Access ends" : "Next billing date"} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
+                : "Your account currently uses the Free plan."}
+            </p>
+            {subscription && <BillingPortalButton />}
+          </section>
+        )}
 
-      <nav className="account-jump-links" aria-label={copy.accountSections}>
-        <a href="#daily-reading">{copy.myDailyReading}</a>
-        <a href="#reports">{copy.myReadings}</a>
-        <a href="#birth-profiles">{copy.myBirthCharts}</a>
-        <a href="#account-settings">{copy.settings}</a>
-        <Link href="/membership">{copy.membership}</Link>
-        {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
-      </nav>
-
-      {commerce.subscriptions && (
-        <section className="dashboard-panel" id="billing">
+        <section
+          className="dashboard-panel dashboard-panel--daily"
+          id="daily-reading"
+        >
           <div className="dashboard-panel__heading">
             <div>
-              <p className="section-kicker">Membership &amp; billing</p>
-              <h2>
-                {subscription
-                  ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
-                  : "Free"}
-              </h2>
+              <p className="section-kicker">{copy.dailyReadingKicker}</p>
+              <h2>{copy.dailyReadingTitle}</h2>
             </div>
             <span className="dashboard-panel__meta">
-              {subscription?.status ?? "active"}
+              {copy.registeredUserEntitlement}
             </span>
           </div>
           <p className="dashboard-panel__introduction">
-            {subscription?.current_period_end
-              ? `${subscription.cancel_at_period_end ? "Access ends" : "Next billing date"} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
-              : "Your account currently uses the Free plan."}
+            {copy.dailyReadingDescription}
           </p>
-          {subscription && <BillingPortalButton />}
-        </section>
-      )}
-
-      <section
-        className="dashboard-panel dashboard-panel--daily"
-        id="daily-reading"
-      >
-        <div className="dashboard-panel__heading">
-          <div>
-            <p className="section-kicker">{copy.dailyReadingKicker}</p>
-            <h2>{copy.dailyReadingTitle}</h2>
-          </div>
-          <span className="dashboard-panel__meta">
-            {copy.registeredUserEntitlement}
-          </span>
-        </div>
-        <p className="dashboard-panel__introduction">
-          {copy.dailyReadingDescription}
-        </p>
-        <DailyReadingGenerator
-          profiles={birthProfiles.map((item) => ({
-            id: item.id,
-            label: item.label,
-          }))}
-          existingReadings={dailyReadings}
-        />
-      </section>
-
-      <section
-        className="dashboard-panel dashboard-panel--reports"
-        id="reports"
-      >
-        <div className="dashboard-panel__heading">
-          <div>
-            <p className="section-kicker">{copy.libraryKicker}</p>
-            <h2>{copy.readingsTitle}</h2>
-          </div>
-          <span className="dashboard-panel__meta">
-            {reports.length} {copy.saved}
-          </span>
-        </div>
-
-        {readyEntitlements.map((entitlement) => (
-          <article className="ready-report" key={entitlement.id}>
-            <div>
-              <strong>
-                {entitlement.report_type === "recovery_reflection"
-                  ? copy.recoveryReflection
-                  : copy.careerPurpose}
-              </strong>
-              <p>{copy.purchasedReady}</p>
-            </div>
-            <GenerateReportButton
-              entitlementId={entitlement.id}
-              reportType={entitlement.report_type}
-              profiles={birthProfiles.map((item) => ({
-                id: item.id,
-                label: item.label,
-              }))}
-              defaultLocale={reportLocale}
-            />
-          </article>
-        ))}
-
-        {reports.length ? (
-          <AccountReportList
-            initialReports={reports}
-            focusReportId={params.focusReport}
+          <DailyReadingGenerator
+            profiles={birthProfiles.map((item) => ({
+              id: item.id,
+              label: item.label,
+            }))}
+            existingReadings={dailyReadings}
           />
-        ) : (
-          <p className="dashboard-empty">{copy.noReports}</p>
-        )}
+        </section>
 
-        <div className="compact-products">
-          {products
-            .filter((product) =>
-              ["career_purpose", "recovery_reflection"].includes(
-                product.report_type,
-              ),
-            )
-            .map((product) => (
-              <article key={product.report_type}>
-                <div>
-                  <h3>
-                    {product.report_type === "recovery_reflection"
-                      ? copy.recoveryReflection
-                      : copy.careerPurpose}
-                  </h3>
-                  <p>
-                    {product.report_type === "recovery_reflection"
-                      ? copy.recoveryDescription
-                      : copy.careerDescription}
-                  </p>
-                </div>
-                <div className="compact-products__action compact-products__action--complimentary">
-                  {commerce.checkout && birthProfiles.length ? (
-                    (() => {
-                      const price = reportPrices?.find(
-                        (candidate) =>
-                          candidate.report_type === product.report_type,
-                      );
-                      return commercePlanKey === "premium" ? (
-                        <div>
-                          <strong>Included with Premium</strong>
-                          <GenerateReportButton
-                            reportType={product.report_type}
-                            profiles={birthProfiles.map((item) => ({
-                              id: item.id,
-                              label: item.label,
-                            }))}
-                            defaultLocale={reportLocale}
-                          />
-                        </div>
-                      ) : price ? (
-                        <CheckoutButton
-                          reportType={product.report_type}
-                          priceLabel={new Intl.NumberFormat(pack.tag, {
-                            style: "currency",
-                            currency: price.currency.toUpperCase(),
-                          }).format(price.unit_amount / 100)}
-                          creditAvailable={availableReportCredits > 0}
-                        />
-                      ) : (
-                        <strong>Currently unavailable</strong>
-                      );
-                    })()
-                  ) : birthProfiles.length ? (
-                    <>
-                      <strong>{copy.complimentary}</strong>
-                      <GenerateReportButton
-                        reportType={product.report_type}
-                        profiles={birthProfiles.map((item) => ({
-                          id: item.id,
-                          label: item.label,
-                        }))}
-                        defaultLocale={reportLocale}
-                      />
-                    </>
-                  ) : (
-                    <Link href="/#chart" className="button-primary">
-                      {copy.createNatalChart}
-                    </Link>
-                  )}
-                </div>
-              </article>
-            ))}
-        </div>
-      </section>
-
-      <section
-        className="dashboard-panel dashboard-panel--charts"
-        id="birth-profiles"
-      >
-        <div className="dashboard-panel__heading">
-          <div>
-            <p className="section-kicker">{copy.foundationKicker}</p>
-            <h2>{copy.savedBirthCharts}</h2>
+        <section
+          className="dashboard-panel dashboard-panel--reports"
+          id="reports"
+        >
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">{copy.libraryKicker}</p>
+              <h2>{copy.readingsTitle}</h2>
+            </div>
+            <span className="dashboard-panel__meta">
+              {reports.length} {copy.saved}
+            </span>
           </div>
-          <Link href="/#chart" className="text-link">
-            {copy.createAnotherChart}
-          </Link>
-        </div>
-        <BirthProfileList initialProfiles={birthProfiles} />
-      </section>
 
-      <AccountSettings
-        displayName={profile?.display_name ?? ""}
-        email={authData.user.email ?? ""}
-        copy={copy}
-        reportLocale={reportLocale}
-      />
+          {readyEntitlements.map((entitlement) => (
+            <article className="ready-report" key={entitlement.id}>
+              <div>
+                <strong>
+                  {entitlement.report_type === "recovery_reflection"
+                    ? copy.recoveryReflection
+                    : copy.careerPurpose}
+                </strong>
+                <p>{copy.purchasedReady}</p>
+              </div>
+              <GenerateReportButton
+                entitlementId={entitlement.id}
+                reportType={entitlement.report_type}
+                profiles={birthProfiles.map((item) => ({
+                  id: item.id,
+                  label: item.label,
+                }))}
+                defaultLocale={reportLocale}
+              />
+            </article>
+          ))}
+
+          {reports.length ? (
+            <AccountReportList
+              initialReports={reports}
+              focusReportId={params.focusReport}
+            />
+          ) : (
+            <p className="dashboard-empty">{copy.noReports}</p>
+          )}
+
+          <div className="compact-products">
+            {products
+              .filter((product) =>
+                ["career_purpose", "recovery_reflection"].includes(
+                  product.report_type,
+                ),
+              )
+              .map((product) => (
+                <article key={product.report_type}>
+                  <div>
+                    <h3>
+                      {product.report_type === "recovery_reflection"
+                        ? copy.recoveryReflection
+                        : copy.careerPurpose}
+                    </h3>
+                    <p>
+                      {product.report_type === "recovery_reflection"
+                        ? copy.recoveryDescription
+                        : copy.careerDescription}
+                    </p>
+                  </div>
+                  <div className="compact-products__action compact-products__action--complimentary">
+                    {commerce.checkout && birthProfiles.length ? (
+                      (() => {
+                        const price = reportPrices?.find(
+                          (candidate) =>
+                            candidate.report_type === product.report_type,
+                        );
+                        return commercePlanKey === "premium" ? (
+                          <div>
+                            <strong>Included with Premium</strong>
+                            <GenerateReportButton
+                              reportType={product.report_type}
+                              profiles={birthProfiles.map((item) => ({
+                                id: item.id,
+                                label: item.label,
+                              }))}
+                              defaultLocale={reportLocale}
+                            />
+                          </div>
+                        ) : price ? (
+                          <CheckoutButton
+                            reportType={product.report_type}
+                            priceLabel={new Intl.NumberFormat(pack.tag, {
+                              style: "currency",
+                              currency: price.currency.toUpperCase(),
+                            }).format(price.unit_amount / 100)}
+                            creditAvailable={availableReportCredits > 0}
+                          />
+                        ) : (
+                          <strong>Currently unavailable</strong>
+                        );
+                      })()
+                    ) : birthProfiles.length ? (
+                      <>
+                        <strong>{copy.complimentary}</strong>
+                        <GenerateReportButton
+                          reportType={product.report_type}
+                          profiles={birthProfiles.map((item) => ({
+                            id: item.id,
+                            label: item.label,
+                          }))}
+                          defaultLocale={reportLocale}
+                        />
+                      </>
+                    ) : (
+                      <Link href="/#chart" className="button-primary">
+                        {copy.createNatalChart}
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              ))}
+          </div>
+        </section>
+
+        <section
+          className="dashboard-panel dashboard-panel--charts"
+          id="birth-profiles"
+        >
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">{copy.foundationKicker}</p>
+              <h2>{copy.savedBirthCharts}</h2>
+            </div>
+            <Link href="/#chart" className="text-link">
+              {copy.createAnotherChart}
+            </Link>
+          </div>
+          <BirthProfileList initialProfiles={birthProfiles} />
+        </section>
+
+        <AccountSettings
+          displayName={profile?.display_name ?? ""}
+          email={authData.user.email ?? ""}
+          copy={copy}
+          reportLocale={reportLocale}
+        />
+      </div>
     </main>
   );
 }
