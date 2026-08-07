@@ -7130,6 +7130,106 @@ th {
     transition: none;
   }
 }
+
+/* Final My Atlas shell overrides: keep after the legacy account rules. */
+body:has(.account-dashboard) .account-dashboard {
+  align-items: start;
+}
+
+body:has(.account-dashboard) .account-sidebar {
+  align-self: start;
+  top: 1rem;
+  min-height: calc(100vh - 4rem);
+  border-color: var(--atlas-line);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(
+      circle at 25% 0%,
+      rgba(32, 215, 230, 0.1),
+      transparent 14rem
+    ),
+    linear-gradient(180deg, #151a25, #0e121a);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+body:has(.account-dashboard) .account-sidebar__identity {
+  min-height: 5.7rem;
+  padding: 1rem;
+  border-color: var(--atlas-line);
+}
+
+body:has(.account-dashboard) .account-sidebar__identity strong {
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 680;
+}
+
+body:has(.account-dashboard) .account-sidebar__identity p {
+  color: var(--atlas-cyan);
+}
+
+body:has(.account-dashboard) .account-sidebar__identity small {
+  color: var(--atlas-muted);
+}
+
+body:has(.account-dashboard) .account-sidebar__nav {
+  gap: 0.38rem;
+  padding: 1rem 0.75rem;
+}
+
+body:has(.account-dashboard) .account-sidebar__nav::before {
+  display: none;
+}
+
+body:has(.account-dashboard) .account-sidebar__nav a {
+  min-height: 3rem;
+  border-radius: 0.72rem;
+  color: #a9b2c2;
+}
+
+body:has(.account-dashboard) .account-sidebar__nav a:hover,
+body:has(.account-dashboard) .account-sidebar__nav a:focus-visible,
+body:has(.account-dashboard) .account-sidebar__nav a.account-sidebar__active {
+  background: linear-gradient(
+    90deg,
+    rgba(47, 124, 255, 0.18),
+    rgba(32, 215, 230, 0.06)
+  );
+  color: #fff;
+  transform: none;
+}
+
+body:has(.account-dashboard) .account-sidebar__nav a span {
+  border: 0;
+  border-radius: 0.42rem;
+  background: rgba(47, 124, 255, 0.12);
+  color: var(--atlas-cyan);
+}
+
+body:has(.account-dashboard) .account-sidebar__plan {
+  border-color: rgba(32, 215, 230, 0.18);
+  border-radius: 0.9rem;
+  background: linear-gradient(
+    145deg,
+    rgba(47, 124, 255, 0.15),
+    rgba(29, 227, 168, 0.07)
+  );
+}
+
+body:has(.account-dashboard) .account-sidebar__plan a {
+  color: var(--atlas-cyan);
+}
+
+body:has(.account-dashboard) .account-workspace {
+  grid-auto-flow: dense;
+}
+
+@media (max-width: 980px) {
+  body:has(.account-dashboard) .account-sidebar {
+    top: 0.6rem;
+    min-height: 0;
+  }
+}
 .daily-reading-generator {
   display: grid;
   gap: 1.25rem;

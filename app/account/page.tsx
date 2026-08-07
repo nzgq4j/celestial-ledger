@@ -202,9 +202,9 @@ export default async function AccountPage({
             <i />
           </span>
           <div>
-            <p>{copy.heroKicker}</p>
-            <strong>{displayName}</strong>
-            <small>{authData.user.email}</small>
+            <p>Celestial Atlas</p>
+            <strong>Member observatory</strong>
+            <small>Your private workspace</small>
           </div>
         </div>
 
@@ -296,9 +296,7 @@ export default async function AccountPage({
           <header className="account-hero" id="overview">
             <div className="account-hero__welcome">
               <p className="eyebrow">{copy.heroKicker}</p>
-              <h1>
-                {copy.welcome}, {displayName}
-              </h1>
+              <h1>Your private sky.</h1>
               <p>{copy.heroCopy}</p>
             </div>
             <div className="account-hero__orbit" aria-hidden="true">
