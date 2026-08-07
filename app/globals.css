@@ -4888,13 +4888,14 @@ th {
   border-bottom: 1px solid var(--line);
 }
 .membership-hero h1 {
-  max-width: 13ch;
+  max-width: none;
   margin: 0.75rem 0 1.4rem;
   color: var(--paper);
   font:
-    400 clamp(3.1rem, 7vw, 6.6rem) / 0.88 Georgia,
+    400 clamp(3rem, 5vw, 5rem) / 0.94 Georgia,
     serif;
   letter-spacing: -0.045em;
+  white-space: nowrap;
 }
 .membership-hero__copy > p:not(.eyebrow):not(.membership-preview-note) {
   max-width: 43rem;
@@ -5236,6 +5237,9 @@ th {
 }
 
 @media (max-width: 760px) {
+  .membership-hero h1 {
+    white-space: normal;
+  }
   .landing-pathways > header,
   .landing-pathways__routes,
   .landing-pathways > footer {

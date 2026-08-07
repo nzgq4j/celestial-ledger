@@ -35,7 +35,9 @@ export function MembershipExperience({
               {copy.reportsAction}
             </Link>
           </div>
-          <p className="membership-preview-note">{copy.preview}</p>
+          <p className="membership-preview-note">
+            {subscriptionsEnabled ? copy.preview : copy.unavailable}
+          </p>
         </div>
         <figure className="membership-orbits" aria-label={copy.orbitLabel}>
           <div className="membership-orbits__ring membership-orbits__ring--premium">

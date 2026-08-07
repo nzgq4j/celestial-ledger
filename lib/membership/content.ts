@@ -31,6 +31,7 @@ type MembershipCopy = {
     title: string;
     introduction: string;
     preview: string;
+    unavailable: string;
     orbitLabel: string;
     included: string;
     recommended: string;
@@ -92,11 +93,13 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
     },
     page: {
       eyebrow: "Membership · your atlas over time",
-      title: "Choose how much of the sky you want to carry.",
+      title: "Your sky, your rhythm.",
       introduction:
         "Every level begins with a calculated natal chart. Membership widens the number of charts you can hold, the rhythm of personal readings and the depth of reports available inside your private atlas.",
       preview:
-        "Membership subscriptions are opening soon. The page below is the planned launch structure; paid billing is not yet active.",
+        "Paid memberships are open. Choose the level that matches how often you want to return to your atlas.",
+      unavailable:
+        "Paid membership enrolment is temporarily unavailable. You can still create a free account and explore your atlas.",
       orbitLabel: "Membership orbits",
       included: "What the orbit holds",
       recommended: "Recommended",
@@ -255,11 +258,13 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
     },
     page: {
       eyebrow: "Membresía · tu atlas a través del tiempo",
-      title: "Elige cuánto cielo quieres llevar contigo.",
+      title: "Tu cielo, tu ritmo.",
       introduction:
         "Cada nivel comienza con una carta natal calculada. La membresía amplía las cartas que puedes guardar, el ritmo de las lecturas personales y la profundidad de los informes de tu atlas privado.",
       preview:
-        "Las suscripciones abrirán pronto. Esta es la estructura prevista para el lanzamiento; la facturación de pago aún no está activa.",
+        "Las membresías de pago ya están disponibles. Elige el nivel que acompañe la frecuencia con la que quieres volver a tu atlas.",
+      unavailable:
+        "La inscripción a membresías de pago no está disponible temporalmente. Aún puedes crear una cuenta gratuita y explorar tu atlas.",
       orbitLabel: "Órbitas de membresía",
       included: "Lo que contiene la órbita",
       recommended: "Recomendado",
@@ -418,11 +423,13 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
     },
     page: {
       eyebrow: "Adhésion · votre atlas dans le temps",
-      title: "Choisissez la part du ciel que vous souhaitez porter.",
+      title: "Votre ciel, votre rythme.",
       introduction:
         "Chaque niveau commence par un thème natal calculé. L’adhésion élargit le nombre de thèmes conservés, le rythme des lectures personnelles et la profondeur des rapports dans votre atlas privé.",
       preview:
-        "Les abonnements ouvriront bientôt. Voici la structure prévue pour le lancement ; la facturation payante n’est pas encore active.",
+        "Les adhésions payantes sont ouvertes. Choisissez le niveau qui correspond au rythme auquel vous souhaitez retrouver votre atlas.",
+      unavailable:
+        "L’adhésion payante est temporairement indisponible. Vous pouvez toujours créer un compte gratuit et explorer votre atlas.",
       orbitLabel: "Orbites d’adhésion",
       included: "Ce que contient l’orbite",
       recommended: "Recommandé",
@@ -582,11 +589,13 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
     },
     page: {
       eyebrow: "Mitgliedschaft · dein Atlas im Lauf der Zeit",
-      title: "Wähle, wie viel vom Himmel du tragen möchtest.",
+      title: "Dein Himmel, dein Rhythmus.",
       introduction:
         "Jede Stufe beginnt mit einem berechneten Geburtshoroskop. Die Mitgliedschaft erweitert die Zahl deiner Horoskope, den Rhythmus persönlicher Lesungen und die Tiefe der Berichte in deinem privaten Atlas.",
       preview:
-        "Die Mitgliedschaften öffnen bald. Dies ist die geplante Startstruktur; die kostenpflichtige Abrechnung ist noch nicht aktiv.",
+        "Bezahlte Mitgliedschaften sind jetzt verfügbar. Wähle die Stufe, die dazu passt, wie oft du zu deinem Atlas zurückkehren möchtest.",
+      unavailable:
+        "Die Anmeldung für bezahlte Mitgliedschaften ist vorübergehend nicht verfügbar. Du kannst weiterhin ein kostenloses Konto erstellen und deinen Atlas entdecken.",
       orbitLabel: "Mitgliedschaftsorbits",
       included: "Was der Orbit enthält",
       recommended: "Empfohlen",

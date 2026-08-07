@@ -37,10 +37,14 @@ describe("membership discovery experience", () => {
     ).toBe(3);
   });
 
-  it("states that paid billing is not active", () => {
+  it("provides accurate available and unavailable billing messages", () => {
     for (const locale of localeTags) {
       expect(membershipCopy[locale].page.preview).not.toHaveLength(0);
+      expect(membershipCopy[locale].page.unavailable).not.toHaveLength(0);
       expect(membershipCopy[locale].page.note).not.toHaveLength(0);
     }
+    expect(membershipCopy["en-GB"].page.preview).toContain(
+      "Paid memberships are open",
+    );
   });
 });
