@@ -86,6 +86,12 @@ const pack = {
       recoveryReflection: "Réflexion de renouveau",
       careerPurpose: "Vocation et raison d’être",
       purchasedReady: "Acheté et prêt à générer.",
+      purchasedReportsKicker: "En attente de votre thème",
+      purchasedReportsTitle: "Rapports achetés",
+      purchasedReportsDescription:
+        "Les rapports achetés mais pas encore générés apparaissent ici. Lorsque vous êtes prêt, choisissez un thème natal enregistré et les sujets à explorer.",
+      purchasedOn: "Acheté",
+      noUnusedPurchases: "Aucun rapport acheté n'attend d'être utilisé.",
       availableUntil: "Disponible jusqu’au",
       noReports:
         "Aucun rapport pour le moment. Choisissez-en un ci-dessous lorsque vous êtes prêt.",

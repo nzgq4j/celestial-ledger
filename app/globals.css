@@ -2306,6 +2306,35 @@ a {
   gap: 1.15rem;
   padding: clamp(1rem, 2.5vw, 1.45rem);
 }
+.dashboard-panel--purchased {
+  background:
+    linear-gradient(135deg, rgba(201, 167, 93, 0.08), transparent 42%),
+    var(--panel);
+}
+.purchased-report-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.purchased-report-list .ready-report {
+  margin-top: 0;
+  border-color: rgba(201, 167, 93, 0.42);
+}
+.purchased-report-list .ready-report > div:first-child {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+.purchased-report-list .ready-report > div:first-child p {
+  margin: 0;
+}
+.purchased-report-list .ready-report > div:first-child small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .ready-report > div:first-child {
   display: flex;
   align-items: baseline;

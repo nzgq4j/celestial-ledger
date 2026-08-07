@@ -85,6 +85,12 @@ const pack = {
       recoveryReflection: "Reflexión de renovación",
       careerPurpose: "Vocación y propósito",
       purchasedReady: "Adquirido y listo para generar.",
+      purchasedReportsKicker: "A la espera de tu carta",
+      purchasedReportsTitle: "Informes adquiridos",
+      purchasedReportsDescription:
+        "Aquí aparecen los informes que has comprado pero aún no has generado. Cuando estés listo, elige una carta natal guardada y los temas que quieres explorar.",
+      purchasedOn: "Comprado",
+      noUnusedPurchases: "No tienes informes adquiridos pendientes de usar.",
       availableUntil: "Disponible hasta",
       noReports: "Aún no hay informes. Elige uno abajo cuando estés listo.",
       complimentary: "Gratuito durante la vista previa",

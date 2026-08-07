@@ -66,7 +66,9 @@ export default async function AccountPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("reports")
-      .select("id, report_type, status, locale, expires_at, created_at")
+      .select(
+        "id, entitlement_id, report_type, status, locale, expires_at, created_at",
+      )
       .order("created_at", { ascending: false }),
     supabase
       .from("daily_readings")
@@ -93,9 +95,13 @@ export default async function AccountPage({
     profile?.report_locale && isLocaleTag(profile.report_locale)
       ? profile.report_locale
       : pack.tag;
+  const linkedEntitlementIds = new Set(
+    reports.map((report) => report.entitlement_id),
+  );
   const readyEntitlements = entitlements.filter(
     (item) =>
-      item.status === "unused" &&
+      (item.status === "unused" ||
+        (item.status === "queued" && !linkedEntitlementIds.has(item.id))) &&
       ["career_purpose", "recovery_reflection"].includes(item.report_type),
   );
   const displayName =
@@ -215,6 +221,10 @@ export default async function AccountPage({
           <a href="#reports">
             <span aria-hidden="true">03</span>
             {copy.myReadings}
+          </a>
+          <a href="#purchased-reports">
+            <span aria-hidden="true">P</span>
+            {copy.purchasedReportsTitle}
           </a>
           <a href="#birth-profiles">
             <span aria-hidden="true">04</span>
@@ -347,6 +357,58 @@ export default async function AccountPage({
         </section>
 
         <section
+          className="dashboard-panel dashboard-panel--purchased"
+          id="purchased-reports"
+        >
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">{copy.purchasedReportsKicker}</p>
+              <h2>{copy.purchasedReportsTitle}</h2>
+            </div>
+            <span className="dashboard-panel__meta">
+              {readyEntitlements.length} {copy.readyToGenerate}
+            </span>
+          </div>
+          <p className="dashboard-panel__introduction">
+            {copy.purchasedReportsDescription}
+          </p>
+
+          {readyEntitlements.length ? (
+            <div className="purchased-report-list">
+              {readyEntitlements.map((entitlement) => (
+                <article className="ready-report" key={entitlement.id}>
+                  <div>
+                    <strong>
+                      {entitlement.report_type === "recovery_reflection"
+                        ? copy.recoveryReflection
+                        : copy.careerPurpose}
+                    </strong>
+                    <p>{copy.purchasedReady}</p>
+                    <small>
+                      {copy.purchasedOn}{" "}
+                      {new Date(entitlement.granted_at).toLocaleDateString(
+                        pack.tag,
+                      )}
+                    </small>
+                  </div>
+                  <GenerateReportButton
+                    entitlementId={entitlement.id}
+                    reportType={entitlement.report_type}
+                    profiles={birthProfiles.map((item) => ({
+                      id: item.id,
+                      label: item.label,
+                    }))}
+                    defaultLocale={reportLocale}
+                  />
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="dashboard-empty">{copy.noUnusedPurchases}</p>
+          )}
+        </section>
+
+        <section
           className="dashboard-panel dashboard-panel--reports"
           id="reports"
         >
@@ -359,28 +421,6 @@ export default async function AccountPage({
               {reports.length} {copy.saved}
             </span>
           </div>
-
-          {readyEntitlements.map((entitlement) => (
-            <article className="ready-report" key={entitlement.id}>
-              <div>
-                <strong>
-                  {entitlement.report_type === "recovery_reflection"
-                    ? copy.recoveryReflection
-                    : copy.careerPurpose}
-                </strong>
-                <p>{copy.purchasedReady}</p>
-              </div>
-              <GenerateReportButton
-                entitlementId={entitlement.id}
-                reportType={entitlement.report_type}
-                profiles={birthProfiles.map((item) => ({
-                  id: item.id,
-                  label: item.label,
-                }))}
-                defaultLocale={reportLocale}
-              />
-            </article>
-          ))}
 
           {reports.length ? (
             <AccountReportList

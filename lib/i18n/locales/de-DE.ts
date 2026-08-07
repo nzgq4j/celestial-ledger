@@ -85,6 +85,12 @@ const pack = {
       recoveryReflection: "Reflexion der Erneuerung",
       careerPurpose: "Berufung und Lebensaufgabe",
       purchasedReady: "Erworben und bereit zur Erstellung.",
+      purchasedReportsKicker: "Wartet auf Ihr Horoskop",
+      purchasedReportsTitle: "Gekaufte Berichte",
+      purchasedReportsDescription:
+        "Hier erscheinen gekaufte Berichte, die noch nicht erstellt wurden. Wählen Sie ein gespeichertes Geburtshoroskop und die gewünschten Themen aus, sobald Sie bereit sind.",
+      purchasedOn: "Gekauft",
+      noUnusedPurchases: "Es warten keine gekauften Berichte auf ihre Nutzung.",
       availableUntil: "Verfügbar bis",
       noReports:
         "Noch keine Berichte. Wähle unten einen aus, wenn du bereit bist.",

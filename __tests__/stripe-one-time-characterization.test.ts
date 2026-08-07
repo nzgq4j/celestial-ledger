@@ -160,6 +160,14 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(reportQueue).toContain('planKey !== "premium"');
   });
 
+  it("separates purchased but unused reports from the generated library", () => {
+    expect(account).toContain('id="purchased-reports"');
+    expect(account).toContain("linkedEntitlementIds");
+    expect(account).toContain('item.status === "unused"');
+    expect(account).toContain('item.status === "queued"');
+    expect(account).toContain("<GenerateReportButton");
+  });
+
   it("resolves portal plan switches from the active catalogue price", () => {
     expect(webhook).toContain('.from("commerce_plans")');
     expect(webhook).toContain('.eq("stripe_price_id", priceId)');

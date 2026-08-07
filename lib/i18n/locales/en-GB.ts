@@ -87,6 +87,12 @@ const pack = {
       recoveryReflection: "Recovery Reflection",
       careerPurpose: "Career and Purpose",
       purchasedReady: "Purchased and ready to generate.",
+      purchasedReportsKicker: "Awaiting your chart",
+      purchasedReportsTitle: "Purchased reports",
+      purchasedReportsDescription:
+        "Reports you have purchased but have not yet generated appear here. Choose a saved birth chart and the themes you want the report to explore when you are ready.",
+      purchasedOn: "Purchased",
+      noUnusedPurchases: "You have no purchased reports waiting to be used.",
       availableUntil: "Available until",
       noReports: "No reports yet. Choose a report below when you are ready.",
       complimentary: "Complimentary during preview",
