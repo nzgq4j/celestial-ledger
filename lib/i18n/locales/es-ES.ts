@@ -289,8 +289,7 @@ const pack = {
         "Tu Sol, tu Luna, tu ascendente, las posiciones en las casas y los aspectos planetarios forman un patrón exclusivamente tuyo. Comienza con tu carta natal y sigue sus firmas más profundas a través de la vocación, los vínculos, los desafíos y el cambio.",
       exploreChart: "Explora tu carta",
       readSample: "Leer un ejemplo",
-      privacy:
-        "Privado por diseño · Los datos natales nunca aparecen en las URL",
+      privacy: "El cielo recuerda el momento en que llegaste.",
       principlesLabel: "Principios de Celestial Atlas",
       personalisedTitle: "Cartas personalizadas",
       personalisedCopy: "Calculadas para tu hora y lugar.",

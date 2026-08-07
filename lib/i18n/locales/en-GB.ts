@@ -292,7 +292,7 @@ const pack = {
         "Your Sun, Moon, rising sign, house placements, and planetary aspects form a pattern entirely your own. Begin with your natal chart, then follow its deeper signatures through vocation, connection, challenge, and change.",
       exploreChart: "Explore your chart",
       readSample: "Read a sample",
-      privacy: "Private by design · Birth data never appears in URLs",
+      privacy: "The heavens remember the moment you arrived.",
       principlesLabel: "Celestial Atlas principles",
       personalisedTitle: "Personalised charts",
       personalisedCopy: "Calculated for your time and place.",

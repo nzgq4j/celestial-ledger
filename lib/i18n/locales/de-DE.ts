@@ -292,7 +292,7 @@ const pack = {
         "Deine Sonne, dein Mond, dein Aszendent, deine Häuserstellungen und planetaren Aspekte bilden ein Muster, das allein dir gehört. Beginne mit deinem Geburtshoroskop und folge seinen tieferen Signaturen durch Berufung, Verbindung, Herausforderung und Wandel.",
       exploreChart: "Dein Horoskop erkunden",
       readSample: "Beispiel lesen",
-      privacy: "Privat konzipiert · Geburtsdaten erscheinen nie in URLs",
+      privacy: "Der Himmel erinnert sich an den Moment deiner Ankunft.",
       principlesLabel: "Grundsätze von Celestial Atlas",
       personalisedTitle: "Persönliche Horoskope",
       personalisedCopy: "Für deine Zeit und deinen Ort berechnet.",

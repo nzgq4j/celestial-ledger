@@ -296,8 +296,7 @@ const pack = {
         "Votre Soleil, votre Lune, votre ascendant, vos maisons et vos aspects planétaires forment un motif qui n'appartient qu'à vous. Commencez par votre thème natal, puis suivez ses signatures profondes à travers la vocation, les liens, les défis et le changement.",
       exploreChart: "Explorer votre thème",
       readSample: "Lire un exemple",
-      privacy:
-        "Privé par conception · Les données de naissance n'apparaissent jamais dans les URL",
+      privacy: "Le ciel garde la mémoire de votre venue.",
       principlesLabel: "Principes de Celestial Atlas",
       personalisedTitle: "Thèmes personnalisés",
       personalisedCopy: "Calculés pour votre heure et votre lieu.",

@@ -102,6 +102,17 @@ export default function MethodPage() {
         </p>
       </aside>
 
+      <aside className="method-page__unknown-time">
+        <p className="section-kicker">A private celestial record</p>
+        <h2>Privacy belongs to the method.</h2>
+        <p>
+          Celestial Atlas is private by design. Personal charts and readings are
+          kept within the account that owns them, with access limited to their
+          owner. Birth data never appears in URLs, keeping the details of your
+          first moment out of links, browser history, and shared addresses.
+        </p>
+      </aside>
+
       <div className="method-page__actions">
         <Link href="/#chart" className="button-primary">
           Create my free natal chart
