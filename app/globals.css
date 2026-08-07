@@ -280,6 +280,80 @@
   gap: 0.6rem;
   align-items: center;
 }
+.admin-action {
+  display: inline-flex;
+  min-height: 2.85rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.68rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.45rem;
+  font:
+    650 0.82rem/1.1 Arial,
+    sans-serif;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+.admin-action > span {
+  font-size: 1rem;
+  line-height: 1;
+}
+.admin-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.admin-action:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.admin-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+.admin-action--save,
+.admin-action--restore {
+  border-color: #536177;
+  background: #0b1929;
+  color: var(--paper);
+}
+.admin-action--save:hover:not(:disabled),
+.admin-action--restore:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #102238;
+  color: var(--gold);
+}
+.admin-action--grant {
+  min-width: 10.5rem;
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink);
+}
+.admin-action--grant:hover:not(:disabled) {
+  border-color: #e5c978;
+  background: #e5c978;
+}
+.admin-action--danger,
+.admin-action--revoke {
+  border-color: rgba(168, 106, 96, 0.7);
+  background: rgba(168, 106, 96, 0.08);
+  color: #f2c2ba;
+}
+.admin-action--danger:hover:not(:disabled),
+.admin-action--revoke:hover:not(:disabled) {
+  border-color: #c78277;
+  background: rgba(168, 106, 96, 0.18);
+}
+.admin-action--revoke {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.72rem;
+  font-size: 0.74rem;
+}
 .admin-user-row select,
 .admin-form input,
 .admin-form textarea,

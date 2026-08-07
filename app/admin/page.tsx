@@ -216,7 +216,7 @@ export default async function AdminPage({
                         {new Date(user.created_at).toLocaleDateString("en-GB")}
                       </small>
                     </div>
-                    <form action={updateUserRole}>
+                    <form action={updateUserRole} className="admin-role-form">
                       <input type="hidden" name="user_id" value={user.id} />
                       <select
                         name="role"
@@ -232,12 +232,16 @@ export default async function AdminPage({
                       </select>
                       <button
                         disabled={!canManageUsers}
-                        className="button-quiet"
+                        className="admin-action admin-action--save"
                       >
+                        <span aria-hidden="true">&#10003;</span>
                         Save role
                       </button>
                     </form>
-                    <form action={updateUserAccess}>
+                    <form
+                      action={updateUserAccess}
+                      className="admin-access-form"
+                    >
                       <input type="hidden" name="user_id" value={user.id} />
                       <input
                         type="hidden"
@@ -246,8 +250,11 @@ export default async function AdminPage({
                       />
                       <button
                         disabled={!canManageUsers || user.id === identity.id}
-                        className={suspended ? "button-quiet" : "button-danger"}
+                        className={`admin-action ${suspended ? "admin-action--restore" : "admin-action--danger"}`}
                       >
+                        <span aria-hidden="true">
+                          {suspended ? "\u21ba" : "\u2298"}
+                        </span>
                         {suspended ? "Restore" : "Suspend"}
                       </button>
                     </form>
@@ -268,9 +275,10 @@ export default async function AdminPage({
                               : ""}
                           </span>
                           <button
-                            className="button-danger"
+                            className="admin-action admin-action--revoke"
                             disabled={!canManageUsers}
                           >
+                            <span aria-hidden="true">\u00d7</span>
                             Revoke
                           </button>
                         </form>
@@ -296,9 +304,10 @@ export default async function AdminPage({
                         />
                         <input name="ends_at" type="date" />
                         <button
-                          className="button-quiet"
+                          className="admin-action admin-action--grant"
                           disabled={!canManageUsers}
                         >
+                          <span aria-hidden="true">+</span>
                           Grant entitlement
                         </button>
                       </form>
