@@ -8,21 +8,7 @@ import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
 import { LandingPathways } from "@/components/LandingPathways";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
-
-const ZODIAC_SYMBOLS = [
-  "♈",
-  "♉",
-  "♊",
-  "♋",
-  "♌",
-  "♍",
-  "♎",
-  "♏",
-  "♐",
-  "♑",
-  "♒",
-  "♓",
-] as const;
+import { ZodiacConstellationStrip } from "@/components/ZodiacConstellationStrip";
 
 function MeaningNote({ children }: { children: React.ReactNode }) {
   return (
@@ -769,16 +755,7 @@ export default function HoroscopeApp({
             <section className="panel p-5 md:p-7" aria-live="polite">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-xl gold">Interpretation</h2>
-                <div
-                  className="flex flex-wrap gap-2 text-xl text-[#c9a75d]"
-                  aria-label="Zodiac constellation symbols"
-                >
-                  {ZODIAC_SYMBOLS.map((symbol) => (
-                    <span key={symbol} aria-hidden="true">
-                      {symbol}
-                    </span>
-                  ))}
-                </div>
+                <ZodiacConstellationStrip />
               </div>
               <MeaningNote>
                 This reading brings the separate chart factors together into
