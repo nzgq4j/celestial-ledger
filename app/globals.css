@@ -263,6 +263,54 @@
   color: var(--ivory);
   padding: 0.65rem;
 }
+.admin-entitlement-options {
+  display: flex;
+  min-width: 17rem;
+  align-self: stretch;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid #3d4b5f;
+  background: #050e19;
+}
+.admin-entitlement-options legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.admin-entitlement-options label {
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.admin-entitlement-options label:hover {
+  border-color: rgba(201, 167, 93, 0.35);
+  color: var(--paper);
+}
+.admin-entitlement-options input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--gold);
+}
+.admin-entitlement-options label:has(input:checked) {
+  border-color: rgba(201, 167, 93, 0.6);
+  background: rgba(201, 167, 93, 0.1);
+  color: var(--gold);
+}
 .admin-user-row > div:first-child {
   display: grid;
   gap: 0.25rem;

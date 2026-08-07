@@ -90,36 +90,43 @@ export async function grantUserCapability(formData: FormData) {
   const input = z
     .object({
       userId: z.string().uuid(),
-      capabilityKey: z.string().regex(/^[a-z][a-z0-9_.]{2,95}$/),
+      capabilityKeys: z
+        .array(z.enum(["birth_profiles.saved", "report.standard_credit"]))
+        .min(1),
       allowance: z.union([z.literal(""), z.coerce.number().int().positive()]),
       endsAt: z.union([z.literal(""), z.string().date()]),
     })
     .parse({
       userId: formData.get("user_id"),
-      capabilityKey: formData.get("capability_key"),
+      capabilityKeys: formData.getAll("capability_key"),
       allowance: formData.get("allowance"),
       endsAt: formData.get("ends_at"),
     });
   const { error } = await createAdminClient()
     .from("capability_grants")
-    .insert({
-      user_id: input.userId,
-      capability_key: input.capabilityKey,
-      source_type: "administrative",
-      source_reference: `admin:${actor.id}`,
-      allowance: input.allowance === "" ? null : input.allowance,
-      period: "none",
-      ends_at: input.endsAt
-        ? new Date(`${input.endsAt}T23:59:59.999Z`).toISOString()
-        : null,
-      priority: 10,
-      status: "active",
-    });
+    .insert(
+      input.capabilityKeys.map((capabilityKey) => ({
+        user_id: input.userId,
+        capability_key: capabilityKey,
+        source_type: "administrative",
+        source_reference: `admin:${actor.id}`,
+        allowance: input.allowance === "" ? null : input.allowance,
+        period: "none",
+        ends_at: input.endsAt
+          ? new Date(`${input.endsAt}T23:59:59.999Z`).toISOString()
+          : null,
+        priority: 10,
+        status: "active",
+      })),
+    );
   if (error) redirect("/admin?notice=entitlement_failed");
   await audit(actor.id, "admin.entitlement.granted", {
     targetUserId: input.userId,
-    settingKey: input.capabilityKey,
-    metadata: { unlimited: input.allowance === "" },
+    settingKey: input.capabilityKeys.join(","),
+    metadata: {
+      capabilities: input.capabilityKeys.join(","),
+      unlimited: input.allowance === "",
+    },
   });
   done("entitlement_updated");
 }

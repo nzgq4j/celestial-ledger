@@ -35,7 +35,6 @@ export default async function AdminPage({
     postsResult,
     auditResult,
     contactResult,
-    capabilitiesResult,
     grantsResult,
     params,
   ] = await Promise.all([
@@ -58,10 +57,6 @@ export default async function AdminPage({
       .order("created_at", { ascending: false })
       .limit(50),
     admin
-      .from("plan_capabilities")
-      .select("capability_key")
-      .order("capability_key"),
-    admin
       .from("capability_grants")
       .select("id,user_id,capability_key,allowance,ends_at,status")
       .eq("status", "active")
@@ -72,9 +67,6 @@ export default async function AdminPage({
     (rolesResult.data ?? []).map((item) => [item.user_id, item.role]),
   );
   const users = usersResult.data.users;
-  const capabilityKeys = Array.from(
-    new Set((capabilitiesResult.data ?? []).map((item) => item.capability_key)),
-  );
   const grantsByUser = new Map<string, NonNullable<typeof grantsResult.data>>();
   for (const grant of grantsResult.data ?? []) {
     const current = grantsByUser.get(grant.user_id ?? "") ?? [];
@@ -268,8 +260,13 @@ export default async function AdminPage({
                           />
                           <input type="hidden" name="user_id" value={user.id} />
                           <span>
-                            {grant.capability_key} ·{" "}
-                            {grant.allowance ?? "unlimited"}
+                            {grant.capability_key === "birth_profiles.saved"
+                              ? "Natal charts"
+                              : grant.capability_key ===
+                                  "report.standard_credit"
+                                ? "Reports"
+                                : grant.capability_key}{" "}
+                            · {grant.allowance ?? "unlimited"}
                             {grant.ends_at
                               ? ` · until ${new Date(grant.ends_at).toLocaleDateString("en-GB")}`
                               : ""}
@@ -285,17 +282,27 @@ export default async function AdminPage({
                       ))}
                       <form action={grantUserCapability}>
                         <input type="hidden" name="user_id" value={user.id} />
-                        <select
-                          name="capability_key"
-                          required
-                          disabled={!canManageUsers}
-                        >
-                          {capabilityKeys.map((key) => (
-                            <option key={key} value={key}>
-                              {key}
-                            </option>
-                          ))}
-                        </select>
+                        <fieldset className="admin-entitlement-options">
+                          <legend>Grant access to</legend>
+                          <label>
+                            <input
+                              type="checkbox"
+                              name="capability_key"
+                              value="birth_profiles.saved"
+                              disabled={!canManageUsers}
+                            />
+                            <span>Natal charts</span>
+                          </label>
+                          <label>
+                            <input
+                              type="checkbox"
+                              name="capability_key"
+                              value="report.standard_credit"
+                              disabled={!canManageUsers}
+                            />
+                            <span>Reports</span>
+                          </label>
+                        </fieldset>
                         <input
                           name="allowance"
                           type="number"
