@@ -2225,6 +2225,36 @@ a {
   border: 1px solid #4a5b72;
   background: var(--surface-deep);
 }
+.ready-report {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 1.15rem;
+  padding: clamp(1rem, 2.5vw, 1.45rem);
+}
+.ready-report > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.ready-report > div:first-child strong {
+  color: var(--paper);
+  font:
+    400 1.2rem Georgia,
+    serif;
+}
+.ready-report > div:first-child p {
+  flex: 0 1 auto;
+  margin: 0;
+  text-align: right;
+}
+.ready-report > .report-generator {
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+}
 .ready-report p,
 .compact-products p,
 .account-form p,
@@ -2546,6 +2576,12 @@ a {
   }
 }
 @media (max-width: 760px) {
+  .ready-report > div:first-child {
+    display: grid;
+  }
+  .ready-report > div:first-child p {
+    text-align: left;
+  }
   .interpretation-section {
     grid-template-columns: 1fr;
     gap: 0.9rem;
