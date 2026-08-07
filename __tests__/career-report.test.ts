@@ -21,7 +21,7 @@ describe("career report evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       careerReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 1, maxLength: 1800 });
+    ).toMatchObject({ minLength: 3000, maxLength: 12000 });
     expect(careerReportJsonSchema.properties.disclaimer).toMatchObject({
       minLength: 1,
       maxLength: 400,
@@ -140,5 +140,39 @@ describe("career report evidence", () => {
         "strengths_talents",
       ]),
     ).toThrow("DUPLICATE_CAREER_THEME");
+  });
+
+  it("rejects a new-format section with fewer than 750 analysis words", async () => {
+    const { evidence } = await buildCareerEvidence({
+      date: "1990-01-15",
+      time: "12:00",
+      timeUnknown: false,
+      place: birthplace,
+    });
+    const draft = careerReportSchema.parse({
+      title: "Career and Purpose",
+      introduction: "A reflective introduction.",
+      sections: [
+        {
+          title: "Direction",
+          theme: "direction_purpose",
+          bottomLine: "Choose the work that best matches your values.",
+          narrative: "brief ".repeat(700),
+          bringIntoLife: "Name one value and one action that expresses it.",
+          evidenceIds: ["placement:sun"],
+          reflectionQuestions: ["What matters now?"],
+          journalingPrompts: [
+            "Write about meaning.",
+            "List your strengths.",
+            "Describe one next step.",
+          ],
+        },
+      ],
+      closing: "A reflective close.",
+      disclaimer: "This is symbolic reflection, not prediction.",
+    });
+    expect(() =>
+      validateEvidenceLinks(draft, evidence, ["direction_purpose"]),
+    ).toThrow("CAREER_SECTION_TOO_SHORT");
   });
 });

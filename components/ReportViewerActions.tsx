@@ -1,28 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { ReportDeleteModal } from "@/components/ReportDeleteModal";
 
-export function ReportViewerActions({
-  reportId,
-  autoPrint,
-}: {
-  reportId: string;
-  autoPrint: boolean;
-}) {
+export function ReportViewerActions({ reportId }: { reportId: string }) {
   const router = useRouter();
   const { pack } = useLocale();
   const copy = pack.messages.account;
   const [deleting, setDeleting] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
-  useEffect(() => {
-    if (!autoPrint) return;
-    const timer = window.setTimeout(() => window.print(), 350);
-    return () => window.clearTimeout(timer);
-  }, [autoPrint]);
 
   async function remove() {
     setDeleting(true);
@@ -36,13 +24,13 @@ export function ReportViewerActions({
   return (
     <>
       <div className="report-viewer-actions" aria-label={copy.reportActions}>
-        <button
-          type="button"
-          className="button-quiet"
-          onClick={() => window.print()}
+        <a
+          className="button-primary"
+          href={`/api/reports/${reportId}/pdf`}
+          download
         >
           {copy.printReport}
-        </button>
+        </a>
         <button
           type="button"
           className="button-danger"

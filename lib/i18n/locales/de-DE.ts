@@ -193,7 +193,7 @@ const pack = {
       statusCompleted: "Bereit",
       reportProgress: "Fortschritt der Berichterstellung",
       openReport: "Öffnen",
-      printReport: "Drucken",
+      printReport: "PDF herunterladen",
       deleteReport: "Löschen",
       deleteReportConfirm: "Diesen privaten Bericht dauerhaft löschen?",
       deleteReportKicker: "Aus deinem Atlas entfernen",
@@ -227,6 +227,9 @@ const pack = {
       unknownTimeEvidence:
         "Die Geburtszeit ist unbekannt; Häuser, Achsen und Aussagen, die eine genaue Zeit voraussetzen, sind ausgeschlossen.",
       questionsToCarry: "Fragen zum Weitertragen",
+      bottomLine: "Das Wichtigste auf einen Blick",
+      bringIntoLife: "Bring dies in dein Leben",
+      journalingPrompts: "Schreib- und Journaling-Impulse",
       evidenceForSection: "Horoskopbelege für diesen Abschnitt",
       evidenceConstellation: "Konstellation der Belege",
       chartFactorsUsed: "Verwendete Horoskopfaktoren",

@@ -3178,11 +3178,39 @@ a {
   color: #d2cabc;
   line-height: 1.75;
 }
+.report-section-callout {
+  margin: 1.5rem 0 2rem;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid rgba(201, 161, 82, 0.45);
+  border-left: 3px solid var(--gold);
+  background: linear-gradient(
+    135deg,
+    rgba(201, 161, 82, 0.1),
+    rgba(13, 26, 43, 0.72)
+  );
+}
+.report-section-callout h3 {
+  margin: 0 0 0.65rem;
+  color: var(--gold);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.report-section-callout p {
+  margin: 0;
+  color: var(--paper);
+  font-family: Georgia, serif;
+  font-size: 1.12rem;
+}
 .reflection-prompts {
   margin-top: 1.5rem;
   padding: 1.25rem;
   background: rgba(13, 26, 43, 0.8);
   border-left: 1px solid var(--map-cyan);
+}
+.reflection-prompts ol,
+.reflection-prompts ul {
+  padding-left: 1.4rem;
 }
 .reflection-prompts h3 {
   color: var(--map-cyan);

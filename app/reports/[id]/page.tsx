@@ -22,10 +22,8 @@ export const metadata = {
 
 export default async function ReportPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ print?: string }>;
 }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -88,10 +86,9 @@ export default async function ReportPage({
       </main>
     );
   const evidenceById = new Map(evidence.items.map((item) => [item.id, item]));
-  const autoPrint = (await searchParams).print === "1";
   return (
     <main className="page-shell private-report" lang={reportLocale}>
-      <ReportViewerActions reportId={report.id} autoPrint={autoPrint} />
+      <ReportViewerActions reportId={report.id} />
       <header className="report-viewer-heading">
         <p className="eyebrow">
           {isRecovery ? copy.recoveryPrivateEdition : copy.careerPrivateEdition}
@@ -107,7 +104,31 @@ export default async function ReportPage({
           {output.data.sections.map((section) => (
             <section key={section.title}>
               <h2>{section.title}</h2>
-              <p>{section.narrative}</p>
+              {section.bottomLine && (
+                <aside className="report-section-callout">
+                  <h3>{copy.bottomLine}</h3>
+                  <p>{section.bottomLine}</p>
+                </aside>
+              )}
+              {section.narrative.split(/\n\s*\n/).map((paragraph, index) => (
+                <p key={`${section.title}-narrative-${index}`}>{paragraph}</p>
+              ))}
+              {section.bringIntoLife && (
+                <div className="reflection-prompts">
+                  <h3>{copy.bringIntoLife}</h3>
+                  <p>{section.bringIntoLife}</p>
+                </div>
+              )}
+              {!!section.journalingPrompts?.length && (
+                <div className="reflection-prompts">
+                  <h3>{copy.journalingPrompts}</h3>
+                  <ol>
+                    {section.journalingPrompts.map((prompt) => (
+                      <li key={prompt}>{prompt}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
               {!!section.reflectionQuestions.length && (
                 <div className="reflection-prompts">
                   <h3>{copy.questionsToCarry}</h3>

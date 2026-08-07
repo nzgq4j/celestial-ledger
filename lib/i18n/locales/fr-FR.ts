@@ -197,7 +197,7 @@ const pack = {
       statusCompleted: "Prêt",
       reportProgress: "Progression de la génération du rapport",
       openReport: "Ouvrir",
-      printReport: "Imprimer",
+      printReport: "Télécharger le PDF",
       deleteReport: "Supprimer",
       deleteReportConfirm: "Supprimer définitivement ce rapport privé ?",
       deleteReportKicker: "Retirer de votre atlas",
@@ -231,6 +231,9 @@ const pack = {
       unknownTimeEvidence:
         "L’heure de naissance est inconnue ; les maisons, les angles et les interprétations dépendant d’une heure précise sont exclus.",
       questionsToCarry: "Questions à emporter",
+      bottomLine: "L’essentiel",
+      bringIntoLife: "Faites entrer ceci dans votre vie",
+      journalingPrompts: "Invitations d’écriture et de journal",
       evidenceForSection: "Éléments astrologiques de cette section",
       evidenceConstellation: "Constellation d’éléments",
       chartFactorsUsed: "Facteurs du thème utilisés",

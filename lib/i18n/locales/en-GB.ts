@@ -193,7 +193,7 @@ const pack = {
       statusCompleted: "Ready",
       reportProgress: "Report generation progress",
       openReport: "Open",
-      printReport: "Print",
+      printReport: "Download PDF",
       deleteReport: "Delete",
       deleteReportConfirm: "Permanently delete this private report?",
       deleteReportKicker: "Remove from your atlas",
@@ -227,6 +227,9 @@ const pack = {
       unknownTimeEvidence:
         "Birth time is unknown; houses, angles, and exact-time claims are excluded.",
       questionsToCarry: "Questions to carry forward",
+      bottomLine: "BLUF — the bottom line",
+      bringIntoLife: "Bring this into your life",
+      journalingPrompts: "Writing and journaling prompts",
       evidenceForSection: "Evidence for this section",
       evidenceConstellation: "Evidence constellation",
       chartFactorsUsed: "Chart factors used",

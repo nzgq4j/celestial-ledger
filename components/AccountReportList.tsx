@@ -209,13 +209,13 @@ export function AccountReportList({
                 </Link>
               )}
               {report.status === "completed" && (
-                <Link
+                <a
                   className="report-action report-action--quiet"
-                  href={`/reports/${report.id}?print=1`}
-                  target="_blank"
+                  href={`/api/reports/${report.id}/pdf`}
+                  download
                 >
                   {copy.printReport}
-                </Link>
+                </a>
               )}
               {report.status === "failed" && (
                 <button

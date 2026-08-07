@@ -7,8 +7,8 @@ import {
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
-export const RECOVERY_SCHEMA_VERSION = "recovery-2";
-export const RECOVERY_PROMPT_VERSION = "recovery-2";
+export const RECOVERY_SCHEMA_VERSION = "recovery-3";
+export const RECOVERY_PROMPT_VERSION = "recovery-3";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([
@@ -63,9 +63,16 @@ const recoverySectionSchema = z
   .object({
     title: z.string().min(1).max(100),
     theme: recoveryThemeSchema,
-    narrative: z.string().min(1).max(1800),
+    bottomLine: z.string().min(1).max(1200).optional(),
+    narrative: z.string().min(1).max(12000),
+    bringIntoLife: z.string().min(1).max(2400).optional(),
     evidenceIds: z.array(evidenceReference).min(1).max(8),
     reflectionQuestions: z.array(z.string().min(1).max(240)).min(1).max(3),
+    journalingPrompts: z
+      .array(z.string().min(1).max(320))
+      .min(3)
+      .max(5)
+      .optional(),
   })
   .strict();
 
@@ -96,14 +103,19 @@ export const recoveryReportJsonSchema = {
         required: [
           "title",
           "theme",
+          "bottomLine",
           "narrative",
+          "bringIntoLife",
           "evidenceIds",
           "reflectionQuestions",
+          "journalingPrompts",
         ],
         properties: {
           title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: recoveryThemeSchema.options },
-          narrative: { type: "string", minLength: 1, maxLength: 1800 },
+          bottomLine: { type: "string", minLength: 1, maxLength: 1200 },
+          narrative: { type: "string", minLength: 3000, maxLength: 12000 },
+          bringIntoLife: { type: "string", minLength: 1, maxLength: 2400 },
           evidenceIds: {
             type: "array",
             minItems: 1,
@@ -115,6 +127,12 @@ export const recoveryReportJsonSchema = {
             minItems: 1,
             maxItems: 3,
             items: { type: "string", minLength: 1, maxLength: 240 },
+          },
+          journalingPrompts: {
+            type: "array",
+            minItems: 3,
+            maxItems: 5,
+            items: { type: "string", minLength: 1, maxLength: 320 },
           },
         },
       },
@@ -143,6 +161,9 @@ ${reportLanguageInstruction(locale)}
 - Reveal constructive patterns without forced optimism, shame or fatalism.
 - Use only the selected themes, with exactly one section per theme and no additional sections.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
+- Structure every section with: a concise bottomLine field (the BLUF), a narrative of no fewer than 750 words of interpretation and analysis, a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
+- Without naming, citing, or alluding to any recovery program or therapy model, weave in relevant principles such as honest self-inventory, acceptance of what cannot be controlled, responsibility for present choices, repair where safe and appropriate, connection with trusted support, attention to one day and one action at a time, identifying automatic thoughts, testing interpretations against evidence, reframing unhelpful patterns, noticing triggers, and choosing workable alternative responses.
+- Apply those principles specifically to the selected theme and supplied chart evidence; do not turn them into generic recovery advice or repeat the same principles in every section.
 - Never invent or recalculate chart facts. Every section must cite supplied evidence IDs.
 - If timeKnown is false, do not use houses, angles or exact-time claims.
 
@@ -163,6 +184,10 @@ ${JSON.stringify(evidence)}`;
 }
 
 const prohibitedOutput = [
+  /\b12[ -]?step(?:s)?\b/i,
+  /\btwelve[ -]?step(?:s)?\b/i,
+  /\bCBT\b/,
+  /\bcognitive behavio(?:u)?ral therapy\b/i,
   /you (?:have|suffer from) (?:an? )?(?:addiction|disorder|disease)/i,
   /(?:stop|start|change|reduce|increase) (?:your )?medication/i,
   /(?:will|are going to) relapse/i,
@@ -185,13 +210,30 @@ export function validateRecoveryReport(
     report.closing,
     ...report.sections.flatMap((section) => [
       section.title,
+      section.bottomLine ?? "",
       section.narrative,
+      section.bringIntoLife ?? "",
       ...section.reflectionQuestions,
+      ...(section.journalingPrompts ?? []),
     ]),
   ].join("\n");
   if (prohibitedOutput.some((pattern) => pattern.test(combined)))
     throw new Error("RECOVERY_SAFETY_REJECTED");
   for (const section of report.sections) {
+    if (
+      section.bottomLine ||
+      section.bringIntoLife ||
+      section.journalingPrompts
+    ) {
+      if (
+        !section.bottomLine ||
+        !section.bringIntoLife ||
+        !section.journalingPrompts
+      )
+        throw new Error("INCOMPLETE_RECOVERY_SECTION_FORMAT");
+      if (section.narrative.trim().split(/\s+/).filter(Boolean).length < 750)
+        throw new Error("RECOVERY_SECTION_TOO_SHORT");
+    }
     if (!selectedThemes.has(section.theme))
       throw new Error("UNSELECTED_RECOVERY_THEME");
     if (reportedThemes.has(section.theme))

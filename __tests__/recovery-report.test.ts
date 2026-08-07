@@ -61,7 +61,7 @@ describe("Recovery Reflection safety and evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 1, maxLength: 1800 });
+    ).toMatchObject({ minLength: 3000, maxLength: 12000 });
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties
         .reflectionQuestions.items,
@@ -123,6 +123,8 @@ describe("Recovery Reflection safety and evidence", () => {
     "Stop your medication during this cycle.",
     "Your chart caused substance use.",
     "Avoid professional support.",
+    "This follows a 12-step model.",
+    "Use CBT to challenge this thought.",
   ])("rejects prohibited recovery language: %s", async (unsafe) => {
     const bundle = await evidence();
     expect(() =>

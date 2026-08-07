@@ -191,7 +191,7 @@ const pack = {
       statusCompleted: "Listo",
       reportProgress: "Progreso de generación del informe",
       openReport: "Abrir",
-      printReport: "Imprimir",
+      printReport: "Descargar PDF",
       deleteReport: "Eliminar",
       deleteReportConfirm: "¿Eliminar permanentemente este informe privado?",
       deleteReportKicker: "Eliminar de tu atlas",
@@ -224,6 +224,9 @@ const pack = {
       unknownTimeEvidence:
         "Se desconoce la hora de nacimiento; se excluyen las casas, los ángulos y las afirmaciones que dependen de una hora exacta.",
       questionsToCarry: "Preguntas para llevar contigo",
+      bottomLine: "Lo esencial",
+      bringIntoLife: "Lleva esto a tu vida",
+      journalingPrompts: "Propuestas de escritura y diario",
       evidenceForSection: "Evidencias de esta sección",
       evidenceConstellation: "Constelación de evidencias",
       chartFactorsUsed: "Factores de la carta utilizados",
