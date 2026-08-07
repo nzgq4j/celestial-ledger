@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { AdminThemeToggle } from "@/components/AdminThemeToggle";
 import {
   deleteBlogPost,
   saveBlogPost,
@@ -98,23 +100,62 @@ export default async function AdminPage({
     identity.role,
   );
   const canManageSystem = identity.role === "site_admin";
+  const reportStatuses = [
+    {
+      label: "Ready",
+      value: reports.filter((report) => report.status === "completed").length,
+      tone: "ready",
+    },
+    {
+      label: "Generating",
+      value: reports.filter((report) => report.status === "generating").length,
+      tone: "generating",
+    },
+    {
+      label: "Queued",
+      value: reports.filter((report) => report.status === "queued").length,
+      tone: "queued",
+    },
+    {
+      label: "Needs attention",
+      value: reports.filter((report) => report.status === "failed").length,
+      tone: "failed",
+    },
+  ];
+  const statusTotal = Math.max(
+    1,
+    reportStatuses.reduce((total, status) => total + status.value, 0),
+  );
 
   return (
     <main className="admin-shell">
       <header className="admin-hero">
         <div>
-          <p className="eyebrow">Observatory control room</p>
-          <h1>Celestial Atlas administration</h1>
+          <p className="eyebrow">Administration / Dashboard</p>
+          <h1>Main dashboard</h1>
           <p>
-            Manage access, generation, discovery, integrations, and editorial
-            publishing from one private console.
+            A clear view of members, private reports, publishing, and the
+            systems that keep the atlas moving.
           </p>
         </div>
-        <div className="admin-identity">
-          <span>Signed in as</span>
-          <strong>{identity.email}</strong>
-          <code>{identity.role}</code>
-          <Link href="/account">Return to account</Link>
+        <div className="admin-hero__utilities">
+          <nav className="admin-quick-actions" aria-label="Quick actions">
+            <a href="#users">Manage users</a>
+            <a href="#journal">New journal entry</a>
+          </nav>
+          <AdminThemeToggle />
+          <div className="admin-identity">
+            <span className="admin-identity__avatar" aria-hidden="true">
+              {identity.email.slice(0, 1).toUpperCase()}
+            </span>
+            <span>
+              <strong>{identity.email}</strong>
+              <code>{identity.role.replaceAll("_", " ")}</code>
+            </span>
+            <Link href="/account" aria-label="Return to account">
+              &#8599;
+            </Link>
+          </div>
         </div>
       </header>
       {notice && (
@@ -125,8 +166,17 @@ export default async function AdminPage({
 
       <div className="admin-workspace">
         <aside className="admin-sidebar">
-          <div className="admin-sidebar__mark" aria-hidden="true">
-            ✦
+          <div className="admin-sidebar__brand">
+            <Image
+              src="/celestialatlas-logo.png"
+              alt=""
+              width={42}
+              height={42}
+            />
+            <span>
+              <strong>Celestial Atlas</strong>
+              <small>Admin observatory</small>
+            </span>
           </div>
           <nav className="admin-rail" aria-label="Administration sections">
             <span>Workspace</span>
@@ -157,11 +207,17 @@ export default async function AdminPage({
             </div>
             <div className="admin-metrics">
               <article>
+                <span className="admin-metric__icon" aria-hidden="true">
+                  &#9678;
+                </span>
                 <span>Registered users</span>
                 <strong>{users.length}</strong>
                 <small>First 100 accounts</small>
               </article>
               <article>
+                <span className="admin-metric__icon" aria-hidden="true">
+                  &#10022;
+                </span>
                 <span>Private reports</span>
                 <strong>{reportsResult.count ?? reports.length}</strong>
                 <small>
@@ -170,11 +226,17 @@ export default async function AdminPage({
                 </small>
               </article>
               <article>
+                <span className="admin-metric__icon" aria-hidden="true">
+                  &#9671;
+                </span>
                 <span>Administrators</span>
                 <strong>{roleMap.size}</strong>
                 <small>Role-assigned accounts</small>
               </article>
               <article>
+                <span className="admin-metric__icon" aria-hidden="true">
+                  &#9998;
+                </span>
                 <span>Published entries</span>
                 <strong>
                   {
@@ -184,6 +246,64 @@ export default async function AdminPage({
                   }
                 </strong>
                 <small>Public journal</small>
+              </article>
+            </div>
+            <div className="admin-overview-grid">
+              <article className="admin-report-pulse">
+                <header>
+                  <div>
+                    <span>Generation health</span>
+                    <h3>Private report pipeline</h3>
+                  </div>
+                  <strong>{reportsResult.count ?? reports.length}</strong>
+                </header>
+                <div className="admin-pipeline" aria-label="Report statuses">
+                  {reportStatuses.map((status) => (
+                    <div className="admin-pipeline__row" key={status.label}>
+                      <span>{status.label}</span>
+                      <div>
+                        <i
+                          className={`admin-pipeline__bar admin-pipeline__bar--${status.tone}`}
+                          style={{
+                            width: `${Math.max(status.value ? 6 : 0, (status.value / statusTotal) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                      <strong>{status.value}</strong>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="admin-overview-activity">
+                <header>
+                  <div>
+                    <span>Control-room activity</span>
+                    <h3>Recent changes</h3>
+                  </div>
+                  <a href="#audit">View audit trail</a>
+                </header>
+                <ol>
+                  {(auditResult.data ?? []).slice(0, 5).map((item) => (
+                    <li key={item.id}>
+                      <i aria-hidden="true" />
+                      <span>
+                        <strong>{item.action.replaceAll("_", " ")}</strong>
+                        <small>{item.setting_key ?? "System setting"}</small>
+                      </span>
+                      <time>
+                        {new Date(item.created_at).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </time>
+                    </li>
+                  ))}
+                  {!auditResult.data?.length && (
+                    <li className="admin-overview-activity__empty">
+                      No privileged changes recorded yet.
+                    </li>
+                  )}
+                </ol>
               </article>
             </div>
           </section>
