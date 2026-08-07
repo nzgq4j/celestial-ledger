@@ -1,6 +1,40 @@
 import type { LocaleTag } from "@/lib/i18n/config";
 
-export function LocaleFlag({ locale }: { locale: LocaleTag }) {
+export type EnglishFlagRegion = "GB" | "US";
+
+export function englishFlagRegion(
+  browserLanguages: readonly string[] | undefined,
+): EnglishFlagRegion {
+  const primaryLanguage = browserLanguages?.[0];
+  if (!primaryLanguage) return "GB";
+  try {
+    return new Intl.Locale(primaryLanguage).region === "US" ? "US" : "GB";
+  } catch {
+    return "GB";
+  }
+}
+
+function UnitedKingdomFlag() {
+  return (
+    <svg viewBox="0 0 60 36" role="img" aria-label="United Kingdom flag">
+      <rect width="60" height="36" fill="#012169" />
+      <path d="M0 0l60 36M60 0L0 36" stroke="#fff" strokeWidth="7.2" />
+      <path d="M0 0l60 36M60 0L0 36" stroke="#c8102e" strokeWidth="4" />
+      <path d="M30 0v36M0 18h60" stroke="#fff" strokeWidth="12" />
+      <path d="M30 0v36M0 18h60" stroke="#c8102e" strokeWidth="7.2" />
+    </svg>
+  );
+}
+
+export function LocaleFlag({
+  locale,
+  englishRegion = "GB",
+}: {
+  locale: LocaleTag;
+  englishRegion?: EnglishFlagRegion;
+}) {
+  if (locale === "en-GB" && englishRegion === "GB")
+    return <UnitedKingdomFlag />;
   if (locale === "en-GB")
     return (
       <svg viewBox="0 0 60 36" role="img" aria-label="United States flag">
