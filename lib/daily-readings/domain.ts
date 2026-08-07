@@ -3,7 +3,7 @@ import { localeTags } from "@/lib/i18n/config";
 
 export const DAILY_READING_SCHEMA_VERSION = "daily-reading-v1";
 export const DAILY_READING_RULE_VERSION = "daily-rules-v1";
-export const DAILY_READING_METHOD_VERSION = "daily-method-v1";
+export const DAILY_READING_METHOD_VERSION = "daily-method-v2";
 
 export const dailyBodySchema = z.enum([
   "Sun",

@@ -31,7 +31,7 @@ type NarrativeCopy = {
     phase: string,
     state: string,
   ) => string;
-  applications: (theme: string) => string[];
+  applications: (sectionId: string, signal: DailySignal) => string[];
   questions: (theme: string, secondTheme: string) => string[];
 };
 
@@ -82,27 +82,55 @@ const english: NarrativeCopy = {
   tension: (first, second) =>
     `${first} and ${second.toLowerCase()} both deserve room. The first names the dominant emphasis; the second shows what could be lost if the day is handled too narrowly. Hold them as a working polarity rather than choosing one and dismissing the other. A response may combine a firm priority with a reversible method, or a clear boundary with enough listening to revise its form. The tension changes the advice from “push harder” or “wait indefinitely” into a measured sequence: clarify, act, observe and adjust.`,
   sectionNarrative: (id, theme, transit, phase, state) => {
-    const common = `${theme} is supported by ${transit}. The contact is ${state}, and the ${phase} sets the broader daily rhythm.`;
     const endings: Record<string, string> = {
-      "strategic-context": `${common} Place the day inside the longer arc of the transiting planet rather than reading it as an isolated mood. The natal target shows where the pattern meets an established part of the chart. What matters now is the stage of development: build structure around a durable transit, make room for revision under a changing one, and use the lunar signal to decide how much can reasonably be carried today.`,
-      "recent-past": `${common} Separating contacts describe material that has recently peaked and now asks to be understood in practice. Look for the residue rather than inventing a specific event: an unfinished conversation, a decision still settling, a boundary that needs reinforcement, or a lesson becoming clearer after pressure has passed. Today differs because integration can replace immediate reaction.`,
-      "present-conditions": `${common} This is the most concentrated part of the reading. The aspect describes the relationship between the active planet and the natal function; the orb and phase describe its present emphasis. Keep the symbolism close to observable choices. What receives attention, language, effort or restraint today becomes the place where the chart is most directly lived.`,
-      "immediate-application": `${common} Give the pattern a narrow practical destination. Choose one action, one conversation or one review that can reveal useful information. Establish the terms before expanding the scope. If the first step produces friction, treat that response as feedback about timing, ownership or boundaries rather than as proof that the entire direction is wrong.`,
-      "work-professional": `${common} In work, convert the theme into sequence: define the purpose, identify the dependency, record the decision and protect the standard that matters. The transit favours work that makes the invisible structure visible. Avoid absorbing every urgent request into the main plan; distinguish genuine priority from noise created by unclear ownership.`,
-      "relationships-communication": `${common} In relationship, describe your experience and request without assigning another person a hidden motive. Let reciprocity be practical: who is offering what, what is being assumed, and which boundary keeps the exchange honest? A clear sentence may do more than a long explanation. Leave room for the response to alter the form without erasing the need.`,
-      "energy-self-regulation": `${common} Match effort to the duration of the influence. A fast lunar trigger may need a pause and a reset; a developmental or structural transit needs sustainable repetition. Protect attention from unnecessary switching, and do not turn one intense interval into a judgement about the whole day. Rhythm is part of interpretation, not an afterthought.`,
-      "what-is-ending": `${common} The separating side of the pattern is ready to move from reaction into integration. Release the version of the task, conversation or expectation that has already given its information. Completion may mean documenting the lesson, repairing a small gap, closing an unnecessary loop or allowing a former urgency to lose authority.`,
-      "what-is-beginning": `${common} The applying side of the pattern is beginning to gather definition. Prepare without forcing finality: assemble the facts, identify the decision point, name the boundary and choose the first reversible action. Emerging conditions become easier to work with when preparation is concrete and the desired direction is stated plainly.`,
-      "next-72-hours": `${common} Carry the leading theme forward as a sequence rather than a single verdict. First clarify the practical question; then act at a scale that produces feedback; finally review what changed. The transit duration indicates whether this is a brief trigger or part of a larger developmental cycle. Let later evidence refine today's interpretation.`,
-      "longer-term-staging": `${common} The day is a staging point inside a larger pattern. Repetition matters more than drama: the standard you keep, the conversation you improve, the resource boundary you maintain or the creative practice you return to. Record the small choice that best expresses the theme; it becomes a useful reference when the transit changes phase or returns to the same natal territory.`,
+      "strategic-context": `${transit} places ${theme.toLowerCase()} inside a ${state} longer arc. Read this durable influence as context rather than as an isolated mood: the natal target shows where the pattern meets an established part of the chart, while the ${phase} indicates how much of that larger work can reasonably be carried today.`,
+      "recent-past": `${transit} is ${state}, so its relevance here is what remains after the contact's recent peak. Look for residue connected with ${theme.toLowerCase()}: a decision still settling, an unfinished exchange, or a lesson becoming clearer after pressure has passed. Integration is more useful here than recreating urgency.`,
+      "present-conditions": `The clearest current condition is ${transit}. Its ${state} state concentrates ${theme.toLowerCase()} in observable choices made now. The ${phase} supplies today's pacing, but the transit—not a general daily theme—identifies where attention, language, effort or restraint has the most relevance.`,
+      "immediate-application": `For immediate use, translate ${theme.toLowerCase()} into one bounded response to ${transit}. Choose an action, conversation or review that can produce information today. Treat friction as feedback about timing, ownership or scope rather than as a verdict on the whole direction.`,
+      "work-professional": `In work and professional activity, ${transit} directs attention specifically to ${theme.toLowerCase()}. Define the purpose, identify the dependency, record the decision and protect the relevant standard. Distinguish genuine priority from urgency created by unclear ownership.`,
+      "relationships-communication": `For relationships and communication, ${transit} brings ${theme.toLowerCase()} into the terms of an exchange. Describe your experience and request without assigning a hidden motive. Make reciprocity concrete—what is offered, what is assumed and which boundary keeps the exchange honest.`,
+      "energy-self-regulation": `For energy and self-regulation, the useful evidence is ${transit}. Match effort to its ${state} condition and protect attention from unnecessary switching. Let the ${phase} guide rhythm and recovery; do not turn one intense interval into a judgement about the whole day.`,
+      "what-is-ending": `${transit} is ${state}, marking ${theme.toLowerCase()} as material ready to move from reaction into integration. Release the version of the task, exchange or expectation that has already yielded its information; completion may be a documented lesson, a repaired gap or a closed loop.`,
+      "what-is-beginning": `${transit} is ${state}, so ${theme.toLowerCase()} belongs to the emerging edge of the reading. Prepare without forcing finality: assemble the facts, identify the decision point and choose a first reversible action that lets the developing condition become clearer.`,
+      "next-72-hours": `Over the next 72 hours, ${transit} keeps ${theme.toLowerCase()} within a near-term sequence. Clarify the practical question, act at a scale that produces feedback, then review what changed. Later evidence should refine today's interpretation rather than merely repeat it.`,
+      "longer-term-staging": `${transit} makes ${theme.toLowerCase()} a longer-term staging concern rather than a prediction about today. Repetition matters more than drama: record the standard, boundary or practice worth maintaining so it can be reviewed when the contact changes phase or returns to the same natal territory.`,
     };
-    return endings[id] ?? common;
+    return (
+      endings[id] ??
+      `${transit} directs this section toward ${theme.toLowerCase()} under ${state} conditions.`
+    );
   },
-  applications: (theme) => [
-    `Give ${theme.toLowerCase()} one observable task for today.`,
-    "Write down the assumption that most needs verification.",
-    "Choose a boundary or stopping point before expanding the work.",
-  ],
+  applications: (sectionId, signal) => {
+    const sectionApplication: Record<string, string> = {
+      "strategic-context":
+        "Name the durable pattern this influence is developing, without turning it into a prediction.",
+      "recent-past":
+        "Identify what the recent peak has already taught you and what no longer needs another reaction.",
+      "present-conditions":
+        "Choose the observable decision that best reflects the current condition.",
+      "immediate-application":
+        "Take one reversible step today and decide in advance what feedback you will review.",
+      "work-professional":
+        "Clarify the owner, dependency and finish line for the professional task most affected.",
+      "relationships-communication":
+        "State one request or boundary plainly, then leave room for an actual response.",
+      "energy-self-regulation":
+        "Set a sustainable pace and protect one interval from unnecessary switching.",
+      "what-is-ending":
+        "Close, document or release one loop that has already supplied its lesson.",
+      "what-is-beginning":
+        "Prepare one first step without demanding a final outcome from an emerging condition.",
+      "next-72-hours":
+        "Sequence the next three days as clarify, act and review.",
+      "longer-term-staging":
+        "Record the repeatable standard or practice that deserves continuity beyond today.",
+    };
+    return [
+      sectionApplication[sectionId] ??
+        `Give ${signal.theme.toLowerCase()} one observable expression.`,
+      ...signal.practicalApplications.slice(0, 2),
+    ];
+  },
   questions: (theme, secondTheme) => [
     `Where is ${theme.toLowerCase()} already asking for a clearer choice?`,
     `What changes when ${secondTheme.toLowerCase()} is treated as a necessary counterweight?`,
@@ -188,6 +216,74 @@ function signalForTheme(analysis: DailyReadingAnalysis, themeIndex: number) {
   );
 }
 
+type SectionId =
+  | "strategic-context"
+  | "recent-past"
+  | "present-conditions"
+  | "immediate-application"
+  | "work-professional"
+  | "relationships-communication"
+  | "energy-self-regulation"
+  | "what-is-ending"
+  | "what-is-beginning"
+  | "next-72-hours"
+  | "longer-term-staging";
+
+const requiredSectionIds = [
+  "strategic-context",
+  "present-conditions",
+  "immediate-application",
+  "next-72-hours",
+] as const satisfies readonly SectionId[];
+
+function signalsForSection(
+  analysis: DailyReadingAnalysis,
+  sectionId: SectionId,
+): DailySignal[] {
+  const matching = analysis.signals.filter((signal) => {
+    switch (sectionId) {
+      case "strategic-context":
+      case "longer-term-staging":
+        return ["developmental", "structural"].includes(signal.durationClass);
+      case "recent-past":
+      case "what-is-ending":
+        return ["separating", "integrating"].includes(signal.temporalState);
+      case "present-conditions":
+        return ["exact", "building", "separating"].includes(
+          signal.temporalState,
+        );
+      case "work-professional":
+        return signal.lifeDomains.includes("work");
+      case "relationships-communication":
+        return signal.lifeDomains.some((domain) =>
+          ["relationships", "communication"].includes(domain),
+        );
+      case "energy-self-regulation":
+        return signal.lifeDomains.some((domain) =>
+          ["restoration", "self-direction"].includes(domain),
+        );
+      case "what-is-beginning":
+        return ["building", "emerging"].includes(signal.temporalState);
+      case "next-72-hours":
+        return ["intraday", "daily", "short-term"].includes(
+          signal.durationClass,
+        );
+      case "immediate-application":
+        return true;
+    }
+  });
+  return [...matching].sort(
+    (first, second) =>
+      second.relevance - first.relevance ||
+      second.intensity - first.intensity ||
+      first.id.localeCompare(second.id),
+  );
+}
+
+function themeForSignal(analysis: DailyReadingAnalysis, signal: DailySignal) {
+  return analysis.themes.find((theme) => theme.signalIds.includes(signal.id));
+}
+
 function transitLabel(
   analysis: DailyReadingAnalysis,
   signal: DailySignal,
@@ -243,22 +339,43 @@ export function buildDailyReadingContent(
     "what-is-beginning",
     "next-72-hours",
     "longer-term-staging",
-  ];
-  const sections = sectionIds.map((id) => ({
-    id,
-    title: copy.sections[id],
-    narrative: copy.sectionNarrative(
-      id,
-      leadingTheme.label,
-      primaryTransit,
-      analysis.lunarPhase.name,
-      state,
-    ),
-    practicalApplications: copy.applications(leadingTheme.label),
-    evidenceIds,
-    signalIds: leadingTheme.signalIds,
-    themeIds: [leadingTheme.id],
-  }));
+  ] as const satisfies readonly SectionId[];
+  const sections = sectionIds.flatMap((id) => {
+    const sectionSignal =
+      signalsForSection(analysis, id)[0] ??
+      (requiredSectionIds.includes(id as (typeof requiredSectionIds)[number])
+        ? leadingSignal
+        : undefined);
+    if (!sectionSignal) {
+      if (
+        requiredSectionIds.includes(id as (typeof requiredSectionIds)[number])
+      )
+        throw new Error(
+          `Daily analysis cannot support required section ${id}.`,
+        );
+      return [];
+    }
+    const sectionTheme = themeForSignal(analysis, sectionSignal);
+    if (!sectionTheme) return [];
+    return [
+      {
+        id,
+        title: copy.sections[id],
+        narrative: copy.sectionNarrative(
+          id,
+          sectionTheme.label,
+          transitLabel(analysis, sectionSignal),
+          analysis.lunarPhase.name,
+          sectionSignal.temporalState,
+        ),
+        practicalApplications: copy.applications(id, sectionSignal),
+        evidenceIds: sectionSignal.evidenceIds,
+        signalIds: [sectionSignal.id],
+        themeIds: [sectionTheme.id],
+      },
+    ];
+  });
+  const renderedSectionIds = new Set(sections.map((section) => section.id));
   const content = dailyReadingContentSchema.parse({
     schemaVersion: analysis.schemaVersion,
     readingId,
@@ -298,7 +415,9 @@ export function buildDailyReadingContent(
       forwardLook: {
         narrative: copy.forward(leadingTheme.label, state),
         evidenceIds,
-        sourceSectionIds: ["next-72-hours", "longer-term-staging"],
+        sourceSectionIds: (
+          ["next-72-hours", "longer-term-staging"] as const
+        ).filter((id) => renderedSectionIds.has(id)),
       },
       ...(secondTheme && secondTheme.id !== leadingTheme.id
         ? {
@@ -307,10 +426,12 @@ export function buildDailyReadingContent(
               evidenceIds: [
                 ...new Set([...evidenceIds, ...secondTheme.evidenceIds]),
               ],
-              sourceSectionIds: [
-                "relationships-communication",
-                "energy-self-regulation",
-              ],
+              sourceSectionIds: (
+                [
+                  "relationships-communication",
+                  "energy-self-regulation",
+                ] as const
+              ).filter((id) => renderedSectionIds.has(id)),
             },
           }
         : {}),

@@ -146,6 +146,65 @@ describe("registered daily reading foundation", () => {
     expect(content.sections[0].id).toBe("strategic-context");
   });
 
+  it("scopes each section to its own temporal, domain or duration signal", async () => {
+    const natalChart = await calculateNatalChart(sampleBirthInput);
+    const analysis = buildDailyReadingAnalysis({
+      natalChart,
+      readingDate: "2026-08-05",
+      observationTimeZone: sampleBirthInput.place.timeZone,
+      locale: "en-GB",
+      calculatedAtUtc: generatedAt,
+    });
+    const content = buildDailyReadingContent(analysis, readingId);
+    const byId = new Map(
+      content.sections.map((section) => [section.id, section]),
+    );
+    const signalById = new Map(
+      analysis.signals.map((signal) => [signal.id, signal]),
+    );
+
+    expect(
+      new Set(content.sections.map((section) => section.narrative)).size,
+    ).toBe(content.sections.length);
+    expect(
+      new Set(
+        content.sections.map((section) =>
+          section.practicalApplications.join("|"),
+        ),
+      ).size,
+    ).toBe(content.sections.length);
+
+    const workSignal = signalById.get(
+      byId.get("work-professional")!.signalIds[0],
+    );
+    expect(workSignal?.lifeDomains).toContain("work");
+
+    const relationshipSignal = signalById.get(
+      byId.get("relationships-communication")!.signalIds[0],
+    );
+    expect(
+      relationshipSignal?.lifeDomains.some((domain) =>
+        ["relationships", "communication"].includes(domain),
+      ),
+    ).toBe(true);
+
+    const ending = byId.get("what-is-ending");
+    if (ending) {
+      const endingSignal = signalById.get(ending.signalIds[0]);
+      expect(["separating", "integrating"]).toContain(
+        endingSignal?.temporalState,
+      );
+    }
+
+    const beginning = byId.get("what-is-beginning");
+    if (beginning) {
+      const beginningSignal = signalById.get(beginning.signalIds[0]);
+      expect(["building", "emerging"]).toContain(
+        beginningSignal?.temporalState,
+      );
+    }
+  });
+
   it("allows a detailed BLUF of up to 1,000 words", async () => {
     const natalChart = await calculateNatalChart(sampleBirthInput);
     const analysis = buildDailyReadingAnalysis({
