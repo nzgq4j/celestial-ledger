@@ -106,6 +106,7 @@ export async function runNextReportJob() {
       : careerPrompt(evidence, careerThemes!, reportLocale);
     let report;
     let draftError: unknown;
+    let rawReport: unknown;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
         const response = await client.responses.create({
@@ -117,7 +118,7 @@ export async function runNextReportJob() {
           input:
             attempt === 0
               ? prompt
-              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and write 550-750 complete words in every narrative. Keep every narrative between 500 and 1,000 words.`,
+              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and write 750-900 complete words in every narrative. Keep every narrative between 500 and 1,000 words; do not compress later sections.`,
           text: {
             format: {
               type: "json_schema",
@@ -134,7 +135,7 @@ export async function runNextReportJob() {
             },
           },
         });
-        const rawReport: unknown = JSON.parse(response.output_text);
+        rawReport = JSON.parse(response.output_text);
         if (recoveryThemes) {
           const recoveryReport = recoveryReportSchema.parse(rawReport);
           validateRecoveryReport(recoveryReport, evidence, recoveryThemes);
@@ -147,6 +148,33 @@ export async function runNextReportJob() {
         break;
       } catch (error) {
         draftError = error;
+        if (
+          error instanceof Error &&
+          /SECTION_TOO_(?:SHORT|LONG)/.test(error.message)
+        ) {
+          console.warn(
+            JSON.stringify({
+              level: "warning",
+              message: "Report section length validation failed",
+              reportType: job.report_type,
+              sectionWordCounts:
+                typeof rawReport === "object" &&
+                rawReport !== null &&
+                "sections" in rawReport &&
+                Array.isArray(rawReport.sections)
+                  ? rawReport.sections.map((section) =>
+                      typeof section === "object" &&
+                      section !== null &&
+                      "narrative" in section &&
+                      typeof section.narrative === "string"
+                        ? section.narrative.trim().split(/\s+/).filter(Boolean)
+                            .length
+                        : null,
+                    )
+                  : [],
+            }),
+          );
+        }
         if (attempt === 0)
           console.warn(
             JSON.stringify({
