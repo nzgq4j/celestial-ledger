@@ -93,10 +93,10 @@ to service_role;
 update public.entitlements e
 set status = 'unused', consumed_at = null
 where e.status = 'queued'
-  and exists (
+  and not exists (
     select 1 from public.reports r
     where r.entitlement_id = e.id
-      and r.status <> 'completed'
+      and r.status <> 'deleted'
   );
 
 comment on function public.queue_paid_report(uuid,uuid,uuid,text,text,text,text,jsonb) is

@@ -2300,6 +2300,9 @@ a {
   border: 1px solid #4a5b72;
   background: var(--surface-deep);
 }
+.compact-products article:has(.report-generator) {
+  grid-column: 1 / -1;
+}
 .ready-report {
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
