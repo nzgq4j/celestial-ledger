@@ -4,8 +4,8 @@ import { calculateNatalChart } from "@/lib/chart";
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
-export const CAREER_SCHEMA_VERSION = "career-4";
-export const CAREER_PROMPT_VERSION = "career-5";
+export const CAREER_SCHEMA_VERSION = "career-5";
+export const CAREER_PROMPT_VERSION = "career-6";
 export const CAREER_SAFETY_VERSION = "reflection-1";
 
 export const careerThemeSchema = z.enum([
@@ -62,7 +62,7 @@ const sectionSchema = z
     // Optional when reading career-1 reports; career-2 generation requires it.
     theme: careerThemeSchema.optional(),
     bottomLine: z.string().min(1).max(1200).optional(),
-    narrative: z.string().min(1).max(12000),
+    narrative: z.string().min(1).max(9000),
     bringIntoLife: z.string().min(1).max(2400).optional(),
     evidenceIds: z.array(evidenceReference).min(1).max(8),
     reflectionQuestions: z.array(z.string().min(1).max(240)).max(3),
@@ -113,7 +113,7 @@ export const careerReportJsonSchema = {
           title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: careerThemeSchema.options },
           bottomLine: { type: "string", minLength: 1, maxLength: 1200 },
-          narrative: { type: "string", minLength: 6500, maxLength: 12000 },
+          narrative: { type: "string", minLength: 3000, maxLength: 9000 },
           bringIntoLife: { type: "string", minLength: 1, maxLength: 2400 },
           evidenceIds: {
             type: "array",
@@ -248,7 +248,7 @@ ${reportLanguageInstruction(locale)}
 - Never invent or recalculate chart facts. Every section must cite only supplied evidence IDs.
 - Discuss motivations, values, contribution, work environments, tensions, and reflective questions.
 - Write exactly one section for each selected theme, set its theme field to that theme ID, and do not add sections for unselected themes.
-- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 850-950 words of interpretation and analysis (never fewer than 750 words), a specific bringIntoLife field containing practical ways to embody the insight, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
+- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 500-1,000 words of interpretation and analysis, a specific bringIntoLife field containing practical ways to embody the insight, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
 - Do not predict employment, income, promotion, success, status, or outcomes.
 - Do not provide medical, legal, financial, or mental-health advice.
@@ -282,8 +282,12 @@ export function validateEvidenceLinks(
         !section.journalingPrompts
       )
         throw new Error("INCOMPLETE_CAREER_SECTION_FORMAT");
-      if (section.narrative.trim().split(/\s+/).filter(Boolean).length < 750)
-        throw new Error("CAREER_SECTION_TOO_SHORT");
+      const narrativeWords = section.narrative
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length;
+      if (narrativeWords < 500) throw new Error("CAREER_SECTION_TOO_SHORT");
+      if (narrativeWords > 1000) throw new Error("CAREER_SECTION_TOO_LONG");
     }
     if (selectedThemes) {
       if (!section.theme || !selectedThemes.has(section.theme))

@@ -21,7 +21,7 @@ describe("career report evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       careerReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 6500, maxLength: 12000 });
+    ).toMatchObject({ minLength: 3000, maxLength: 9000 });
     expect(careerReportJsonSchema.properties.disclaimer).toMatchObject({
       minLength: 1,
       maxLength: 400,
@@ -142,7 +142,7 @@ describe("career report evidence", () => {
     ).toThrow("DUPLICATE_CAREER_THEME");
   });
 
-  it("rejects a new-format section with fewer than 750 analysis words", async () => {
+  it("rejects a new-format section with fewer than 500 analysis words", async () => {
     const { evidence } = await buildCareerEvidence({
       date: "1990-01-15",
       time: "12:00",
@@ -157,7 +157,7 @@ describe("career report evidence", () => {
           title: "Direction",
           theme: "direction_purpose",
           bottomLine: "Choose the work that best matches your values.",
-          narrative: "brief ".repeat(700),
+          narrative: "brief ".repeat(499),
           bringIntoLife: "Name one value and one action that expresses it.",
           evidenceIds: ["placement:sun"],
           reflectionQuestions: ["What matters now?"],

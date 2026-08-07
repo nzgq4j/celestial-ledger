@@ -98,7 +98,7 @@ export async function runNextReportJob() {
         : defaultLocale;
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-      timeout: 135_000,
+      timeout: 100_000,
       maxRetries: 0,
     });
     const prompt = recoveryThemes
@@ -117,7 +117,7 @@ export async function runNextReportJob() {
           input:
             attempt === 0
               ? prompt
-              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and write 850-950 complete words in every narrative. Count conservatively and do not shorten later sections.`,
+              : `${prompt}\n\nThe previous draft did not pass validation (${draftError instanceof Error ? draftError.message : "VALIDATION_FAILED"}). Create a fresh draft, use only the exact evidence IDs supplied above, and write 550-750 complete words in every narrative. Keep every narrative between 500 and 1,000 words.`,
           text: {
             format: {
               type: "json_schema",

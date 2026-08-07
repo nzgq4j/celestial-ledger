@@ -7,8 +7,8 @@ import {
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 
-export const RECOVERY_SCHEMA_VERSION = "recovery-4";
-export const RECOVERY_PROMPT_VERSION = "recovery-4";
+export const RECOVERY_SCHEMA_VERSION = "recovery-5";
+export const RECOVERY_PROMPT_VERSION = "recovery-5";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([
@@ -64,7 +64,7 @@ const recoverySectionSchema = z
     title: z.string().min(1).max(100),
     theme: recoveryThemeSchema,
     bottomLine: z.string().min(1).max(1200).optional(),
-    narrative: z.string().min(1).max(12000),
+    narrative: z.string().min(1).max(9000),
     bringIntoLife: z.string().min(1).max(2400).optional(),
     evidenceIds: z.array(evidenceReference).min(1).max(8),
     reflectionQuestions: z.array(z.string().min(1).max(240)).min(1).max(3),
@@ -114,7 +114,7 @@ export const recoveryReportJsonSchema = {
           title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: recoveryThemeSchema.options },
           bottomLine: { type: "string", minLength: 1, maxLength: 1200 },
-          narrative: { type: "string", minLength: 6500, maxLength: 12000 },
+          narrative: { type: "string", minLength: 3000, maxLength: 9000 },
           bringIntoLife: { type: "string", minLength: 1, maxLength: 2400 },
           evidenceIds: {
             type: "array",
@@ -161,7 +161,7 @@ ${reportLanguageInstruction(locale)}
 - Reveal constructive patterns without forced optimism, shame or fatalism.
 - Use only the selected themes, with exactly one section per theme and no additional sections.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
-- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 850-950 words of interpretation and analysis (never fewer than 750 words), a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
+- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 500-1,000 words of interpretation and analysis, a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
 - Without naming, citing, or alluding to any recovery program or therapy model, weave in relevant principles such as honest self-inventory, acceptance of what cannot be controlled, responsibility for present choices, repair where safe and appropriate, connection with trusted support, attention to one day and one action at a time, identifying automatic thoughts, testing interpretations against evidence, reframing unhelpful patterns, noticing triggers, and choosing workable alternative responses.
 - Apply those principles specifically to the selected theme and supplied chart evidence; do not turn them into generic recovery advice or repeat the same principles in every section.
 - Never invent or recalculate chart facts. Every section must cite supplied evidence IDs.
@@ -231,8 +231,12 @@ export function validateRecoveryReport(
         !section.journalingPrompts
       )
         throw new Error("INCOMPLETE_RECOVERY_SECTION_FORMAT");
-      if (section.narrative.trim().split(/\s+/).filter(Boolean).length < 750)
-        throw new Error("RECOVERY_SECTION_TOO_SHORT");
+      const narrativeWords = section.narrative
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length;
+      if (narrativeWords < 500) throw new Error("RECOVERY_SECTION_TOO_SHORT");
+      if (narrativeWords > 1000) throw new Error("RECOVERY_SECTION_TOO_LONG");
     }
     if (!selectedThemes.has(section.theme))
       throw new Error("UNSELECTED_RECOVERY_THEME");
