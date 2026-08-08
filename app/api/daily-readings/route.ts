@@ -15,7 +15,7 @@ import {
   buildDailyReadingAnalysis,
   dailyReadingCacheKey,
 } from "@/lib/daily-readings/calculation";
-import { buildDailyReadingContent } from "@/lib/daily-readings/content";
+import { generateDailyReadingContent } from "@/lib/daily-readings/generated";
 import {
   DAILY_READING_METHOD_VERSION,
   DAILY_READING_RULE_VERSION,
@@ -23,10 +23,11 @@ import {
 } from "@/lib/daily-readings/domain";
 import { resolveRegisteredDailyReadingEntitlement } from "@/lib/daily-readings/entitlement";
 import { z } from "zod";
+import { loadRecentContentContext } from "@/lib/content-similarity/recent-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
@@ -149,7 +150,20 @@ export async function POST(request: Request) {
       locale,
     });
     const readingId = randomUUID();
-    const content = buildDailyReadingContent(analysis, readingId);
+    const recentContext = await loadRecentContentContext({
+      admin,
+      userId,
+      birthProfileId: profile!.id,
+      currentKind: "daily",
+      periodStart: input.readingDate,
+      periodEnd: input.readingDate,
+      locale,
+    });
+    const content = await generateDailyReadingContent({
+      analysis,
+      readingId,
+      recentContext,
+    });
     const { error: insertError } = await admin.from("daily_readings").insert({
       id: readingId,
       user_id: userId,

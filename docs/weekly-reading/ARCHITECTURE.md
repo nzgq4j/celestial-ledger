@@ -15,7 +15,8 @@ Account server component
   -> server-authoritative natal recalculation
   -> seven daily calculation windows through the existing daily engine
   -> week-scoped evidence aggregation and day emphasis map
-  -> deterministic localized weekly content
+  -> structured model-generated prose bound to deterministic evidence
+  -> same-type and overlapping cross-type similarity validation
   -> private one-year persistence
   -> atomic weekly capability consumption after successful persistence
   -> owner-only viewer and PDF

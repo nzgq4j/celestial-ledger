@@ -6,9 +6,12 @@ import {
 } from "@/lib/reports/career";
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
+import type { RecentContentContext } from "@/lib/content-similarity/recent-context";
+import { recentContentInstruction } from "@/lib/content-similarity/recent-context";
+import { assertReportContentDiversity } from "@/lib/reports/similarity";
 
 export const RECOVERY_SCHEMA_VERSION = "recovery-6";
-export const RECOVERY_PROMPT_VERSION = "recovery-6";
+export const RECOVERY_PROMPT_VERSION = "recovery-7";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([
@@ -149,6 +152,7 @@ export function recoveryPrompt(
   evidence: CareerEvidenceBundle,
   themes: RecoveryTheme[],
   locale: LocaleTag = "en-GB",
+  recentContext?: RecentContentContext,
 ) {
   const labels = recoveryThemes
     .filter((theme) => themes.includes(theme.id))
@@ -179,6 +183,8 @@ Safety boundaries:
 Selected reviewed themes:
 ${labels.join("\n")}
 
+${recentContentInstruction(recentContext ?? { sameType: [], crossType: [], all: [] })}
+
 Immutable natal evidence:
 ${JSON.stringify(evidence)}`;
 }
@@ -200,6 +206,7 @@ export function validateRecoveryReport(
   report: RecoveryReport,
   evidence: CareerEvidenceBundle,
   themes: RecoveryTheme[],
+  recentContext?: RecentContentContext,
 ) {
   const validEvidence = new Set(evidence.items.map((item) => item.id));
   const selectedThemes = new Set(themes);
@@ -251,4 +258,5 @@ export function validateRecoveryReport(
     [...selectedThemes].some((theme) => !reportedThemes.has(theme))
   )
     throw new Error("MISSING_RECOVERY_THEME");
+  assertReportContentDiversity(report, recentContext);
 }

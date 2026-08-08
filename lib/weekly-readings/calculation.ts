@@ -11,24 +11,19 @@ import {
   weeklyReadingAnalysisSchema,
   type WeeklyReadingAnalysis,
 } from "./domain";
+import { contentSimilarity } from "@/lib/content-similarity/similarity";
 
 const DAY_MS = 86_400_000;
 
-function normalisedWords(value: string) {
-  return new Set(value.toLowerCase().match(/[a-z0-9]+/g) ?? []);
-}
-
-function jaccardSimilarity(left: string, right: string) {
-  const a = normalisedWords(left);
-  const b = normalisedWords(right);
-  const intersection = [...a].filter((word) => b.has(word)).length;
-  return intersection / Math.max(1, new Set([...a, ...b]).size);
-}
+export const WEEKLY_NARRATIVE_SIMILARITY_THRESHOLD = 0.36;
 
 export function assertWeeklyNarrativeDiversity(narratives: string[]) {
   for (let left = 0; left < narratives.length; left += 1)
     for (let right = left + 1; right < narratives.length; right += 1)
-      if (jaccardSimilarity(narratives[left], narratives[right]) > 0.94)
+      if (
+        contentSimilarity(narratives[left], narratives[right]) >
+        WEEKLY_NARRATIVE_SIMILARITY_THRESHOLD
+      )
         throw new Error("WEEKLY_NARRATIVE_DIVERSITY_FAILED");
 }
 
@@ -176,7 +171,6 @@ export function buildWeeklyReadingAnalysis(input: {
       ],
     };
   });
-  assertWeeklyNarrativeDiversity(dayByDay.map((day) => day.narrative));
   return weeklyReadingAnalysisSchema.parse({
     schemaVersion: WEEKLY_READING_SCHEMA_VERSION,
     weekStartDate: dates[0],

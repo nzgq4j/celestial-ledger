@@ -9,8 +9,9 @@ import {
 export const WEEKLY_READING_SCHEMA_VERSION = "weekly-reading-v3";
 export const WEEKLY_READING_METHOD_VERSION = "weekly-method-v3";
 export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v3";
-export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v3";
-export const WEEKLY_READING_PROMPT_VERSION = "weekly-sectional-diversity-v3";
+export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v4";
+export const WEEKLY_READING_PROMPT_VERSION =
+  "weekly-cross-content-diversity-v4";
 export const WEEKLY_READING_CAPABILITY = "weekly_reading.primary";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);

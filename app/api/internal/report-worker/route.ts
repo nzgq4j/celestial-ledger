@@ -22,6 +22,7 @@ import {
 import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
 import { getConfiguredModel } from "@/lib/admin/settings";
+import { loadRecentContentContext } from "@/lib/content-similarity/recent-context";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -101,9 +102,23 @@ export async function runNextReportJob() {
       timeout: 100_000,
       maxRetries: 0,
     });
+    const today = new Date().toISOString().slice(0, 10);
+    const periodStartDate = new Date(`${today}T00:00:00.000Z`);
+    periodStartDate.setUTCDate(periodStartDate.getUTCDate() - 6);
+    const recentContext = await loadRecentContentContext({
+      admin,
+      userId: job.user_id,
+      birthProfileId: job.birth_profile_id,
+      currentKind: "report",
+      periodStart: periodStartDate.toISOString().slice(0, 10),
+      periodEnd: today,
+      locale: reportLocale,
+      reportType: job.report_type,
+      excludeId: job.id,
+    });
     const prompt = recoveryThemes
-      ? recoveryPrompt(evidence, recoveryThemes, reportLocale)
-      : careerPrompt(evidence, careerThemes!, reportLocale);
+      ? recoveryPrompt(evidence, recoveryThemes, reportLocale, recentContext)
+      : careerPrompt(evidence, careerThemes!, reportLocale, recentContext);
     let report;
     let draftError: unknown;
     let rawReport: unknown;
@@ -138,11 +153,21 @@ export async function runNextReportJob() {
         rawReport = JSON.parse(response.output_text);
         if (recoveryThemes) {
           const recoveryReport = recoveryReportSchema.parse(rawReport);
-          validateRecoveryReport(recoveryReport, evidence, recoveryThemes);
+          validateRecoveryReport(
+            recoveryReport,
+            evidence,
+            recoveryThemes,
+            recentContext,
+          );
           report = recoveryReport;
         } else {
           const careerReport = careerReportSchema.parse(rawReport);
-          validateEvidenceLinks(careerReport, evidence, careerThemes);
+          validateEvidenceLinks(
+            careerReport,
+            evidence,
+            careerThemes,
+            recentContext,
+          );
           report = careerReport;
         }
         break;

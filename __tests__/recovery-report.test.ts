@@ -28,7 +28,7 @@ async function evidence() {
   ).evidence;
 }
 
-function report(narrative = "The Sun offers a steady centre for renewal.") {
+function report(narrative?: string) {
   return recoveryReportSchema.parse({
     title: "A Map of Renewal",
     introduction: "Your natal sky opens a path of attentive reflection.",
@@ -36,7 +36,11 @@ function report(narrative = "The Sun offers a steady centre for renewal.") {
       title:
         theme === "grounding" ? "The Returning Ground" : "The New Moon Gate",
       theme,
-      narrative,
+      narrative:
+        narrative ??
+        (theme === "grounding"
+          ? "The Sun offers a steady centre through repeated acts of attention, embodiment, and honest appraisal of what is present now."
+          : "Renewal begins at the edge of an old identity, where release creates enough space for experiment, imagination, and a consciously chosen next chapter."),
       evidenceIds: ["placement:sun"],
       reflectionQuestions: ["What helps you return to your own centre?"],
     })),

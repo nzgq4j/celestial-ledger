@@ -3,9 +3,12 @@ import type { BirthInput, NatalChart } from "@/lib/types";
 import { calculateNatalChart } from "@/lib/chart";
 import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
+import type { RecentContentContext } from "@/lib/content-similarity/recent-context";
+import { recentContentInstruction } from "@/lib/content-similarity/recent-context";
+import { assertReportContentDiversity } from "@/lib/reports/similarity";
 
 export const CAREER_SCHEMA_VERSION = "career-6";
-export const CAREER_PROMPT_VERSION = "career-7";
+export const CAREER_PROMPT_VERSION = "career-8";
 export const CAREER_SAFETY_VERSION = "reflection-1";
 
 export const careerThemeSchema = z.enum([
@@ -236,6 +239,7 @@ export function careerPrompt(
   evidence: CareerEvidenceBundle,
   themes: CareerTheme[],
   locale: LocaleTag = "en-GB",
+  recentContext?: RecentContentContext,
 ) {
   const selectedThemes = careerThemes
     .filter((theme) => themes.includes(theme.id))
@@ -259,6 +263,8 @@ ${reportLanguageInstruction(locale)}
 Selected career reflection themes:
 ${selectedThemes.join("\n")}
 
+${recentContentInstruction(recentContext ?? { sameType: [], crossType: [], all: [] })}
+
 Immutable evidence bundle:\n${JSON.stringify(evidence)}`;
 }
 
@@ -266,6 +272,7 @@ export function validateEvidenceLinks(
   report: CareerReport,
   evidence: CareerEvidenceBundle,
   themes?: CareerTheme[],
+  recentContext?: RecentContentContext,
 ) {
   const valid = new Set(evidence.items.map((item) => item.id));
   const selectedThemes = themes ? new Set(themes) : undefined;
@@ -305,4 +312,5 @@ export function validateEvidenceLinks(
       [...selectedThemes].some((theme) => !reportedThemes.has(theme)))
   )
     throw new Error("MISSING_CAREER_THEME");
+  assertReportContentDiversity(report, recentContext);
 }

@@ -20,7 +20,7 @@ import {
   isoWeekStart,
   weeklyReadingCacheKey,
 } from "@/lib/weekly-readings/calculation";
-import { buildWeeklyReadingContent } from "@/lib/weekly-readings/content";
+import { generateWeeklyReadingContent } from "@/lib/weekly-readings/generated";
 import {
   generateWeeklyReadingRequestSchema,
   WEEKLY_READING_CAPABILITY,
@@ -29,10 +29,11 @@ import {
   WEEKLY_READING_PROMPT_VERSION,
   WEEKLY_READING_RULE_VERSION,
 } from "@/lib/weekly-readings/domain";
+import { loadRecentContentContext } from "@/lib/content-similarity/recent-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
@@ -165,7 +166,21 @@ export async function POST(request: Request) {
       locale,
     });
     const readingId = existingWeek?.id ?? randomUUID();
-    const content = buildWeeklyReadingContent(analysis, readingId);
+    const recentContext = await loadRecentContentContext({
+      admin,
+      userId,
+      birthProfileId: primaryProfile.id,
+      currentKind: "weekly",
+      periodStart: analysis.weekStartDate,
+      periodEnd: analysis.weekEndDate,
+      locale,
+      excludeId: existingWeek?.id,
+    });
+    const content = await generateWeeklyReadingContent({
+      analysis,
+      readingId,
+      recentContext,
+    });
     if (existingWeek) {
       const { error: refreshError } = await admin
         .from("weekly_readings")
