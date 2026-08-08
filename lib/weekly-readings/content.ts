@@ -19,6 +19,15 @@ const copy = {
     forward:
       "At the end of the week, review what actually occurred against the evidence-linked emphasis map. Carry forward only the observations that proved useful, and release interpretations that did not fit your lived experience.",
     priority: "Weekly priority",
+    priorityNarrative: (day: string, theme: string, action: string) =>
+      `${theme} deserves deliberate attention around ${day}. The priority is not to repeat the full daily interpretation, but to turn its strongest signal into one observable choice: ${action}`,
+    sectionNarrative: (
+      theme: string,
+      days: string,
+      first: string,
+      last: string,
+    ) =>
+      `${theme} forms a distinct weekly thread across ${days}. Its evidence develops from ${first} toward ${last}, so this section asks how the pattern changes with context rather than assuming every appearance means the same thing.`,
     questions: [
       "Which repeated emphasis became clearer through direct experience?",
       "Where did a quieter day change how you understood a stronger one?",
@@ -38,6 +47,15 @@ const copy = {
     forward:
       "Vergleichen Sie am Ende der Woche das tatsächlich Erlebte mit der evidenzbasierten Tageskarte. Nehmen Sie nur hilfreiche Beobachtungen mit und lassen Sie unpassende Deutungen los.",
     priority: "Wochenfokus",
+    priorityNarrative: (day: string, theme: string, action: string) =>
+      `${theme} verdient rund um ${day} bewusste Aufmerksamkeit. Entscheidend ist, die Tagesdeutung nicht zu wiederholen, sondern ihr stärkstes Signal in eine beobachtbare Entscheidung zu übersetzen: ${action}`,
+    sectionNarrative: (
+      theme: string,
+      days: string,
+      first: string,
+      last: string,
+    ) =>
+      `${theme} bildet über ${days} einen eigenen Wochenfaden. Die Evidenz entwickelt sich von ${first} zu ${last}; entscheidend ist daher, wie sich das Muster mit dem Kontext verändert.`,
     questions: [
       "Welche wiederkehrende Betonung wurde durch direkte Erfahrung klarer?",
       "Wo veränderte ein ruhigerer Tag Ihr Verständnis eines stärkeren Tages?",
@@ -57,6 +75,15 @@ const copy = {
     forward:
       "Al terminar la semana, compara lo ocurrido con el mapa de énfasis vinculado a evidencias. Conserva solo las observaciones útiles y descarta las interpretaciones que no encajen con tu experiencia.",
     priority: "Prioridad semanal",
+    priorityNarrative: (day: string, theme: string, action: string) =>
+      `${theme} merece atención deliberada alrededor de ${day}. La prioridad no es repetir la interpretación diaria, sino convertir su señal principal en una decisión observable: ${action}`,
+    sectionNarrative: (
+      theme: string,
+      days: string,
+      first: string,
+      last: string,
+    ) =>
+      `${theme} forma un hilo semanal propio a través de ${days}. La evidencia evoluciona desde ${first} hacia ${last}, por lo que importa observar cómo cambia el patrón con el contexto.`,
     questions: [
       "¿Qué énfasis recurrente se aclaró mediante la experiencia directa?",
       "¿Dónde cambió un día tranquilo tu comprensión de uno más intenso?",
@@ -76,6 +103,15 @@ const copy = {
     forward:
       "À la fin de la semaine, comparez ce qui s’est réellement produit à la carte des accents liée aux preuves. Ne conservez que les observations utiles et abandonnez les interprétations qui ne correspondent pas à votre expérience.",
     priority: "Priorité de la semaine",
+    priorityNarrative: (day: string, theme: string, action: string) =>
+      `${theme} mérite une attention délibérée autour de ${day}. La priorité n’est pas de répéter l’interprétation quotidienne, mais de transformer son signal principal en un choix observable : ${action}`,
+    sectionNarrative: (
+      theme: string,
+      days: string,
+      first: string,
+      last: string,
+    ) =>
+      `${theme} forme un fil hebdomadaire distinct à travers ${days}. Les éléments évoluent de ${first} vers ${last}; il faut donc observer comment le motif change avec le contexte.`,
     questions: [
       "Quel accent récurrent est devenu plus clair par l’expérience directe ?",
       "Quand une journée calme a-t-elle changé votre lecture d’une journée forte ?",
@@ -108,8 +144,16 @@ export function buildWeeklyReadingContent(
     );
   });
   const overview = [text.opening, ...dayParagraphs, text.closing].join("\n\n");
-  const strongestDays = [...analysis.dayByDay]
-    .sort((left, right) => right.strength - left.strength)
+  const strongestDays = [...analysis.dayByDay].sort(
+    (left, right) => right.strength - left.strength,
+  );
+  const seenPriorityThemes = new Set<string>();
+  const priorityDays = strongestDays
+    .filter((day) => {
+      if (seenPriorityThemes.has(day.themeLabel)) return false;
+      seenPriorityThemes.add(day.themeLabel);
+      return true;
+    })
     .slice(0, 4);
   const evidenceIds = [
     ...new Set(analysis.dayByDay.flatMap((day) => day.evidenceIds)),
@@ -128,27 +172,56 @@ export function buildWeeklyReadingContent(
     bottomLineUpFront: {
       title: text.title,
       overview: { narrative: overview, evidenceIds },
-      practicalPriorities: strongestDays.map((day, index) => ({
-        title: `${text.priority} ${index + 1}: ${day.themeLabel}`,
-        dayRange: day.label,
-        narrative: day.narrative,
-        evidenceIds: day.evidenceIds,
-      })),
+      practicalPriorities: priorityDays.map((day, index) => {
+        const signal = analysis.days
+          .find((item) => item.readingDate === day.date)
+          ?.signals.find((item) => item.theme === day.themeLabel);
+        return {
+          title: `${text.priority} ${index + 1}: ${day.themeLabel}`,
+          dayRange: day.label,
+          narrative: text.priorityNarrative(
+            day.label,
+            day.themeLabel,
+            signal?.practicalApplications[
+              index % (signal?.practicalApplications.length ?? 1)
+            ] ?? text.forward,
+          ),
+          evidenceIds: day.evidenceIds,
+        };
+      }),
       forwardLook: {
         narrative: text.forward,
-        evidenceIds: strongestDays.flatMap((day) => day.evidenceIds),
+        evidenceIds: priorityDays.flatMap((day) => day.evidenceIds),
       },
     },
     dayByDay: analysis.dayByDay,
-    sections: strongestDays.slice(0, 3).map((day, index) => ({
-      id: `weekly-theme-${index + 1}`,
-      title: day.themeLabel,
-      narrative: day.narrative,
-      practicalApplications: analysis.days.find(
-        (item) => item.readingDate === day.date,
-      )?.signals[0]?.practicalApplications ?? [text.forward],
-      evidenceIds: day.evidenceIds,
-    })),
+    sections: priorityDays.slice(0, 3).map((day, index) => {
+      const matchingDays = analysis.dayByDay.filter(
+        (item) => item.themeLabel === day.themeLabel,
+      );
+      const matchingEvidence = matchingDays.flatMap((item) => item.evidenceIds);
+      const firstEvidence = analysis.evidence.find((item) =>
+        matchingEvidence.includes(item.id),
+      );
+      const lastEvidence = [...analysis.evidence]
+        .reverse()
+        .find((item) => matchingEvidence.includes(item.id));
+      const signal = analysis.days
+        .find((item) => item.readingDate === day.date)
+        ?.signals.find((item) => item.theme === day.themeLabel);
+      return {
+        id: `weekly-theme-${index + 1}`,
+        title: day.themeLabel,
+        narrative: text.sectionNarrative(
+          day.themeLabel,
+          matchingDays.map((item) => item.label).join(", "),
+          firstEvidence?.label ?? day.label,
+          lastEvidence?.label ?? day.label,
+        ),
+        practicalApplications: signal?.practicalApplications ?? [text.forward],
+        evidenceIds: [...new Set(matchingEvidence)],
+      };
+    }),
     reflectiveQuestions: text.questions,
     limitations: analysis.limitations,
   });

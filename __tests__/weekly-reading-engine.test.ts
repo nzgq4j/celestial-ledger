@@ -54,6 +54,15 @@ describe("weekly reading engine", () => {
     expect(first.days).toHaveLength(7);
     expect(first.dayByDay).toHaveLength(7);
     expect(new Set(first.dayByDay.map((day) => day.narrative)).size).toBe(7);
+    const themeCounts = first.dayByDay.reduce<Record<string, number>>(
+      (counts, day) => ({
+        ...counts,
+        [day.themeLabel]: (counts[day.themeLabel] ?? 0) + 1,
+      }),
+      {},
+    );
+    expect(Object.keys(themeCounts).length).toBeGreaterThanOrEqual(4);
+    expect(Math.max(...Object.values(themeCounts))).toBeLessThanOrEqual(2);
     expect(
       first.dayByDay.every((day) =>
         day.narrative.includes(
@@ -111,6 +120,26 @@ describe("weekly reading engine", () => {
     expect(
       content.bottomLineUpFront.practicalPriorities.length,
     ).toBeGreaterThanOrEqual(3);
+    expect(
+      new Set(
+        content.bottomLineUpFront.practicalPriorities.map(
+          (priority) => priority.title,
+        ),
+      ).size,
+    ).toBe(content.bottomLineUpFront.practicalPriorities.length);
+    const dailyNarratives = new Set(
+      content.dayByDay.map((day) => day.narrative),
+    );
+    expect(
+      content.bottomLineUpFront.practicalPriorities.every(
+        (priority) => !dailyNarratives.has(priority.narrative),
+      ),
+    ).toBe(true);
+    expect(
+      content.sections.every(
+        (section) => !dailyNarratives.has(section.narrative),
+      ),
+    ).toBe(true);
     const words = content.bottomLineUpFront.overview.narrative
       .trim()
       .split(/\s+/).length;

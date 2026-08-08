@@ -89,33 +89,67 @@ export function buildWeeklyReadingAnalysis(input: {
     .slice(0, 5);
   const themeOccurrences = new Map<string, number>();
   const evidenceById = new Map(evidence.map((item) => [item.id, item]));
-  const dayByDay = days.map((day) => {
-    const theme = day.themes[0];
+  const dayByDay = days.map((day, dayIndex) => {
     const fallback = day.evidence[0];
-    const themeSignal =
-      day.signals.find((signal) => signal.theme === theme?.label) ??
-      day.signals[0];
-    const supportingSignal = day.signals.find(
-      (signal) => signal.id !== themeSignal?.id,
+    const strongestByTheme = Array.from(
+      new Map(day.signals.map((signal) => [signal.theme, signal])).values(),
+    ).sort(
+      (left, right) =>
+        right.relevance + right.intensity - left.relevance - left.intensity,
     );
-    const occurrence = theme ? (themeOccurrences.get(theme.label) ?? 0) + 1 : 1;
-    if (theme) themeOccurrences.set(theme.label, occurrence);
+    const themeSignal =
+      strongestByTheme.find(
+        (signal) => (themeOccurrences.get(signal.theme) ?? 0) < 2,
+      ) ?? strongestByTheme[0];
+    const supportingSignal = day.signals.find(
+      (signal) =>
+        signal.id !== themeSignal?.id && signal.theme !== themeSignal?.theme,
+    );
+    const occurrence = themeSignal
+      ? (themeOccurrences.get(themeSignal.theme) ?? 0) + 1
+      : 1;
+    if (themeSignal) themeOccurrences.set(themeSignal.theme, occurrence);
     const primaryEvidence = themeSignal?.evidenceIds[0]
       ? evidenceById.get(themeSignal.evidenceIds[0])
       : fallback;
     const supportingEvidence = supportingSignal?.evidenceIds[0]
       ? evidenceById.get(supportingSignal.evidenceIds[0])
       : undefined;
-    const expression =
-      occurrence === 1
-        ? "opens the week's first chapter"
-        : occurrence === 2
-          ? "returns with a more concrete test"
-          : occurrence === 3
-            ? "deepens into a question of consistency"
-            : "reappears as an invitation to revise what earlier evidence revealed";
+    const expressions = [
+      "sets the opening terms",
+      "asks for a practical adjustment",
+      "changes the question from reaction to choice",
+      "marks the week's pivot",
+      "tests what can hold under pressure",
+      "creates space for integration",
+      "closes the sequence with a decision about what to carry forward",
+    ];
+    const evidenceBridges = [
+      "The decisive signature is",
+      "The calculation turns on",
+      "The most exact thread comes from",
+      "The day is distinguished by",
+      "The clearest pressure point is",
+      "The evidence becomes specific through",
+      "The final emphasis is anchored by",
+    ];
+    const counterpointBridges = [
+      "Alongside it",
+      "A different register appears through",
+      "The picture is complicated productively by",
+      "Balancing that signal",
+      "A second demand enters through",
+      "The surrounding context comes from",
+      "In the background",
+    ];
+    const cleanApplication = themeSignal?.practicalApplications[
+      (dayIndex + occurrence) % themeSignal.practicalApplications.length
+    ]?.replace(/[.;]+$/, "");
+    const cleanCaution = themeSignal?.watchFor[0]
+      ?.replace(/^[A-Z]/, (letter) => letter.toLowerCase())
+      .replace(/[.;]+$/, "");
     const narrative = themeSignal
-      ? `${themeSignal.theme} ${expression} on ${new Intl.DateTimeFormat(input.locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${day.readingDate}T12:00:00Z`))}. ${themeSignal.interpretation} The day's clearest evidence is ${primaryEvidence?.label ?? fallback.label}.${supportingEvidence ? ` In counterpoint, ${supportingEvidence.label} adds a separate strand, so the emphasis should not be reduced to a single mood.` : ""} Bring this into lived experience by ${themeSignal.practicalApplications[occurrence % themeSignal.practicalApplications.length].replace(/^[A-Z]/, (letter) => letter.toLowerCase())} Keep watch for ${themeSignal.watchFor[0]?.replace(/^[A-Z]/, (letter) => letter.toLowerCase()) ?? "turning symbolic emphasis into certainty"}; the value lies in testing the interpretation against what actually happens.`
+      ? `${themeSignal.theme} ${expressions[dayIndex]} on ${new Intl.DateTimeFormat(input.locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${day.readingDate}T12:00:00Z`))}. ${themeSignal.interpretation} ${evidenceBridges[dayIndex]} ${primaryEvidence?.label ?? fallback.label}.${supportingEvidence ? ` ${counterpointBridges[dayIndex]} ${supportingEvidence.label}, shifting the interpretation toward ${supportingSignal?.lifeDomains.join(" and ")}.` : ""} The useful experiment is simple: ${cleanApplication ?? "observe before deciding"}. Measure the result against direct experience, especially if you notice ${cleanCaution ?? "certainty arriving before evidence"}.`
       : "The calculated sky carries a quieter signal. Use the day for observation rather than forcing a conclusion.";
     return {
       date: day.readingDate,
@@ -125,15 +159,17 @@ export function buildWeeklyReadingAnalysis(input: {
         month: "short",
         timeZone: "UTC",
       }).format(new Date(`${day.readingDate}T12:00:00Z`)),
-      strength: theme
-        ? Math.min(1, (theme.relevance + theme.intensity) / 2)
+      strength: themeSignal
+        ? Math.min(1, (themeSignal.relevance + themeSignal.intensity) / 2)
         : 0.35,
-      themeLabel: theme?.label ?? fallback.label,
+      themeLabel: themeSignal?.theme ?? fallback.label,
       narrative,
       evidenceIds: [
         ...new Set(
           [
-            ...(theme?.evidenceIds.length ? theme.evidenceIds : [fallback.id]),
+            ...(themeSignal?.evidenceIds.length
+              ? themeSignal.evidenceIds
+              : [fallback.id]),
             ...(supportingSignal?.evidenceIds ?? []),
           ].filter(Boolean),
         ),
