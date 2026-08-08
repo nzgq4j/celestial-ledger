@@ -48,6 +48,12 @@ describe("checkout-led signup", () => {
     expect(checkoutRoute).toContain("customer_email: input.email");
   });
 
+  it("allows a fully discounted subscription to complete without card entry", () => {
+    expect(checkoutRoute).toContain(
+      'payment_method_collection: "if_required"',
+    );
+  });
+
   it("uses opaque single-use claim tokens and stable server comparison", () => {
     const token = randomClaimToken();
     expect(token).toHaveLength(43);

@@ -136,6 +136,7 @@ export async function POST(request: Request) {
       mode: "subscription",
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
       customer_email: input.email,
+      payment_method_collection: "if_required",
       allow_promotion_codes: true,
       metadata,
       subscription_data: { metadata },
