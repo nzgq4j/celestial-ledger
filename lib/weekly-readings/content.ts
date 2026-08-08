@@ -100,12 +100,11 @@ export function buildWeeklyReadingContent(
   readingId: string,
 ): WeeklyReadingContent {
   const text = copy[analysis.locale];
-  const dayParagraphs = analysis.dayByDay.map((day, index) => {
-    const signal = analysis.days[index].signals[0];
+  const dayParagraphs = analysis.dayByDay.map((day) => {
     return text.day(
       day.label,
       day.themeLabel,
-      completeSentenceExcerpt(signal?.interpretation ?? day.narrative),
+      completeSentenceExcerpt(day.narrative, 30),
     );
   });
   const overview = [text.opening, ...dayParagraphs, text.closing].join("\n\n");

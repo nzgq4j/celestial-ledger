@@ -6,11 +6,11 @@ import {
   dailyThemeSchema,
 } from "@/lib/daily-readings/domain";
 
-export const WEEKLY_READING_SCHEMA_VERSION = "weekly-reading-v1";
-export const WEEKLY_READING_METHOD_VERSION = "weekly-method-v1";
-export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v1";
-export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v1";
-export const WEEKLY_READING_PROMPT_VERSION = "weekly-deterministic-v1";
+export const WEEKLY_READING_SCHEMA_VERSION = "weekly-reading-v2";
+export const WEEKLY_READING_METHOD_VERSION = "weekly-method-v2";
+export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v2";
+export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v2";
+export const WEEKLY_READING_PROMPT_VERSION = "weekly-diversity-v2";
 export const WEEKLY_READING_CAPABILITY = "weekly_reading.primary";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);

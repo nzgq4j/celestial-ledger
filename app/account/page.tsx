@@ -156,6 +156,8 @@ export default async function AccountPage({
         WEEKLY_READING_CAPABILITY,
       )
     : null;
+  const weeklyAccessible =
+    weeklyDecision?.allowed === true || weeklyReadings.length > 0;
   const primaryProfile = birthProfiles.at(-1);
   const commercePlanKey = commerce.checkout
     ? await effectivePlanKeyForUser(authData.user.id)
@@ -448,7 +450,7 @@ export default async function AccountPage({
             <span className="dashboard-panel__meta">
               {!weeklyFlags.generationEnabled
                 ? copy.weeklyReadingUnavailableTitle
-                : weeklyDecision?.allowed
+                : weeklyAccessible
                   ? weeklyReadings.length
                     ? copy.weeklyReadingEntitled
                     : copy.weeklyReadingReady
@@ -460,7 +462,7 @@ export default async function AccountPage({
               <h3>{copy.weeklyReadingUnavailableTitle}</h3>
               <p>{copy.weeklyReadingUnavailableCopy}</p>
             </div>
-          ) : weeklyDecision?.allowed ? (
+          ) : weeklyAccessible ? (
             <>
               <p className="dashboard-panel__introduction">
                 {copy.weeklyReadingDescription}

@@ -53,6 +53,15 @@ describe("weekly reading engine", () => {
     expect(first).toEqual(second);
     expect(first.days).toHaveLength(7);
     expect(first.dayByDay).toHaveLength(7);
+    expect(new Set(first.dayByDay.map((day) => day.narrative)).size).toBe(7);
+    expect(
+      first.dayByDay.every((day) =>
+        day.narrative.includes(
+          first.evidence.find((item) => day.evidenceIds.includes(item.id))
+            ?.label ?? "__missing_evidence__",
+        ),
+      ),
+    ).toBe(true);
     const evidence = new Set(first.evidence.map((item) => item.id));
     expect(
       first.dayByDay.every((day) =>

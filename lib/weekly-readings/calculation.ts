@@ -14,6 +14,24 @@ import {
 
 const DAY_MS = 86_400_000;
 
+function normalisedWords(value: string) {
+  return new Set(value.toLowerCase().match(/[a-z0-9]+/g) ?? []);
+}
+
+function jaccardSimilarity(left: string, right: string) {
+  const a = normalisedWords(left);
+  const b = normalisedWords(right);
+  const intersection = [...a].filter((word) => b.has(word)).length;
+  return intersection / Math.max(1, new Set([...a, ...b]).size);
+}
+
+export function assertWeeklyNarrativeDiversity(narratives: string[]) {
+  for (let left = 0; left < narratives.length; left += 1)
+    for (let right = left + 1; right < narratives.length; right += 1)
+      if (jaccardSimilarity(narratives[left], narratives[right]) > 0.94)
+        throw new Error("WEEKLY_NARRATIVE_DIVERSITY_FAILED");
+}
+
 export function isoWeekStart(value = new Date()) {
   const date = new Date(
     Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()),
@@ -69,9 +87,36 @@ export function buildWeeklyReadingAnalysis(input: {
         right.relevance + right.intensity - left.relevance - left.intensity,
     )
     .slice(0, 5);
+  const themeOccurrences = new Map<string, number>();
+  const evidenceById = new Map(evidence.map((item) => [item.id, item]));
   const dayByDay = days.map((day) => {
     const theme = day.themes[0];
     const fallback = day.evidence[0];
+    const themeSignal =
+      day.signals.find((signal) => signal.theme === theme?.label) ??
+      day.signals[0];
+    const supportingSignal = day.signals.find(
+      (signal) => signal.id !== themeSignal?.id,
+    );
+    const occurrence = theme ? (themeOccurrences.get(theme.label) ?? 0) + 1 : 1;
+    if (theme) themeOccurrences.set(theme.label, occurrence);
+    const primaryEvidence = themeSignal?.evidenceIds[0]
+      ? evidenceById.get(themeSignal.evidenceIds[0])
+      : fallback;
+    const supportingEvidence = supportingSignal?.evidenceIds[0]
+      ? evidenceById.get(supportingSignal.evidenceIds[0])
+      : undefined;
+    const expression =
+      occurrence === 1
+        ? "opens the week's first chapter"
+        : occurrence === 2
+          ? "returns with a more concrete test"
+          : occurrence === 3
+            ? "deepens into a question of consistency"
+            : "reappears as an invitation to revise what earlier evidence revealed";
+    const narrative = themeSignal
+      ? `${themeSignal.theme} ${expression} on ${new Intl.DateTimeFormat(input.locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${day.readingDate}T12:00:00Z`))}. ${themeSignal.interpretation} The day's clearest evidence is ${primaryEvidence?.label ?? fallback.label}.${supportingEvidence ? ` In counterpoint, ${supportingEvidence.label} adds a separate strand, so the emphasis should not be reduced to a single mood.` : ""} Bring this into lived experience by ${themeSignal.practicalApplications[occurrence % themeSignal.practicalApplications.length].replace(/^[A-Z]/, (letter) => letter.toLowerCase())} Keep watch for ${themeSignal.watchFor[0]?.replace(/^[A-Z]/, (letter) => letter.toLowerCase()) ?? "turning symbolic emphasis into certainty"}; the value lies in testing the interpretation against what actually happens.`
+      : "The calculated sky carries a quieter signal. Use the day for observation rather than forcing a conclusion.";
     return {
       date: day.readingDate,
       label: new Intl.DateTimeFormat(input.locale, {
@@ -84,14 +129,18 @@ export function buildWeeklyReadingAnalysis(input: {
         ? Math.min(1, (theme.relevance + theme.intensity) / 2)
         : 0.35,
       themeLabel: theme?.label ?? fallback.label,
-      narrative: theme
-        ? `${theme.label} is the strongest calculated emphasis for this day. Treat it as a reflective focus rather than a predicted outcome.`
-        : "The calculated sky carries a quieter signal. Use the day for observation rather than forcing a conclusion.",
-      evidenceIds: theme?.evidenceIds.length
-        ? theme.evidenceIds
-        : [fallback.id],
+      narrative,
+      evidenceIds: [
+        ...new Set(
+          [
+            ...(theme?.evidenceIds.length ? theme.evidenceIds : [fallback.id]),
+            ...(supportingSignal?.evidenceIds ?? []),
+          ].filter(Boolean),
+        ),
+      ],
     };
   });
+  assertWeeklyNarrativeDiversity(dayByDay.map((day) => day.narrative));
   return weeklyReadingAnalysisSchema.parse({
     schemaVersion: WEEKLY_READING_SCHEMA_VERSION,
     weekStartDate: dates[0],

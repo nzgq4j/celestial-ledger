@@ -99,15 +99,6 @@ export async function POST(request: Request) {
         403,
       );
 
-    const decision = await capabilityDecisionForUser(
-      userId,
-      WEEKLY_READING_CAPABILITY,
-    );
-    if (!decision.allowed)
-      return json(
-        { error: "Weekly reading is included with Personal and Premium." },
-        403,
-      );
     const locale =
       input.locale ??
       (settings?.report_locale && isLocaleTag(settings.report_locale)
@@ -116,6 +107,24 @@ export async function POST(request: Request) {
     const weekStartDate = input.weekStartDate
       ? assertIsoWeekStart(input.weekStartDate)
       : isoWeekStart();
+    const { data: existingWeek } = await admin
+      .from("weekly_readings")
+      .select("id,status,content_schema_version")
+      .eq("user_id", userId)
+      .eq("birth_profile_id", primaryProfile.id)
+      .eq("week_start_date", weekStartDate)
+      .eq("locale", locale)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    const decision = await capabilityDecisionForUser(
+      userId,
+      WEEKLY_READING_CAPABILITY,
+    );
+    if (!decision.allowed && !existingWeek)
+      return json(
+        { error: "Weekly reading is included with Personal and Premium." },
+        403,
+      );
     const cacheKey = weeklyReadingCacheKey({
       userId,
       birthProfileId: primaryProfile.id,
@@ -124,17 +133,10 @@ export async function POST(request: Request) {
       observationTimeZone: primaryProfile.time_zone,
       locale,
     });
-    const { data: cached } = await admin
-      .from("weekly_readings")
-      .select("id,status")
-      .eq("user_id", userId)
-      .eq("cache_key", cacheKey)
-      .gt("expires_at", new Date().toISOString())
-      .maybeSingle();
-    if (cached)
+    if (existingWeek?.content_schema_version === WEEKLY_READING_CONTENT_VERSION)
       return json({
-        readingId: cached.id,
-        status: cached.status,
+        readingId: existingWeek.id,
+        status: existingWeek.status,
         cacheStatus: "cached",
       });
 
@@ -162,8 +164,40 @@ export async function POST(request: Request) {
       observationTimeZone: primaryProfile.time_zone,
       locale,
     });
-    const readingId = randomUUID();
+    const readingId = existingWeek?.id ?? randomUUID();
     const content = buildWeeklyReadingContent(analysis, readingId);
+    if (existingWeek) {
+      const { error: refreshError } = await admin
+        .from("weekly_readings")
+        .update({
+          status: "completed",
+          cache_key: cacheKey,
+          schema_version: analysis.schemaVersion,
+          content_schema_version: WEEKLY_READING_CONTENT_VERSION,
+          method_version: WEEKLY_READING_METHOD_VERSION,
+          rule_version: WEEKLY_READING_RULE_VERSION,
+          prompt_version: WEEKLY_READING_PROMPT_VERSION,
+          calculation_version: analysis.method.calculationVersion,
+          ephemeris_version: analysis.method.ephemerisVersion,
+          analysis: analysis as unknown as Json,
+          content: content as unknown as Json,
+          evidence: analysis.evidence as unknown as Json,
+          failure_code: null,
+          generated_at: new Date().toISOString(),
+        })
+        .eq("id", readingId)
+        .eq("user_id", userId);
+      if (refreshError)
+        return json(
+          { error: "The weekly reading could not be refreshed." },
+          500,
+        );
+      return json({
+        readingId,
+        status: "completed",
+        cacheStatus: "refreshed",
+      });
+    }
     const { error: insertError } = await admin.from("weekly_readings").insert({
       id: readingId,
       user_id: userId,
