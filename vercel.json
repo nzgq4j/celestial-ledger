@@ -8,6 +8,10 @@
     {
       "path": "/api/internal/horoscope-rollover",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/internal/pending-chart-claims",
+      "schedule": "17 * * * *"
     }
   ]
 }

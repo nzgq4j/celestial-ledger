@@ -80,6 +80,20 @@ export type TranslationPack = {
       calculating: string;
       clear: string;
     };
+    chartReveal: {
+      kicker: string;
+      title: string;
+      copy: string;
+      hookLabel: string;
+      personalLabel: string;
+      personalCopy: string;
+      continuePersonal: string;
+      openingCheckout: string;
+      freeAccount: string;
+      signIn: string;
+      compare: string;
+      checkoutError: string;
+    };
     footer: {
       kicker: string;
       title: string;

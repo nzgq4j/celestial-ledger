@@ -376,6 +376,21 @@ const pack = {
       calculating: "Calcul en cours…",
       clear: "Effacer mes données",
     },
+    chartReveal: {
+      kicker: "Poursuivez au-delà du thème natal",
+      title: "Votre thème vient d’ouvrir la première porte.",
+      copy: "La lecture que vous venez de recevoir décrit le schéma que vous portez. Personal suit ce que ce schéma rencontre aujourd’hui et conserve ce thème complet dans votre atlas privé.",
+      hookLabel: "Extrait de votre thème",
+      personalLabel: "Adhésion Personal",
+      personalCopy:
+        "Enregistrez ce thème, recevez des lectures personnelles quotidiennes et hebdomadaires, puis revenez à ses motifs profonds quand vous le souhaitez.",
+      continuePersonal: "Continuer avec Personal",
+      openingCheckout: "Ouverture du paiement sécurisé…",
+      freeAccount: "Créer un compte gratuit",
+      signIn: "Vous avez déjà un compte ? Connectez-vous",
+      compare: "Comparer toutes les adhésions",
+      checkoutError: "Le paiement sécurisé n’a pas pu être ouvert.",
+    },
     footer: {
       kicker: "Le ciel poursuit sa course",
       title: "Revenez lorsque le motif change.",

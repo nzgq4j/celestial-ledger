@@ -368,6 +368,21 @@ const pack = {
       calculating: "Calculating…",
       clear: "Clear my data",
     },
+    chartReveal: {
+      kicker: "Continue beyond the birth chart",
+      title: "Your chart has opened the first door.",
+      copy: "The reading you just received describes the pattern you carry. Personal follows what that pattern is meeting now—and keeps this complete chart in your private atlas.",
+      hookLabel: "From your chart",
+      personalLabel: "Personal membership",
+      personalCopy:
+        "Save this chart, receive personal daily and weekly readings, and return to its deeper patterns whenever you choose.",
+      continuePersonal: "Continue with Personal",
+      openingCheckout: "Opening secure checkout…",
+      freeAccount: "Create a free account",
+      signIn: "Already have an account? Sign in",
+      compare: "Compare all memberships",
+      checkoutError: "Secure checkout could not be opened.",
+    },
     footer: {
       kicker: "Go deeper than your horoscope.",
       title: "Stop reading your sign. Start reading your chart.",

@@ -938,6 +938,66 @@ export type Database = {
           },
         ];
       };
+      pending_chart_claims: {
+        Row: {
+          birth_input: Json;
+          birth_profile_id: string | null;
+          chart: Json;
+          claim_token_hash: string;
+          claimed_at: string | null;
+          created_at: string;
+          display_name: string | null;
+          expires_at: string;
+          natal_reading: string;
+          natal_reading_model_version: string;
+          natal_reading_prompt_version: string;
+          request_fingerprint_hash: string;
+          requested_plan_key: string;
+          stripe_checkout_session_id: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          birth_input: Json;
+          birth_profile_id?: string | null;
+          chart: Json;
+          claim_token_hash: string;
+          claimed_at?: string | null;
+          created_at?: string;
+          display_name?: string | null;
+          expires_at: string;
+          natal_reading: string;
+          natal_reading_model_version: string;
+          natal_reading_prompt_version: string;
+          request_fingerprint_hash: string;
+          requested_plan_key: string;
+          stripe_checkout_session_id?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          birth_input?: Json;
+          birth_profile_id?: string | null;
+          chart?: Json;
+          claim_token_hash?: string;
+          claimed_at?: string | null;
+          created_at?: string;
+          display_name?: string | null;
+          expires_at?: string;
+          natal_reading?: string;
+          natal_reading_model_version?: string;
+          natal_reading_prompt_version?: string;
+          request_fingerprint_hash?: string;
+          requested_plan_key?: string;
+          stripe_checkout_session_id?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       products: {
         Row: {
           active: boolean;
@@ -980,6 +1040,33 @@ export type Database = {
           synced_at?: string | null;
           unit_amount?: number | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      subscription_signin_claims: {
+        Row: {
+          checkout_session_hash: string;
+          consumed_at: string | null;
+          created_at: string;
+          expires_at: string;
+          locked_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          checkout_session_hash: string;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at: string;
+          locked_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          checkout_session_hash?: string;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          locked_at?: string | null;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -1174,6 +1261,15 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      attach_pending_chart_claim: {
+        Args: {
+          p_claim_token_hash: string;
+          p_stripe_customer_id: string;
+          p_stripe_subscription_id: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
       consume_capability: {
         Args: {
           p_capability_key: string;

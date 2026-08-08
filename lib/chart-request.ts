@@ -77,6 +77,93 @@ export const chartRequestSchema = z
   .object({ birthInput: birthInputSchema })
   .strict();
 
+const planetNameSchema = z.enum([
+  "Sun",
+  "Moon",
+  "Mercury",
+  "Venus",
+  "Mars",
+  "Jupiter",
+  "Saturn",
+  "Uranus",
+  "Neptune",
+  "Pluto",
+  "North Node",
+  "Ascendant",
+  "Midheaven",
+]);
+const aspectNameSchema = z.enum([
+  "Conjunction",
+  "Opposition",
+  "Trine",
+  "Square",
+  "Sextile",
+]);
+const placementSchema = z
+  .object({
+    name: planetNameSchema,
+    longitude: z.number().finite().min(0).lt(360),
+    sign: z.string().trim().min(1).max(20),
+    degree: z.number().int().min(0).max(29),
+    minute: z.number().int().min(0).max(59),
+    house: z.number().int().min(1).max(12).optional(),
+    retrograde: z.boolean(),
+    uncertain: z.boolean().optional(),
+  })
+  .strict();
+
+export const natalChartSchema = z
+  .object({
+    input: birthInputSchema,
+    utc: z.string().datetime(),
+    julianDay: z.number().finite(),
+    timeKnown: z.boolean(),
+    placements: z.array(placementSchema).min(10).max(20),
+    ascendant: placementSchema.optional(),
+    midheaven: placementSchema.optional(),
+    houses: z
+      .array(
+        z
+          .object({
+            house: z.number().int().min(1).max(12),
+            longitude: z.number().finite().min(0).lt(360),
+            sign: z.string().trim().min(1).max(20),
+            degree: z.number().int().min(0).max(29),
+            minute: z.number().int().min(0).max(59),
+          })
+          .strict(),
+      )
+      .max(12),
+    aspects: z
+      .array(
+        z
+          .object({
+            body1: planetNameSchema,
+            body2: planetNameSchema,
+            type: aspectNameSchema,
+            angle: z.number().finite().min(0).max(180),
+            orb: z.number().finite().min(0).max(20),
+          })
+          .strict(),
+      )
+      .max(300),
+    moonMayChangeSign: z.boolean(),
+    calculation: z
+      .object({
+        zodiac: z.literal("Tropical"),
+        houseSystem: z.enum(["Equal (Ascendant)", "None"]),
+        ephemeris: z.string().trim().min(1).max(200),
+        engineVersion: z.string().trim().min(1).max(100),
+        calculationVersion: z.string().trim().min(1).max(100),
+        aspectOrbs: z.record(
+          aspectNameSchema,
+          z.number().finite().min(0).max(20),
+        ),
+      })
+      .strict(),
+  })
+  .strict();
+
 export const CHART_REQUEST_MAX_BYTES = 8_192;
 
 export type ChartRequestInput = z.infer<typeof birthInputSchema>;

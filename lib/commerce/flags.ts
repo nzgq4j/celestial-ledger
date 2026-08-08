@@ -10,6 +10,7 @@ export function commerceFlags() {
     webhookFulfilment: enabled("COMMERCE_WEBHOOK_FULFILMENT_ENABLED"),
     subscriptions: enabled("COMMERCE_SUBSCRIPTIONS_ENABLED"),
     automaticTax: enabled("COMMERCE_AUTOMATIC_TAX_ENABLED"),
+    anonymousCheckout: enabled("COMMERCE_ANONYMOUS_CHECKOUT_ENABLED"),
   };
 }
 

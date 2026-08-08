@@ -230,7 +230,14 @@ Formatting requirements:
       birthProfile = saved;
     }
     return Response.json(
-      { interpretation, birthProfile },
+      {
+        interpretation,
+        birthProfile,
+        provenance: {
+          modelVersion: model,
+          promptVersion: NATAL_INTERPRETATION_PROMPT_VERSION,
+        },
+      },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (error: any) {

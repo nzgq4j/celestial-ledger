@@ -45,6 +45,12 @@ export default function HoroscopeApp({
   const [searching, setSearching] = useState(false);
   const [ambiguity, setAmbiguity] = useState<"earlier" | "later" | undefined>();
   const [saveStatus, setSaveStatus] = useState("");
+  const [interpretationProvenance, setInterpretationProvenance] = useState<{
+    modelVersion: string;
+    promptVersion: string;
+  }>();
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     if (!interpretationLoading) {
@@ -88,6 +94,8 @@ export default function HoroscopeApp({
   async function calculate() {
     setError("");
     setInterpretation("");
+    setInterpretationProvenance(undefined);
+    setCheckoutError("");
     setInterpretationError("");
     setInterpretationLoading(false);
     if (!date) return setError("Birth date is required.");
@@ -169,6 +177,11 @@ export default function HoroscopeApp({
           );
         setInterpretationProgress(100);
         setInterpretation(j.interpretation.trim());
+        if (
+          typeof j.provenance?.modelVersion === "string" &&
+          typeof j.provenance?.promptVersion === "string"
+        )
+          setInterpretationProvenance(j.provenance);
         if (account && j.birthProfile?.id)
           setSaveStatus(pack.messages.chartForm.accountSaved);
       } catch (e) {
@@ -205,6 +218,53 @@ export default function HoroscopeApp({
     setError("");
     setAmbiguity(undefined);
     setSaveStatus("");
+    setInterpretationProvenance(undefined);
+    setCheckoutBusy(false);
+    setCheckoutError("");
+  }
+
+  async function continueWithPersonal() {
+    if (!chart || !interpretation || !interpretationProvenance) return;
+    setCheckoutBusy(true);
+    setCheckoutError("");
+    try {
+      const recaptchaToken = await executeRecaptcha(
+        "anonymous_subscription_checkout",
+      );
+      const response = await fetch(
+        "/api/stripe/anonymous-subscription-checkout",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            planKey: "personal",
+            displayName: firstName.trim() || undefined,
+            birthInput: chart.input,
+            chart,
+            interpretation,
+            interpretationModelVersion: interpretationProvenance.modelVersion,
+            interpretationPromptVersion: interpretationProvenance.promptVersion,
+            recaptchaToken,
+          }),
+        },
+      );
+      const result = (await response.json()) as {
+        url?: string;
+        error?: string;
+      };
+      if (!response.ok || !result.url)
+        throw new Error(
+          result.error ?? pack.messages.chartReveal.checkoutError,
+        );
+      window.location.assign(result.url);
+    } catch (caught) {
+      setCheckoutError(
+        caught instanceof Error
+          ? caught.message
+          : pack.messages.chartReveal.checkoutError,
+      );
+      setCheckoutBusy(false);
+    }
   }
 
   return (
@@ -745,22 +805,51 @@ export default function HoroscopeApp({
               )}
             </section>
             {!account && (
-              <aside className="chart-account-cta chart-account-cta--closing">
-                <div>
-                  <p className="section-kicker">Keep this reading</p>
-                  <h2>Return to this sky whenever you need it</h2>
-                  <p>
-                    Save the complete chart and interpretation privately, then
-                    revisit them from your personal atlas.
+              <aside className="chart-reveal-continuation">
+                <div className="chart-reveal-continuation__intro">
+                  <p className="section-kicker">
+                    {pack.messages.chartReveal.kicker}
                   </p>
+                  <h2>{pack.messages.chartReveal.title}</h2>
+                  <p>{pack.messages.chartReveal.copy}</p>
+                  {interpretation && (
+                    <blockquote>
+                      <span>{pack.messages.chartReveal.hookLabel}</span>“
+                      {interpretationHook(interpretation)}”
+                    </blockquote>
+                  )}
                 </div>
-                <div className="chart-account-cta__actions">
-                  <Link href="/auth/login" className="button-primary">
-                    Save this chart
-                  </Link>
-                  <Link href="/auth/create-account" className="text-link">
-                    Create a free account <span aria-hidden="true">→</span>
-                  </Link>
+                <div className="chart-reveal-continuation__offer">
+                  <p className="chart-reveal-continuation__plan">
+                    {pack.messages.chartReveal.personalLabel}
+                  </p>
+                  <p>{pack.messages.chartReveal.personalCopy}</p>
+                  <button
+                    className="button-primary"
+                    type="button"
+                    disabled={
+                      checkoutBusy ||
+                      !interpretation ||
+                      !interpretationProvenance
+                    }
+                    onClick={continueWithPersonal}
+                  >
+                    {checkoutBusy
+                      ? pack.messages.chartReveal.openingCheckout
+                      : pack.messages.chartReveal.continuePersonal}
+                  </button>
+                  {checkoutError && <p role="alert">{checkoutError}</p>}
+                  <div className="chart-reveal-continuation__free-path">
+                    <Link href="/auth/create-account" className="text-link">
+                      {pack.messages.chartReveal.freeAccount}
+                    </Link>
+                    <Link href="/auth/login" className="text-link">
+                      {pack.messages.chartReveal.signIn}
+                    </Link>
+                    <Link href="/membership" className="text-link">
+                      {pack.messages.chartReveal.compare}
+                    </Link>
+                  </div>
                 </div>
               </aside>
             )}
@@ -800,7 +889,7 @@ export default function HoroscopeApp({
   );
 }
 
-async function executeRecaptcha() {
+async function executeRecaptcha(action = "marketing_subscribe") {
   const google = window as typeof window & {
     grecaptcha?: {
       ready: (callback: () => void) => void;
@@ -822,5 +911,16 @@ async function executeRecaptcha() {
   }
   if (!siteKey || !google.grecaptcha) return undefined;
   await new Promise<void>((resolve) => google.grecaptcha!.ready(resolve));
-  return google.grecaptcha.execute(siteKey, { action: "marketing_subscribe" });
+  return google.grecaptcha.execute(siteKey, { action });
+}
+
+function interpretationHook(text: string) {
+  const prose = text
+    .replace(/\r/g, "")
+    .split(/\n+/)
+    .map((line) => line.replace(/^#{1,3}\s*/, "").trim())
+    .find((line) => line.length >= 60 && !/^\d{1,2}\.\s+[A-Z]/.test(line));
+  const hook = prose ?? text.replace(/\s+/g, " ").trim();
+  if (hook.length <= 260) return hook;
+  return `${hook.slice(0, 260).replace(/\s+\S*$/, "")}…`;
 }

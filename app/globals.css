@@ -2201,6 +2201,107 @@ a {
   color: var(--paper);
   font-size: 0.82rem;
 }
+.chart-reveal-continuation {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(19rem, 0.75fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-top: 1rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid rgba(201, 167, 93, 0.48);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(
+      circle at 82% 14%,
+      rgba(92, 67, 170, 0.24),
+      transparent 35%
+    ),
+    linear-gradient(135deg, #0c1a2c, #08111e 68%);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.22);
+}
+.chart-reveal-continuation h2 {
+  max-width: 17ch;
+  margin: 0.55rem 0 0.8rem;
+  font:
+    400 clamp(2rem, 4vw, 3.5rem)/0.98 Georgia,
+    serif;
+}
+.chart-reveal-continuation__intro > p:last-of-type,
+.chart-reveal-continuation__offer > p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.chart-reveal-continuation blockquote {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.15rem;
+  border-left: 2px solid var(--gold);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--paper);
+  font:
+    400 1.05rem/1.6 Georgia,
+    serif;
+}
+.chart-reveal-continuation blockquote span,
+.chart-reveal-continuation__plan {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--gold);
+  font:
+    600 0.7rem/1.2 ui-monospace,
+    monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.chart-reveal-continuation__offer {
+  align-self: stretch;
+  padding: 1.35rem;
+  border: 1px solid rgba(91, 199, 255, 0.2);
+  border-radius: 1.1rem;
+  background: rgba(7, 13, 24, 0.72);
+}
+.chart-reveal-continuation__offer .button-primary {
+  width: 100%;
+  margin-top: 1rem;
+  background: linear-gradient(110deg, #2d82ff, #9755ff);
+  color: white;
+}
+.chart-reveal-continuation__offer [role="alert"] {
+  margin-top: 0.8rem;
+  color: #ffaaa2;
+}
+.chart-reveal-continuation__free-path {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.chart-reveal-continuation__free-path .text-link {
+  color: var(--paper);
+  font-size: 0.86rem;
+}
+.subscription-claim-panel {
+  max-width: 42rem;
+  text-align: center;
+}
+.subscription-claim-status {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+.subscription-claim-status__orbit {
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 1px solid rgba(201, 167, 93, 0.35);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: atlas-orbit 1.4s linear infinite;
+}
+@keyframes atlas-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .chart-method-notes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5801,6 +5902,9 @@ input:focus-visible {
     justify-content: space-between;
   }
   .chart-account-cta {
+    grid-template-columns: 1fr;
+  }
+  .chart-reveal-continuation {
     grid-template-columns: 1fr;
   }
   th,

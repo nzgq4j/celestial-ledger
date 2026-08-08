@@ -1,6 +1,12 @@
 import type Stripe from "stripe";
 import { PRIVATE_RESPONSE_HEADERS } from "@/lib/api-security";
 import { commerceFlags } from "@/lib/commerce/flags";
+import {
+  customerEmailForSubscription,
+  passwordlessUserForEmail,
+  sha256,
+  SIGNIN_CLAIM_LIFETIME_SECONDS,
+} from "@/lib/commerce/checkout-claims";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeClient, stripeWebhookSecret } from "@/lib/stripe";
 import {
@@ -137,7 +143,7 @@ async function subscriptionForEvent(event: Stripe.Event) {
 async function reconcileSubscription(event: Stripe.Event) {
   const subscription = await subscriptionForEvent(event);
   if (!subscription) return;
-  const userId = subscription.metadata.user_id;
+  let userId = subscription.metadata.user_id;
   const priceId = subscription.items.data[0]?.price.id;
   const admin = createAdminClient();
   const { data: cataloguePlan } = priceId
@@ -150,7 +156,58 @@ async function reconcileSubscription(event: Stripe.Event) {
     : { data: null };
   const planKey = cataloguePlan?.plan_key ?? subscriptionPlanKey(subscription);
   const customerId = stripeId(subscription.customer);
-  if (!userId || !planKey || !customerId) return "subscription_mismatch";
+  if (!planKey || !customerId) return "subscription_mismatch";
+
+  const pendingToken = subscription.metadata.pending_claim_token;
+  let pendingClaim:
+    { tokenHash: string; checkoutSessionId: string | null } | undefined;
+  if (!userId && pendingToken) {
+    const tokenHash = sha256(pendingToken);
+    const { data: claim, error: claimError } = await admin
+      .from("pending_chart_claims")
+      .select(
+        "requested_plan_key,display_name,expires_at,stripe_checkout_session_id",
+      )
+      .eq("claim_token_hash", tokenHash)
+      .maybeSingle();
+    if (claimError) throw claimError;
+    if (!claim || new Date(claim.expires_at).getTime() <= Date.now()) {
+      console.error("[stripe-webhook] Anonymous subscription claim rejected", {
+        reason: claim ? "expired" : "missing",
+        eventId: event.id,
+        subscriptionId: subscription.id,
+      });
+      return claim ? "anonymous_claim_expired" : "anonymous_claim_missing";
+    }
+    if (claim.requested_plan_key !== planKey)
+      return "anonymous_claim_plan_mismatch";
+
+    const customer = await customerEmailForSubscription(
+      stripeClient(),
+      subscription,
+    );
+    userId = await passwordlessUserForEmail(
+      admin,
+      customer.email,
+      claim.display_name ?? customer.displayName,
+    );
+    const { data: profileId, error: attachError } = await admin.rpc(
+      "attach_pending_chart_claim",
+      {
+        p_claim_token_hash: tokenHash,
+        p_user_id: userId,
+        p_stripe_customer_id: customer.customerId,
+        p_stripe_subscription_id: subscription.id,
+      },
+    );
+    if (attachError) throw attachError;
+    if (!profileId) return "anonymous_claim_unavailable";
+    pendingClaim = {
+      tokenHash,
+      checkoutSessionId: claim.stripe_checkout_session_id,
+    };
+  }
+  if (!userId) return "subscription_mismatch";
   const period = subscriptionPeriod(subscription);
   const graceEndsAt =
     subscription.status === "past_due"
@@ -175,6 +232,37 @@ async function reconcileSubscription(event: Stripe.Event) {
     p_grace_ends_at: graceEndsAt,
   });
   if (error) throw error;
+  if (data !== "processed" && data !== "duplicate" && data !== "stale") {
+    if (data === "customer_or_subscription_conflict") throw new Error(data);
+    return data;
+  }
+  if (pendingClaim) {
+    if (!pendingClaim.checkoutSessionId)
+      throw new Error("anonymous_checkout_session_missing");
+    const expiresAt = new Date(
+      Date.now() + SIGNIN_CLAIM_LIFETIME_SECONDS * 1000,
+    ).toISOString();
+    const { error: signinError } = await admin
+      .from("subscription_signin_claims")
+      .upsert({
+        checkout_session_hash: sha256(pendingClaim.checkoutSessionId),
+        user_id: userId,
+        expires_at: expiresAt,
+      });
+    if (signinError) throw signinError;
+    await stripeClient().subscriptions.update(subscription.id, {
+      metadata: {
+        ...subscription.metadata,
+        user_id: userId,
+        pending_claim_token: "",
+      },
+    });
+    const { error: deleteError } = await admin
+      .from("pending_chart_claims")
+      .delete()
+      .eq("claim_token_hash", pendingClaim.tokenHash);
+    if (deleteError) throw deleteError;
+  }
   if (event.type === "invoice.paid") {
     const invoice = event.data.object as Stripe.Invoice;
     const payments = await stripeClient().invoicePayments.list({

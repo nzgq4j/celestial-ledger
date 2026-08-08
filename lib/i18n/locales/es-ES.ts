@@ -368,6 +368,21 @@ const pack = {
       calculating: "Calculando…",
       clear: "Borrar mis datos",
     },
+    chartReveal: {
+      kicker: "Continúa más allá de la carta natal",
+      title: "Tu carta ha abierto la primera puerta.",
+      copy: "La lectura que acabas de recibir describe el patrón que llevas contigo. Personal sigue lo que ese patrón encuentra ahora y guarda esta carta completa en tu atlas privado.",
+      hookLabel: "De tu carta",
+      personalLabel: "Membresía Personal",
+      personalCopy:
+        "Guarda esta carta, recibe lecturas personales diarias y semanales y vuelve a sus patrones más profundos cuando quieras.",
+      continuePersonal: "Continuar con Personal",
+      openingCheckout: "Abriendo el pago seguro…",
+      freeAccount: "Crear una cuenta gratuita",
+      signIn: "¿Ya tienes una cuenta? Inicia sesión",
+      compare: "Comparar todas las membresías",
+      checkoutError: "No se pudo abrir el pago seguro.",
+    },
     footer: {
       kicker: "El cielo sigue girando",
       title: "Regresa cuando cambie el patrón.",

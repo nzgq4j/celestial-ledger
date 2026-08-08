@@ -369,6 +369,21 @@ const pack = {
       calculating: "Berechnung läuft…",
       clear: "Meine Daten löschen",
     },
+    chartReveal: {
+      kicker: "Gehe über dein Geburtshoroskop hinaus",
+      title: "Dein Horoskop hat die erste Tür geöffnet.",
+      copy: "Die Deutung, die du gerade erhalten hast, beschreibt dein persönliches Muster. Personal folgt dem, was diesem Muster jetzt begegnet, und bewahrt dieses vollständige Horoskop in deinem privaten Atlas auf.",
+      hookLabel: "Aus deinem Horoskop",
+      personalLabel: "Personal-Mitgliedschaft",
+      personalCopy:
+        "Speichere dieses Horoskop, erhalte persönliche tägliche und wöchentliche Deutungen und kehre jederzeit zu seinen tieferen Mustern zurück.",
+      continuePersonal: "Mit Personal fortfahren",
+      openingCheckout: "Sicherer Checkout wird geöffnet…",
+      freeAccount: "Kostenloses Konto erstellen",
+      signIn: "Du hast bereits ein Konto? Anmelden",
+      compare: "Alle Mitgliedschaften vergleichen",
+      checkoutError: "Der sichere Checkout konnte nicht geöffnet werden.",
+    },
     footer: {
       kicker: "Der Himmel dreht sich weiter",
       title: "Kehre zurück, wenn sich das Muster wandelt.",
