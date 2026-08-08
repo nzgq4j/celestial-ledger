@@ -364,6 +364,101 @@ export type Database = {
           },
         ];
       };
+      weekly_readings: {
+        Row: {
+          analysis: Json;
+          birth_profile_id: string;
+          cache_key: string;
+          calculation_version: string;
+          capability: string;
+          content: Json;
+          content_schema_version: string;
+          context_hash: string;
+          created_at: string;
+          ephemeris_version: string;
+          evidence: Json;
+          expires_at: string;
+          failure_code: string | null;
+          generated_at: string;
+          id: string;
+          locale: string;
+          method_version: string;
+          observation_time_zone: string;
+          prompt_version: string;
+          rule_version: string;
+          schema_version: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+          week_end_date: string;
+          week_start_date: string;
+        };
+        Insert: {
+          analysis: Json;
+          birth_profile_id: string;
+          cache_key: string;
+          calculation_version: string;
+          capability?: string;
+          content: Json;
+          content_schema_version: string;
+          context_hash?: string;
+          created_at?: string;
+          ephemeris_version: string;
+          evidence: Json;
+          expires_at?: string;
+          failure_code?: string | null;
+          generated_at?: string;
+          id?: string;
+          locale: string;
+          method_version: string;
+          observation_time_zone: string;
+          prompt_version: string;
+          rule_version: string;
+          schema_version: string;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+          week_end_date?: string;
+          week_start_date: string;
+        };
+        Update: {
+          analysis?: Json;
+          birth_profile_id?: string;
+          cache_key?: string;
+          calculation_version?: string;
+          capability?: string;
+          content?: Json;
+          content_schema_version?: string;
+          context_hash?: string;
+          created_at?: string;
+          ephemeris_version?: string;
+          evidence?: Json;
+          expires_at?: string;
+          failure_code?: string | null;
+          generated_at?: string;
+          id?: string;
+          locale?: string;
+          method_version?: string;
+          observation_time_zone?: string;
+          prompt_version?: string;
+          rule_version?: string;
+          schema_version?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+          week_end_date?: string;
+          week_start_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "weekly_readings_birth_profile_id_fkey";
+            columns: ["birth_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "birth_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       commerce_plans: {
         Row: {
           active: boolean;
@@ -1079,6 +1174,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      consume_capability: {
+        Args: {
+          p_capability_key: string;
+          p_idempotency_key: string;
+          p_period_end: string;
+          p_period_start: string;
+          p_quantity: number;
+          p_source_reference?: string | null;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
       claim_report_job: {
         Args: Record<PropertyKey, never>;
         Returns: Database["public"]["Tables"]["reports"]["Row"][];

@@ -1,11 +1,77 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
+  decideCapability,
   effectivePlan,
+  type CapabilityDecision,
+  type CapabilityGrant,
   type Plan,
+  type PlanCapability,
   type PlanKey,
   type SubscriptionState,
 } from "@/lib/entitlements/domain";
+
+export async function capabilityDecisionForUser(
+  userId: string,
+  capability: string,
+  at = new Date(),
+): Promise<CapabilityDecision> {
+  const admin = createAdminClient();
+  const planKey = await effectivePlanKeyForUser(userId, at);
+  const [
+    { data: capabilityRows, error: capabilityError },
+    { data: grantRows, error: grantError },
+  ] = await Promise.all([
+    admin
+      .from("plan_capabilities")
+      .select("plan_key,capability_key,allowance,period")
+      .eq("plan_key", planKey)
+      .eq("capability_key", capability),
+    admin
+      .from("capability_grants")
+      .select(
+        "capability_key,allowance,period,starts_at,ends_at,priority,status",
+      )
+      .eq("user_id", userId)
+      .eq("capability_key", capability),
+  ]);
+  if (capabilityError || grantError)
+    throw new Error("ENTITLEMENT_LOOKUP_FAILED");
+  return decideCapability({
+    plans: [
+      { key: "free", rank: 0, active: true },
+      { key: "personal", rank: 10, active: true },
+      { key: "premium", rank: 20, active: true },
+    ],
+    planCapabilities: (capabilityRows ?? []).map(
+      (row) =>
+        ({
+          planKey: row.plan_key as PlanKey,
+          capability: row.capability_key,
+          allowance: row.allowance,
+          period: row.period as PlanCapability["period"],
+        }) satisfies PlanCapability,
+    ),
+    subscriptions:
+      planKey === "free"
+        ? []
+        : [{ planKey, status: "active" as const, currentPeriodEnd: undefined }],
+    grants: (grantRows ?? []).map(
+      (row) =>
+        ({
+          capability: row.capability_key,
+          allowance: row.allowance,
+          period: row.period as CapabilityGrant["period"],
+          startsAt: new Date(row.starts_at),
+          endsAt: row.ends_at ? new Date(row.ends_at) : undefined,
+          priority: row.priority,
+          status: row.status as CapabilityGrant["status"],
+        }) satisfies CapabilityGrant,
+    ),
+    capability,
+    at,
+  });
+}
 
 export async function effectivePlanKeyForUser(
   userId: string,

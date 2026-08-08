@@ -76,6 +76,30 @@ const pack = {
         "Enregistrez un thème natal avant de générer une lecture quotidienne personnelle.",
       openDailyReading: "Ouvrir la lecture enregistrée pour cette date",
       dailyReadingHistory: "Lectures quotidiennes récentes",
+      weeklyReadingKicker: "Votre semaine tracée à l’avance",
+      weeklyReadingTitle: "Lecture astrologique hebdomadaire",
+      weeklyReadingDescription:
+        "Une lecture privée de sept jours, liée aux preuves de votre thème natal principal, avec carte quotidienne et priorités pratiques.",
+      weeklyReadingEntitled: "Incluse dans votre adhésion",
+      weeklyReadingReady: "Prête à générer",
+      weeklyReadingUpsellTitle:
+        "Ajoutez une lecture hebdomadaire à votre atlas",
+      weeklyReadingUpsellCopy:
+        "La lecture hebdomadaire est incluse avec Personal et Premium.",
+      weeklyReadingUpsellAction: "Voir l’adhésion",
+      weeklyReadingUnavailableTitle:
+        "Les lectures hebdomadaires sont en préparation",
+      weeklyReadingUnavailableCopy:
+        "Votre avantage hebdomadaire apparaîtra ici lorsque la génération sera ouverte.",
+      weeklyReadingNeedsChart:
+        "Créez et enregistrez votre thème natal principal avant de générer une lecture hebdomadaire.",
+      generateWeeklyReading: "Générer la lecture de cette semaine",
+      weeklyReadingCalculating: "Tracé de votre semaine…",
+      weeklyReadingFailed:
+        "Votre lecture hebdomadaire n’a pas pu être générée.",
+      weeklyReadingHistory: "Lectures hebdomadaires récentes",
+      weeklyReadingDownload: "Télécharger le PDF",
+      weeklyReadingDeleteConfirm: "Supprimer cette lecture hebdomadaire ?",
       myBirthCharts: "Mes thèmes natals",
       adminConsole: "Administration",
       membership: "Adhésion",

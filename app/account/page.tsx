@@ -5,15 +5,20 @@ import { BirthProfileList } from "@/components/BirthProfileList";
 import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { AccountReportList } from "@/components/AccountReportList";
 import { DailyReadingGenerator } from "@/components/DailyReadingGenerator";
+import { WeeklyReadingGenerator } from "@/components/WeeklyReadingGenerator";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { commerceFlags } from "@/lib/commerce/flags";
+import { commerceFlags, weeklyReadingFlags } from "@/lib/commerce/flags";
 import { BillingPortalButton } from "@/components/BillingPortalButton";
 import { CheckoutButton } from "@/components/CheckoutButton";
-import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
+import {
+  capabilityDecisionForUser,
+  effectivePlanKeyForUser,
+} from "@/lib/entitlements/server";
+import { WEEKLY_READING_CAPABILITY } from "@/lib/weekly-readings/domain";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -38,6 +43,7 @@ export default async function AccountPage({
 
   const adminClient = createAdminClient();
   const commerce = commerceFlags();
+  const weeklyFlags = weeklyReadingFlags();
   const { data: adminRole } = await adminClient
     .from("admin_roles")
     .select("role")
@@ -89,6 +95,15 @@ export default async function AccountPage({
   const birthProfiles = birthProfileResult.data ?? [];
   const reports = reportResult.data ?? [];
   const dailyReadings = dailyReadingResult.data ?? [];
+  const weeklyReadings = weeklyFlags.generationEnabled
+    ? ((
+        await supabase
+          .from("weekly_readings")
+          .select("id,week_start_date,week_end_date,locale,generated_at,status")
+          .order("week_start_date", { ascending: false })
+          .limit(24)
+      ).data ?? [])
+    : [];
   const products = productResult.data ?? [];
   const entitlements = entitlementResult.data ?? [];
   const reportLocale =
@@ -135,6 +150,13 @@ export default async function AccountPage({
           .maybeSingle()
       ).data
     : null;
+  const weeklyDecision = weeklyFlags.generationEnabled
+    ? await capabilityDecisionForUser(
+        authData.user.id,
+        WEEKLY_READING_CAPABILITY,
+      )
+    : null;
+  const primaryProfile = birthProfiles.at(-1);
   const commercePlanKey = commerce.checkout
     ? await effectivePlanKeyForUser(authData.user.id)
     : "free";
@@ -217,6 +239,10 @@ export default async function AccountPage({
           <a href="#daily-reading">
             <span aria-hidden="true">02</span>
             {copy.myDailyReading}
+          </a>
+          <a href="#weekly-reading">
+            <span aria-hidden="true">W</span>
+            {copy.weeklyReadingTitle}
           </a>
           <a href="#reports">
             <span aria-hidden="true">03</span>
@@ -408,6 +434,55 @@ export default async function AccountPage({
             }))}
             existingReadings={dailyReadings}
           />
+        </section>
+
+        <section
+          className="dashboard-panel dashboard-panel--weekly"
+          id="weekly-reading"
+        >
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">{copy.weeklyReadingKicker}</p>
+              <h2>{copy.weeklyReadingTitle}</h2>
+            </div>
+            <span className="dashboard-panel__meta">
+              {!weeklyFlags.generationEnabled
+                ? copy.weeklyReadingUnavailableTitle
+                : weeklyDecision?.allowed
+                  ? weeklyReadings.length
+                    ? copy.weeklyReadingEntitled
+                    : copy.weeklyReadingReady
+                  : copy.weeklyReadingUpsellTitle}
+            </span>
+          </div>
+          {!weeklyFlags.generationEnabled ? (
+            <div className="dashboard-empty">
+              <h3>{copy.weeklyReadingUnavailableTitle}</h3>
+              <p>{copy.weeklyReadingUnavailableCopy}</p>
+            </div>
+          ) : weeklyDecision?.allowed ? (
+            <>
+              <p className="dashboard-panel__introduction">
+                {copy.weeklyReadingDescription}
+              </p>
+              <WeeklyReadingGenerator
+                primaryProfile={
+                  primaryProfile
+                    ? { id: primaryProfile.id, label: primaryProfile.label }
+                    : undefined
+                }
+                existingReadings={weeklyReadings}
+              />
+            </>
+          ) : (
+            <div className="dashboard-empty dashboard-weekly-upsell">
+              <h3>{copy.weeklyReadingUpsellTitle}</h3>
+              <p>{copy.weeklyReadingUpsellCopy}</p>
+              <Link href="/membership" className="button-primary">
+                {copy.weeklyReadingUpsellAction}
+              </Link>
+            </div>
+          )}
         </section>
 
         <section

@@ -7362,6 +7362,82 @@ body:has(.account-dashboard) .account-workspace {
   padding: 0;
   list-style: none;
 }
+
+.dashboard-panel--weekly {
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(88, 121, 255, 0.14),
+      transparent 18rem
+    ),
+    var(--atlas-panel, #111927);
+}
+
+.dashboard-weekly-upsell .button-primary {
+  margin-top: 1rem;
+}
+
+.weekly-emphasis-map {
+  margin-top: 2rem;
+  padding: clamp(1.2rem, 3vw, 2.2rem);
+  border: 1px solid rgba(208, 171, 88, 0.3);
+  border-radius: 1rem;
+  background: rgba(13, 25, 41, 0.78);
+}
+
+.weekly-emphasis-map > div {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+}
+
+.weekly-emphasis-map article {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid rgba(160, 183, 215, 0.16);
+  border-radius: 0.75rem;
+  background: rgba(4, 14, 25, 0.56);
+}
+
+.weekly-emphasis-map time {
+  display: block;
+  color: var(--gold);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+
+.weekly-emphasis-map h3 {
+  margin: 0.6rem 0;
+  font-size: 1rem;
+}
+
+.weekly-emphasis-map meter {
+  width: 100%;
+  accent-color: var(--gold);
+}
+
+.weekly-emphasis-map p,
+.weekly-emphasis-map details {
+  font-size: 0.78rem;
+}
+
+.weekly-emphasis-map code {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .weekly-emphasis-map > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .weekly-emphasis-map > div {
+    grid-template-columns: 1fr;
+  }
+}
 .daily-reading-history a {
   display: block;
   padding: 0.55rem 0.8rem;

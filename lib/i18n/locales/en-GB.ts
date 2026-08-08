@@ -77,6 +77,27 @@ const pack = {
         "Save a birth chart before generating a personal daily reading.",
       openDailyReading: "Open the saved reading for this date",
       dailyReadingHistory: "Recent daily readings",
+      weeklyReadingKicker: "Your week, mapped in advance",
+      weeklyReadingTitle: "Weekly astrological reading",
+      weeklyReadingDescription:
+        "A private, evidence-linked seven-day reading for your primary birth chart, with a day-by-day emphasis map and practical priorities.",
+      weeklyReadingEntitled: "Included with your membership",
+      weeklyReadingReady: "Ready to generate",
+      weeklyReadingUpsellTitle: "Add a weekly reading to your atlas",
+      weeklyReadingUpsellCopy:
+        "Weekly reading is included with Personal and Premium.",
+      weeklyReadingUpsellAction: "View membership",
+      weeklyReadingUnavailableTitle: "Weekly readings are being prepared",
+      weeklyReadingUnavailableCopy:
+        "Your weekly reading benefit will appear here when generation is released.",
+      weeklyReadingNeedsChart:
+        "Create and save your primary birth chart before generating a weekly reading.",
+      generateWeeklyReading: "Generate this week’s reading",
+      weeklyReadingCalculating: "Mapping your week…",
+      weeklyReadingFailed: "Your weekly reading could not be generated.",
+      weeklyReadingHistory: "Recent weekly readings",
+      weeklyReadingDownload: "Download PDF",
+      weeklyReadingDeleteConfirm: "Delete this weekly reading?",
       myBirthCharts: "My birth charts",
       adminConsole: "Administration",
       membership: "Membership",

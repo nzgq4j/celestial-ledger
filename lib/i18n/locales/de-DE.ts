@@ -75,6 +75,28 @@ const pack = {
         "Speichere ein Geburtshoroskop, bevor du eine persönliche Tagesdeutung erstellst.",
       openDailyReading: "Gespeicherte Deutung für dieses Datum öffnen",
       dailyReadingHistory: "Neueste Tagesdeutungen",
+      weeklyReadingKicker: "Ihre Woche im Voraus kartiert",
+      weeklyReadingTitle: "Wöchentliche astrologische Deutung",
+      weeklyReadingDescription:
+        "Eine private, evidenzbasierte Sieben-Tage-Deutung für Ihr primäres Geburtshoroskop mit Tageskarte und praktischen Schwerpunkten.",
+      weeklyReadingEntitled: "In Ihrer Mitgliedschaft enthalten",
+      weeklyReadingReady: "Bereit zum Erstellen",
+      weeklyReadingUpsellTitle:
+        "Ergänzen Sie Ihren Atlas um eine Wochendeutung",
+      weeklyReadingUpsellCopy:
+        "Die Wochendeutung ist in Personal und Premium enthalten.",
+      weeklyReadingUpsellAction: "Mitgliedschaft ansehen",
+      weeklyReadingUnavailableTitle: "Wochendeutungen werden vorbereitet",
+      weeklyReadingUnavailableCopy:
+        "Ihr Vorteil für Wochendeutungen erscheint hier, sobald die Erstellung freigeschaltet ist.",
+      weeklyReadingNeedsChart:
+        "Erstellen und speichern Sie zuerst Ihr primäres Geburtshoroskop.",
+      generateWeeklyReading: "Wochendeutung erstellen",
+      weeklyReadingCalculating: "Ihre Woche wird kartiert…",
+      weeklyReadingFailed: "Ihre Wochendeutung konnte nicht erstellt werden.",
+      weeklyReadingHistory: "Letzte Wochendeutungen",
+      weeklyReadingDownload: "PDF herunterladen",
+      weeklyReadingDeleteConfirm: "Diese Wochendeutung löschen?",
       myBirthCharts: "Meine Geburtshoroskope",
       adminConsole: "Administration",
       membership: "Mitgliedschaft",

@@ -75,6 +75,28 @@ const pack = {
         "Guarda una carta natal antes de generar una lectura diaria personal.",
       openDailyReading: "Abrir la lectura guardada para esta fecha",
       dailyReadingHistory: "Lecturas diarias recientes",
+      weeklyReadingKicker: "Tu semana trazada con antelación",
+      weeklyReadingTitle: "Lectura astrológica semanal",
+      weeklyReadingDescription:
+        "Una lectura privada de siete días vinculada a evidencias para tu carta natal principal, con mapa diario y prioridades prácticas.",
+      weeklyReadingEntitled: "Incluida con tu membresía",
+      weeklyReadingReady: "Lista para generar",
+      weeklyReadingUpsellTitle: "Añade una lectura semanal a tu atlas",
+      weeklyReadingUpsellCopy:
+        "La lectura semanal está incluida con Personal y Premium.",
+      weeklyReadingUpsellAction: "Ver membresía",
+      weeklyReadingUnavailableTitle:
+        "Estamos preparando las lecturas semanales",
+      weeklyReadingUnavailableCopy:
+        "Tu ventaja de lectura semanal aparecerá aquí cuando se active la generación.",
+      weeklyReadingNeedsChart:
+        "Crea y guarda tu carta natal principal antes de generar una lectura semanal.",
+      generateWeeklyReading: "Generar la lectura de esta semana",
+      weeklyReadingCalculating: "Trazando tu semana…",
+      weeklyReadingFailed: "No se pudo generar tu lectura semanal.",
+      weeklyReadingHistory: "Lecturas semanales recientes",
+      weeklyReadingDownload: "Descargar PDF",
+      weeklyReadingDeleteConfirm: "¿Eliminar esta lectura semanal?",
       myBirthCharts: "Mis cartas natales",
       adminConsole: "Administración",
       membership: "Membresía",

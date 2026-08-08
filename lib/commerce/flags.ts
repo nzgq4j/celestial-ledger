@@ -12,3 +12,9 @@ export function commerceFlags() {
     automaticTax: enabled("COMMERCE_AUTOMATIC_TAX_ENABLED"),
   };
 }
+
+export function weeklyReadingFlags() {
+  return {
+    generationEnabled: enabled("WEEKLY_READING_GENERATION_ENABLED"),
+  };
+}
