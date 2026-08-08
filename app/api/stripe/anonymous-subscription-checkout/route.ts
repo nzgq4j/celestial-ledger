@@ -27,6 +27,7 @@ const requestSchema = z
   .object({
     planKey: z.enum(["personal", "premium"]),
     displayName: z.string().trim().min(2).max(50).optional(),
+    email: z.string().trim().email().max(254),
     birthInput: birthInputSchema,
     chart: natalChartSchema,
     interpretation: z.string().trim().min(200).max(60_000),
@@ -134,6 +135,7 @@ export async function POST(request: Request) {
     const session = await stripeClient().checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
+      customer_email: input.email,
       allow_promotion_codes: true,
       metadata,
       subscription_data: { metadata },

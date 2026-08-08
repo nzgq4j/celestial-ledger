@@ -225,6 +225,11 @@ export default function HoroscopeApp({
 
   async function continueWithPersonal() {
     if (!chart || !interpretation || !interpretationProvenance) return;
+    const checkoutEmail = email.trim();
+    if (!checkoutEmail) {
+      setCheckoutError("Add your email before continuing to secure checkout.");
+      return;
+    }
     setCheckoutBusy(true);
     setCheckoutError("");
     try {
@@ -239,6 +244,7 @@ export default function HoroscopeApp({
           body: JSON.stringify({
             planKey: "personal",
             displayName: firstName.trim() || undefined,
+            email: checkoutEmail,
             birthInput: chart.input,
             chart,
             interpretation,

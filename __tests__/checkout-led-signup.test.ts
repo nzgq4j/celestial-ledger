@@ -35,11 +35,17 @@ describe("checkout-led signup", () => {
   });
 
   it("carries the revealed chart and reading into checkout without re-entry", () => {
+    expect(reveal).toContain("email: checkoutEmail");
     expect(reveal).toContain("birthInput: chart.input");
     expect(reveal).toContain("chart,");
     expect(reveal).toContain("interpretation,");
     expect(reveal).toContain("interpretationModelVersion");
     expect(reveal).toContain("interpretationPromptVersion");
+  });
+
+  it("prefills the existing visitor email in Stripe Checkout", () => {
+    expect(checkoutRoute).toContain("email: z.string().trim().email().max(254)");
+    expect(checkoutRoute).toContain("customer_email: input.email");
   });
 
   it("uses opaque single-use claim tokens and stable server comparison", () => {
