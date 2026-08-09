@@ -4,7 +4,7 @@ import { localeTags } from "@/lib/i18n/config";
 export const DAILY_READING_SCHEMA_VERSION = "daily-reading-v1";
 export const DAILY_READING_RULE_VERSION = "daily-rules-v2";
 export const DAILY_READING_METHOD_VERSION = "daily-method-v3";
-export const DAILY_READING_PROMPT_VERSION = "daily-diversity-v2";
+export const DAILY_READING_PROMPT_VERSION = "daily-reader-facing-v3";
 
 export const dailyBodySchema = z.enum([
   "Sun",

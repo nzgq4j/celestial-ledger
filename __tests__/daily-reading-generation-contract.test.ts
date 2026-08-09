@@ -15,4 +15,11 @@ describe("daily reading generation contract", () => {
       "Write this private daily astrological reading from the immutable, server-calculated evidence",
     );
   });
+
+  it("bumps the cache version for reader-facing generation changes", () => {
+    const domain = readFileSync("lib/daily-readings/domain.ts", "utf8");
+    expect(domain).toContain(
+      'DAILY_READING_PROMPT_VERSION = "daily-reader-facing-v3"',
+    );
+  });
 });
