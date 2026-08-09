@@ -334,7 +334,7 @@ export function TarotReadingExperience({
                 className={`tarot-shuffle__card tarot-shuffle__card--${layer}`}
               />
             ))}
-            <span />
+            <span className="tarot-shuffle__axis" />
           </div>
           <p className="tarot-shuffle__selection">
             {selectedDeck.name} · {selectedReading.name}

@@ -10513,7 +10513,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin-block: 1rem;
 }
 
-.tarot-shuffle > span {
+.tarot-shuffle__axis {
   position: absolute;
   left: 50%;
   bottom: -1.4rem;
