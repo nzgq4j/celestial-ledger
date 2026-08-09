@@ -106,6 +106,10 @@ describe("tarot artwork and access security", () => {
   it("requires a content administrator and overwrites stable paths without orphans", () => {
     expect(uploadRoute).toContain("getAdminIdentity");
     expect(uploadRoute).toContain('"site_admin", "content_admin"');
+    expect(uploadRoute).toContain("ensureTarotDeckBucket");
+    expect(uploadRoute).toContain(".storage.createBucket");
+    expect(uploadRoute).toContain(".storage.updateBucket");
+    expect(uploadRoute).toContain("allowedMimeTypes: [\"image/webp\"]");
     expect(uploadRoute).toContain("upsert: true");
     expect(uploadRoute).toContain("tarotArtworkPath");
     expect(uploadRoute).toContain("remove([path])");

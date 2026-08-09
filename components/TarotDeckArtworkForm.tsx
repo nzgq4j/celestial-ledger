@@ -30,6 +30,10 @@ export function TarotDeckArtworkForm({
     wrong_aspect: copy.adminWrongAspect,
     UNAUTHENTICATED: copy.adminSessionExpired,
     FORBIDDEN: copy.adminForbidden,
+    BUCKET_FAILED: copy.adminUploadFailed,
+    CONFIGURATION_FAILED: copy.adminUploadFailed,
+    CATALOGUE_FAILED: copy.adminUploadFailed,
+    UPLOAD_FAILED: copy.adminUploadFailed,
   };
 
   return (

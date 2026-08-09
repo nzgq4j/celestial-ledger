@@ -13,6 +13,16 @@ import { TAROT_DECK_BUCKET } from "@/lib/tarot/decks";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const TAROT_BUCKET_OPTIONS: {
+  public: boolean;
+  fileSizeLimit: string;
+  allowedMimeTypes: string[];
+} = {
+  public: false,
+  fileSizeLimit: "5242880",
+  allowedMimeTypes: ["image/webp"],
+};
+
 const paramsSchema = z.object({
   deckId: z
     .string()
@@ -30,6 +40,32 @@ const ERROR_STATUS: Record<TarotArtworkError["code"], number> = {
   too_small: 422,
   wrong_aspect: 422,
 };
+
+async function ensureTarotDeckBucket(
+  admin: ReturnType<typeof createAdminClient>,
+) {
+  const { data: bucket, error: getBucketError } =
+    await admin.storage.getBucket(TAROT_DECK_BUCKET);
+  if (bucket) {
+    const { error: updateBucketError } = await admin.storage.updateBucket(
+      TAROT_DECK_BUCKET,
+      TAROT_BUCKET_OPTIONS,
+    );
+    return updateBucketError;
+  }
+  if (
+    getBucketError &&
+    !["NoSuchBucket", "not_found"].includes(getBucketError.name)
+  ) {
+    return getBucketError;
+  }
+
+  const { error: createBucketError } = await admin.storage.createBucket(
+    TAROT_DECK_BUCKET,
+    TAROT_BUCKET_OPTIONS,
+  );
+  return createBucketError;
+}
 
 export async function POST(
   request: Request,
@@ -63,7 +99,12 @@ export async function POST(
     return NextResponse.json({ error: "too_large" }, { status: 413 });
   }
 
-  const admin = createAdminClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return NextResponse.json({ error: "CONFIGURATION_FAILED" }, { status: 500 });
+  }
   const { data: deck, error: deckError } = await admin
     .from("tarot_decks")
     .select("id,cover_image_path,card_back_image_path")
@@ -94,6 +135,10 @@ export async function POST(
   }
 
   const path = tarotArtworkPath(deck.id, kindResult.data);
+  const bucketError = await ensureTarotDeckBucket(admin);
+  if (bucketError) {
+    return NextResponse.json({ error: "BUCKET_FAILED" }, { status: 500 });
+  }
   const previousPath =
     kindResult.data === "cover"
       ? deck.cover_image_path
