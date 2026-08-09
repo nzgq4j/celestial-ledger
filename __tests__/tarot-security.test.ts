@@ -108,8 +108,8 @@ describe("tarot artwork and access security", () => {
     expect(uploadRoute).toContain('"site_admin", "content_admin"');
     expect(uploadRoute).toContain("ensureTarotDeckBucket");
     expect(uploadRoute).toContain(".storage.createBucket");
-    expect(uploadRoute).toContain(".storage.updateBucket");
     expect(uploadRoute).toContain("allowedMimeTypes: [\"image/webp\"]");
+    expect(uploadRoute).not.toContain(".storage.updateBucket");
     expect(uploadRoute).toContain("upsert: true");
     expect(uploadRoute).toContain("tarotArtworkPath");
     expect(uploadRoute).toContain("remove([path])");

@@ -49,9 +49,19 @@ export function TarotDeckArtworkForm({
             `/api/admin/tarot-decks/${encodeURIComponent(deckId)}/artwork`,
             { method: "POST", body: new FormData(event.currentTarget) },
           );
-          const body = (await response.json()) as { error?: string };
+          const body = (await response.json()) as {
+            error?: string;
+            detail?: string;
+          };
           if (!response.ok) {
-            setStatus(errorCopy[body.error ?? ""] ?? copy.adminUploadFailed);
+            const message = errorCopy[body.error ?? ""] ?? copy.adminUploadFailed;
+            setStatus(
+              body.error && body.detail
+                ? `${message} (${body.error}: ${body.detail})`
+                : body.error
+                  ? `${message} (${body.error})`
+                  : message,
+            );
             return;
           }
           setStatus(

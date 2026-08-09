@@ -46,13 +46,7 @@ async function ensureTarotDeckBucket(
 ) {
   const { data: bucket, error: getBucketError } =
     await admin.storage.getBucket(TAROT_DECK_BUCKET);
-  if (bucket) {
-    const { error: updateBucketError } = await admin.storage.updateBucket(
-      TAROT_DECK_BUCKET,
-      TAROT_BUCKET_OPTIONS,
-    );
-    return updateBucketError;
-  }
+  if (bucket) return null;
   if (
     getBucketError &&
     !["NoSuchBucket", "not_found"].includes(getBucketError.name)
@@ -137,7 +131,10 @@ export async function POST(
   const path = tarotArtworkPath(deck.id, kindResult.data);
   const bucketError = await ensureTarotDeckBucket(admin);
   if (bucketError) {
-    return NextResponse.json({ error: "BUCKET_FAILED" }, { status: 500 });
+    return NextResponse.json(
+      { error: "BUCKET_FAILED", detail: bucketError.message },
+      { status: 500 },
+    );
   }
   const previousPath =
     kindResult.data === "cover"
@@ -151,7 +148,10 @@ export async function POST(
       upsert: true,
     });
   if (uploadError) {
-    return NextResponse.json({ error: "UPLOAD_FAILED" }, { status: 500 });
+    return NextResponse.json(
+      { error: "UPLOAD_FAILED", detail: uploadError.message },
+      { status: 500 },
+    );
   }
 
   const imageColumn =
@@ -166,7 +166,10 @@ export async function POST(
     if (!previousPath) {
       await admin.storage.from(TAROT_DECK_BUCKET).remove([path]);
     }
-    return NextResponse.json({ error: "CATALOGUE_FAILED" }, { status: 500 });
+    return NextResponse.json(
+      { error: "CATALOGUE_FAILED", detail: updateError.message },
+      { status: 500 },
+    );
   }
 
   await admin.from("admin_audit_log").insert({
