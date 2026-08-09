@@ -12,6 +12,10 @@ export function dailyUserFacingText(value: string) {
     .replace(/\bevidence-linked\s+/gi, "")
     .replace(/\baccording to the transit labels in the data\b/gi, "")
     .replace(/[^.?!]*\btransiting\s+[^.?!]*\bnatal\s+[^.?!]*[.?!]\s*/gi, "")
+    .replace(
+      /[^.?!]*\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|North Node)\s+(?:conjunction|conjunct|opposition|opposite|trine|square|sextile)\s+(?:natal\s+)?(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|North Node|Ascendant|Midheaven)[^.?!]*[.?!]\s*/gi,
+      "",
+    )
     .replace(/[^.?!]*\btransit record\b[^.?!]*[.?!]\s*/gi, "")
     .replace(/[^.?!]*\btransit labels\b[^.?!]*[.?!]\s*/gi, "")
     .replace(/[^.?!]*\bserver output\b[^.?!]*[.?!]\s*/gi, "")
