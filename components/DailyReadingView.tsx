@@ -5,6 +5,10 @@ import type {
 import { DailyReadingVisuals } from "@/components/DailyReadingVisuals";
 import { ReadingDayArc } from "@/components/reports/ReadingDayArc";
 import { buildDailyReadingDayArc } from "@/lib/daily-readings/day-arc";
+import {
+  dailyFallbackText,
+  dailyUserFacingText,
+} from "@/lib/daily-readings/presentation";
 
 export function DailyReadingView({
   content,
@@ -22,6 +26,8 @@ export function DailyReadingView({
   const evidenceMap = new Map(evidence.map((item) => [item.id, item]));
   const bluf = content.bottomLineUpFront;
   const dayArc = buildDailyReadingDayArc(analysis);
+  const leadingTheme =
+    content.dominantThemes[0]?.label ?? "the main theme of the day";
   return (
     <article className="daily-reading-view">
       <header className="daily-reading-view__header">
@@ -54,25 +60,35 @@ export function DailyReadingView({
       >
         <p className="section-kicker">Daily intelligence brief</p>
         <h2 id="daily-bluf-title">{bluf.title}</h2>
-        <p>{bluf.overview.narrative}</p>
+        <p>
+          {dailyFallbackText(
+            bluf.overview.narrative,
+            `${leadingTheme} is the main thread to work with today. Treat it as guidance for proportionate choices, clearer boundaries, and one grounded action you can review before the day closes.`,
+          )}
+        </p>
         <h3>Active now</h3>
-        <p>{bluf.activeNow.narrative}</p>
+        <p>
+          {dailyFallbackText(
+            bluf.activeNow.narrative,
+            `Focus on how ${leadingTheme.toLowerCase()} is already showing up in ordinary life, then choose one response that clarifies rather than escalates.`,
+          )}
+        </p>
         <div className="daily-reading-priorities">
           {bluf.practicalPriorities.map((priority) => (
             <article key={priority.title}>
-              <h3>{priority.title}</h3>
-              <p>{priority.narrative}</p>
+              <h3>{dailyUserFacingText(priority.title) || priority.title}</h3>
+              <p>{dailyUserFacingText(priority.narrative)}</p>
             </article>
           ))}
         </div>
         {bluf.tensionToHold && (
           <aside>
             <h3>Tension to hold</h3>
-            <p>{bluf.tensionToHold.narrative}</p>
+            <p>{dailyUserFacingText(bluf.tensionToHold.narrative)}</p>
           </aside>
         )}
         <h3>Forward look</h3>
-        <p>{bluf.forwardLook.narrative}</p>
+        <p>{dailyUserFacingText(bluf.forwardLook.narrative)}</p>
       </section>
 
       <ReadingDayArc
@@ -80,7 +96,7 @@ export function DailyReadingView({
         title="The day meridian"
         introduction="Carry the local-noon reading through the day in three deliberate movements: receive the signal, act where the pattern is strongest, and integrate what the day has revealed."
         phases={dayArc}
-        note="The day meridian paces the recorded local-noon reading; the evidence references identify its source positions, transits and lunar phase."
+        note="The day meridian turns the reading into a practical rhythm: receive the signal, choose a proportionate action, and review what the day reveals."
       />
 
       <DailyReadingVisuals analysis={analysis} />
@@ -129,28 +145,15 @@ export function DailyReadingView({
         {content.sections.map((section) => (
           <section key={section.id} id={section.id}>
             <h2>{section.title}</h2>
-            <p>{section.narrative}</p>
+            <p>{dailyUserFacingText(section.narrative)}</p>
             <div className="daily-reading-applications">
               <h3>Practical applications</h3>
               <ul>
                 {section.practicalApplications.map((application) => (
-                  <li key={application}>{application}</li>
+                  <li key={application}>{dailyUserFacingText(application)}</li>
                 ))}
               </ul>
             </div>
-            <details>
-              <summary>Why this matters</summary>
-              <ul className="daily-reading-evidence">
-                {section.evidenceIds.map((evidenceId) => (
-                  <li key={evidenceId}>
-                    <strong>
-                      {evidenceMap.get(evidenceId)?.label ?? evidenceId}
-                    </strong>
-                    <code>{evidenceId}</code>
-                  </li>
-                ))}
-              </ul>
-            </details>
           </section>
         ))}
       </div>
@@ -167,7 +170,14 @@ export function DailyReadingView({
 
       <section className="daily-reading-technical">
         <details>
-          <summary>Technical appendix and current limitations</summary>
+          <summary>Astrological basis and current limitations</summary>
+          <ul className="daily-reading-evidence">
+            {evidence.map((item) => (
+              <li key={item.id}>
+                <strong>{evidenceMap.get(item.id)?.label ?? item.label}</strong>
+              </li>
+            ))}
+          </ul>
           <dl>
             <div>
               <dt>Method version</dt>
