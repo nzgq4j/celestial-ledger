@@ -76,3 +76,30 @@ export function deriveAccountReportStates(input: {
   }
   return states;
 }
+
+/**
+ * Selects the one report action that receives accent emphasis in the account.
+ * A paid unused entitlement wins; ties use the newest purchase. Included and
+ * purchasable reports then follow the stable editorial order above.
+ */
+export function primaryAccountReportAction(
+  states: AccountReportState[],
+): AccountReportType | undefined {
+  const purchased = states
+    .filter(
+      (
+        state,
+      ): state is Extract<AccountReportState, { kind: "purchased_unused" }> =>
+        state.kind === "purchased_unused",
+    )
+    .sort((left, right) =>
+      right.entitlement.granted_at.localeCompare(left.entitlement.granted_at),
+    )[0];
+  if (purchased) return purchased.product.report_type as AccountReportType;
+
+  for (const kind of ["premium_included", "not_purchased"] as const) {
+    const state = states.find((candidate) => candidate.kind === kind);
+    if (state) return state.product.report_type as AccountReportType;
+  }
+  return undefined;
+}

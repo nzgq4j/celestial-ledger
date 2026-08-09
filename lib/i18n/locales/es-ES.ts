@@ -106,6 +106,7 @@ const pack = {
         "Guarda una carta natal antes de generar una lectura diaria personal.",
       openDailyReading: "Abrir la lectura guardada para esta fecha",
       dailyReadingHistory: "Lecturas diarias recientes",
+      openReadingOptions: "Abrir opciones de lectura",
       weeklyReadingKicker: "Tu semana trazada con antelación",
       weeklyReadingTitle: "Lectura astrológica semanal",
       weeklyReadingDescription:
@@ -200,6 +201,7 @@ const pack = {
       typeDelete: "Escribe DELETE para confirmar",
       permanentlyDelete: "Eliminar cuenta permanentemente",
       useProfile: "Usar perfil natal",
+      usingProfile: "Perfil utilizado",
       noSavedProfiles: "No hay perfiles natales guardados",
       chooseThemes: "Elige tus temas de reflexión",
       chooseThemesCopy:
@@ -224,12 +226,12 @@ const pack = {
       careerValue: "Valor y compensación",
       careerValueDetail:
         "Cómo defines el valor, el intercambio y una recompensa sostenible",
-      adultConfirmation: "Confirmo que tengo 18 años o más.",
       saveProfileFirst: "Guarda un perfil natal antes de generar este informe.",
       reportFailed: "No se pudo poner el informe en cola.",
       queueing: "Preparando…",
       generateReport: "Generar informe",
       produceReport: "Crear informe",
+      personaliseReport: "Configurar informe",
       grounding: "Arraigo",
       groundingDetail: "Estabilidad y regreso al centro",
       relationships: "Relaciones",

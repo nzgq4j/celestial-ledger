@@ -71,7 +71,7 @@ export function DailyReadingGenerator({
     return (
       <div className="daily-reading-empty">
         <p>{copy.dailyReadingNeedsChart}</p>
-        <Link href="/#chart" className="button-primary">
+        <Link href="/#chart" className="button-secondary">
           {copy.createNatalChart}
         </Link>
       </div>
@@ -103,7 +103,7 @@ export function DailyReadingGenerator({
           />
         </label>
         <button
-          className="button-primary"
+          className="button-secondary"
           type="button"
           onClick={() => void generate()}
           disabled={busy || !readingDate || !profileId}

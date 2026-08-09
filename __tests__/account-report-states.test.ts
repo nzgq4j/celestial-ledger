@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { deriveAccountReportStates } from "@/lib/account/report-states";
+import {
+  deriveAccountReportStates,
+  primaryAccountReportAction,
+} from "@/lib/account/report-states";
 
 const products = [
   {
@@ -103,5 +106,49 @@ describe("account report states", () => {
     expect(new Set(states.map((state) => state.product.report_type)).size).toBe(
       2,
     );
+  });
+
+  it("emphasizes only the most recently purchased unused entitlement", () => {
+    const states = deriveAccountReportStates({
+      products,
+      readyEntitlements: [
+        {
+          id: "older-career-entitlement",
+          report_type: "career_purpose",
+          granted_at: "2026-08-08T08:00:00Z",
+        },
+        {
+          id: "newer-recovery-entitlement",
+          report_type: "recovery_reflection",
+          granted_at: "2026-08-09T08:00:00Z",
+        },
+      ],
+      reports: [],
+      planKey: "personal",
+    });
+
+    const primary = primaryAccountReportAction(states);
+    expect(primary).toBe("recovery_reflection");
+    expect(
+      states.filter((state) => state.product.report_type === primary),
+    ).toHaveLength(1);
+  });
+
+  it("uses stable editorial order when there is no unused purchase", () => {
+    const included = deriveAccountReportStates({
+      products,
+      readyEntitlements: [],
+      reports: [],
+      planKey: "premium",
+    });
+    const purchasable = deriveAccountReportStates({
+      products,
+      readyEntitlements: [],
+      reports: [],
+      planKey: "personal",
+    });
+
+    expect(primaryAccountReportAction(included)).toBe("career_purpose");
+    expect(primaryAccountReportAction(purchasable)).toBe("career_purpose");
   });
 });

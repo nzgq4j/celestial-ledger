@@ -19,7 +19,10 @@ import {
   effectivePlanKeyForUser,
 } from "@/lib/entitlements/server";
 import { WEEKLY_READING_CAPABILITY } from "@/lib/weekly-readings/domain";
-import { deriveAccountReportStates } from "@/lib/account/report-states";
+import {
+  deriveAccountReportStates,
+  primaryAccountReportAction,
+} from "@/lib/account/report-states";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -63,7 +66,7 @@ export default async function AccountPage({
     searchParams,
     supabase
       .from("profiles")
-      .select("display_name, adult_confirmed_at, created_at, report_locale")
+      .select("display_name, created_at, report_locale")
       .single(),
     supabase
       .from("birth_profiles")
@@ -194,6 +197,7 @@ export default async function AccountPage({
     reports,
     planKey: commercePlanKey,
   });
+  const primaryReportType = primaryAccountReportAction(reportStates);
   const reportProfiles = birthProfiles.map((item) => ({
     id: item.id,
     label: item.label,
@@ -239,86 +243,40 @@ export default async function AccountPage({
 
   return (
     <main className="page-shell private-library account-dashboard">
-      <aside className="account-sidebar" aria-label={copy.accountSections}>
-        <div className="account-sidebar__identity">
-          <span className="account-sidebar__seal" aria-hidden="true">
-            <i />
-          </span>
-          <div>
-            <p>Celestial Atlas</p>
-            <strong>Member observatory</strong>
-            <small>Your private workspace</small>
-          </div>
-        </div>
-
-        <nav className="account-sidebar__nav">
-          <p>{copy.workspace}</p>
-          <a href="#overview" className="account-sidebar__active">
-            <span aria-hidden="true">01</span>
-            {copy.overview}
-          </a>
-          <a href="#readings">
-            <span aria-hidden="true">02</span>
-            {copy.yourReadingsTitle}
-          </a>
-          <a href="#reports">
-            <span aria-hidden="true">03</span>
-            {copy.reportsCombinedTitle}
-          </a>
-          <a href="#birth-profiles">
-            <span aria-hidden="true">04</span>
-            {copy.myBirthCharts}
-          </a>
-          <p>{copy.accountLabel}</p>
-          {commerce.subscriptions && (
-            <a href="#billing">
-              <span aria-hidden="true">05</span>
-              {copy.currentMembership}
-            </a>
-          )}
-          <a href="#account-settings">
-            <span aria-hidden="true">06</span>
-            {copy.settings}
-          </a>
-          {adminRole && (
-            <Link href="/admin">
-              <span aria-hidden="true">07</span>
-              {copy.adminConsole}
-            </Link>
-          )}
-        </nav>
-
-        <div className="account-sidebar__plan">
-          <p>{copy.currentMembership}</p>
-          <strong>{planName}</strong>
-          <Link href="/membership">{copy.viewMembership}</Link>
-        </div>
-      </aside>
+      <nav className="account-jump-links" aria-label={copy.accountSections}>
+        <a href="#overview" aria-current="page">
+          {copy.overview}
+        </a>
+        <a href="#readings">{copy.yourReadingsTitle}</a>
+        <a href="#reports">{copy.reportsCombinedTitle}</a>
+        <a href="#birth-profiles">{copy.myBirthCharts}</a>
+        <a href="#billing">{copy.currentMembership}</a>
+        <a href="#account-settings">{copy.settings}</a>
+        {adminRole && <Link href="/admin">{copy.adminConsole}</Link>}
+      </nav>
 
       <div className="account-workspace">
-        <section className="account-overview-strip" id="overview">
-          <div className="account-overview-strip__identity">
+        <section className="account-command-bar" id="overview">
+          <div className="account-command-bar__identity">
             <span aria-hidden="true">
               {displayName.slice(0, 1).toUpperCase()}
             </span>
             <div>
-              <p className="eyebrow">{copy.heroKicker}</p>
-              <h1>
-                {copy.welcome}, {displayName}.
-              </h1>
+              <p>{copy.heroKicker}</p>
+              <h1>{displayName}</h1>
             </div>
           </div>
-          <div className="account-plan-card" id="billing">
-            <div>
-              <p className="section-kicker">{copy.currentMembership}</p>
-              <h2>{planName}</h2>
-              <p>{planTiming}</p>
-            </div>
+          <div className="account-command-bar__membership" id="billing">
+            <span>{copy.currentMembership}</span>
+            <strong>{planName}</strong>
+            <small>{planTiming}</small>
+          </div>
+          <div className="account-command-bar__manage">
             <span>{subscription?.status ?? copy.activeStatus}</span>
             {subscription ? (
               <BillingPortalButton />
             ) : (
-              <Link className="button-quiet" href="/membership">
+              <Link className="button-secondary" href="/membership">
                 {copy.viewMembership}
               </Link>
             )}
@@ -331,41 +289,28 @@ export default async function AccountPage({
             <h2 id="next-step-title">{nextStep.title}</h2>
             <p>{nextStep.copy}</p>
           </div>
-          <Link href={nextStep.href} className="button-primary">
+          <Link
+            href={nextStep.href}
+            className={
+              primaryReportType ? "button-secondary" : "button-primary"
+            }
+          >
             {nextStep.action}
           </Link>
         </section>
 
         <div className="account-stats" aria-label={copy.accountSummary}>
           <span>
-            <i
-              className="account-stat-icon account-stat-icon--cyan"
-              aria-hidden="true"
-            >
-              ✦
-            </i>
             <strong>{birthProfiles.length}</strong>{" "}
             {birthProfiles.length === 1 ? copy.savedChart : copy.savedCharts}
           </span>
           <span>
-            <i
-              className="account-stat-icon account-stat-icon--violet"
-              aria-hidden="true"
-            >
-              ◌
-            </i>
             <strong>{reports.length + dailyReadings.length}</strong>{" "}
             {reports.length + dailyReadings.length === 1
               ? copy.privateReading
               : copy.privateReadings}
           </span>
           <span>
-            <i
-              className="account-stat-icon account-stat-icon--coral"
-              aria-hidden="true"
-            >
-              ↗
-            </i>
             <strong>{readyEntitlements.length}</strong> {copy.readyToGenerate}
           </span>
         </div>
@@ -387,76 +332,89 @@ export default async function AccountPage({
             </div>
           </div>
           <div className="account-reading-cards">
-            <article
+            <details
               className="account-reading-card account-reading-card--daily"
               id="daily-reading"
             >
-              <div className="dashboard-panel__heading">
+              <summary className="account-reading-card__summary">
                 <div>
                   <p className="section-kicker">{copy.dailyReadingKicker}</p>
-                  <h2>{copy.dailyReadingTitle}</h2>
+                  <h3>{copy.dailyReadingTitle}</h3>
                 </div>
-                <span className="dashboard-panel__meta">
-                  {copy.registeredUserEntitlement}
+                <span className="account-reading-card__status">
+                  <span className="dashboard-panel__meta">
+                    {copy.registeredUserEntitlement}
+                  </span>
+                  <small>{copy.openReadingOptions}</small>
                 </span>
+              </summary>
+              <div className="account-reading-card__body">
+                <p className="dashboard-panel__introduction">
+                  {copy.dailyReadingDescription}
+                </p>
+                <DailyReadingGenerator
+                  profiles={reportProfiles}
+                  existingReadings={dailyReadings}
+                />
               </div>
-              <p className="dashboard-panel__introduction">
-                {copy.dailyReadingDescription}
-              </p>
-              <DailyReadingGenerator
-                profiles={reportProfiles}
-                existingReadings={dailyReadings}
-              />
-            </article>
+            </details>
 
-            <article
+            <details
               className="account-reading-card account-reading-card--weekly"
               id="weekly-reading"
             >
-              <div className="dashboard-panel__heading">
+              <summary className="account-reading-card__summary">
                 <div>
                   <p className="section-kicker">{copy.weeklyReadingKicker}</p>
-                  <h2>{copy.weeklyReadingTitle}</h2>
+                  <h3>{copy.weeklyReadingTitle}</h3>
                 </div>
-                <span className="dashboard-panel__meta">
-                  {!weeklyFlags.generationEnabled
-                    ? copy.weeklyReadingUnavailableTitle
-                    : weeklyAccessible
-                      ? weeklyReadings.length
-                        ? copy.weeklyReadingEntitled
-                        : copy.weeklyReadingReady
-                      : copy.weeklyReadingUpsellTitle}
+                <span className="account-reading-card__status">
+                  <span className="dashboard-panel__meta">
+                    {!weeklyFlags.generationEnabled
+                      ? copy.weeklyReadingUnavailableTitle
+                      : weeklyAccessible
+                        ? weeklyReadings.length
+                          ? copy.weeklyReadingEntitled
+                          : copy.weeklyReadingReady
+                        : copy.weeklyReadingUpsellTitle}
+                  </span>
+                  <small>{copy.openReadingOptions}</small>
                 </span>
+              </summary>
+              <div className="account-reading-card__body">
+                {!weeklyFlags.generationEnabled ? (
+                  <div className="dashboard-empty">
+                    <h3>{copy.weeklyReadingUnavailableTitle}</h3>
+                    <p>{copy.weeklyReadingUnavailableCopy}</p>
+                  </div>
+                ) : weeklyAccessible ? (
+                  <>
+                    <p className="dashboard-panel__introduction">
+                      {copy.weeklyReadingDescription}
+                    </p>
+                    <WeeklyReadingGenerator
+                      primaryProfile={
+                        primaryProfile
+                          ? {
+                              id: primaryProfile.id,
+                              label: primaryProfile.label,
+                            }
+                          : undefined
+                      }
+                      existingReadings={weeklyReadings}
+                    />
+                  </>
+                ) : (
+                  <div className="dashboard-empty dashboard-weekly-upsell">
+                    <h3>{copy.weeklyReadingUpsellTitle}</h3>
+                    <p>{copy.weeklyReadingUpsellCopy}</p>
+                    <Link href="/membership" className="button-secondary">
+                      {copy.weeklyReadingUpsellAction}
+                    </Link>
+                  </div>
+                )}
               </div>
-              {!weeklyFlags.generationEnabled ? (
-                <div className="dashboard-empty">
-                  <h3>{copy.weeklyReadingUnavailableTitle}</h3>
-                  <p>{copy.weeklyReadingUnavailableCopy}</p>
-                </div>
-              ) : weeklyAccessible ? (
-                <>
-                  <p className="dashboard-panel__introduction">
-                    {copy.weeklyReadingDescription}
-                  </p>
-                  <WeeklyReadingGenerator
-                    primaryProfile={
-                      primaryProfile
-                        ? { id: primaryProfile.id, label: primaryProfile.label }
-                        : undefined
-                    }
-                    existingReadings={weeklyReadings}
-                  />
-                </>
-              ) : (
-                <div className="dashboard-empty dashboard-weekly-upsell">
-                  <h3>{copy.weeklyReadingUpsellTitle}</h3>
-                  <p>{copy.weeklyReadingUpsellCopy}</p>
-                  <Link href="/membership" className="button-primary">
-                    {copy.weeklyReadingUpsellAction}
-                  </Link>
-                </div>
-              )}
-            </article>
+            </details>
           </div>
         </section>
 
@@ -477,6 +435,8 @@ export default async function AccountPage({
           <div className="account-report-products">
             {reportStates.map((state) => {
               const reportType = state.product.report_type;
+              const emphasis =
+                primaryReportType === reportType ? "primary" : "secondary";
               const price = reportPrices?.find(
                 (candidate) => candidate.report_type === reportType,
               );
@@ -513,7 +473,14 @@ export default async function AccountPage({
                         {copy.openLatestReport}
                       </Link>
                     ) : !birthProfiles.length ? (
-                      <Link href="/#chart" className="button-primary">
+                      <Link
+                        href="/#chart"
+                        className={
+                          emphasis === "primary"
+                            ? "button-primary"
+                            : "button-secondary"
+                        }
+                      >
                         {copy.createNatalChart}
                       </Link>
                     ) : state.kind === "purchased_unused" ? (
@@ -522,12 +489,14 @@ export default async function AccountPage({
                         reportType={reportType}
                         profiles={reportProfiles}
                         defaultLocale={reportLocale}
+                        emphasis={emphasis}
                       />
                     ) : state.kind === "premium_included" ? (
                       <GenerateReportButton
                         reportType={reportType}
                         profiles={reportProfiles}
                         defaultLocale={reportLocale}
+                        emphasis={emphasis}
                       />
                     ) : commerce.checkout ? (
                       price ? (
@@ -538,6 +507,7 @@ export default async function AccountPage({
                             currency: price.currency.toUpperCase(),
                           }).format(price.unit_amount / 100)}
                           creditAvailable={availableReportCredits > 0}
+                          emphasis={emphasis}
                         />
                       ) : (
                         <strong>{copy.currentlyUnavailable}</strong>
@@ -549,6 +519,7 @@ export default async function AccountPage({
                           reportType={reportType}
                           profiles={reportProfiles}
                           defaultLocale={reportLocale}
+                          emphasis={emphasis}
                         />
                       </div>
                     )}

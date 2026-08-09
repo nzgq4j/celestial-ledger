@@ -106,6 +106,7 @@ const pack = {
         "Speichere ein Geburtshoroskop, bevor du eine persönliche Tagesdeutung erstellst.",
       openDailyReading: "Gespeicherte Deutung für dieses Datum öffnen",
       dailyReadingHistory: "Neueste Tagesdeutungen",
+      openReadingOptions: "Deutungsoptionen öffnen",
       weeklyReadingKicker: "Ihre Woche im Voraus kartiert",
       weeklyReadingTitle: "Wöchentliche astrologische Deutung",
       weeklyReadingDescription:
@@ -203,6 +204,7 @@ const pack = {
       typeDelete: "Zur Bestätigung DELETE eingeben",
       permanentlyDelete: "Konto dauerhaft löschen",
       useProfile: "Geburtsprofil verwenden",
+      usingProfile: "Verwendetes Profil",
       noSavedProfiles: "Keine Geburtsprofile gespeichert",
       chooseThemes: "Wähle deine Reflexionsthemen",
       chooseThemesCopy:
@@ -225,13 +227,13 @@ const pack = {
       careerValue: "Wert & Vergütung",
       careerValueDetail:
         "Wie du Wert, Austausch und nachhaltige Belohnung definierst",
-      adultConfirmation: "Ich bestätige, dass ich mindestens 18 Jahre alt bin.",
       saveProfileFirst:
         "Speichere ein Geburtsprofil, bevor du diesen Bericht erstellst.",
       reportFailed: "Der Bericht konnte nicht eingereiht werden.",
       queueing: "Wird vorbereitet…",
       generateReport: "Bericht erstellen",
       produceReport: "Bericht anfertigen",
+      personaliseReport: "Bericht einrichten",
       grounding: "Erdung",
       groundingDetail: "Beständigkeit und Rückkehr zur Mitte",
       relationships: "Beziehungen",

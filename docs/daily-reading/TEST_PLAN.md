@@ -41,7 +41,7 @@ Golden fixtures must come from independent authoritative sources or a reviewed r
 - Supporting, moderating, and contradictory signals remain distinct.
 - Recent/present/future states follow calculated timestamps.
 - Empty/weak domains are omitted instead of filled.
-- Recovery context requires adult confirmation and reviewed themes.
+- Recovery context accepts reviewed themes without a per-report age-confirmation field.
 
 ## Content and BLUF tests
 

@@ -32,7 +32,6 @@ const inputSchema = z
     entitlementId: z.string().uuid().optional(),
     reportType: z.enum(["career_purpose", "recovery_reflection"]).optional(),
     birthProfileId: z.string().uuid(),
-    adultConfirmed: z.boolean().optional(),
     recoveryThemes: z.array(recoveryThemeSchema).min(1).max(6).optional(),
     careerThemes: z.array(careerThemeSchema).min(1).max(6).optional(),
     locale: z.enum(localeTags).optional(),
@@ -91,30 +90,13 @@ export async function POST(request: Request) {
       input.locale ?? profileSettings?.report_locale ?? "en-GB";
     const isRecovery = reportType === "recovery_reflection";
     const isCareer = reportType === "career_purpose";
-    if (isRecovery && (!input.adultConfirmed || !input.recoveryThemes?.length))
-      return json(
-        {
-          error:
-            "Confirm you are 18 or older and choose at least one reflection theme.",
-        },
-        422,
-      );
+    if (isRecovery && !input.recoveryThemes?.length)
+      return json({ error: "Choose at least one reflection theme." }, 422);
     if (isCareer && !input.careerThemes?.length)
       return json(
         { error: "Choose at least one career reflection theme." },
         422,
       );
-    if (isRecovery) {
-      const { error: profileError } = await admin
-        .from("profiles")
-        .update({ adult_confirmed_at: new Date().toISOString() })
-        .eq("id", userId);
-      if (profileError)
-        return json(
-          { error: "Adult confirmation could not be recorded." },
-          500,
-        );
-    }
     const versions = {
       p_user_id: userId,
       p_birth_profile_id: input.birthProfileId,

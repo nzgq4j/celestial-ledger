@@ -52,7 +52,7 @@ Stage A contains calculated facts, rules, signals, scores, themes, contradiction
 
 Status: accepted for plan.
 
-Release one uses bounded context categories and event types. Calendar connections and unrestricted journal text are deferred. Recovery uses adult confirmation and reviewed themes only. Context affects relevance/order and never calculated facts.
+Release one uses bounded context categories and event types. Calendar connections and unrestricted journal text are deferred. Recovery remains adults-only, uses reviewed themes only, and does not collect a per-report age confirmation. Context affects relevance/order and never calculated facts.
 
 ## DR-ADR-008 — Locale inheritance and snapshot
 

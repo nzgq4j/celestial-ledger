@@ -50,7 +50,7 @@ export function BirthProfileList({
           <strong>{copy.noChartsTitle}</strong>
           <p>{copy.noChartsCopy}</p>
         </div>
-        <Link href="/#chart" className="button-primary">
+        <Link href="/#chart" className="button-secondary">
           {copy.createMyChart}
         </Link>
       </div>
@@ -90,7 +90,7 @@ export function BirthProfileList({
           <div className="birth-profile-card__actions">
             <Link
               href={`/account/birth-profiles/${profile.id}`}
-              className="button-primary"
+              className="button-secondary"
             >
               {copy.openChart}
             </Link>

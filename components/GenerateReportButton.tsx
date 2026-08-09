@@ -13,17 +13,18 @@ export function GenerateReportButton({
   profiles,
   reportType,
   defaultLocale,
+  emphasis = "secondary",
 }: {
   entitlementId?: string;
   profiles: Option[];
   reportType: string;
   defaultLocale: LocaleTag;
+  emphasis?: "primary" | "secondary";
 }) {
   const router = useRouter();
   const [profileId, setProfileId] = useState(profiles[0]?.id ?? "");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-  const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [themes, setThemes] = useState<RecoveryTheme[]>([]);
   const [careerSelections, setCareerSelections] = useState<CareerTheme[]>([]);
   const [reportLocale, setReportLocale] = useState(defaultLocale);
@@ -60,7 +61,7 @@ export function GenerateReportButton({
           ...(entitlementId ? { entitlementId } : { reportType }),
           birthProfileId: profileId,
           ...(!useDefaultLocale ? { locale: reportLocale } : {}),
-          ...(isRecovery ? { adultConfirmed, recoveryThemes: themes } : {}),
+          ...(isRecovery ? { recoveryThemes: themes } : {}),
           ...(isCareer ? { careerThemes: careerSelections } : {}),
         }),
       });
@@ -73,149 +74,172 @@ export function GenerateReportButton({
       setBusy(false);
     }
   }
+  const controlId = entitlementId ?? reportType;
   return (
-    <div className="report-generator">
-      <label
-        className="label"
-        htmlFor={`profile-${entitlementId ?? reportType}`}
-      >
-        {copy.useProfile}
-      </label>
-      <select
-        id={`profile-${entitlementId ?? reportType}`}
-        className="input"
-        value={profileId}
-        onChange={(event) => setProfileId(event.target.value)}
-      >
-        {profiles.length ? (
-          profiles.map((profile) => (
-            <option key={profile.id} value={profile.id}>
-              {profile.label}
-            </option>
-          ))
-        ) : (
-          <option value="">{copy.noSavedProfiles}</option>
-        )}
-      </select>
-      <label className="report-language-default">
-        <input
-          type="checkbox"
-          checked={useDefaultLocale}
-          onChange={(event) => setUseDefaultLocale(event.target.checked)}
-        />
-        <span>{copy.useSelectedLanguage}</span>
-      </label>
-      {!useDefaultLocale && (
-        <div className="report-language-override">
-          <label
-            className="label"
-            htmlFor={`locale-${entitlementId ?? reportType}`}
-          >
-            {copy.reportLanguage}
-          </label>
-          <select
-            id={`locale-${entitlementId ?? reportType}`}
-            className="input"
-            value={reportLocale}
-            onChange={(event) =>
-              setReportLocale(event.target.value as LocaleTag)
-            }
-          >
-            {localeTags.map((tag) => (
-              <option key={tag} value={tag} lang={tag}>
-                {localeRegistry[tag].nativeName}
-              </option>
-            ))}
-          </select>
-          <small className="report-language-hint">
-            {copy.reportLanguageOverride}
-          </small>
-        </div>
-      )}
-      {isRecovery && (
-        <fieldset className="recovery-compass">
-          <legend>{copy.chooseThemes}</legend>
-          <p>{copy.chooseThemesCopy}</p>
-          <div className="recovery-compass__themes">
-            {recoveryThemes.map((theme) => (
-              <label key={theme.id}>
-                <input
-                  type="checkbox"
-                  checked={themes.includes(theme.id)}
-                  onChange={(event) =>
-                    setThemes((current) =>
-                      event.target.checked
-                        ? [...current, theme.id]
-                        : current.filter((item) => item !== theme.id),
-                    )
-                  }
-                />
-                <span>
-                  <strong>{themeCopy[theme.id][0]}</strong>
-                  <small>{themeCopy[theme.id][1]}</small>
-                </span>
-              </label>
-            ))}
-          </div>
-          <label className="recovery-confirmation">
-            <input
-              type="checkbox"
-              checked={adultConfirmed}
-              onChange={(event) => setAdultConfirmed(event.target.checked)}
-            />
-            <span>{copy.adultConfirmation}</span>
-          </label>
-        </fieldset>
-      )}
-      {isCareer && (
-        <fieldset className="recovery-compass career-compass">
-          <legend>{copy.chooseCareerThemes}</legend>
-          <p>{copy.chooseCareerThemesCopy}</p>
-          <div className="recovery-compass__themes">
-            {careerThemes.map((theme) => (
-              <label key={theme.id}>
-                <input
-                  type="checkbox"
-                  checked={careerSelections.includes(theme.id)}
-                  onChange={(event) =>
-                    setCareerSelections((current) =>
-                      event.target.checked
-                        ? [...current, theme.id]
-                        : current.filter((item) => item !== theme.id),
-                    )
-                  }
-                />
-                <span>
-                  <strong>{careerThemeCopy[theme.id][0]}</strong>
-                  <small>{careerThemeCopy[theme.id][1]}</small>
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
-      <button
-        type="button"
-        className="button-primary"
-        disabled={
-          busy ||
-          !profiles.length ||
-          (isCareer && careerSelections.length === 0) ||
-          (isRecovery && (!adultConfirmed || themes.length === 0))
+    <details
+      className={`report-generator report-generator--${emphasis}`}
+      name="account-report-generator"
+    >
+      <summary
+        className={
+          emphasis === "primary" ? "button-primary" : "button-secondary"
         }
-        onClick={generate}
       >
-        {busy
-          ? copy.queueing
-          : entitlementId
-            ? copy.produceReport
-            : copy.generateReport}
-      </button>
-      {status && (
-        <p role="status" className="text-sm text-[#d7bd7b]">
-          {status}
-        </p>
-      )}
-    </div>
+        {copy.personaliseReport}
+      </summary>
+      <div className="report-generator__body">
+        {profiles.length > 1 ? (
+          <div className="report-generator__field">
+            <label className="label" htmlFor={`profile-${controlId}`}>
+              {copy.useProfile}
+            </label>
+            <select
+              id={`profile-${controlId}`}
+              className="input"
+              value={profileId}
+              onChange={(event) => setProfileId(event.target.value)}
+            >
+              {profiles.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : profiles.length === 1 ? (
+          <p className="report-generator__profile">
+            <span>{copy.usingProfile}</span>
+            <strong>{profiles[0].label}</strong>
+          </p>
+        ) : (
+          <p className="report-generator__profile">
+            <span>{copy.useProfile}</span>
+            <strong>{copy.noSavedProfiles}</strong>
+          </p>
+        )}
+
+        <label className="report-language-default">
+          <input
+            type="checkbox"
+            checked={useDefaultLocale}
+            onChange={(event) => setUseDefaultLocale(event.target.checked)}
+          />
+          <span>{copy.useSelectedLanguage}</span>
+        </label>
+        {!useDefaultLocale && (
+          <div className="report-language-override">
+            <label className="label" htmlFor={`locale-${controlId}`}>
+              {copy.reportLanguage}
+            </label>
+            <select
+              id={`locale-${controlId}`}
+              className="input"
+              value={reportLocale}
+              onChange={(event) =>
+                setReportLocale(event.target.value as LocaleTag)
+              }
+            >
+              {localeTags.map((tag) => (
+                <option key={tag} value={tag} lang={tag}>
+                  {localeRegistry[tag].nativeName}
+                </option>
+              ))}
+            </select>
+            <small className="report-language-hint">
+              {copy.reportLanguageOverride}
+            </small>
+          </div>
+        )}
+
+        {isRecovery && (
+          <fieldset className="report-theme-selector">
+            <legend>{copy.chooseThemes}</legend>
+            <p>{copy.chooseThemesCopy}</p>
+            <div className="report-theme-selector__chips">
+              {recoveryThemes.map((theme) => {
+                const detailId = `theme-${controlId}-${theme.id}`;
+                return (
+                  <label
+                    className="report-theme-chip"
+                    key={theme.id}
+                    title={themeCopy[theme.id][1]}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={themes.includes(theme.id)}
+                      aria-describedby={detailId}
+                      onChange={(event) =>
+                        setThemes((current) =>
+                          event.target.checked
+                            ? [...current, theme.id]
+                            : current.filter((item) => item !== theme.id),
+                        )
+                      }
+                    />
+                    <span>{themeCopy[theme.id][0]}</span>
+                    <small id={detailId}>{themeCopy[theme.id][1]}</small>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        {isCareer && (
+          <fieldset className="report-theme-selector">
+            <legend>{copy.chooseCareerThemes}</legend>
+            <p>{copy.chooseCareerThemesCopy}</p>
+            <div className="report-theme-selector__chips">
+              {careerThemes.map((theme) => {
+                const detailId = `theme-${controlId}-${theme.id}`;
+                return (
+                  <label
+                    className="report-theme-chip"
+                    key={theme.id}
+                    title={careerThemeCopy[theme.id][1]}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={careerSelections.includes(theme.id)}
+                      aria-describedby={detailId}
+                      onChange={(event) =>
+                        setCareerSelections((current) =>
+                          event.target.checked
+                            ? [...current, theme.id]
+                            : current.filter((item) => item !== theme.id),
+                        )
+                      }
+                    />
+                    <span>{careerThemeCopy[theme.id][0]}</span>
+                    <small id={detailId}>{careerThemeCopy[theme.id][1]}</small>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        <button
+          type="button"
+          className="report-generator__submit button-secondary"
+          disabled={
+            busy ||
+            !profiles.length ||
+            (isCareer && careerSelections.length === 0) ||
+            (isRecovery && themes.length === 0)
+          }
+          onClick={generate}
+        >
+          {busy
+            ? copy.queueing
+            : entitlementId
+              ? copy.produceReport
+              : copy.generateReport}
+        </button>
+        {status && (
+          <p role="status" className="report-generator__status">
+            {status}
+          </p>
+        )}
+      </div>
+    </details>
   );
 }

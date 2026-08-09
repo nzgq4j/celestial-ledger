@@ -53,7 +53,7 @@ export function AccountSettings({
             </select>
           </label>
           <small>{copy.reportLanguageNote}</small>
-          <button className="button-primary" type="submit">
+          <button className="button-secondary" type="submit">
             {copy.saveReportLanguage}
           </button>
         </form>
@@ -78,7 +78,7 @@ export function AccountSettings({
             <input value={email} disabled aria-describedby="email-note" />
           </label>
           <small id="email-note">{copy.emailNote}</small>
-          <button className="button-primary" type="submit">
+          <button className="button-secondary" type="submit">
             {copy.saveName}
           </button>
         </form>
@@ -117,7 +117,7 @@ export function AccountSettings({
               required
             />
           </label>
-          <button className="button-primary" type="submit">
+          <button className="button-secondary" type="submit">
             {copy.changePassword}
           </button>
         </form>

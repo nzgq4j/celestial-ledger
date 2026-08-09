@@ -108,6 +108,7 @@ const pack = {
         "Save a birth chart before generating a personal daily reading.",
       openDailyReading: "Open the saved reading for this date",
       dailyReadingHistory: "Recent daily readings",
+      openReadingOptions: "Open reading options",
       weeklyReadingKicker: "Your week, mapped in advance",
       weeklyReadingTitle: "Weekly astrological reading",
       weeklyReadingDescription:
@@ -202,6 +203,7 @@ const pack = {
       typeDelete: "Type DELETE to confirm",
       permanentlyDelete: "Permanently delete account",
       useProfile: "Use birth profile",
+      usingProfile: "Using profile",
       noSavedProfiles: "No saved birth profiles",
       chooseThemes: "Choose your reflection themes",
       chooseThemesCopy:
@@ -225,12 +227,12 @@ const pack = {
       careerValue: "Value & compensation",
       careerValueDetail:
         "How you define worth, exchange and sustainable reward",
-      adultConfirmation: "I confirm that I am 18 or older.",
       saveProfileFirst: "Save a birth profile before generating this report.",
       reportFailed: "The report could not be queued.",
       queueing: "Queueing…",
       generateReport: "Generate report",
       produceReport: "Produce report",
+      personaliseReport: "Set up report",
       grounding: "Grounding",
       groundingDetail: "Steadiness and returning to centre",
       relationships: "Relationships",

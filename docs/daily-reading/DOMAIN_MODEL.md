@@ -144,11 +144,10 @@ type StructuredDailyContext = {
     | "deadline"
   >;
   recoveryThemes?: Array<ReviewedRecoveryTheme>;
-  adultConfirmed?: boolean;
 };
 ```
 
-Recovery requires adult confirmation and reviewed themes. No free-text recovery story is accepted. Context is snapshotted and hashed; it changes ordering/emphasis only.
+Recovery is an adults-only product and accepts reviewed themes without a per-report age confirmation. No free-text recovery story is accepted. Context is snapshotted and hashed; it changes ordering/emphasis only.
 
 ## Evidence fact
 

@@ -7,10 +7,12 @@ export function CheckoutButton({
   reportType,
   priceLabel,
   creditAvailable = false,
+  emphasis = "primary",
 }: {
   reportType: string;
   priceLabel?: string;
   creditAvailable?: boolean;
+  emphasis?: "primary" | "secondary";
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -59,7 +61,9 @@ export function CheckoutButton({
           type="button"
           onClick={() => checkout(false)}
           disabled={busy}
-          className="button-primary"
+          className={
+            emphasis === "primary" ? "button-primary" : "button-secondary"
+          }
         >
           {busy
             ? "Opening Stripe…"

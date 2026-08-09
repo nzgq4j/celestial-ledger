@@ -37,7 +37,9 @@ describe("header identity menu", () => {
   });
 
   it("keeps the relocated billing and settings anchors available", () => {
-    expect(account).toContain('className="account-plan-card" id="billing"');
+    expect(account).toContain(
+      'className="account-command-bar__membership" id="billing"',
+    );
     expect(accountSettings).toContain('id="account-settings"');
   });
 });
