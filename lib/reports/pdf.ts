@@ -43,6 +43,7 @@ export type PdfReport = {
       strength: number;
     }>;
   };
+  visualPlacement?: "cover" | "appendix";
   generatedAt: string;
   labels?: {
     bottomLine: string;
@@ -169,13 +170,13 @@ export async function buildReportPdf(report: PdfReport) {
     y -= options.gap ?? 7;
   };
 
-  const drawEvidenceConstellation = () => {
+  const drawEvidenceConstellation = (options: { newPage?: boolean } = {}) => {
     const visual = report.visualEvidence ?? [];
     const nodes = visual
       .filter((item) => item.kind === "placement" || item.kind === "angle")
       .slice(0, 14);
     if (!nodes.length) return;
-    newPage();
+    if (options.newPage ?? true) newPage();
     text(report.evidenceTitle.toUpperCase(), {
       font: sansBold,
       size: 8,
@@ -193,8 +194,8 @@ export async function buildReportPdf(report: PdfReport) {
     );
 
     const centreX = PAGE_WIDTH / 2;
-    const centreY = 470;
-    const radius = 176;
+    const centreY = options.newPage === false ? y - 112 : 470;
+    const radius = options.newPage === false ? 96 : 176;
     const positions = new Map<
       string,
       { x: number; y: number; label: string }
@@ -279,7 +280,7 @@ export async function buildReportPdf(report: PdfReport) {
         color: ink,
       });
     });
-    y = 210;
+    y = centreY - radius - 38;
     text(
       "Gold nodes mark placements or chart angles. Fine connecting lines mark calculated aspects between the bodies shown; no relationship is inferred beyond the recorded chart evidence.",
       { font: sans, size: 8, color: muted, gap: 0 },
@@ -446,7 +447,9 @@ export async function buildReportPdf(report: PdfReport) {
     gap: 0,
   });
   y = PAGE_HEIGHT - coverHeaderHeight - 22;
-  drawWeeklyRhythmChart();
+  if (report.weeklyRhythm) drawWeeklyRhythmChart();
+  else if (report.visualPlacement === "cover")
+    drawEvidenceConstellation({ newPage: false });
   text(report.introduction, { size: 12, gap: 12 });
   for (const note of report.uncertainty) {
     ensure(48);
@@ -533,7 +536,7 @@ export async function buildReportPdf(report: PdfReport) {
   text(report.closing, { font: serifBold, size: 13, gap: 12 });
   if (report.disclaimer && !disclaimerOnCover)
     text(report.disclaimer, { font: sans, size: 8, color: muted });
-  drawEvidenceConstellation();
+  if (report.visualPlacement !== "cover") drawEvidenceConstellation();
   if (report.evidence.length) {
     newPage();
     text(report.evidenceTitle.toUpperCase(), {
