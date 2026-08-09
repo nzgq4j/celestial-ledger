@@ -61,19 +61,22 @@ const gold = rgb(0.68, 0.52, 0.24);
 const ink = rgb(0.09, 0.085, 0.07);
 const muted = rgb(0.34, 0.33, 0.29);
 
-function safeText(value: string) {
+export function sanitizePdfText(value: string) {
   return value
     .normalize("NFC")
+    .replace(/\u00A0/g, " ")
+    .replace(/\u00B0/g, " deg")
     .replace(/[\u2010-\u2015]/g, "-")
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201c\u201d]/g, '"')
     .replace(/\u2026/g, "...")
+    .replace(/\u2022/g, "-")
     .replace(/[^\u0009\u000A\u000D\u0020-\u00FF]/g, "");
 }
 
 function wrap(text: string, font: PDFFont, size: number, width: number) {
   const lines: string[] = [];
-  for (const paragraph of safeText(text).split(/\n+/)) {
+  for (const paragraph of sanitizePdfText(text).split(/\n+/)) {
     const words = paragraph.trim().split(/\s+/).filter(Boolean);
     if (!words.length) {
       lines.push("");
@@ -143,12 +146,13 @@ export async function buildReportPdf(report: PdfReport) {
       color?: ReturnType<typeof rgb>;
       indent?: number;
       gap?: number;
+      lineHeight?: number;
     } = {},
   ) => {
     const font = options.font ?? serif;
     const size = options.size ?? 11;
     const indent = options.indent ?? 0;
-    const lineHeight = size * 1.48;
+    const lineHeight = options.lineHeight ?? size * 1.48;
     const lines = wrap(value, font, size, CONTENT_WIDTH - indent);
     for (const line of lines) {
       ensure(lineHeight);
@@ -258,7 +262,7 @@ export async function buildReportPdf(report: PdfReport) {
         borderColor: gold,
         borderWidth: 1.2,
       });
-      const label = safeText(position.label);
+      const label = sanitizePdfText(position.label);
       const shortLabel = label.length > 30 ? `${label.slice(0, 27)}...` : label;
       const labelWidth = sans.widthOfTextAtSize(shortLabel, 7.2);
       page.drawText(shortLabel, {
@@ -282,10 +286,9 @@ export async function buildReportPdf(report: PdfReport) {
     );
   };
 
-  const drawWeeklyRhythm = () => {
+  const drawWeeklyRhythmChart = () => {
     const rhythm = report.weeklyRhythm;
     if (!rhythm?.days.length) return;
-    newPage();
     text("SEVEN-DAY MAP", {
       font: sansBold,
       size: 8,
@@ -335,7 +338,9 @@ export async function buildReportPdf(report: PdfReport) {
         borderColor: gold,
         borderWidth: 1.4,
       });
-      const shortDay = safeText(point.day.label.split(/\s+/)[0].slice(0, 3));
+      const shortDay = sanitizePdfText(
+        point.day.label.split(/\s+/)[0].slice(0, 3),
+      );
       const labelWidth = sansBold.widthOfTextAtSize(shortDay, 7);
       page.drawText(shortDay, {
         x: point.x - labelWidth / 2,
@@ -361,6 +366,12 @@ export async function buildReportPdf(report: PdfReport) {
       color: muted,
       gap: 15,
     });
+  };
+
+  const drawWeeklyTimeline = () => {
+    const rhythm = report.weeklyRhythm;
+    if (!rhythm?.days.length) return;
+    newPage();
     text(rhythm.timelineTitle.toUpperCase(), {
       font: sansBold,
       size: 8,
@@ -393,11 +404,32 @@ export async function buildReportPdf(report: PdfReport) {
   };
 
   newPage();
+  let coverTitleSize = 27;
+  let coverTitleLines = wrap(
+    report.title,
+    serifBold,
+    coverTitleSize,
+    CONTENT_WIDTH,
+  );
+  while (coverTitleLines.length > 4 && coverTitleSize > 20) {
+    coverTitleSize -= 1;
+    coverTitleLines = wrap(
+      report.title,
+      serifBold,
+      coverTitleSize,
+      CONTENT_WIDTH,
+    );
+  }
+  const coverTitleLineHeight = coverTitleSize * 1.18;
+  const coverHeaderHeight = Math.max(
+    126,
+    MARGIN + 22 + coverTitleLines.length * coverTitleLineHeight + 20,
+  );
   page.drawRectangle({
     x: 0,
-    y: PAGE_HEIGHT - 126,
+    y: PAGE_HEIGHT - coverHeaderHeight,
     width: PAGE_WIDTH,
-    height: 126,
+    height: coverHeaderHeight,
     color: navy,
   });
   text(report.edition.toUpperCase(), {
@@ -408,11 +440,13 @@ export async function buildReportPdf(report: PdfReport) {
   });
   text(report.title, {
     font: serifBold,
-    size: 27,
+    size: coverTitleSize,
     color: rgb(0.96, 0.93, 0.84),
-    gap: 28,
+    lineHeight: coverTitleLineHeight,
+    gap: 0,
   });
-  y = PAGE_HEIGHT - 160;
+  y = PAGE_HEIGHT - coverHeaderHeight - 22;
+  drawWeeklyRhythmChart();
   text(report.introduction, { size: 12, gap: 12 });
   for (const note of report.uncertainty) {
     ensure(48);
@@ -425,8 +459,11 @@ export async function buildReportPdf(report: PdfReport) {
     });
     text(note, { font: sans, size: 9, indent: 10, gap: 12 });
   }
+  const disclaimerOnCover = Boolean(report.weeklyRhythm && report.disclaimer);
+  if (disclaimerOnCover)
+    text(report.disclaimer!, { font: sans, size: 8, color: muted, gap: 0 });
 
-  drawWeeklyRhythm();
+  drawWeeklyTimeline();
 
   report.sections.forEach((section, index) => {
     ensure(160);
@@ -494,7 +531,7 @@ export async function buildReportPdf(report: PdfReport) {
 
   rule(22);
   text(report.closing, { font: serifBold, size: 13, gap: 12 });
-  if (report.disclaimer)
+  if (report.disclaimer && !disclaimerOnCover)
     text(report.disclaimer, { font: sans, size: 8, color: muted });
   drawEvidenceConstellation();
   if (report.evidence.length) {
@@ -510,13 +547,13 @@ export async function buildReportPdf(report: PdfReport) {
       text(item, { font: sans, size: 9, indent: 8, gap: 4 }),
     );
   }
-  text(`Generated ${safeText(report.generatedAt)}`, {
+  text(`Generated ${sanitizePdfText(report.generatedAt)}`, {
     font: sans,
     size: 7,
     color: muted,
     gap: 0,
   });
-  document.setTitle(safeText(report.title));
+  document.setTitle(sanitizePdfText(report.title));
   document.setAuthor("Celestial Atlas");
   document.setSubject("Private astrology report");
   document.setCreationDate(new Date());
