@@ -16,6 +16,11 @@ chalice, blade, or pentacle-star motifs for Minor Arcana. The fallback does not
 load remote imagery and remains available if card-specific face art is absent
 or fails to load.
 
+Shuffle cards use a matching symbolic CSS back with a compass-seal motif. A
+private signed card-back image renders above it when available; if that image
+is absent or fails to load, the CSS back remains visible. This lets every deck
+operate safely while proprietary artwork is being prepared or replaced.
+
 The approved access model has two independent axes:
 
 - Spread access: Daily Draw is Free. Past, Present & Future and Love Reading
@@ -29,8 +34,9 @@ The approved access model has two independent axes:
 - Locked decks remain visible with a clear membership action.
 
 `TAROT_READING_ENABLED` defaults to `false`. The page, navigation, and draw API
-remain unavailable until the database, complete deck catalogue, artwork, and
-release checks are ready.
+remain unavailable until the database, deck catalogue, and release checks are
+ready. Private artwork is replaceable and is not required because the CSS
+cover/card-back fallbacks are launch-safe.
 
 ## Content and safety
 
@@ -73,7 +79,8 @@ behind. A first-upload database failure removes the newly written object.
 
 ## Database release runbook
 
-Migration: `20260809110121_add_tarot_decks.sql`
+Migrations: `20260809110121_add_tarot_decks.sql` and
+`20260809122805_enable_tarot_css_artwork_fallbacks.sql`
 
 Before applying to production:
 
@@ -88,7 +95,8 @@ Before applying to production:
    is private.
 7. Confirm the five seeded records, then create the sixth Premium Canva/Hockney
    record in the admin console with all localized metadata.
-8. Upload both images for each deck and activate only complete records.
+8. Activate decks with the CSS fallbacks; upload private cover and card-back
+   artwork when it is ready.
 9. Verify Free, Personal, and Premium access before enabling the feature flag.
 
 Forward recovery keeps the feature flag off while correcting rows, policies,

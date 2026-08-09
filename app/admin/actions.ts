@@ -394,16 +394,10 @@ export async function saveTarotDeck(formData: FormData) {
   const admin = createAdminClient();
   const { data: existing, error: lookupError } = await admin
     .from("tarot_decks")
-    .select("id,cover_image_path,card_back_image_path")
+    .select("id")
     .eq("id", input.id)
     .maybeSingle();
   if (lookupError) redirect("/admin?notice=tarot_save_failed#tarot-decks");
-  if (
-    input.active &&
-    (!existing?.cover_image_path || !existing.card_back_image_path)
-  ) {
-    redirect("/admin?notice=tarot_images_required#tarot-decks");
-  }
 
   const record = {
     name: input.name,

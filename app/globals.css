@@ -10534,6 +10534,145 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.32);
 }
 
+.tarot-card-back {
+  --tarot-back-burgundy: #541426;
+  --tarot-back-deep: #260811;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--gold) 10%, transparent),
+      transparent 38%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.018) 0 1px,
+      transparent 1px 9px
+    ),
+    linear-gradient(
+      145deg,
+      #681e33,
+      var(--tarot-back-burgundy) 48%,
+      var(--tarot-back-deep)
+    );
+  color: var(--gold);
+}
+
+.tarot-card-back::before,
+.tarot-card-back::after {
+  position: absolute;
+  inset: 0.6rem;
+  z-index: 2;
+  border: 1px solid color-mix(in srgb, var(--gold) 62%, transparent);
+  box-shadow: inset 0 0 0 0.22rem
+    color-mix(in srgb, var(--tarot-back-deep) 72%, transparent);
+  pointer-events: none;
+  content: "";
+}
+
+.tarot-card-back::after {
+  inset: 0.95rem;
+  border-color: color-mix(in srgb, var(--gold) 26%, transparent);
+  box-shadow: none;
+}
+
+.tarot-card-back__axis {
+  position: absolute;
+  top: 13%;
+  bottom: 13%;
+  left: 50%;
+  z-index: 3;
+  width: 1px;
+  background: linear-gradient(
+    transparent,
+    color-mix(in srgb, var(--gold) 70%, transparent) 18%,
+    color-mix(in srgb, var(--gold) 70%, transparent) 82%,
+    transparent
+  );
+}
+
+.tarot-card-back__axis::before,
+.tarot-card-back__axis::after {
+  position: absolute;
+  left: 50%;
+  width: 0.42rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--gold);
+  background: var(--tarot-back-burgundy);
+  transform: translateX(-50%) rotate(45deg);
+  content: "";
+}
+
+.tarot-card-back__axis::before {
+  top: 0;
+}
+
+.tarot-card-back__axis::after {
+  bottom: 0;
+}
+
+.tarot-card-back__seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 48%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--gold) 80%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 0.42rem color-mix(in srgb, var(--gold) 7%, transparent),
+    0 0 1.6rem rgba(10, 2, 5, 0.3);
+  transform: translate(-50%, -50%);
+}
+
+.tarot-card-back__seal::before,
+.tarot-card-back__seal::after {
+  position: absolute;
+  inset: 21%;
+  border: 1px solid color-mix(in srgb, var(--gold) 74%, transparent);
+  transform: rotate(45deg);
+  content: "";
+}
+
+.tarot-card-back__seal::after {
+  inset: 34%;
+  border-radius: 50%;
+  transform: none;
+}
+
+.tarot-card-back__seal i {
+  position: absolute;
+  top: 14%;
+  bottom: 14%;
+  left: 50%;
+  width: 1px;
+  background: color-mix(in srgb, var(--gold) 82%, transparent);
+}
+
+.tarot-card-back__seal i::before,
+.tarot-card-back__seal i::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: inherit;
+  transform: translate(-50%, -50%) rotate(60deg);
+  content: "";
+}
+
+.tarot-card-back__seal i::after {
+  transform: translate(-50%, -50%) rotate(-60deg);
+}
+
+.tarot-card-back__artwork {
+  z-index: 5;
+  object-fit: cover;
+}
+
 .tarot-shuffle__card--a {
   transform: rotate(-3deg) translate(-0.35rem, 0.3rem);
 }

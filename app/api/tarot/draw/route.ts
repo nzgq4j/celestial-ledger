@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     ),
     getServerTranslationPack(parsed.data.locale),
   ]);
-  if (!deck?.cardBackImageUrl) {
+  if (!deck) {
     return NextResponse.json(
       { error: "DECK_NOT_READY" },
       { status: 409, headers: noStoreHeaders },

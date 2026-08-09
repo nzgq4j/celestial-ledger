@@ -139,5 +139,6 @@ describe("tarot artwork and access security", () => {
     expect(drawRoute).toContain("tarotCardsForLocale");
     expect(drawRoute).toContain('"Cache-Control": "private, no-store');
     expect(experience).not.toContain("Math.random");
+    expect(drawRoute).not.toContain("!deck?.cardBackImageUrl");
   });
 });

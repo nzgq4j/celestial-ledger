@@ -16,6 +16,10 @@ const symbolicFace = readFileSync(
   "components/TarotSymbolicCardFace.tsx",
   "utf8",
 );
+const symbolicBack = readFileSync(
+  "components/TarotSymbolicCardBack.tsx",
+  "utf8",
+);
 const styles = readFileSync("app/globals.css", "utf8");
 
 describe("tarot accessibility and content safety", () => {
@@ -47,6 +51,14 @@ describe("tarot accessibility and content safety", () => {
     for (const suit of ["wands", "cups", "swords", "pentacles"]) {
       expect(styles).toContain(`.tarot-symbolic-face--${suit}`);
     }
+  });
+
+  it("replaces missing or failed private artwork with a symbolic card back", () => {
+    expect(symbolicBack).toContain('className="tarot-card-back__seal"');
+    expect(symbolicBack).toContain("event.currentTarget.hidden = true");
+    expect(symbolicBack).toContain('aria-hidden="true"');
+    expect(styles).toContain(".tarot-card-back__seal");
+    expect(styles).toContain(".tarot-card-back__artwork");
   });
 
   it("keeps card copy reflective instead of predictive or diagnostic", () => {

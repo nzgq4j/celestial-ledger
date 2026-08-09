@@ -12,6 +12,7 @@ import type {
   TarotSuit,
 } from "@/lib/tarot/types";
 import { formatTarotMessage } from "@/lib/tarot/ui-locales";
+import { TarotSymbolicCardBack } from "@/components/TarotSymbolicCardBack";
 import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
 
 type ReadingCard = {
@@ -26,7 +27,7 @@ type ReadingCard = {
 };
 
 type DrawResponse = {
-  deck: { id: string; name: string; cardBackImageUrl: string };
+  deck: { id: string; name: string; cardBackImageUrl: string | null };
   reading: { id: string; name: string };
   cards: ReadingCard[];
   narrative: string;
@@ -327,16 +328,10 @@ export function TarotReadingExperience({
             aria-hidden="true"
           >
             {["a", "b", "c"].map((layer) => (
-              <i
+              <TarotSymbolicCardBack
                 key={layer}
+                imageUrl={selectedDeck.cardBackImageUrl}
                 className={`tarot-shuffle__card tarot-shuffle__card--${layer}`}
-                style={
-                  selectedDeck.cardBackImageUrl
-                    ? {
-                        backgroundImage: `url("${selectedDeck.cardBackImageUrl}")`,
-                      }
-                    : undefined
-                }
               />
             ))}
             <span />
