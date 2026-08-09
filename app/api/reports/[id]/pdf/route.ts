@@ -67,9 +67,7 @@ export async function GET(
       reflectionQuestions: section.reflectionQuestions,
       evidence: section.evidenceIds.map((evidenceId) => {
         const item = evidenceById.get(evidenceId);
-        return item
-          ? `${evidenceId} - ${localizeEvidenceLabel(item, locale)}`
-          : evidenceId;
+        return item ? localizeEvidenceLabel(item, locale) : evidenceId;
       }),
     })),
     closing: output.data.closing,
@@ -78,9 +76,7 @@ export async function GET(
         ? output.data.disclaimer
         : undefined,
     evidenceTitle: copy.evidenceConstellation,
-    evidence: evidence.items.map(
-      (item) => `${item.id} - ${localizeEvidenceLabel(item, locale)}`,
-    ),
+    evidence: evidence.items.map((item) => localizeEvidenceLabel(item, locale)),
     visualEvidence: evidence.items.map((item) => ({
       id: item.id,
       label: localizeEvidenceLabel(item, locale),

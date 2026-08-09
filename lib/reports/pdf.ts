@@ -76,6 +76,28 @@ export function sanitizePdfText(value: string) {
     .replace(/[^\u0009\u000A\u000D\u0020-\u00FF]/g, "");
 }
 
+function cleanPdfTitle(title: string, fallback: string) {
+  const cleaned = sanitizePdfText(title).trim();
+  if (
+    !cleaned ||
+    /short,\s*quiet\s+opening/i.test(cleaned) ||
+    /visible\s+note\s+of\s+restraint/i.test(cleaned)
+  ) {
+    return fallback;
+  }
+  return cleaned;
+}
+
+function cleanNarrativeForPdf(value: string) {
+  return sanitizePdfText(value)
+    .replace(
+      /(^|\n\n)Evidence:\s+.*?\([^)]*\)\.\s*/gi,
+      (_match, prefix: string) => prefix,
+    )
+    .replace(/(^|\n\n)Evidence:\s+[^.\n]+(?:\.\s*)?/gi, "$1")
+    .trim();
+}
+
 function wrap(text: string, font: PDFFont, size: number, width: number) {
   const lines: string[] = [];
   for (const paragraph of sanitizePdfText(text).split(/\n+/)) {
@@ -149,6 +171,7 @@ function drawJustifiedTextLine(input: {
 }
 
 export async function buildReportPdf(report: PdfReport) {
+  const displayTitle = cleanPdfTitle(report.title, report.edition);
   const document = await PDFDocument.create();
   const serif = await document.embedFont(StandardFonts.TimesRoman);
   const serifBold = await document.embedFont(StandardFonts.TimesRomanBold);
@@ -486,7 +509,7 @@ export async function buildReportPdf(report: PdfReport) {
   newPage();
   let coverTitleSize = 27;
   let coverTitleLines = wrap(
-    report.title,
+    displayTitle,
     serifBold,
     coverTitleSize,
     CONTENT_WIDTH,
@@ -518,7 +541,7 @@ export async function buildReportPdf(report: PdfReport) {
     color: gold,
     gap: 10,
   });
-  text(report.title, {
+  text(displayTitle, {
     font: serifBold,
     size: coverTitleSize,
     color: rgb(0.96, 0.93, 0.84),
@@ -567,7 +590,11 @@ export async function buildReportPdf(report: PdfReport) {
       });
       text(section.bottomLine, { font: serifBold, size: 12, gap: 12 });
     }
-    text(section.narrative, { size: 11, gap: 11, justify: true });
+    text(cleanNarrativeForPdf(section.narrative), {
+      size: 11,
+      gap: 11,
+      justify: true,
+    });
     if (section.bringIntoLife) {
       text(report.labels?.bringIntoLife ?? "BRING THIS INTO YOUR LIFE", {
         font: sansBold,
@@ -604,12 +631,6 @@ export async function buildReportPdf(report: PdfReport) {
       );
       y -= 6;
     }
-    if (section.evidence.length) {
-      text("CHART EVIDENCE", { font: sansBold, size: 8, color: muted, gap: 4 });
-      section.evidence.forEach((item) =>
-        text(item, { font: sans, size: 8, color: muted, indent: 9, gap: 1 }),
-      );
-    }
   });
 
   rule(22);
@@ -636,7 +657,7 @@ export async function buildReportPdf(report: PdfReport) {
     color: muted,
     gap: 0,
   });
-  document.setTitle(sanitizePdfText(report.title));
+  document.setTitle(displayTitle);
   document.setAuthor("Celestial Atlas");
   document.setSubject("Private astrology report");
   document.setCreationDate(new Date());
