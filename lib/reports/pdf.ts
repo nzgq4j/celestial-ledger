@@ -98,6 +98,56 @@ function wrap(text: string, font: PDFFont, size: number, width: number) {
   return lines;
 }
 
+function drawJustifiedTextLine(input: {
+  page: PDFPage;
+  line: string;
+  x: number;
+  y: number;
+  width: number;
+  font: PDFFont;
+  size: number;
+  color: ReturnType<typeof rgb>;
+}) {
+  const words = input.line.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 3) {
+    input.page.drawText(input.line, {
+      x: input.x,
+      y: input.y,
+      size: input.size,
+      font: input.font,
+      color: input.color,
+    });
+    return;
+  }
+  const wordsWidth = words.reduce(
+    (total, word) => total + input.font.widthOfTextAtSize(word, input.size),
+    0,
+  );
+  const spaceWidth = (input.width - wordsWidth) / (words.length - 1);
+  if (!Number.isFinite(spaceWidth) || spaceWidth <= 0 || spaceWidth > 8) {
+    input.page.drawText(input.line, {
+      x: input.x,
+      y: input.y,
+      size: input.size,
+      font: input.font,
+      color: input.color,
+    });
+    return;
+  }
+  let cursorX = input.x;
+  words.forEach((word, index) => {
+    input.page.drawText(word, {
+      x: cursorX,
+      y: input.y,
+      size: input.size,
+      font: input.font,
+      color: input.color,
+    });
+    cursorX += input.font.widthOfTextAtSize(word, input.size);
+    if (index < words.length - 1) cursorX += spaceWidth;
+  });
+}
+
 export async function buildReportPdf(report: PdfReport) {
   const document = await PDFDocument.create();
   const serif = await document.embedFont(StandardFonts.TimesRoman);
@@ -149,25 +199,53 @@ export async function buildReportPdf(report: PdfReport) {
       indent?: number;
       gap?: number;
       lineHeight?: number;
+      paragraphGap?: number;
+      justify?: boolean;
     } = {},
   ) => {
     const font = options.font ?? serif;
     const size = options.size ?? 11;
     const indent = options.indent ?? 0;
     const lineHeight = options.lineHeight ?? size * 1.48;
-    const lines = wrap(value, font, size, CONTENT_WIDTH - indent);
-    for (const line of lines) {
-      ensure(lineHeight);
-      if (line)
-        page.drawText(line, {
-          x: MARGIN + indent,
-          y,
-          size,
-          font,
-          color: options.color ?? ink,
-        });
-      y -= lineHeight;
-    }
+    const color = options.color ?? ink;
+    const paragraphs = sanitizePdfText(value)
+      .split(/\n{2,}/)
+      .map((paragraph) => paragraph.replace(/\s*\n\s*/g, " ").trim())
+      .filter(Boolean);
+    paragraphs.forEach((paragraph, paragraphIndex) => {
+      const lines = wrap(paragraph, font, size, CONTENT_WIDTH - indent);
+      lines.forEach((line, lineIndex) => {
+        ensure(lineHeight);
+        if (line) {
+          const shouldJustify =
+            Boolean(options.justify) &&
+            lineIndex < lines.length - 1 &&
+            font === serif;
+          if (shouldJustify)
+            drawJustifiedTextLine({
+              page,
+              line,
+              x: MARGIN + indent,
+              y,
+              width: CONTENT_WIDTH - indent,
+              font,
+              size,
+              color,
+            });
+          else
+            page.drawText(line, {
+              x: MARGIN + indent,
+              y,
+              size,
+              font,
+              color,
+            });
+        }
+        y -= lineHeight;
+      });
+      if (paragraphIndex < paragraphs.length - 1)
+        y -= options.paragraphGap ?? size * 0.55;
+    });
     y -= options.gap ?? 7;
   };
 
@@ -452,7 +530,7 @@ export async function buildReportPdf(report: PdfReport) {
   else if (report.visualPlacement === "cover")
     drawEvidenceConstellation({ newPage: false });
   if (report.showCoverIntroduction ?? true)
-    text(report.introduction, { size: 12, gap: 12 });
+    text(report.introduction, { size: 12, gap: 12, justify: true });
   for (const note of report.uncertainty) {
     ensure(48);
     page.drawRectangle({
@@ -489,7 +567,7 @@ export async function buildReportPdf(report: PdfReport) {
       });
       text(section.bottomLine, { font: serifBold, size: 12, gap: 12 });
     }
-    text(section.narrative, { size: 11, gap: 11 });
+    text(section.narrative, { size: 11, gap: 11, justify: true });
     if (section.bringIntoLife) {
       text(report.labels?.bringIntoLife ?? "BRING THIS INTO YOUR LIFE", {
         font: sansBold,

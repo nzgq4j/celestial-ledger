@@ -50,10 +50,10 @@ export async function buildDailyReadingPdf(input: {
         narrative: [
           bluf.overview.narrative,
           ...bluf.practicalPriorities.map(
-            (priority) => `${priority.title}\n${priority.narrative}`,
+            (priority) => `${priority.title}: ${priority.narrative}`,
           ),
           bluf.tensionToHold
-            ? `Tension to hold\n${bluf.tensionToHold.narrative}`
+            ? `Tension to hold: ${bluf.tensionToHold.narrative}`
             : "",
         ]
           .filter(Boolean)
@@ -73,7 +73,10 @@ export async function buildDailyReadingPdf(input: {
         narrative:
           "Carry the local-noon reading through the day in three deliberate movements: receive the signal, act where the pattern is strongest, and integrate what the day has revealed.",
         bringIntoLife: dayArc
-          .map((phase) => `${phase.label}: ${phase.title}\n${phase.guidance}`)
+          .map(
+            (phase) =>
+              `${phase.label} - ${phase.title}: ${phase.guidance}`,
+          )
           .join("\n\n"),
         reflectionQuestions: [],
         evidence: [],
