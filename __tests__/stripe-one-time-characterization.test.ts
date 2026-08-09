@@ -9,6 +9,10 @@ const subscriptionCheckout = fs.readFileSync(
 );
 const billingPortal = fs.readFileSync("app/api/stripe/portal/route.ts", "utf8");
 const account = fs.readFileSync("app/account/page.tsx", "utf8");
+const accountReportStates = fs.readFileSync(
+  "lib/account/report-states.ts",
+  "utf8",
+);
 const reportQueue = fs.readFileSync("app/api/reports/route.ts", "utf8");
 const fulfilment = fs.readFileSync(
   "supabase/migrations/20260802232350_stripe_fulfilment.sql",
@@ -151,8 +155,10 @@ describe("existing one-time Stripe purchase contract", () => {
   });
 
   it("includes standard reports with Premium without opening Checkout", () => {
-    expect(account).toContain('commercePlanKey === "premium"');
-    expect(account).toContain("Included with Premium");
+    expect(account).toContain("deriveAccountReportStates");
+    expect(accountReportStates).toContain('input.planKey === "premium"');
+    expect(accountReportStates).toContain('kind: "premium_included"');
+    expect(account).toContain('state.kind === "premium_included"');
     expect(checkout).toContain(
       "This report is included with Premium membership.",
     );
@@ -161,13 +167,14 @@ describe("existing one-time Stripe purchase contract", () => {
   });
 
   it("separates purchased but unused reports from the generated library", () => {
-    expect(account).toContain('id="purchased-reports"');
+    expect(account).toContain('id="reports"');
     expect(account).toContain("linkedEntitlementIds");
     expect(account).toContain('item.status === "unused"');
     expect(account).toContain('item.status === "queued"');
     expect(account).toContain("<GenerateReportButton");
-    expect(account).toContain("outstandingEntitlement");
-    expect(account).toContain("entitlementId={outstandingEntitlement.id}");
+    expect(accountReportStates).toContain('kind: "purchased_unused"');
+    expect(account).toContain('state.kind === "purchased_unused"');
+    expect(account).toContain("entitlementId={state.entitlement.id}");
   });
 
   it("resolves portal plan switches from the active catalogue price", () => {

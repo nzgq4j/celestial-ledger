@@ -12,6 +12,7 @@ import {
   DEFAULT_SOCIAL_IMAGE,
   localizedAlternates,
 } from "@/lib/seo";
+import { getHeaderIdentity } from "@/lib/auth/header-identity";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAdminSettings();
@@ -69,9 +70,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [settings, pack] = await Promise.all([
+  const [settings, pack, identity] = await Promise.all([
     getAdminSettings(),
     getServerTranslationPack(),
+    getHeaderIdentity(),
   ]);
   const organizationJson = settings.geo.enabled
     ? {
@@ -124,7 +126,7 @@ export default async function RootLayout({
         />
         <LocaleProvider initialLocale={pack.tag} initialPack={pack}>
           <div className="meridian" aria-hidden="true" />
-          <SiteHeader />
+          <SiteHeader identity={identity} />
           {children}
           <SiteFooter />
         </LocaleProvider>

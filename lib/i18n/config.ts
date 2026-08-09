@@ -26,6 +26,13 @@ export type TranslationPack = {
       privateReports: string;
       membershipPlans: string;
       sampleReports: string;
+      signIn: string;
+      dashboard: string;
+      accountSettings: string;
+      billing: string;
+      signOut: string;
+      identityMenu: string;
+      signedInAs: string;
     };
     preferences: {
       language: string;

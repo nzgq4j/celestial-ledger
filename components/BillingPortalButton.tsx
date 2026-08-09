@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 
 export function BillingPortalButton() {
+  const { pack } = useLocale();
+  const copy = pack.messages.account;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function openPortal() {
@@ -15,13 +18,11 @@ export function BillingPortalButton() {
         error?: string;
       };
       if (!response.ok || !result.url)
-        throw new Error(result.error ?? "Billing portal could not be opened.");
+        throw new Error(result.error ?? copy.billingOpenFailed);
       window.location.assign(result.url);
     } catch (caught) {
       setError(
-        caught instanceof Error
-          ? caught.message
-          : "Billing portal could not be opened.",
+        caught instanceof Error ? caught.message : copy.billingOpenFailed,
       );
       setBusy(false);
     }
@@ -34,7 +35,7 @@ export function BillingPortalButton() {
         disabled={busy}
         onClick={openPortal}
       >
-        {busy ? "Opening billing…" : "Manage billing"}
+        {busy ? copy.openingBilling : copy.manageBilling}
       </button>
       {error && <p role="alert">{error}</p>}
     </div>

@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRef } from "react";
 import { SitePreferences } from "@/components/SitePreferences";
 import { useLocale } from "@/components/LocaleProvider";
+import { signOut } from "@/app/auth/actions";
+import type { HeaderIdentity } from "@/lib/auth/header-identity";
 
-export function SiteHeader() {
+export function SiteHeader({ identity }: { identity: HeaderIdentity | null }) {
   const { pack } = useLocale();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
 
@@ -92,12 +94,67 @@ export function SiteHeader() {
                 </Link>
               </div>
               <Link href="/journal">{pack.messages.navigation.journal}</Link>
-              <Link href="/account">{pack.messages.navigation.library}</Link>
+              {identity ? (
+                <div className="mobile-nav__group mobile-nav__identity">
+                  <span>
+                    {pack.messages.navigation.signedInAs} {identity.displayName}
+                  </span>
+                  <Link href="/account">
+                    {pack.messages.navigation.dashboard}
+                  </Link>
+                  <Link href="/account#account-settings">
+                    {pack.messages.navigation.accountSettings}
+                  </Link>
+                  <Link href="/account#billing">
+                    {pack.messages.navigation.billing}
+                  </Link>
+                  <form action={signOut}>
+                    <button type="submit">
+                      {pack.messages.navigation.signOut}
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <Link href="/auth/login">
+                  {pack.messages.navigation.signIn}
+                </Link>
+              )}
             </div>
           </details>
-          <Link href="/account" className="site-nav__account">
-            {pack.messages.navigation.library}
-          </Link>
+          {identity ? (
+            <details className="site-nav-group site-nav-identity">
+              <summary aria-label={pack.messages.navigation.identityMenu}>
+                <i className="site-nav-identity__avatar" aria-hidden="true">
+                  {identity.displayName.slice(0, 1).toUpperCase()}
+                </i>
+                <strong>{identity.displayName}</strong>
+                <span aria-hidden="true" />
+              </summary>
+              <div className="site-nav-group__menu">
+                <Link href="/account">
+                  <strong>{pack.messages.navigation.dashboard}</strong>
+                  <small>{pack.messages.navigation.library}</small>
+                </Link>
+                <Link href="/account#account-settings">
+                  <strong>{pack.messages.navigation.accountSettings}</strong>
+                  <small>{identity.email}</small>
+                </Link>
+                <Link href="/account#billing">
+                  <strong>{pack.messages.navigation.billing}</strong>
+                  <small>{pack.messages.navigation.membership}</small>
+                </Link>
+                <form action={signOut}>
+                  <button type="submit">
+                    <strong>{pack.messages.navigation.signOut}</strong>
+                  </button>
+                </form>
+              </div>
+            </details>
+          ) : (
+            <Link href="/auth/login" className="site-nav__account">
+              {pack.messages.navigation.signIn}
+            </Link>
+          )}
           <SitePreferences />
         </nav>
       </div>

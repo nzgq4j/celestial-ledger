@@ -5,23 +5,29 @@ const page = readFileSync("app/account/page.tsx", "utf8");
 const css = readFileSync("app/globals.css", "utf8");
 
 describe("My Atlas dashboard layout refinement", () => {
-  it("keeps member identity in the top-right profile block", () => {
-    expect(page.match(/<strong>\{displayName\}<\/strong>/g)).toHaveLength(1);
-    expect(
-      page.match(/<small>\{authData\.user\.email\}<\/small>/g),
-    ).toHaveLength(1);
+  it("consolidates identity and plan into one compact overview strip", () => {
+    expect(page).toContain('className="account-overview-strip"');
+    expect(page).toContain('className="account-plan-card" id="billing"');
     expect(page).toContain("Member observatory");
-    expect(page).toContain("Your private sky.");
+    expect(page).not.toContain('className="account-command-bar"');
+    expect(page).not.toContain('className="account-hero__orbit"');
   });
 
-  it("aligns and visually integrates the sidebar", () => {
-    expect(css).toContain("Final My Atlas shell overrides");
-    expect(css).toContain("align-self: start");
-    expect(css).toContain("top: 1rem");
+  it("keeps the sidebar aligned below the now-visible global header", () => {
+    expect(css).toContain("top: 5.8rem");
     expect(css).toContain("var(--atlas-cyan)");
+    expect(css).not.toContain(
+      "body:has(.account-dashboard) > .site-header,\nbody:has(.account-dashboard) > .site-footer",
+    );
   });
 
-  it("backfills dashboard gaps with dense grid placement", () => {
-    expect(css).toContain("grid-auto-flow: dense");
+  it("uses a stable usage-ordered flow rather than dense reordering", () => {
+    expect(css).toContain("grid-auto-flow: row");
+    expect(page.indexOf('id="readings"')).toBeLessThan(
+      page.indexOf('id="reports"'),
+    );
+    expect(page.indexOf('id="reports"')).toBeLessThan(
+      page.indexOf('id="birth-profiles"'),
+    );
   });
 });

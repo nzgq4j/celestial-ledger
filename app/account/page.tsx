@@ -19,6 +19,7 @@ import {
   effectivePlanKeyForUser,
 } from "@/lib/entitlements/server";
 import { WEEKLY_READING_CAPABILITY } from "@/lib/weekly-readings/domain";
+import { deriveAccountReportStates } from "@/lib/account/report-states";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -187,6 +188,22 @@ export default async function AccountPage({
         : total,
     0,
   );
+  const reportStates = deriveAccountReportStates({
+    products,
+    readyEntitlements,
+    reports,
+    planKey: commercePlanKey,
+  });
+  const reportProfiles = birthProfiles.map((item) => ({
+    id: item.id,
+    label: item.label,
+  }));
+  const planName = subscription
+    ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
+    : copy.freePlan;
+  const planTiming = subscription?.current_period_end
+    ? `${subscription.cancel_at_period_end ? copy.accessEnds : copy.nextBillingDate} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
+    : copy.freePlanCopy;
   const latestReport = reports[0];
   const nextStep = readyEntitlements.length
     ? {
@@ -235,36 +252,28 @@ export default async function AccountPage({
         </div>
 
         <nav className="account-sidebar__nav">
-          <p>Workspace</p>
+          <p>{copy.workspace}</p>
           <a href="#overview" className="account-sidebar__active">
             <span aria-hidden="true">01</span>
-            Overview
+            {copy.overview}
           </a>
-          <a href="#daily-reading">
+          <a href="#readings">
             <span aria-hidden="true">02</span>
-            {copy.myDailyReading}
-          </a>
-          <a href="#weekly-reading">
-            <span aria-hidden="true">W</span>
-            {copy.weeklyReadingTitle}
+            {copy.yourReadingsTitle}
           </a>
           <a href="#reports">
             <span aria-hidden="true">03</span>
-            {copy.myReadings}
-          </a>
-          <a href="#purchased-reports">
-            <span aria-hidden="true">P</span>
-            {copy.purchasedReportsTitle}
+            {copy.reportsCombinedTitle}
           </a>
           <a href="#birth-profiles">
             <span aria-hidden="true">04</span>
             {copy.myBirthCharts}
           </a>
-          <p>Account</p>
+          <p>{copy.accountLabel}</p>
           {commerce.subscriptions && (
             <a href="#billing">
               <span aria-hidden="true">05</span>
-              Membership &amp; billing
+              {copy.currentMembership}
             </a>
           )}
           <a href="#account-settings">
@@ -280,76 +289,52 @@ export default async function AccountPage({
         </nav>
 
         <div className="account-sidebar__plan">
-          <p>Current orbit</p>
-          <strong>
-            {commercePlanKey[0].toUpperCase() + commercePlanKey.slice(1)}
-          </strong>
-          <Link href="/membership">View membership</Link>
+          <p>{copy.currentMembership}</p>
+          <strong>{planName}</strong>
+          <Link href="/membership">{copy.viewMembership}</Link>
         </div>
       </aside>
 
       <div className="account-workspace">
-        <header className="account-command-bar">
-          <div>
-            <p>Private observatory</p>
-            <strong>My Celestial Atlas</strong>
-          </div>
-          <div
-            className="account-command-bar__signals"
-            aria-label="Account summary"
-          >
-            <span>
-              <small>Charts</small>
-              <strong>{birthProfiles.length}</strong>
-            </span>
-            <span>
-              <small>Readings</small>
-              <strong>{reports.length + dailyReadings.length}</strong>
-            </span>
-            <span>
-              <small>Ready</small>
-              <strong>{readyEntitlements.length}</strong>
-            </span>
-          </div>
-          <div className="account-command-bar__profile">
+        <section className="account-overview-strip" id="overview">
+          <div className="account-overview-strip__identity">
             <span aria-hidden="true">
               {displayName.slice(0, 1).toUpperCase()}
             </span>
             <div>
-              <strong>{displayName}</strong>
-              <small>{authData.user.email}</small>
+              <p className="eyebrow">{copy.heroKicker}</p>
+              <h1>
+                {copy.welcome}, {displayName}.
+              </h1>
             </div>
           </div>
-        </header>
-
-        <div className="account-activity-grid">
-          <header className="account-hero" id="overview">
-            <div className="account-hero__welcome">
-              <p className="eyebrow">{copy.heroKicker}</p>
-              <h1>Your private sky.</h1>
-              <p>{copy.heroCopy}</p>
-            </div>
-            <div className="account-hero__orbit" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </div>
-          </header>
-
-          <section
-            className="atlas-next-step"
-            aria-labelledby="next-step-title"
-          >
+          <div className="account-plan-card" id="billing">
             <div>
-              <p className="section-kicker">{nextStep.kicker}</p>
-              <h2 id="next-step-title">{nextStep.title}</h2>
-              <p>{nextStep.copy}</p>
+              <p className="section-kicker">{copy.currentMembership}</p>
+              <h2>{planName}</h2>
+              <p>{planTiming}</p>
             </div>
-            <Link href={nextStep.href} className="button-primary">
-              {nextStep.action}
-            </Link>
-          </section>
-        </div>
+            <span>{subscription?.status ?? copy.activeStatus}</span>
+            {subscription ? (
+              <BillingPortalButton />
+            ) : (
+              <Link className="button-quiet" href="/membership">
+                {copy.viewMembership}
+              </Link>
+            )}
+          </div>
+        </section>
+
+        <section className="atlas-next-step" aria-labelledby="next-step-title">
+          <div>
+            <p className="section-kicker">{nextStep.kicker}</p>
+            <h2 id="next-step-title">{nextStep.title}</h2>
+            <p>{nextStep.copy}</p>
+          </div>
+          <Link href={nextStep.href} className="button-primary">
+            {nextStep.action}
+          </Link>
+        </section>
 
         <div className="account-stats" aria-label={copy.accountSummary}>
           <span>
@@ -391,154 +376,88 @@ export default async function AccountPage({
           </p>
         )}
 
-        {commerce.subscriptions && (
-          <section className="dashboard-panel" id="billing">
-            <div className="dashboard-panel__heading">
-              <div>
-                <p className="section-kicker">Membership &amp; billing</p>
-                <h2>
-                  {subscription
-                    ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
-                    : "Free"}
-                </h2>
+        <section
+          className="dashboard-panel dashboard-panel--readings"
+          id="readings"
+        >
+          <div className="dashboard-panel__heading">
+            <div>
+              <p className="section-kicker">{copy.yourReadingsKicker}</p>
+              <h2>{copy.yourReadingsTitle}</h2>
+            </div>
+          </div>
+          <div className="account-reading-cards">
+            <article
+              className="account-reading-card account-reading-card--daily"
+              id="daily-reading"
+            >
+              <div className="dashboard-panel__heading">
+                <div>
+                  <p className="section-kicker">{copy.dailyReadingKicker}</p>
+                  <h2>{copy.dailyReadingTitle}</h2>
+                </div>
+                <span className="dashboard-panel__meta">
+                  {copy.registeredUserEntitlement}
+                </span>
               </div>
-              <span className="dashboard-panel__meta">
-                {subscription?.status ?? "active"}
-              </span>
-            </div>
-            <p className="dashboard-panel__introduction">
-              {subscription?.current_period_end
-                ? `${subscription.cancel_at_period_end ? "Access ends" : "Next billing date"} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
-                : "Your account currently uses the Free plan."}
-            </p>
-            {subscription && <BillingPortalButton />}
-          </section>
-        )}
-
-        <section
-          className="dashboard-panel dashboard-panel--daily"
-          id="daily-reading"
-        >
-          <div className="dashboard-panel__heading">
-            <div>
-              <p className="section-kicker">{copy.dailyReadingKicker}</p>
-              <h2>{copy.dailyReadingTitle}</h2>
-            </div>
-            <span className="dashboard-panel__meta">
-              {copy.registeredUserEntitlement}
-            </span>
-          </div>
-          <p className="dashboard-panel__introduction">
-            {copy.dailyReadingDescription}
-          </p>
-          <DailyReadingGenerator
-            profiles={birthProfiles.map((item) => ({
-              id: item.id,
-              label: item.label,
-            }))}
-            existingReadings={dailyReadings}
-          />
-        </section>
-
-        <section
-          className="dashboard-panel dashboard-panel--weekly"
-          id="weekly-reading"
-        >
-          <div className="dashboard-panel__heading">
-            <div>
-              <p className="section-kicker">{copy.weeklyReadingKicker}</p>
-              <h2>{copy.weeklyReadingTitle}</h2>
-            </div>
-            <span className="dashboard-panel__meta">
-              {!weeklyFlags.generationEnabled
-                ? copy.weeklyReadingUnavailableTitle
-                : weeklyAccessible
-                  ? weeklyReadings.length
-                    ? copy.weeklyReadingEntitled
-                    : copy.weeklyReadingReady
-                  : copy.weeklyReadingUpsellTitle}
-            </span>
-          </div>
-          {!weeklyFlags.generationEnabled ? (
-            <div className="dashboard-empty">
-              <h3>{copy.weeklyReadingUnavailableTitle}</h3>
-              <p>{copy.weeklyReadingUnavailableCopy}</p>
-            </div>
-          ) : weeklyAccessible ? (
-            <>
               <p className="dashboard-panel__introduction">
-                {copy.weeklyReadingDescription}
+                {copy.dailyReadingDescription}
               </p>
-              <WeeklyReadingGenerator
-                primaryProfile={
-                  primaryProfile
-                    ? { id: primaryProfile.id, label: primaryProfile.label }
-                    : undefined
-                }
-                existingReadings={weeklyReadings}
+              <DailyReadingGenerator
+                profiles={reportProfiles}
+                existingReadings={dailyReadings}
               />
-            </>
-          ) : (
-            <div className="dashboard-empty dashboard-weekly-upsell">
-              <h3>{copy.weeklyReadingUpsellTitle}</h3>
-              <p>{copy.weeklyReadingUpsellCopy}</p>
-              <Link href="/membership" className="button-primary">
-                {copy.weeklyReadingUpsellAction}
-              </Link>
-            </div>
-          )}
-        </section>
+            </article>
 
-        <section
-          className="dashboard-panel dashboard-panel--purchased"
-          id="purchased-reports"
-        >
-          <div className="dashboard-panel__heading">
-            <div>
-              <p className="section-kicker">{copy.purchasedReportsKicker}</p>
-              <h2>{copy.purchasedReportsTitle}</h2>
-            </div>
-            <span className="dashboard-panel__meta">
-              {readyEntitlements.length} {copy.readyToGenerate}
-            </span>
-          </div>
-          <p className="dashboard-panel__introduction">
-            {copy.purchasedReportsDescription}
-          </p>
-
-          {readyEntitlements.length ? (
-            <div className="purchased-report-list">
-              {readyEntitlements.map((entitlement) => (
-                <article className="ready-report" key={entitlement.id}>
-                  <div>
-                    <strong>
-                      {entitlement.report_type === "recovery_reflection"
-                        ? copy.recoveryReflection
-                        : copy.careerPurpose}
-                    </strong>
-                    <p>{copy.purchasedReady}</p>
-                    <small>
-                      {copy.purchasedOn}{" "}
-                      {new Date(entitlement.granted_at).toLocaleDateString(
-                        pack.tag,
-                      )}
-                    </small>
-                  </div>
-                  <GenerateReportButton
-                    entitlementId={entitlement.id}
-                    reportType={entitlement.report_type}
-                    profiles={birthProfiles.map((item) => ({
-                      id: item.id,
-                      label: item.label,
-                    }))}
-                    defaultLocale={reportLocale}
+            <article
+              className="account-reading-card account-reading-card--weekly"
+              id="weekly-reading"
+            >
+              <div className="dashboard-panel__heading">
+                <div>
+                  <p className="section-kicker">{copy.weeklyReadingKicker}</p>
+                  <h2>{copy.weeklyReadingTitle}</h2>
+                </div>
+                <span className="dashboard-panel__meta">
+                  {!weeklyFlags.generationEnabled
+                    ? copy.weeklyReadingUnavailableTitle
+                    : weeklyAccessible
+                      ? weeklyReadings.length
+                        ? copy.weeklyReadingEntitled
+                        : copy.weeklyReadingReady
+                      : copy.weeklyReadingUpsellTitle}
+                </span>
+              </div>
+              {!weeklyFlags.generationEnabled ? (
+                <div className="dashboard-empty">
+                  <h3>{copy.weeklyReadingUnavailableTitle}</h3>
+                  <p>{copy.weeklyReadingUnavailableCopy}</p>
+                </div>
+              ) : weeklyAccessible ? (
+                <>
+                  <p className="dashboard-panel__introduction">
+                    {copy.weeklyReadingDescription}
+                  </p>
+                  <WeeklyReadingGenerator
+                    primaryProfile={
+                      primaryProfile
+                        ? { id: primaryProfile.id, label: primaryProfile.label }
+                        : undefined
+                    }
+                    existingReadings={weeklyReadings}
                   />
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="dashboard-empty">{copy.noUnusedPurchases}</p>
-          )}
+                </>
+              ) : (
+                <div className="dashboard-empty dashboard-weekly-upsell">
+                  <h3>{copy.weeklyReadingUpsellTitle}</h3>
+                  <p>{copy.weeklyReadingUpsellCopy}</p>
+                  <Link href="/membership" className="button-primary">
+                    {copy.weeklyReadingUpsellAction}
+                  </Link>
+                </div>
+              )}
+            </article>
+          </div>
         </section>
 
         <section
@@ -547,113 +466,108 @@ export default async function AccountPage({
         >
           <div className="dashboard-panel__heading">
             <div>
-              <p className="section-kicker">{copy.libraryKicker}</p>
-              <h2>{copy.readingsTitle}</h2>
+              <p className="section-kicker">{copy.reportsCombinedKicker}</p>
+              <h2>{copy.reportsCombinedTitle}</h2>
             </div>
             <span className="dashboard-panel__meta">
               {reports.length} {copy.saved}
             </span>
           </div>
 
-          {reports.length ? (
-            <AccountReportList
-              initialReports={reports}
-              focusReportId={params.focusReport}
-            />
-          ) : (
-            <p className="dashboard-empty">{copy.noReports}</p>
-          )}
-
-          <div className="compact-products">
-            {products
-              .filter((product) =>
-                ["career_purpose", "recovery_reflection"].includes(
-                  product.report_type,
-                ),
-              )
-              .map((product) => (
-                <article key={product.report_type}>
+          <div className="account-report-products">
+            {reportStates.map((state) => {
+              const reportType = state.product.report_type;
+              const price = reportPrices?.find(
+                (candidate) => candidate.report_type === reportType,
+              );
+              const stateLabel =
+                state.kind === "purchased_unused"
+                  ? copy.reportStatePurchased
+                  : state.kind === "generated"
+                    ? copy.reportStateGenerated
+                    : state.kind === "premium_included"
+                      ? copy.reportStateIncluded
+                      : copy.reportStateAvailable;
+              return (
+                <article className="account-report-product" key={reportType}>
                   <div>
+                    <span>{stateLabel}</span>
                     <h3>
-                      {product.report_type === "recovery_reflection"
+                      {reportType === "recovery_reflection"
                         ? copy.recoveryReflection
                         : copy.careerPurpose}
                     </h3>
                     <p>
-                      {product.report_type === "recovery_reflection"
+                      {reportType === "recovery_reflection"
                         ? copy.recoveryDescription
                         : copy.careerDescription}
                     </p>
-                    <small className="compact-products__delivery">
-                      {copy.reportDelivery}
-                    </small>
+                    <small>{copy.reportDelivery}</small>
                   </div>
-                  <div className="compact-products__action compact-products__action--complimentary">
-                    {commerce.checkout && birthProfiles.length ? (
-                      (() => {
-                        const outstandingEntitlement = readyEntitlements.find(
-                          (entitlement) =>
-                            entitlement.report_type === product.report_type,
-                        );
-                        const price = reportPrices?.find(
-                          (candidate) =>
-                            candidate.report_type === product.report_type,
-                        );
-                        return outstandingEntitlement ? (
-                          <GenerateReportButton
-                            entitlementId={outstandingEntitlement.id}
-                            reportType={product.report_type}
-                            profiles={birthProfiles.map((item) => ({
-                              id: item.id,
-                              label: item.label,
-                            }))}
-                            defaultLocale={reportLocale}
-                          />
-                        ) : commercePlanKey === "premium" ? (
-                          <div>
-                            <strong>Included with Premium</strong>
-                            <GenerateReportButton
-                              reportType={product.report_type}
-                              profiles={birthProfiles.map((item) => ({
-                                id: item.id,
-                                label: item.label,
-                              }))}
-                              defaultLocale={reportLocale}
-                            />
-                          </div>
-                        ) : price ? (
-                          <CheckoutButton
-                            reportType={product.report_type}
-                            priceLabel={new Intl.NumberFormat(pack.tag, {
-                              style: "currency",
-                              currency: price.currency.toUpperCase(),
-                            }).format(price.unit_amount / 100)}
-                            creditAvailable={availableReportCredits > 0}
-                          />
-                        ) : (
-                          <strong>Currently unavailable</strong>
-                        );
-                      })()
-                    ) : birthProfiles.length ? (
-                      <>
-                        <strong>{copy.complimentary}</strong>
-                        <GenerateReportButton
-                          reportType={product.report_type}
-                          profiles={birthProfiles.map((item) => ({
-                            id: item.id,
-                            label: item.label,
-                          }))}
-                          defaultLocale={reportLocale}
-                        />
-                      </>
-                    ) : (
+                  <div className="account-report-product__action">
+                    {state.kind === "generated" ? (
+                      <Link
+                        className="button-quiet"
+                        href={`#report-${state.report.id}`}
+                      >
+                        {copy.openLatestReport}
+                      </Link>
+                    ) : !birthProfiles.length ? (
                       <Link href="/#chart" className="button-primary">
                         {copy.createNatalChart}
                       </Link>
+                    ) : state.kind === "purchased_unused" ? (
+                      <GenerateReportButton
+                        entitlementId={state.entitlement.id}
+                        reportType={reportType}
+                        profiles={reportProfiles}
+                        defaultLocale={reportLocale}
+                      />
+                    ) : state.kind === "premium_included" ? (
+                      <GenerateReportButton
+                        reportType={reportType}
+                        profiles={reportProfiles}
+                        defaultLocale={reportLocale}
+                      />
+                    ) : commerce.checkout ? (
+                      price ? (
+                        <CheckoutButton
+                          reportType={reportType}
+                          priceLabel={new Intl.NumberFormat(pack.tag, {
+                            style: "currency",
+                            currency: price.currency.toUpperCase(),
+                          }).format(price.unit_amount / 100)}
+                          creditAvailable={availableReportCredits > 0}
+                        />
+                      ) : (
+                        <strong>{copy.currentlyUnavailable}</strong>
+                      )
+                    ) : (
+                      <div>
+                        <strong>{copy.complimentary}</strong>
+                        <GenerateReportButton
+                          reportType={reportType}
+                          profiles={reportProfiles}
+                          defaultLocale={reportLocale}
+                        />
+                      </div>
                     )}
                   </div>
                 </article>
-              ))}
+              );
+            })}
+          </div>
+
+          <div className="account-report-history">
+            <h3>{copy.reportHistoryTitle}</h3>
+            {reports.length ? (
+              <AccountReportList
+                initialReports={reports}
+                focusReportId={params.focusReport}
+              />
+            ) : (
+              <p className="dashboard-empty">{copy.noReports}</p>
+            )}
           </div>
         </section>
 
