@@ -40,6 +40,7 @@ describe("tarot accessibility and content safety", () => {
     expect(styles).toContain(".tarot-shuffle.is-shuffling");
     expect(experience).toContain('className="tarot-shuffle__axis"');
     expect(styles).toContain(".tarot-shuffle__axis");
+    expect(styles).toContain(".tarot-card-back.tarot-shuffle__card");
     expect(styles).not.toContain(".tarot-shuffle > span");
     expect(styles).toMatch(
       /prefers-reduced-motion:[\s\S]*?\.tarot-shuffle[\s\S]*?animation: none/,

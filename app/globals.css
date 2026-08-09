@@ -10560,6 +10560,11 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   color: var(--gold);
 }
 
+.tarot-card-back.tarot-shuffle__card {
+  position: absolute;
+  inset: 0;
+}
+
 .tarot-card-back::before,
 .tarot-card-back::after {
   position: absolute;
