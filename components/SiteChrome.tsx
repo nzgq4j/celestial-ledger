@@ -17,9 +17,14 @@ export function SiteHeader({
 }) {
   const { pack } = useLocale();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
+  const membershipMenu = useRef<HTMLDetailsElement>(null);
 
   function closeMobileMenu() {
     if (mobileMenu.current) mobileMenu.current.open = false;
+  }
+
+  function closeMembershipMenu() {
+    if (membershipMenu.current) membershipMenu.current.open = false;
   }
 
   return (
@@ -55,12 +60,28 @@ export function SiteHeader({
               <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
             )}
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
-            <details className="site-nav-group">
+            <details
+              className="site-nav-group"
+              ref={membershipMenu}
+              onPointerLeave={closeMembershipMenu}
+              onBlur={(event) => {
+                const nextFocus = event.relatedTarget;
+                if (
+                  !(nextFocus instanceof Node) ||
+                  !event.currentTarget.contains(nextFocus)
+                ) {
+                  closeMembershipMenu();
+                }
+              }}
+            >
               <summary>
                 {pack.messages.navigation.membership}
                 <span aria-hidden="true" />
               </summary>
-              <div className="site-nav-group__menu">
+              <div
+                className="site-nav-group__menu"
+                onClick={closeMembershipMenu}
+              >
                 <Link href="/membership">
                   <strong>{pack.messages.navigation.membership}</strong>
                   <small>Plans and benefits</small>

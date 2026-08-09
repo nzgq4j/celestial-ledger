@@ -815,6 +815,13 @@ a {
   box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.38);
   transform: translateX(-50%);
 }
+.site-nav-group__menu::before {
+  position: absolute;
+  inset-inline: 0;
+  top: -0.55rem;
+  height: 0.55rem;
+  content: "";
+}
 .site-nav-group__menu a {
   display: grid;
   gap: 0.12rem;

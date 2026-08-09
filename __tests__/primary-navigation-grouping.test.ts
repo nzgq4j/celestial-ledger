@@ -22,4 +22,12 @@ describe("primary navigation grouping", () => {
     expect(css).toContain(".site-nav-group__menu");
     expect(css).toContain("position: absolute");
   });
+
+  it("closes the desktop membership menu after selection or pointer exit", () => {
+    expect(chrome).toContain("ref={membershipMenu}");
+    expect(chrome).toContain("onPointerLeave={closeMembershipMenu}");
+    expect(chrome).toContain("onClick={closeMembershipMenu}");
+    expect(chrome).toContain("onBlur={(event) =>");
+    expect(css).toContain(".site-nav-group__menu::before");
+  });
 });
