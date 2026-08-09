@@ -165,6 +165,7 @@ export function TarotReadingExperience({
                     selected ? "is-selected" : ""
                   }`}
                   key={deck.id}
+                  onClick={() => unlocked && setDeckId(deck.id)}
                 >
                   <div
                     className="tarot-deck__cover"
@@ -191,7 +192,10 @@ export function TarotReadingExperience({
                     <button
                       type="button"
                       aria-pressed={selected}
-                      onClick={() => setDeckId(deck.id)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setDeckId(deck.id);
+                      }}
                     >
                       {selected
                         ? copy.selected

@@ -10351,7 +10351,8 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 
 .tarot-deck-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 12.5rem));
+  justify-content: start;
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
@@ -10368,6 +10369,10 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   transition:
     background 180ms ease,
     box-shadow 180ms ease;
+}
+
+.tarot-deck:has(> button) {
+  cursor: pointer;
 }
 
 .tarot-accent--copper {
