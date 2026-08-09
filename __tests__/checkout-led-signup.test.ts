@@ -101,4 +101,11 @@ describe("checkout-led signup", () => {
       readFileSync("components/SubscriptionClaimStatus.tsx", "utf8"),
     ).toContain("attempt < 9");
   });
+
+  it("recovers an existing member without retaining a duplicate subscription", () => {
+    expect(claimRoute).toContain("celestial_atlas_duplicate");
+    expect(claimRoute).toContain("subscriptions.cancel(subscription.id)");
+    expect(claimRoute).toContain("existingSubscription");
+    expect(webhookRoute).toContain("duplicate_subscription_ignored");
+  });
 });

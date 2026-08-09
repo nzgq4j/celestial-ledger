@@ -6,7 +6,10 @@ import {
   PRIVATE_RESPONSE_HEADERS,
   readLimitedJson,
 } from "@/lib/api-security";
-import { sha256 } from "@/lib/commerce/checkout-claims";
+import {
+  sha256,
+  SIGNIN_CLAIM_LIFETIME_SECONDS,
+} from "@/lib/commerce/checkout-claims";
 import { commerceFlags } from "@/lib/commerce/flags";
 import { stripeClient } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -55,16 +58,72 @@ export async function POST(request: NextRequest) {
   if (!subscriptionId) return json({ state: "pending" }, 202);
   const subscription =
     await stripeClient().subscriptions.retrieve(subscriptionId);
-  if (!subscription.metadata.user_id) return json({ state: "pending" }, 202);
-
   const admin = createAdminClient();
+  let provisionedUserId = subscription.metadata.user_id;
+  const pendingToken = subscription.metadata.pending_claim_token;
+  if (!provisionedUserId && pendingToken) {
+    const pendingHash = sha256(pendingToken);
+    const { data: pending } = await admin
+      .from("pending_chart_claims")
+      .select(
+        "user_id,birth_profile_id,stripe_checkout_session_id,expires_at",
+      )
+      .eq("claim_token_hash", pendingHash)
+      .maybeSingle();
+    if (
+      pending?.user_id &&
+      pending.birth_profile_id &&
+      pending.stripe_checkout_session_id === session.id &&
+      new Date(pending.expires_at).getTime() > Date.now()
+    ) {
+      const { data: existingSubscription } = await admin
+        .from("account_subscriptions")
+        .select("stripe_subscription_id")
+        .eq("user_id", pending.user_id)
+        .in("status", ["active", "trialing", "past_due", "paused"])
+        .neq("stripe_subscription_id", subscription.id)
+        .maybeSingle();
+      if (existingSubscription) {
+        const expiresAt = new Date(
+          Date.now() + SIGNIN_CLAIM_LIFETIME_SECONDS * 1000,
+        ).toISOString();
+        const { error: signinError } = await admin
+          .from("subscription_signin_claims")
+          .upsert({
+            checkout_session_hash: sha256(session.id),
+            user_id: pending.user_id,
+            expires_at: expiresAt,
+          });
+        if (signinError)
+          return json({ error: "Subscription confirmation failed." }, 500);
+        await stripeClient().subscriptions.update(subscription.id, {
+          metadata: {
+            ...subscription.metadata,
+            user_id: pending.user_id,
+            pending_claim_token: "",
+            celestial_atlas_duplicate: "ignored",
+          },
+        });
+        await stripeClient().subscriptions.cancel(subscription.id);
+        const { error: deleteError } = await admin
+          .from("pending_chart_claims")
+          .delete()
+          .eq("claim_token_hash", pendingHash);
+        if (deleteError)
+          return json({ error: "Subscription confirmation failed." }, 500);
+        provisionedUserId = pending.user_id;
+      }
+    }
+  }
+  if (!provisionedUserId) return json({ state: "pending" }, 202);
+
   const claimHash = sha256(session.id);
   const staleLock = new Date(Date.now() - 2 * 60 * 1000).toISOString();
   const { data: claimed, error: claimError } = await admin
     .from("subscription_signin_claims")
     .update({ locked_at: new Date().toISOString() })
     .eq("checkout_session_hash", claimHash)
-    .eq("user_id", subscription.metadata.user_id)
+    .eq("user_id", provisionedUserId)
     .is("consumed_at", null)
     .gt("expires_at", new Date().toISOString())
     .or(`locked_at.is.null,locked_at.lt.${staleLock}`)

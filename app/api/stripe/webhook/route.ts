@@ -143,6 +143,8 @@ async function subscriptionForEvent(event: Stripe.Event) {
 async function reconcileSubscription(event: Stripe.Event) {
   const subscription = await subscriptionForEvent(event);
   if (!subscription) return;
+  if (subscription.metadata.celestial_atlas_duplicate === "ignored")
+    return "duplicate_subscription_ignored";
   let userId = subscription.metadata.user_id;
   const priceId = subscription.items.data[0]?.price.id;
   const admin = createAdminClient();
