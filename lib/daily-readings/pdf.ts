@@ -42,6 +42,7 @@ export async function buildDailyReadingPdf(input: {
       : ["Birth time is unknown; houses and angles are excluded."],
     visualPlacement: "cover",
     visualEvidence,
+    showCoverIntroduction: false,
     sections: [
       {
         title: bluf.title,

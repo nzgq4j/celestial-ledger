@@ -44,6 +44,7 @@ export type PdfReport = {
     }>;
   };
   visualPlacement?: "cover" | "appendix";
+  showCoverIntroduction?: boolean;
   generatedAt: string;
   labels?: {
     bottomLine: string;
@@ -450,7 +451,8 @@ export async function buildReportPdf(report: PdfReport) {
   if (report.weeklyRhythm) drawWeeklyRhythmChart();
   else if (report.visualPlacement === "cover")
     drawEvidenceConstellation({ newPage: false });
-  text(report.introduction, { size: 12, gap: 12 });
+  if (report.showCoverIntroduction ?? true)
+    text(report.introduction, { size: 12, gap: 12 });
   for (const note of report.uncertainty) {
     ensure(48);
     page.drawRectangle({
