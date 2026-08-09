@@ -9,6 +9,11 @@ import {
 } from "@/lib/weekly-readings/domain";
 
 const samplePage = readFileSync("app/samples/[report]/page.tsx", "utf8");
+const sampleData = readFileSync("lib/samples.ts", "utf8");
+const sampleVisual = readFileSync(
+  "components/samples/SampleReportVisual.tsx",
+  "utf8",
+);
 
 describe("weekly reading sample", () => {
   it("renders the weekly sample through the current subscriber view", () => {
@@ -16,6 +21,9 @@ describe("weekly reading sample", () => {
     expect(samplePage).toContain("buildSampleWeeklyReading()");
     expect(samplePage).toContain("<WeeklyReadingView");
     expect(samplePage).toContain("isSample");
+    expect(sampleData).toContain('date: "1967-05-24"');
+    expect(sampleVisual).toContain("sample-week-current__chart");
+    expect(sampleVisual).not.toContain("sample-week-current__line");
   });
 
   it("builds current evidence-linked content from the existing sample chart", async () => {

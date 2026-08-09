@@ -1423,62 +1423,62 @@ a {
   color: var(--gold);
   font-size: 0.62rem;
 }
-.sample-week-current__plot {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  min-height: 15rem;
-  align-items: center;
+.sample-week-current__chart {
+  display: block;
+  width: 100%;
+  min-height: 18rem;
+  color: var(--gold);
 }
-.sample-week-current__line {
-  position: absolute;
-  right: 5%;
-  left: 5%;
-  top: 50%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--gold) 12% 88%,
-    transparent
-  );
+.sample-week-current__grid {
+  stroke: rgba(229, 213, 181, 0.14);
+  stroke-width: 1;
 }
-.sample-week-current__plot > div {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 0.45rem;
-  padding-top: calc((3 - var(--week-level, 1)) * 1.25rem);
+.sample-week-current__axis {
+  fill: rgba(229, 213, 181, 0.52);
+  font:
+    0.55rem ui-monospace,
+    monospace;
+  text-anchor: end;
 }
-.sample-week-current__plot > div[data-level="1"] {
-  --week-level: 1;
+.sample-week-current__area {
+  fill: url("#sample-week-current-fill");
 }
-.sample-week-current__plot > div[data-level="2"] {
-  --week-level: 2;
+.sample-week-current__bar {
+  fill: rgba(207, 165, 74, 0.2);
 }
-.sample-week-current__plot > div[data-level="3"] {
-  --week-level: 3;
+.sample-week-current__curve {
+  fill: none;
+  stroke: var(--gold);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 0.45rem rgba(244, 213, 138, 0.34));
 }
-.sample-week-current__plot > div > span {
-  width: calc(0.55rem + var(--week-level) * 0.15rem);
-  height: calc(0.55rem + var(--week-level) * 0.15rem);
-  border: 2px solid var(--gold);
-  border-radius: 50%;
-  background: var(--panel);
-  box-shadow: 0 0 calc(var(--week-level) * 0.35rem) rgba(244, 213, 138, 0.6);
+.sample-week-current__point {
+  fill: var(--panel);
+  stroke: var(--gold);
+  stroke-width: 2.6;
 }
-.sample-week-current__plot strong {
-  color: var(--paper);
+.sample-week-current__day {
+  fill: var(--paper);
   font:
     400 0.95rem Georgia,
     serif;
+  text-anchor: middle;
 }
-.sample-week-current__plot small {
-  color: var(--gold);
+.sample-week-current__theme,
+.sample-week-current__value {
+  fill: var(--gold);
   font:
-    0.58rem ui-monospace,
+    0.55rem ui-monospace,
     monospace;
+  letter-spacing: 0.06em;
+  text-anchor: middle;
   text-transform: uppercase;
+}
+.sample-week-current__value {
+  fill: rgba(229, 213, 181, 0.64);
+  letter-spacing: 0;
 }
 .sample-report__folio {
   display: grid;
@@ -5003,23 +5003,8 @@ body:has(.account-dashboard) > .meridian {
     top: 50%;
     left: -0.45rem;
   }
-  .sample-week-current__plot {
-    grid-template-columns: 1fr;
-    gap: 0.7rem;
-    align-items: stretch;
-  }
-  .sample-week-current__line {
-    top: 5%;
-    bottom: 5%;
-    left: 0.42rem;
-    width: 1px;
-    height: auto;
-  }
-  .sample-week-current__plot > div {
-    grid-template-columns: 1rem 3rem 1fr;
-    justify-items: start;
-    align-items: center;
-    padding: 0;
+  .sample-week-current__chart {
+    min-height: 14rem;
   }
   .sample-report__folio > nav {
     position: static;
