@@ -97,6 +97,56 @@ function interpretiveDailySection(
   return narrative;
 }
 
+function interpretiveDailyBluf(
+  content: DailyReadingContent,
+  analysis: DailyReadingAnalysis,
+) {
+  const leadingTheme =
+    content.dominantThemes[0]?.label ??
+    analysis.themes[0]?.label ??
+    "today's main theme";
+  const secondTheme =
+    content.dominantThemes[1]?.label ??
+    analysis.themes[1]?.label ??
+    "the secondary theme";
+  const leadingSignal = analysis.signals.find((signal) =>
+    content.dominantThemes[0]?.signalIds.includes(signal.id),
+  );
+  const domains = leadingSignal?.lifeDomains.length
+    ? leadingSignal.lifeDomains
+        .map((domain) => domain.replaceAll("-", " "))
+        .join(", ")
+    : "attention, choice and practical follow-through";
+  const priorities = proseList(
+    content.bottomLineUpFront.practicalPriorities.map(
+      (priority) => `${priority.title}: ${priority.narrative}`,
+    ),
+  );
+  const forward = userFacingText(content.bottomLineUpFront.forwardLook.narrative);
+  const tension = userFacingText(
+    content.bottomLineUpFront.tensionToHold?.narrative ??
+      `Hold ${leadingTheme.toLowerCase()} together with ${secondTheme.toLowerCase()} so the day stays both honest and proportionate.`,
+  );
+
+  const activeNow = `${leadingTheme} is the main thread to work with today. Treat it as a practical orientation: notice where it is already shaping your attention, then choose one clear response that can be completed, reviewed or revised before the day closes.`;
+
+  const paragraphs = [
+    `The bottom line is that ${leadingTheme.toLowerCase()} needs to move from insight into use. This is not a day for treating the chart as a list of technical contacts. It is a day for asking where the strongest symbolic emphasis is already showing up in your lived experience: what feels charged, what needs a cleaner boundary, what deserves a pause before reaction, and what would become easier if you named the real priority directly. The value of the reading is not in memorising the transit data. The value is in letting the pattern help you act with more proportion.`,
+    `In practical terms, the emphasis touches ${domains}. Keep that field narrow enough to work with. If the day brings intensity, do not assume intensity equals certainty. If it brings clarity, do not use clarity as permission to become rigid. The best use of the reading is to slow the first reaction, identify the actual choice in front of you and make the next move small enough that it produces information. That might mean writing down a limit, clarifying what a fair exchange looks like, choosing what is non-negotiable, or admitting where an old surface-level fix is no longer enough.`,
+    `Your priorities are to ${priorities}. These are not abstract virtues; they are behavioural instructions. Give each one a concrete form. A boundary can become a sentence. A feeling can become a note rather than an argument. A professional concern can become a written outcome and owner. A relationship concern can become a direct request instead of a test. The point is to keep symbolic insight close to lived behaviour, because that is where it becomes useful.`,
+    `${forward || `As the day unfolds, use ${leadingTheme.toLowerCase()} as a reference point rather than a verdict.`} ${tension} The most reliable outcome of this reading should be a cleaner relationship with your own response: less compulsion to dramatise the signal, more willingness to hear what it is showing, and a practical next step that respects both the urgency of the moment and the longer pattern underneath it.`,
+  ];
+
+  let narrative = paragraphs.join("\n\n");
+  while (countWords(narrative) < DAILY_PDF_SECTION_MIN_WORDS) {
+    narrative = `${narrative}\n\nReturn to one grounded question: what would make this theme useful before the day is over? Choose the action that clarifies rather than performs, and leave yourself a record you can review later.`;
+  }
+  const words = narrative.split(/\s+/);
+  if (words.length > DAILY_PDF_SECTION_MAX_WORDS)
+    narrative = `${words.slice(0, DAILY_PDF_SECTION_MAX_WORDS).join(" ").replace(/[,:;]$/, "")}.`;
+  return { activeNow, narrative };
+}
+
 export async function buildDailyReadingPdf(input: {
   content: DailyReadingContent;
   analysis: DailyReadingAnalysis;
@@ -125,10 +175,11 @@ export async function buildDailyReadingPdf(input: {
     })),
   ];
   const dayArc = buildDailyReadingDayArc(input.analysis);
+  const interpretiveBluf = interpretiveDailyBluf(input.content, input.analysis);
   return buildReportPdf({
     edition: "Daily Astrological Reading",
     title: input.content.header.headline,
-    introduction: bluf.overview.narrative,
+    introduction: interpretiveBluf.narrative,
     uncertainty: input.analysis.birthTimeKnown
       ? []
       : ["Birth time is unknown; houses and angles are excluded."],
@@ -138,19 +189,9 @@ export async function buildDailyReadingPdf(input: {
     sections: [
       {
         title: bluf.title,
-        bottomLine: bluf.activeNow.narrative,
-        narrative: [
-          bluf.overview.narrative,
-          ...bluf.practicalPriorities.map(
-            (priority) => `${priority.title}: ${priority.narrative}`,
-          ),
-          bluf.tensionToHold
-            ? `Tension to hold: ${bluf.tensionToHold.narrative}`
-            : "",
-        ]
-          .filter(Boolean)
-          .join("\n\n"),
-        bringIntoLife: bluf.forwardLook.narrative,
+        bottomLine: interpretiveBluf.activeNow,
+        narrative: interpretiveBluf.narrative,
+        bringIntoLife: userFacingText(bluf.forwardLook.narrative),
         reflectionQuestions: input.content.reflectiveQuestions,
         evidence: [
           ...new Set([

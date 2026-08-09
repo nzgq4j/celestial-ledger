@@ -1,11 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { PDFDocument } from "pdf-lib";
+import { readFileSync } from "node:fs";
 import { sampleChart } from "@/lib/samples";
 import { buildDailyReadingAnalysis } from "@/lib/daily-readings/calculation";
 import { buildDailyReadingContent } from "@/lib/daily-readings/content";
 import { buildDailyReadingPdf } from "@/lib/daily-readings/pdf";
 
 describe("daily reading PDF", () => {
+  it("does not pass generated technical BLUF copy directly into the PDF", () => {
+    const source = readFileSync("lib/daily-readings/pdf.ts", "utf8");
+    expect(source).not.toContain("bottomLine: bluf.activeNow.narrative");
+    expect(source).not.toContain("bluf.overview.narrative,");
+    expect(source).toContain("bottomLine: interpretiveBluf.activeNow");
+    expect(source).toContain("narrative: interpretiveBluf.narrative");
+  });
+
   it("creates a native PDF from the complete saved reading", async () => {
     const natalChart = await sampleChart();
     const analysis = buildDailyReadingAnalysis({
