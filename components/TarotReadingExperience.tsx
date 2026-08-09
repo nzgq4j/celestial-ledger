@@ -83,6 +83,21 @@ export function TarotReadingExperience({
     setResult(null);
   }
 
+  function chooseDeck(nextDeckId: string) {
+    setDeckId(nextDeckId);
+    setReadingId("");
+    setShuffleComplete(false);
+    setError("");
+    setStage(2);
+  }
+
+  function chooseReading(nextReadingId: string) {
+    setReadingId(nextReadingId);
+    setShuffleComplete(false);
+    setError("");
+    setStage(3);
+  }
+
   async function reveal() {
     if (!selectedDeck || !selectedReading) return;
     setPending(true);
@@ -165,7 +180,7 @@ export function TarotReadingExperience({
                     selected ? "is-selected" : ""
                   }`}
                   key={deck.id}
-                  onClick={() => unlocked && setDeckId(deck.id)}
+                  onClick={() => unlocked && chooseDeck(deck.id)}
                 >
                   <div
                     className="tarot-deck__cover"
@@ -194,7 +209,7 @@ export function TarotReadingExperience({
                       aria-pressed={selected}
                       onClick={(event) => {
                         event.stopPropagation();
-                        setDeckId(deck.id);
+                        chooseDeck(deck.id);
                       }}
                     >
                       {selected
@@ -212,16 +227,6 @@ export function TarotReadingExperience({
                 </article>
               );
             })}
-          </div>
-          <div className="tarot-stage__actions">
-            <button
-              className="button-primary"
-              type="button"
-              disabled={!selectedDeck}
-              onClick={() => setStage(2)}
-            >
-              {copy.continue}
-            </button>
           </div>
         </div>
       )}
@@ -249,6 +254,7 @@ export function TarotReadingExperience({
                 <article
                   className={`tarot-spread ${selected ? "is-selected" : ""}`}
                   key={reading.id}
+                  onClick={() => unlocked && chooseReading(reading.id)}
                 >
                   <div
                     className="tarot-spread__count"
@@ -283,7 +289,10 @@ export function TarotReadingExperience({
                     <button
                       type="button"
                       aria-pressed={selected}
-                      onClick={() => setReadingId(reading.id)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        chooseReading(reading.id);
+                      }}
                     >
                       {selected
                         ? copy.selected
@@ -304,14 +313,6 @@ export function TarotReadingExperience({
           <div className="tarot-stage__actions">
             <button className="button-quiet" onClick={() => setStage(1)}>
               {copy.back}
-            </button>
-            <button
-              className="button-primary"
-              type="button"
-              disabled={!selectedReading}
-              onClick={() => setStage(3)}
-            >
-              {copy.continue}
             </button>
           </div>
         </div>

@@ -10371,7 +10371,8 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
     box-shadow 180ms ease;
 }
 
-.tarot-deck:has(> button) {
+.tarot-deck:has(> button),
+.tarot-spread:has(> button) {
   cursor: pointer;
 }
 
