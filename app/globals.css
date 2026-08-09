@@ -10215,6 +10215,23 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   content: "";
 }
 
+.tarot-page::after {
+  content: "BETA";
+  position: fixed;
+  inset: 50% auto auto 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: clamp(7rem, 18vw, 20rem);
+  letter-spacing: 0.18em;
+  line-height: 1;
+  opacity: 0.1;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
 .tarot-hero {
   width: min(100%, 58rem);
   display: grid;

@@ -62,7 +62,7 @@ export function SiteHeader({
               {pack.messages.navigation.horoscopes}
             </Link>
             {tarotEnabled && (
-              <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
+              <Link href="/tarot">{pack.messages.navigation.tarot} (Beta)</Link>
             )}
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
             <details
@@ -114,7 +114,7 @@ export function SiteHeader({
                 {pack.messages.navigation.dailyHoroscopes}
               </Link>
               {tarotEnabled && (
-                <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
+                <Link href="/tarot">{pack.messages.navigation.tarot} (Beta)</Link>
               )}
               <Link href="/reports">
                 {pack.messages.navigation.privateReports}

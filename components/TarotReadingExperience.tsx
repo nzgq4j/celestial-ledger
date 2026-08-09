@@ -51,6 +51,7 @@ export function TarotReadingExperience({
   locale: TarotLocale;
   copy: Record<string, string>;
 }) {
+  const visibleDecks = decks.filter((deck) => deck.active);
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
   const [deckId, setDeckId] = useState("");
   const [readingId, setReadingId] = useState("");
@@ -60,7 +61,8 @@ export function TarotReadingExperience({
   const [error, setError] = useState("");
   const [result, setResult] = useState<DrawResponse | null>(null);
 
-  const selectedDeck = decks.find((deck) => deck.id === deckId) ?? null;
+  const selectedDeck =
+    visibleDecks.find((deck) => deck.id === deckId) ?? null;
   const selectedReading =
     readings.find((reading) => reading.id === readingId) ?? null;
   const stepNames = [
@@ -102,7 +104,7 @@ export function TarotReadingExperience({
     }
   }
 
-  if (!decks.length) {
+  if (!visibleDecks.length) {
     return (
       <section className="tarot-empty" aria-live="polite">
         <span aria-hidden="true">✦</span>
@@ -151,7 +153,7 @@ export function TarotReadingExperience({
             <p>{copy.chooseDeckCopy}</p>
           </header>
           <div className="tarot-deck-grid">
-            {decks.map((deck) => {
+            {visibleDecks.map((deck) => {
               const unlocked = planMeetsTarotMinimum(
                 currentPlan,
                 deck.minimumPlan,
