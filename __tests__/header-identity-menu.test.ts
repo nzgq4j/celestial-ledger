@@ -37,6 +37,14 @@ describe("header identity menu", () => {
     expect(actions).toContain('redirect("/")');
   });
 
+  it("closes the user menu after selection, pointer exit, or focus exit", () => {
+    expect(header).toContain("const identityMenu = useRef<HTMLDetailsElement>");
+    expect(header).toContain("ref={identityMenu}");
+    expect(header).toContain("onPointerLeave={closeIdentityMenu}");
+    expect(header).toContain("onClick={closeIdentityMenu}");
+    expect(header).toContain("closeIdentityMenu();");
+  });
+
   it("keeps the relocated billing and settings anchors available", () => {
     expect(account).toContain(
       'className="account-command-bar__membership" id="billing"',

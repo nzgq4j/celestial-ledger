@@ -18,6 +18,7 @@ export function SiteHeader({
   const { pack } = useLocale();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   const membershipMenu = useRef<HTMLDetailsElement>(null);
+  const identityMenu = useRef<HTMLDetailsElement>(null);
 
   function closeMobileMenu() {
     if (mobileMenu.current) mobileMenu.current.open = false;
@@ -25,6 +26,10 @@ export function SiteHeader({
 
   function closeMembershipMenu() {
     if (membershipMenu.current) membershipMenu.current.open = false;
+  }
+
+  function closeIdentityMenu() {
+    if (identityMenu.current) identityMenu.current.open = false;
   }
 
   return (
@@ -155,7 +160,20 @@ export function SiteHeader({
             </div>
           </details>
           {identity ? (
-            <details className="site-nav-group site-nav-identity">
+            <details
+              className="site-nav-group site-nav-identity"
+              ref={identityMenu}
+              onPointerLeave={closeIdentityMenu}
+              onBlur={(event) => {
+                const nextFocus = event.relatedTarget;
+                if (
+                  !(nextFocus instanceof Node) ||
+                  !event.currentTarget.contains(nextFocus)
+                ) {
+                  closeIdentityMenu();
+                }
+              }}
+            >
               <summary aria-label={pack.messages.navigation.identityMenu}>
                 <i className="site-nav-identity__avatar" aria-hidden="true">
                   {identity.displayName.slice(0, 1).toUpperCase()}
@@ -163,7 +181,7 @@ export function SiteHeader({
                 <strong>{identity.displayName}</strong>
                 <span aria-hidden="true" />
               </summary>
-              <div className="site-nav-group__menu">
+              <div className="site-nav-group__menu" onClick={closeIdentityMenu}>
                 <Link href="/account">
                   <strong>{pack.messages.navigation.dashboard}</strong>
                   <small>{pack.messages.navigation.library}</small>
