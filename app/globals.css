@@ -9381,29 +9381,10 @@ body:has(.account-dashboard)
 
 .account-tarot-result__plate {
   min-height: 14rem;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  place-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid rgba(201, 167, 93, 0.42);
-  background: #07111f;
-  color: #c9a75d;
 }
 
-.account-tarot-result__plate span {
-  align-self: end;
-  font:
-    400 2.5rem/1 Georgia,
-    serif;
-}
-
-.account-tarot-result__plate strong {
-  color: #f2ead8;
-  font:
-    400 1rem/1.25 Georgia,
-    serif;
-  text-align: center;
+.account-tarot-result__plate .tarot-symbolic-face__emblem {
+  width: min(5.5rem, 60%);
 }
 
 .account-tarot-result > div:last-child h4 {
@@ -10600,50 +10581,277 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 }
 
 .tarot-card-plate {
-  position: relative;
   min-height: 18rem;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 1rem;
-  padding: 1.2rem;
   border-bottom: 1px solid var(--line);
-  color: var(--gold);
 }
 
-.tarot-card-plate::before,
-.tarot-card-plate::after {
+.tarot-symbolic-face {
+  --tarot-face-burgundy: #541426;
+  --tarot-face-burgundy-deep: #260811;
+  --tarot-face-gold: var(--gold);
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--tarot-face-gold) 62%, #1b060d);
+  background:
+    radial-gradient(
+      circle at 50% 39%,
+      color-mix(in srgb, var(--tarot-face-gold) 9%, transparent),
+      transparent 42%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.018) 0 1px,
+      transparent 1px 9px
+    ),
+    linear-gradient(
+      145deg,
+      #681e33,
+      var(--tarot-face-burgundy) 48%,
+      var(--tarot-face-burgundy-deep)
+    );
+  box-shadow:
+    inset 0 0 0 0.3rem
+      color-mix(in srgb, var(--tarot-face-gold) 12%, transparent),
+    inset 0 0 2.8rem rgba(8, 1, 4, 0.48);
+  color: var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face::before,
+.tarot-symbolic-face::after {
   position: absolute;
   inset: 0.55rem;
-  border: 1px solid color-mix(in srgb, var(--gold) 27%, transparent);
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--tarot-face-gold) 54%, transparent);
+  box-shadow: inset 0 0 0 0.18rem
+    color-mix(in srgb, var(--tarot-face-burgundy-deep) 70%, transparent);
+  pointer-events: none;
   content: "";
 }
 
-.tarot-card-plate::after {
+.tarot-symbolic-face::after {
   inset: 0.85rem;
-  border-color: color-mix(in srgb, var(--gold) 13%, transparent);
+  border-color: color-mix(in srgb, var(--tarot-face-gold) 24%, transparent);
+  box-shadow: none;
 }
 
-.tarot-card-plate small {
-  z-index: 1;
-  color: var(--muted);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-}
-
-.tarot-card-plate > span {
-  z-index: 1;
-  place-self: center;
+.tarot-symbolic-face__index {
+  position: absolute;
+  z-index: 3;
+  color: var(--tarot-face-gold);
   font:
-    400 3.5rem/1 Georgia,
-    serif;
+    600 0.68rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
 }
 
-.tarot-card-plate strong {
-  z-index: 1;
+.tarot-symbolic-face__index--top {
+  top: 1.15rem;
+  left: 1.15rem;
+}
+
+.tarot-symbolic-face__index--bottom {
+  right: 1.15rem;
+  bottom: 1.15rem;
+  transform: rotate(180deg);
+}
+
+.tarot-symbolic-face__emblem {
+  position: relative;
+  z-index: 2;
+  width: min(7rem, 58%);
+  aspect-ratio: 1;
+  place-self: center;
+}
+
+.tarot-symbolic-face__emblem--major {
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--tarot-face-gold) 78%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 0.5rem
+      color-mix(in srgb, var(--tarot-face-gold) 7%, transparent),
+    0 0 1.6rem rgba(10, 2, 5, 0.32);
+}
+
+.tarot-symbolic-face__emblem--major::before,
+.tarot-symbolic-face__emblem--major::after {
+  position: absolute;
+  inset: 22%;
+  border: 1px solid color-mix(in srgb, var(--tarot-face-gold) 72%, transparent);
+  transform: rotate(45deg);
+  content: "";
+}
+
+.tarot-symbolic-face__emblem--major::after {
+  inset: 33%;
+  border-radius: 50%;
+  transform: none;
+}
+
+.tarot-symbolic-face__emblem--major i {
+  position: relative;
+  width: 1px;
+  height: 72%;
+  background: color-mix(in srgb, var(--tarot-face-gold) 80%, transparent);
+  box-shadow: 0 0 0.8rem
+    color-mix(in srgb, var(--tarot-face-gold) 22%, transparent);
+}
+
+.tarot-symbolic-face__emblem--major i::before,
+.tarot-symbolic-face__emblem--major i::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: inherit;
+  transform: translate(-50%, -50%) rotate(60deg);
+  content: "";
+}
+
+.tarot-symbolic-face__emblem--major i::after {
+  transform: translate(-50%, -50%) rotate(-60deg);
+}
+
+.tarot-symbolic-face__emblem--minor {
+  display: grid;
+  place-items: center;
+}
+
+.tarot-symbolic-face__emblem--minor i,
+.tarot-symbolic-face__emblem--minor i::before,
+.tarot-symbolic-face__emblem--minor i::after {
+  position: absolute;
+  display: block;
+  content: "";
+}
+
+.tarot-symbolic-face--wands .tarot-symbolic-face__emblem i {
+  top: 14%;
+  left: calc(50% - 0.11rem);
+  width: 0.22rem;
+  height: 72%;
+  border-radius: 999px;
+  background: var(--tarot-face-gold);
+  transform: rotate(32deg);
+}
+
+.tarot-symbolic-face--wands .tarot-symbolic-face__emblem i::before,
+.tarot-symbolic-face--wands .tarot-symbolic-face__emblem i::after {
+  width: 1rem;
+  height: 0.55rem;
+  border: 1px solid var(--tarot-face-gold);
+  border-radius: 100% 0;
+  background: var(--tarot-face-burgundy);
+  transform: translate(-0.82rem, 1.3rem) rotate(-20deg);
+}
+
+.tarot-symbolic-face--wands .tarot-symbolic-face__emblem i::after {
+  transform: translate(0.05rem, 3.4rem) rotate(160deg);
+}
+
+.tarot-symbolic-face--cups .tarot-symbolic-face__emblem i {
+  top: 20%;
+  left: 19%;
+  width: 62%;
+  height: 37%;
+  border: 2px solid var(--tarot-face-gold);
+  border-top: 0;
+  border-radius: 0 0 50% 50%;
+}
+
+.tarot-symbolic-face--cups .tarot-symbolic-face__emblem i::before {
+  top: 100%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 2.4rem;
+  background: var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face--cups .tarot-symbolic-face__emblem i::after {
+  top: calc(100% + 2.3rem);
+  left: 16%;
+  width: 68%;
+  height: 2px;
+  background: var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face--swords .tarot-symbolic-face__emblem i {
+  top: 8%;
+  left: calc(50% - 0.1rem);
+  width: 0.2rem;
+  height: 72%;
+  background: var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face--swords .tarot-symbolic-face__emblem i::before {
+  top: -0.65rem;
+  left: -0.31rem;
+  border-right: 0.42rem solid transparent;
+  border-bottom: 0.7rem solid var(--tarot-face-gold);
+  border-left: 0.42rem solid transparent;
+}
+
+.tarot-symbolic-face--swords .tarot-symbolic-face__emblem i::after {
+  top: 78%;
+  left: -1.65rem;
+  width: 3.5rem;
+  height: 2px;
+  background: var(--tarot-face-gold);
+  box-shadow: 0 0.8rem 0 -0.02rem var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face--pentacles .tarot-symbolic-face__emblem i {
+  top: 11%;
+  left: 11%;
+  width: 78%;
+  aspect-ratio: 1;
+  border: 1px solid var(--tarot-face-gold);
+  border-radius: 50%;
+}
+
+.tarot-symbolic-face--pentacles .tarot-symbolic-face__emblem i::before,
+.tarot-symbolic-face--pentacles .tarot-symbolic-face__emblem i::after {
+  inset: 13%;
+  background: var(--tarot-face-gold);
+  clip-path: polygon(
+    50% 0,
+    61% 35%,
+    98% 35%,
+    68% 56%,
+    79% 93%,
+    50% 71%,
+    21% 93%,
+    32% 56%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.tarot-symbolic-face--pentacles .tarot-symbolic-face__emblem i::after {
+  inset: 24%;
+  background: var(--tarot-face-burgundy);
+}
+
+.tarot-symbolic-face__name {
+  z-index: 2;
+  width: calc(100% - 2.4rem);
+  padding-top: 0.75rem;
+  border-top: 1px solid
+    color-mix(in srgb, var(--tarot-face-gold) 32%, transparent);
   color: var(--ivory);
   font:
     400 1.15rem/1.25 Georgia,
     serif;
+  text-align: center;
 }
 
 .tarot-result-card__copy {

@@ -9,14 +9,16 @@ import type {
   TarotLocale,
   TarotOrientation,
   TarotReading,
+  TarotSuit,
 } from "@/lib/tarot/types";
 import { formatTarotMessage } from "@/lib/tarot/ui-locales";
+import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
 
 type ReadingCard = {
   id: string;
   name: string;
   arcana: "major" | "minor";
-  suit: string | null;
+  suit: TarotSuit | null;
   number: number | null;
   position: string;
   orientation: TarotOrientation;
@@ -29,13 +31,6 @@ type DrawResponse = {
   cards: ReadingCard[];
   narrative: string;
   labels: { upright: string; reversed: string };
-};
-
-const SUIT_GLYPHS: Record<string, string> = {
-  wands: "✦",
-  cups: "◡",
-  swords: "†",
-  pentacles: "⬡",
 };
 
 function requirementLabel(copy: Record<string, string>, plan: PlanKey) {
@@ -412,15 +407,13 @@ export function TarotReadingExperience({
                 className="tarot-result-card"
                 key={`${item.id}-${index}`}
               >
-                <div className="tarot-card-plate" aria-hidden="true">
-                  <small>{String(index + 1).padStart(2, "0")}</small>
-                  <span>
-                    {item.arcana === "major"
-                      ? "✦"
-                      : (SUIT_GLYPHS[item.suit ?? ""] ?? "◇")}
-                  </span>
-                  <strong>{item.name}</strong>
-                </div>
+                <TarotSymbolicCardFace
+                  arcana={item.arcana}
+                  suit={item.suit}
+                  number={item.number}
+                  name={item.name}
+                  className="tarot-card-plate"
+                />
                 <div className="tarot-result-card__copy">
                   <p>{item.position}</p>
                   <small>

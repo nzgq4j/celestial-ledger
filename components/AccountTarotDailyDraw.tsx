@@ -8,26 +8,22 @@ import type {
   TarotDeck,
   TarotLocale,
   TarotOrientation,
+  TarotSuit,
 } from "@/lib/tarot/types";
+import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
 
 type DailyDrawResponse = {
   cards: Array<{
     id: string;
     name: string;
     arcana: "major" | "minor";
-    suit: string | null;
+    suit: TarotSuit | null;
+    number: number | null;
     position: string;
     orientation: TarotOrientation;
     meaning: string;
   }>;
   labels: { upright: string; reversed: string };
-};
-
-const GLYPHS: Record<string, string> = {
-  wands: "✦",
-  cups: "◡",
-  swords: "†",
-  pentacles: "⬡",
 };
 
 export function AccountTarotDailyDraw({
@@ -114,12 +110,13 @@ export function AccountTarotDailyDraw({
         </>
       ) : (
         <article className="account-tarot-result">
-          <div className="account-tarot-result__plate" aria-hidden="true">
-            <span>
-              {card.arcana === "major" ? "✦" : (GLYPHS[card.suit ?? ""] ?? "◇")}
-            </span>
-            <strong>{card.name}</strong>
-          </div>
+          <TarotSymbolicCardFace
+            arcana={card.arcana}
+            suit={card.suit}
+            number={card.number}
+            name={card.name}
+            className="account-tarot-result__plate"
+          />
           <div>
             <p className="section-kicker">{card.position}</p>
             <h4>{card.name}</h4>

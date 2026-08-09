@@ -14,6 +14,7 @@ import {
   TAROT_READING_PLAN_MATRIX,
 } from "@/lib/tarot/readings";
 import { TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
+import { tarotCardIndex } from "@/components/TarotSymbolicCardFace";
 
 const planMatrix = {
   daily: "free",
@@ -33,6 +34,17 @@ describe("tarot domain", () => {
     expect(TAROT_CARDS.filter((card) => card.arcana === "minor")).toHaveLength(
       56,
     );
+  });
+
+  it("formats major and minor corner indices for symbolic card faces", () => {
+    expect(tarotCardIndex("major", 0)).toBe("0");
+    expect(tarotCardIndex("major", 21)).toBe("XXI");
+    expect(tarotCardIndex("minor", 1)).toBe("A");
+    expect(tarotCardIndex("minor", 10)).toBe("X");
+    expect(tarotCardIndex("minor", 11)).toBe("P");
+    expect(tarotCardIndex("minor", 12)).toBe("Kn");
+    expect(tarotCardIndex("minor", 13)).toBe("Q");
+    expect(tarotCardIndex("minor", 14)).toBe("K");
   });
 
   it("provides all 78 meanings in every supported locale", () => {

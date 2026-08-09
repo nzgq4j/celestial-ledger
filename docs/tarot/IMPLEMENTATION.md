@@ -9,6 +9,13 @@ independent upright/reversed orientation, narrative combination, and three-part
 shuffle motion. It does not reuse the prototype runtime, fonts, colour systems,
 or placeholder art.
 
+Reading results have an art-independent symbolic face fallback in the
+Traditional deck language: gold-on-burgundy framing, Roman-numeral or court
+rank corner indices, a geometric seal for Major Arcana, and CSS-drawn wand,
+chalice, blade, or pentacle-star motifs for Minor Arcana. The fallback does not
+load remote imagery and remains available if card-specific face art is absent
+or fails to load.
+
 The approved access model has two independent axes:
 
 - Spread access: Daily Draw is Free. Past, Present & Future and Love Reading

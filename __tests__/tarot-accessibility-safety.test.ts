@@ -12,6 +12,10 @@ const accountDraw = readFileSync(
   "utf8",
 );
 const uploadForm = readFileSync("components/TarotDeckArtworkForm.tsx", "utf8");
+const symbolicFace = readFileSync(
+  "components/TarotSymbolicCardFace.tsx",
+  "utf8",
+);
 const styles = readFileSync("app/globals.css", "utf8");
 
 describe("tarot accessibility and content safety", () => {
@@ -33,6 +37,16 @@ describe("tarot accessibility and content safety", () => {
     expect(styles).toMatch(
       /prefers-reduced-motion:[\s\S]*?\.tarot-shuffle[\s\S]*?animation: none/,
     );
+  });
+
+  it("provides a decorative, art-independent symbolic card face", () => {
+    expect(symbolicFace).toContain('aria-hidden="true"');
+    expect(symbolicFace).toContain("tarot-symbolic-face__index--top");
+    expect(symbolicFace).toContain("tarot-symbolic-face__index--bottom");
+    expect(styles).toContain(".tarot-symbolic-face__emblem--major");
+    for (const suit of ["wands", "cups", "swords", "pentacles"]) {
+      expect(styles).toContain(`.tarot-symbolic-face--${suit}`);
+    }
   });
 
   it("keeps card copy reflective instead of predictive or diagnostic", () => {
