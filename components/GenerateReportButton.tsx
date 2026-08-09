@@ -88,44 +88,41 @@ export function GenerateReportButton({
         {copy.personaliseReport}
       </summary>
       <div className="report-generator__body">
-        {profiles.length > 1 ? (
-          <div className="report-generator__field">
-            <label className="label" htmlFor={`profile-${controlId}`}>
-              {copy.useProfile}
-            </label>
-            <select
-              id={`profile-${controlId}`}
-              className="input"
-              value={profileId}
-              onChange={(event) => setProfileId(event.target.value)}
-            >
-              {profiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>
-                  {profile.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : profiles.length === 1 ? (
-          <p className="report-generator__profile">
-            <span>{copy.usingProfile}</span>
-            <strong>{profiles[0].label}</strong>
-          </p>
-        ) : (
-          <p className="report-generator__profile">
-            <span>{copy.useProfile}</span>
-            <strong>{copy.noSavedProfiles}</strong>
-          </p>
-        )}
+        <div className="report-generator__preferences">
+          {profiles.length ? (
+            <div className="report-generator__field">
+              <label className="label" htmlFor={`profile-${controlId}`}>
+                {copy.useProfile}
+              </label>
+              <select
+                id={`profile-${controlId}`}
+                className="input"
+                value={profileId}
+                onChange={(event) => setProfileId(event.target.value)}
+              >
+                {profiles.map((profile) => (
+                  <option key={profile.id} value={profile.id}>
+                    {profile.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="report-generator__profile">
+              <span>{copy.useProfile}</span>
+              <strong>{copy.noSavedProfiles}</strong>
+            </p>
+          )}
 
-        <label className="report-language-default">
-          <input
-            type="checkbox"
-            checked={useDefaultLocale}
-            onChange={(event) => setUseDefaultLocale(event.target.checked)}
-          />
-          <span>{copy.useSelectedLanguage}</span>
-        </label>
+          <label className="report-language-default">
+            <input
+              type="checkbox"
+              checked={useDefaultLocale}
+              onChange={(event) => setUseDefaultLocale(event.target.checked)}
+            />
+            <span>{copy.useSelectedLanguage}</span>
+          </label>
+        </div>
         {!useDefaultLocale && (
           <div className="report-language-override">
             <label className="label" htmlFor={`locale-${controlId}`}>

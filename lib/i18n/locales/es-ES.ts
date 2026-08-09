@@ -202,7 +202,7 @@ const pack = {
         "Elimina permanentemente tus perfiles natales, informes, evidencias y cuenta. Pueden conservarse registros mínimos de pago cuando la ley lo exija.",
       typeDelete: "Escribe DELETE para confirmar",
       permanentlyDelete: "Eliminar cuenta permanentemente",
-      useProfile: "Usar perfil natal",
+      useProfile: "Carta natal",
       usingProfile: "Perfil utilizado",
       noSavedProfiles: "No hay perfiles natales guardados",
       chooseThemes: "Elige tus temas de reflexión",

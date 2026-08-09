@@ -205,7 +205,7 @@ const pack = {
         "Löscht deine Geburtsprofile, Berichte, Belege und dein Konto dauerhaft. Gesetzlich erforderliche minimale Zahlungsdaten können aufbewahrt werden.",
       typeDelete: "Zur Bestätigung DELETE eingeben",
       permanentlyDelete: "Konto dauerhaft löschen",
-      useProfile: "Geburtsprofil verwenden",
+      useProfile: "Geburtshoroskop",
       usingProfile: "Verwendetes Profil",
       noSavedProfiles: "Keine Geburtsprofile gespeichert",
       chooseThemes: "Wähle deine Reflexionsthemen",

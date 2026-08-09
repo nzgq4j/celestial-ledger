@@ -209,7 +209,7 @@ const pack = {
         "Supprime définitivement vos profils natals, rapports, preuves et votre compte. Des données de paiement minimales peuvent être conservées lorsque la loi l’exige.",
       typeDelete: "Saisissez DELETE pour confirmer",
       permanentlyDelete: "Supprimer définitivement le compte",
-      useProfile: "Utiliser le profil natal",
+      useProfile: "Thème natal",
       usingProfile: "Profil utilisé",
       noSavedProfiles: "Aucun profil natal enregistré",
       chooseThemes: "Choisissez vos thèmes de réflexion",

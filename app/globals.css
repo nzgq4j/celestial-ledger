@@ -4549,13 +4549,18 @@ body:has(.account-dashboard) > .meridian {
 .report-language-default {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  color: var(--ivory);
+  min-height: 2.75rem;
+  gap: 0.45rem;
+  color: var(--atlas-muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  white-space: nowrap;
   cursor: pointer;
 }
 .report-language-default input {
-  width: 1rem;
-  height: 1rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 auto;
   accent-color: var(--gold);
 }
 .report-language-override {
@@ -9920,6 +9925,17 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   gap: 0.4rem;
 }
 
+.report-generator__preferences {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+  gap: 0.75rem 1.25rem;
+  align-items: end;
+}
+
+.report-generator__preferences .report-generator__profile {
+  align-self: center;
+}
+
 .report-generator__profile {
   display: flex;
   align-items: baseline;
@@ -9931,6 +9947,17 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .report-generator__profile strong {
   color: var(--atlas-copy);
   font-size: 0.82rem;
+}
+
+@media (max-width: 640px) {
+  .report-generator__preferences {
+    grid-template-columns: 1fr;
+  }
+
+  .report-language-default {
+    min-height: auto;
+    white-space: normal;
+  }
 }
 
 .report-theme-selector {

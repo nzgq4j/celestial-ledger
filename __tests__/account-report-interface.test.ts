@@ -42,11 +42,12 @@ describe("account report interface", () => {
     expect(generator).not.toMatch(/<details[^>]*\sopen(?:=|\s|>)/);
   });
 
-  it("shows a selector only when more than one profile can be selected", () => {
-    expect(generator).toContain("profiles.length > 1");
-    expect(generator).toContain("profiles.length === 1");
-    expect(generator).toContain("copy.usingProfile");
+  it("keeps the birth chart selector beside the language preference", () => {
+    expect(generator).toContain('className="report-generator__preferences"');
+    expect(generator).toContain("profiles.length ?");
     expect(generator).toContain("<select");
+    expect(generator).toContain('className="report-language-default"');
+    expect(generator).not.toContain("copy.usingProfile");
   });
 
   it("uses compact accessible theme chips while retaining descriptions", () => {

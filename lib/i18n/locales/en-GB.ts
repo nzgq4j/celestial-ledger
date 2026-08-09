@@ -204,7 +204,7 @@ const pack = {
         "Permanently removes your birth profiles, reports, evidence, and account. Minimized payment records may be retained where legally required.",
       typeDelete: "Type DELETE to confirm",
       permanentlyDelete: "Permanently delete account",
-      useProfile: "Use birth profile",
+      useProfile: "Birth chart",
       usingProfile: "Using profile",
       noSavedProfiles: "No saved birth profiles",
       chooseThemes: "Choose your reflection themes",
