@@ -8,6 +8,7 @@ import { buildWeeklyReadingContent } from "@/lib/weekly-readings/content";
 const viewCopy = {
   "en-GB": {
     private: "Private weekly reading",
+    sample: "Sample weekly reading",
     profile: "Birth profile",
     zone: "Reading time zone",
     method: "Method",
@@ -28,6 +29,7 @@ const viewCopy = {
   },
   "de-DE": {
     private: "Private Wochenanalyse",
+    sample: "Beispiel einer Wochenanalyse",
     profile: "Geburtsprofil",
     zone: "Zeitzone der Analyse",
     method: "Methode",
@@ -48,6 +50,7 @@ const viewCopy = {
   },
   "es-ES": {
     private: "Lectura semanal privada",
+    sample: "Ejemplo de lectura semanal",
     profile: "Perfil natal",
     zone: "Zona horaria de la lectura",
     method: "Método",
@@ -68,6 +71,7 @@ const viewCopy = {
   },
   "fr-FR": {
     private: "Lecture hebdomadaire privée",
+    sample: "Exemple de lecture hebdomadaire",
     profile: "Profil natal",
     zone: "Fuseau horaire de la lecture",
     method: "Méthode",
@@ -165,10 +169,12 @@ export function WeeklyReadingView({
   content,
   analysis,
   profileLabel,
+  isSample = false,
 }: {
   content: WeeklyReadingContent;
   analysis: WeeklyReadingAnalysis;
   profileLabel: string;
+  isSample?: boolean;
 }) {
   const displayedContent =
     content.schemaVersion === WEEKLY_READING_LEGACY_CONTENT_VERSION
@@ -203,7 +209,7 @@ export function WeeklyReadingView({
     <article className="daily-reading-view weekly-reading-view">
       <header className="daily-reading-view__header">
         <div>
-          <p className="eyebrow">{text.private}</p>
+          <p className="eyebrow">{isSample ? text.sample : text.private}</p>
           <h1>{displayedContent.header.headline}</h1>
           <p>{displayedContent.header.dateLabel}</p>
         </div>

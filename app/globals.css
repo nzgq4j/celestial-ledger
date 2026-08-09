@@ -7964,6 +7964,31 @@ body:has(.account-dashboard) .account-workspace {
   grid-column: 1 / -1;
 }
 
+.sample-weekly-reading {
+  max-width: 78rem;
+}
+
+.sample-weekly-reading > .horoscope-back {
+  display: inline-flex;
+  margin-bottom: 1.25rem;
+}
+
+.sample-weekly-reading__cta {
+  display: grid;
+  justify-items: start;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, rgba(201, 167, 93, 0.1), transparent 58%);
+}
+
+.sample-weekly-reading__cta h2,
+.sample-weekly-reading__cta p {
+  margin: 0;
+}
+
 @media (max-width: 820px) {
   .weekly-reading-visuals__heading,
   .weekly-reading-visuals__grid {

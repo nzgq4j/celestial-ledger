@@ -5,6 +5,8 @@ import { sampleChart, sampleIdentity } from "@/lib/samples";
 import { SampleReportBluf } from "@/components/samples/SampleReportBluf";
 import { SampleReportVisual } from "@/components/samples/SampleReportVisual";
 import { ReadingDayArc } from "@/components/reports/ReadingDayArc";
+import { WeeklyReadingView } from "@/components/WeeklyReadingView";
+import { buildSampleWeeklyReading } from "@/lib/sample-reports/weekly-reading";
 import {
   sampleReportPresentation,
   type SampleReportKey,
@@ -62,9 +64,9 @@ const editions = {
   },
   "weekly-reading": {
     eyebrow: "Weekly Reading · subscriber sample",
-    title: "Seven Days Beneath a Moving Sky",
+    title: "A Week for Measured Expansion",
     intro:
-      "A weekly edition follows the living conversation between the natal chart and the present sky—showing where momentum gathers, where patience has power and which questions belong to the week ahead.",
+      "A complete seven-day sample generated from the Atlas Sample natal chart and presented in the same interpretation-first format subscribers receive.",
     sections: [
       [
         "The week’s threshold",
@@ -651,6 +653,29 @@ export default async function SampleReportPage({
   const reportKey = report as SampleReportKey;
   const edition = editions[reportKey];
   if (!edition) notFound();
+  if (reportKey === "weekly-reading") {
+    const sample = await buildSampleWeeklyReading();
+    return (
+      <main className="page-shell sample-weekly-reading">
+        <Link href="/samples" className="horoscope-back">
+          ← All sample editions
+        </Link>
+        <WeeklyReadingView
+          content={sample.content}
+          analysis={sample.analysis}
+          profileLabel={sample.profileLabel}
+          isSample
+        />
+        <aside className="sample-weekly-reading__cta">
+          <p className="eyebrow">Now, let your own chart speak</p>
+          <h2>Follow the next seven days through your own natal sky.</h2>
+          <Link href="/#chart" className="button-primary">
+            Create my free natal chart
+          </Link>
+        </aside>
+      </main>
+    );
+  }
   const chart = await sampleChart();
   const expanded =
     {
