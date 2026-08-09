@@ -110,6 +110,7 @@ describe("tarot artwork and access security", () => {
     expect(uploadRoute).toContain(".storage.createBucket");
     expect(uploadRoute).toContain("allowedMimeTypes: [\"image/webp\"]");
     expect(uploadRoute).not.toContain(".storage.updateBucket");
+    expect(uploadRoute).toContain("new Blob([new Uint8Array(output)]");
     expect(uploadRoute).toContain("upsert: true");
     expect(uploadRoute).toContain("tarotArtworkPath");
     expect(uploadRoute).toContain("remove([path])");

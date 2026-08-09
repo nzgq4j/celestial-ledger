@@ -142,7 +142,7 @@ export async function POST(
       : deck.card_back_image_path;
   const { error: uploadError } = await admin.storage
     .from(TAROT_DECK_BUCKET)
-    .upload(path, output, {
+    .upload(path, new Blob([new Uint8Array(output)], { type: "image/webp" }), {
       contentType: "image/webp",
       cacheControl: "3600",
       upsert: true,
