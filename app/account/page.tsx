@@ -6,12 +6,17 @@ import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { AccountReportList } from "@/components/AccountReportList";
 import { DailyReadingGenerator } from "@/components/DailyReadingGenerator";
 import { WeeklyReadingGenerator } from "@/components/WeeklyReadingGenerator";
+import { AccountTarotDailyDraw } from "@/components/AccountTarotDailyDraw";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { commerceFlags, weeklyReadingFlags } from "@/lib/commerce/flags";
+import {
+  commerceFlags,
+  tarotReadingFlags,
+  weeklyReadingFlags,
+} from "@/lib/commerce/flags";
 import { BillingPortalButton } from "@/components/BillingPortalButton";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import {
@@ -23,6 +28,7 @@ import {
   deriveAccountReportStates,
   primaryAccountReportAction,
 } from "@/lib/account/report-states";
+import { listActiveTarotDecksForPlan } from "@/lib/tarot/decks";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -48,6 +54,7 @@ export default async function AccountPage({
   const adminClient = createAdminClient();
   const commerce = commerceFlags();
   const weeklyFlags = weeklyReadingFlags();
+  const tarotFlags = tarotReadingFlags();
   const { data: adminRole } = await adminClient
     .from("admin_roles")
     .select("role")
@@ -165,9 +172,13 @@ export default async function AccountPage({
   const weeklyAccessible =
     weeklyDecision?.allowed === true || weeklyReadings.length > 0;
   const primaryProfile = birthProfiles.at(-1);
-  const commercePlanKey = commerce.checkout
-    ? await effectivePlanKeyForUser(authData.user.id)
-    : "free";
+  const commercePlanKey =
+    commerce.checkout || tarotFlags.enabled
+      ? await effectivePlanKeyForUser(authData.user.id)
+      : "free";
+  const tarotDecks = tarotFlags.enabled
+    ? await listActiveTarotDecksForPlan(commercePlanKey, pack.tag)
+    : [];
   const [{ data: reportPrices }, { data: reportCredits }] = commerce.checkout
     ? await Promise.all([
         adminClient
@@ -415,6 +426,39 @@ export default async function AccountPage({
                 )}
               </div>
             </details>
+
+            {tarotFlags.enabled && (
+              <details
+                className="account-reading-card account-reading-card--tarot"
+                id="tarot-daily-draw"
+              >
+                <summary className="account-reading-card__summary">
+                  <div>
+                    <p className="section-kicker">
+                      {pack.messages.tarot.accountDailyKicker}
+                    </p>
+                    <h3>{pack.messages.tarot.accountDailyTitle}</h3>
+                  </div>
+                  <span className="account-reading-card__status">
+                    <span className="dashboard-panel__meta">
+                      {pack.messages.tarot.includedWithPlan}
+                    </span>
+                    <small>{copy.openReadingOptions}</small>
+                  </span>
+                </summary>
+                <div className="account-reading-card__body">
+                  <p className="dashboard-panel__introduction">
+                    {pack.messages.tarot.accountDailyDescription}
+                  </p>
+                  <AccountTarotDailyDraw
+                    decks={[...tarotDecks]}
+                    currentPlan={commercePlanKey}
+                    locale={pack.tag}
+                    copy={pack.messages.tarot}
+                  />
+                </div>
+              </details>
+            )}
           </div>
         </section>
 

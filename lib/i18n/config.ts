@@ -9,6 +9,7 @@ export type TranslationPack = {
   direction: "ltr" | "rtl";
   messages: {
     navigation: {
+      tarot: string;
       homeLabel: string;
       tagline: string;
       primaryLabel: string;
@@ -39,6 +40,7 @@ export type TranslationPack = {
     };
     account: Record<string, string>;
     horoscopes: Record<string, string>;
+    tarot: Record<string, string>;
     home: {
       eyebrow: string;
       titleFirst: string;

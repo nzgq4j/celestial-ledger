@@ -8,7 +8,13 @@ import { useLocale } from "@/components/LocaleProvider";
 import { signOut } from "@/app/auth/actions";
 import type { HeaderIdentity } from "@/lib/auth/header-identity";
 
-export function SiteHeader({ identity }: { identity: HeaderIdentity | null }) {
+export function SiteHeader({
+  identity,
+  tarotEnabled,
+}: {
+  identity: HeaderIdentity | null;
+  tarotEnabled: boolean;
+}) {
   const { pack } = useLocale();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
 
@@ -45,6 +51,9 @@ export function SiteHeader({ identity }: { identity: HeaderIdentity | null }) {
             <Link href="/horoscopes">
               {pack.messages.navigation.horoscopes}
             </Link>
+            {tarotEnabled && (
+              <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
+            )}
             <Link href="/reports">{pack.messages.navigation.reports}</Link>
             <details className="site-nav-group">
               <summary>
@@ -78,6 +87,9 @@ export function SiteHeader({ identity }: { identity: HeaderIdentity | null }) {
               <Link href="/horoscopes">
                 {pack.messages.navigation.dailyHoroscopes}
               </Link>
+              {tarotEnabled && (
+                <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
+              )}
               <Link href="/reports">
                 {pack.messages.navigation.privateReports}
               </Link>

@@ -1,4 +1,5 @@
 import type { TranslationPack } from "@/lib/i18n/config";
+import { TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
 
 const pack = {
   tag: "es-ES",
@@ -7,6 +8,7 @@ const pack = {
   direction: "ltr",
   messages: {
     navigation: {
+      tarot: "Tarot",
       homeLabel: "Inicio de Celestial Atlas",
       tagline: "Cielo ancestral · atlas personal",
       primaryLabel: "Navegación principal",
@@ -348,6 +350,7 @@ const pack = {
       calculationNote:
         "Calculado para las 12:00 UTC con Astronomy Engine e interpretado mediante una carta solar tropical de signos completos.",
     },
+    tarot: TAROT_UI_MESSAGES["es-ES"],
     home: {
       eyebrow: "El cielo en el momento de tu llegada",
       titleFirst: "Navega",

@@ -13,6 +13,7 @@ import {
   localizedAlternates,
 } from "@/lib/seo";
 import { getHeaderIdentity } from "@/lib/auth/header-identity";
+import { tarotReadingFlags } from "@/lib/commerce/flags";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAdminSettings();
@@ -126,7 +127,10 @@ export default async function RootLayout({
         />
         <LocaleProvider initialLocale={pack.tag} initialPack={pack}>
           <div className="meridian" aria-hidden="true" />
-          <SiteHeader identity={identity} />
+          <SiteHeader
+            identity={identity}
+            tarotEnabled={tarotReadingFlags().enabled}
+          />
           {children}
           <SiteFooter />
         </LocaleProvider>

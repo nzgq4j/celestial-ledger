@@ -8,7 +8,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google.com https://www.gstatic.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.google-analytics.com",
+  "img-src 'self' data: blob: https://*.supabase.co https://*.google-analytics.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co https://*.google-analytics.com https://www.google.com",
   "frame-src https://www.google.com https://recaptcha.google.com",

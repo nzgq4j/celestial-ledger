@@ -1262,6 +1262,65 @@ export type Database = {
         };
         Relationships: [];
       };
+      tarot_decks: {
+        Row: {
+          accent_token: string;
+          active: boolean;
+          card_back_image_path: string | null;
+          cover_image_path: string | null;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          minimum_plan: string;
+          name: string;
+          sort_order: number;
+          tagline: string;
+          translations: Json;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          accent_token: string;
+          active?: boolean;
+          card_back_image_path?: string | null;
+          cover_image_path?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id: string;
+          minimum_plan: string;
+          name: string;
+          sort_order?: number;
+          tagline: string;
+          translations: Json;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          accent_token?: string;
+          active?: boolean;
+          card_back_image_path?: string | null;
+          cover_image_path?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          minimum_plan?: string;
+          name?: string;
+          sort_order?: number;
+          tagline?: string;
+          translations?: Json;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tarot_decks_minimum_plan_fkey";
+            columns: ["minimum_plan"];
+            isOneToOne: false;
+            referencedRelation: "commerce_plans";
+            referencedColumns: ["plan_key"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

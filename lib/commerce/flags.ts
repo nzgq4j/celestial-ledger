@@ -19,3 +19,9 @@ export function weeklyReadingFlags() {
     generationEnabled: enabled("WEEKLY_READING_GENERATION_ENABLED"),
   };
 }
+
+export function tarotReadingFlags() {
+  return {
+    enabled: enabled("TAROT_READING_ENABLED"),
+  };
+}

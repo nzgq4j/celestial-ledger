@@ -12,7 +12,8 @@ const actions = readFileSync("app/auth/actions.ts", "utf8");
 describe("header identity menu", () => {
   it("resolves identity in the request-bound root layout", () => {
     expect(layout).toContain("getHeaderIdentity()");
-    expect(layout).toContain("<SiteHeader identity={identity} />");
+    expect(layout).toContain("identity={identity}");
+    expect(layout).toContain("tarotEnabled={tarotReadingFlags().enabled}");
     expect(resolveHeaderDisplayName("  David  ", "member@example.com")).toBe(
       "David",
     );

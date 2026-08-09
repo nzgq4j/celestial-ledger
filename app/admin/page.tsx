@@ -4,6 +4,7 @@ import { AdminThemeToggle } from "@/components/AdminThemeToggle";
 import {
   deleteBlogPost,
   saveBlogPost,
+  saveTarotDeck,
   updateAiSettings,
   updateDiscoverySettings,
   updateIntegrationSettings,
@@ -15,6 +16,10 @@ import {
 import { requireAdmin, adminRoles } from "@/lib/admin/auth";
 import { getAdminSettings } from "@/lib/admin/settings";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { TarotDeckArtworkForm } from "@/components/TarotDeckArtworkForm";
+import { signTarotDeckArtworkForAdmin } from "@/lib/tarot/decks";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { formatTarotMessage } from "@/lib/tarot/ui-locales";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -22,12 +27,26 @@ export const metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
+function translatedDeckField(
+  translations: unknown,
+  locale: "es-ES" | "fr-FR" | "de-DE",
+  field: "name" | "tagline",
+) {
+  if (!translations || typeof translations !== "object") return "";
+  const translation = (translations as Record<string, unknown>)[locale];
+  if (!translation || typeof translation !== "object") return "";
+  const value = (translation as Record<string, unknown>)[field];
+  return typeof value === "string" ? value : "";
+}
+
 export default async function AdminPage({
   searchParams,
 }: {
   searchParams: Promise<{ notice?: string }>;
 }) {
   const identity = await requireAdmin();
+  const pack = await getServerTranslationPack();
+  const tarotCopy = pack.messages.tarot;
   const admin = createAdminClient();
   const [
     settings,
@@ -38,6 +57,7 @@ export default async function AdminPage({
     auditResult,
     contactResult,
     grantsResult,
+    decksResult,
     params,
   ] = await Promise.all([
     getAdminSettings(),
@@ -63,6 +83,11 @@ export default async function AdminPage({
       .select("id,user_id,capability_key,allowance,ends_at,status")
       .eq("status", "active")
       .order("created_at", { ascending: false }),
+    admin
+      .from("tarot_decks")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true }),
     searchParams,
   ]);
   const roleMap = new Map(
@@ -76,6 +101,12 @@ export default async function AdminPage({
     grantsByUser.set(grant.user_id ?? "", current);
   }
   const reports = reportsResult.data ?? [];
+  const tarotDecks = await Promise.all(
+    (decksResult.data ?? []).map(async (deck) => ({
+      ...deck,
+      ...(await signTarotDeckArtworkForAdmin(deck)),
+    })),
+  );
   const notices: Record<string, string> = {
     role_updated: "Administrator role updated.",
     user_updated: "User access updated.",
@@ -89,6 +120,9 @@ export default async function AdminPage({
     geo_updated: "GEO defaults updated.",
     blog_saved: "Journal post saved.",
     blog_deleted: "Journal post deleted.",
+    tarot_saved: tarotCopy.adminSavedNotice,
+    tarot_save_failed: tarotCopy.adminSaveFailedNotice,
+    tarot_images_required: tarotCopy.adminImagesRequiredNotice,
     settings_failed: "The setting could not be saved.",
     self_role_protected: "You cannot remove your own site-admin role.",
     self_access_protected: "You cannot suspend your own account.",
@@ -141,6 +175,7 @@ export default async function AdminPage({
         <div className="admin-hero__utilities">
           <nav className="admin-quick-actions" aria-label="Quick actions">
             <a href="#users">Manage users</a>
+            <a href="#tarot-decks">{tarotCopy.adminTitle}</a>
             <a href="#journal">New journal entry</a>
           </nav>
           <AdminThemeToggle />
@@ -187,6 +222,7 @@ export default async function AdminPage({
             <a href="#integrations">Integrations</a>
             <a href="#discovery">Discovery</a>
             <span>Publishing</span>
+            <a href="#tarot-decks">{tarotCopy.adminTitle}</a>
             <a href="#journal">Journal</a>
             <a href="#contact-messages">Contact</a>
             <a href="#audit">Audit trail</a>
@@ -637,6 +673,421 @@ export default async function AdminPage({
                 </button>
               </form>
             </div>
+          </section>
+
+          <section className="admin-section" id="tarot-decks">
+            <div className="admin-section__heading">
+              <p className="eyebrow">{tarotCopy.adminEyebrow}</p>
+              <h2>{tarotCopy.adminTitle}</h2>
+              <p>{tarotCopy.adminIntroduction}</p>
+            </div>
+
+            {decksResult.error ? (
+              <p className="admin-empty-state">
+                {tarotCopy.adminMigrationPending}
+              </p>
+            ) : (
+              <div className="admin-tarot-layout">
+                <form className="admin-form" action={saveTarotDeck}>
+                  <h3>{tarotCopy.adminCreateDeck}</h3>
+                  <label>
+                    {tarotCopy.adminStableId}
+                    <small>{tarotCopy.adminStableIdHelp}</small>
+                    <input
+                      name="id"
+                      required
+                      minLength={2}
+                      maxLength={80}
+                      pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                    />
+                  </label>
+                  <label>
+                    {tarotCopy.adminName}
+                    <input name="name" required minLength={2} maxLength={80} />
+                  </label>
+                  <label>
+                    {tarotCopy.adminTagline}
+                    <textarea
+                      name="tagline"
+                      required
+                      minLength={10}
+                      maxLength={240}
+                    />
+                  </label>
+                  <fieldset className="admin-localization-fields">
+                    <legend>{tarotCopy.adminLocalizedMetadata}</legend>
+                    <label>
+                      {tarotCopy.adminSpanishName}
+                      <input
+                        name="name_es"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                      />
+                    </label>
+                    <label>
+                      {tarotCopy.adminSpanishTagline}
+                      <textarea
+                        name="tagline_es"
+                        required
+                        minLength={10}
+                        maxLength={240}
+                      />
+                    </label>
+                    <label>
+                      {tarotCopy.adminFrenchName}
+                      <input
+                        name="name_fr"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                      />
+                    </label>
+                    <label>
+                      {tarotCopy.adminFrenchTagline}
+                      <textarea
+                        name="tagline_fr"
+                        required
+                        minLength={10}
+                        maxLength={240}
+                      />
+                    </label>
+                    <label>
+                      {tarotCopy.adminGermanName}
+                      <input
+                        name="name_de"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                      />
+                    </label>
+                    <label>
+                      {tarotCopy.adminGermanTagline}
+                      <textarea
+                        name="tagline_de"
+                        required
+                        minLength={10}
+                        maxLength={240}
+                      />
+                    </label>
+                  </fieldset>
+                  <label>
+                    {tarotCopy.adminAccent}
+                    <select name="accent_token" defaultValue="gold">
+                      <option value="gold">{tarotCopy.adminAccentGold}</option>
+                      <option value="copper">
+                        {tarotCopy.adminAccentCopper}
+                      </option>
+                      <option value="map-cyan">
+                        {tarotCopy.adminAccentMapCyan}
+                      </option>
+                      <option value="map-red">
+                        {tarotCopy.adminAccentMapRed}
+                      </option>
+                      <option value="map-chalk">
+                        {tarotCopy.adminAccentMapChalk}
+                      </option>
+                    </select>
+                  </label>
+                  <label>
+                    {tarotCopy.adminMinimumPlan}
+                    <select name="minimum_plan" defaultValue="premium">
+                      <option value="free">{tarotCopy.adminPlanFree}</option>
+                      <option value="personal">
+                        {tarotCopy.adminPlanPersonal}
+                      </option>
+                      <option value="premium">
+                        {tarotCopy.adminPlanPremium}
+                      </option>
+                    </select>
+                  </label>
+                  <label>
+                    {tarotCopy.adminSortOrder}
+                    <input
+                      name="sort_order"
+                      type="number"
+                      min={0}
+                      max={1000}
+                      defaultValue={tarotDecks.length * 10}
+                    />
+                  </label>
+                  <label className="admin-check-row">
+                    <input name="active" type="checkbox" />
+                    {tarotCopy.adminActivateAfterImages}
+                  </label>
+                  <button
+                    className="button-primary"
+                    disabled={!canManageContent}
+                  >
+                    {tarotCopy.adminCreateAction}
+                  </button>
+                </form>
+
+                <div className="admin-tarot-decks">
+                  {tarotDecks.map((deck) => (
+                    <article className="admin-tarot-deck" key={deck.id}>
+                      <header>
+                        <div className="admin-tarot-artwork-pair">
+                          <div
+                            className="admin-tarot-artwork"
+                            role={deck.coverImageUrl ? "img" : undefined}
+                            aria-label={
+                              deck.coverImageUrl
+                                ? formatTarotMessage(tarotCopy.deckCoverLabel, {
+                                    name: deck.name,
+                                  })
+                                : undefined
+                            }
+                            style={
+                              deck.coverImageUrl
+                                ? {
+                                    backgroundImage: `url("${deck.coverImageUrl}")`,
+                                  }
+                                : undefined
+                            }
+                          >
+                            {!deck.coverImageUrl && (
+                              <span>{tarotCopy.adminCoverNeeded}</span>
+                            )}
+                          </div>
+                          <div
+                            className="admin-tarot-artwork admin-tarot-artwork--back"
+                            role={deck.cardBackImageUrl ? "img" : undefined}
+                            aria-label={
+                              deck.cardBackImageUrl
+                                ? formatTarotMessage(tarotCopy.cardBackLabel, {
+                                    name: deck.name,
+                                  })
+                                : undefined
+                            }
+                            style={
+                              deck.cardBackImageUrl
+                                ? {
+                                    backgroundImage: `url("${deck.cardBackImageUrl}")`,
+                                  }
+                                : undefined
+                            }
+                          >
+                            {!deck.cardBackImageUrl && (
+                              <span>{tarotCopy.adminBackNeeded}</span>
+                            )}
+                          </div>
+                        </div>
+                        <span
+                          className={`admin-tarot-state ${
+                            deck.active ? "is-active" : ""
+                          }`}
+                        >
+                          {deck.active
+                            ? tarotCopy.adminActive
+                            : tarotCopy.adminInactive}
+                        </span>
+                      </header>
+
+                      <form className="admin-form" action={saveTarotDeck}>
+                        <input type="hidden" name="id" value={deck.id} />
+                        <code>{deck.id}</code>
+                        <label>
+                          {tarotCopy.adminName}
+                          <input
+                            name="name"
+                            defaultValue={deck.name}
+                            required
+                            minLength={2}
+                            maxLength={80}
+                          />
+                        </label>
+                        <label>
+                          {tarotCopy.adminTagline}
+                          <textarea
+                            name="tagline"
+                            defaultValue={deck.tagline}
+                            required
+                            minLength={10}
+                            maxLength={240}
+                          />
+                        </label>
+                        <fieldset className="admin-localization-fields">
+                          <legend>{tarotCopy.adminLocalizedMetadata}</legend>
+                          <label>
+                            {tarotCopy.adminSpanishName}
+                            <input
+                              name="name_es"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "es-ES",
+                                "name",
+                              )}
+                              required
+                              minLength={2}
+                              maxLength={80}
+                            />
+                          </label>
+                          <label>
+                            {tarotCopy.adminSpanishTagline}
+                            <textarea
+                              name="tagline_es"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "es-ES",
+                                "tagline",
+                              )}
+                              required
+                              minLength={10}
+                              maxLength={240}
+                            />
+                          </label>
+                          <label>
+                            {tarotCopy.adminFrenchName}
+                            <input
+                              name="name_fr"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "fr-FR",
+                                "name",
+                              )}
+                              required
+                              minLength={2}
+                              maxLength={80}
+                            />
+                          </label>
+                          <label>
+                            {tarotCopy.adminFrenchTagline}
+                            <textarea
+                              name="tagline_fr"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "fr-FR",
+                                "tagline",
+                              )}
+                              required
+                              minLength={10}
+                              maxLength={240}
+                            />
+                          </label>
+                          <label>
+                            {tarotCopy.adminGermanName}
+                            <input
+                              name="name_de"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "de-DE",
+                                "name",
+                              )}
+                              required
+                              minLength={2}
+                              maxLength={80}
+                            />
+                          </label>
+                          <label>
+                            {tarotCopy.adminGermanTagline}
+                            <textarea
+                              name="tagline_de"
+                              defaultValue={translatedDeckField(
+                                deck.translations,
+                                "de-DE",
+                                "tagline",
+                              )}
+                              required
+                              minLength={10}
+                              maxLength={240}
+                            />
+                          </label>
+                        </fieldset>
+                        <div className="admin-form__split">
+                          <label>
+                            {tarotCopy.adminAccent}
+                            <select
+                              name="accent_token"
+                              defaultValue={deck.accent_token}
+                            >
+                              <option value="gold">
+                                {tarotCopy.adminAccentGold}
+                              </option>
+                              <option value="copper">
+                                {tarotCopy.adminAccentCopper}
+                              </option>
+                              <option value="map-cyan">
+                                {tarotCopy.adminAccentMapCyan}
+                              </option>
+                              <option value="map-red">
+                                {tarotCopy.adminAccentMapRed}
+                              </option>
+                              <option value="map-chalk">
+                                {tarotCopy.adminAccentMapChalk}
+                              </option>
+                            </select>
+                          </label>
+                          <label>
+                            {tarotCopy.adminMinimumPlan}
+                            <select
+                              name="minimum_plan"
+                              defaultValue={deck.minimum_plan}
+                            >
+                              <option value="free">
+                                {tarotCopy.adminPlanFree}
+                              </option>
+                              <option value="personal">
+                                {tarotCopy.adminPlanPersonal}
+                              </option>
+                              <option value="premium">
+                                {tarotCopy.adminPlanPremium}
+                              </option>
+                            </select>
+                          </label>
+                        </div>
+                        <label>
+                          {tarotCopy.adminSortOrder}
+                          <input
+                            name="sort_order"
+                            type="number"
+                            min={0}
+                            max={1000}
+                            defaultValue={deck.sort_order}
+                          />
+                        </label>
+                        <label className="admin-check-row">
+                          <input
+                            name="active"
+                            type="checkbox"
+                            defaultChecked={deck.active}
+                          />
+                          {tarotCopy.adminActive}
+                        </label>
+                        <button
+                          className="button-primary"
+                          disabled={!canManageContent}
+                        >
+                          {tarotCopy.adminSaveAction}
+                        </button>
+                      </form>
+
+                      <div className="admin-tarot-uploads">
+                        <TarotDeckArtworkForm
+                          deckId={deck.id}
+                          kind="cover"
+                          hasArtwork={Boolean(deck.cover_image_path)}
+                          disabled={!canManageContent}
+                          copy={tarotCopy}
+                        />
+                        <TarotDeckArtworkForm
+                          deckId={deck.id}
+                          kind="card-back"
+                          hasArtwork={Boolean(deck.card_back_image_path)}
+                          disabled={!canManageContent}
+                          copy={tarotCopy}
+                        />
+                      </div>
+                    </article>
+                  ))}
+                  {!tarotDecks.length && (
+                    <p className="admin-empty-state">
+                      {tarotCopy.adminNoDecks}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="admin-section" id="journal">

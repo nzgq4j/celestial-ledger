@@ -336,3 +336,105 @@ export async function deleteBlogPost(formData: FormData) {
   revalidatePath("/journal");
   done("blog_deleted");
 }
+
+const tarotDeckSchema = z.object({
+  id: z
+    .string()
+    .trim()
+    .min(2)
+    .max(80)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: z.string().trim().min(2).max(80),
+  tagline: z.string().trim().min(10).max(240),
+  accentToken: z.enum(["gold", "copper", "map-cyan", "map-red", "map-chalk"]),
+  minimumPlan: z.enum(["free", "personal", "premium"]),
+  sortOrder: z.coerce.number().int().min(0).max(1000),
+  active: z.boolean(),
+  translations: z.object({
+    "es-ES": z.object({
+      name: z.string().trim().min(2).max(80),
+      tagline: z.string().trim().min(10).max(240),
+    }),
+    "fr-FR": z.object({
+      name: z.string().trim().min(2).max(80),
+      tagline: z.string().trim().min(10).max(240),
+    }),
+    "de-DE": z.object({
+      name: z.string().trim().min(2).max(80),
+      tagline: z.string().trim().min(10).max(240),
+    }),
+  }),
+});
+
+export async function saveTarotDeck(formData: FormData) {
+  const actor = await requireAdmin(["site_admin", "content_admin"]);
+  const input = tarotDeckSchema.parse({
+    id: formData.get("id"),
+    name: formData.get("name"),
+    tagline: formData.get("tagline"),
+    accentToken: formData.get("accent_token"),
+    minimumPlan: formData.get("minimum_plan"),
+    sortOrder: formData.get("sort_order"),
+    active: formData.get("active") === "on",
+    translations: {
+      "es-ES": {
+        name: formData.get("name_es"),
+        tagline: formData.get("tagline_es"),
+      },
+      "fr-FR": {
+        name: formData.get("name_fr"),
+        tagline: formData.get("tagline_fr"),
+      },
+      "de-DE": {
+        name: formData.get("name_de"),
+        tagline: formData.get("tagline_de"),
+      },
+    },
+  });
+  const admin = createAdminClient();
+  const { data: existing, error: lookupError } = await admin
+    .from("tarot_decks")
+    .select("id,cover_image_path,card_back_image_path")
+    .eq("id", input.id)
+    .maybeSingle();
+  if (lookupError) redirect("/admin?notice=tarot_save_failed#tarot-decks");
+  if (
+    input.active &&
+    (!existing?.cover_image_path || !existing.card_back_image_path)
+  ) {
+    redirect("/admin?notice=tarot_images_required#tarot-decks");
+  }
+
+  const record = {
+    name: input.name,
+    tagline: input.tagline,
+    accent_token: input.accentToken,
+    minimum_plan: input.minimumPlan,
+    sort_order: input.sortOrder,
+    active: input.active,
+    translations: input.translations,
+    updated_by: actor.id,
+  };
+  const result = existing
+    ? await admin.from("tarot_decks").update(record).eq("id", input.id)
+    : await admin.from("tarot_decks").insert({
+        id: input.id,
+        ...record,
+        created_by: actor.id,
+      });
+  if (result.error) redirect("/admin?notice=tarot_save_failed#tarot-decks");
+
+  await audit(
+    actor.id,
+    existing ? "tarot.deck.updated" : "tarot.deck.created",
+    {
+      settingKey: `tarot.deck.${input.id}`,
+      metadata: {
+        plan: input.minimumPlan,
+        active: input.active,
+      },
+    },
+  );
+  revalidatePath("/tarot");
+  done("tarot_saved#tarot-decks");
+}
