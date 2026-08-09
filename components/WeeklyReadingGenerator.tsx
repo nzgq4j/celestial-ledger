@@ -13,6 +13,8 @@ export function WeeklyReadingGenerator({
     id: string;
     week_start_date: string;
     week_end_date: string;
+    reading_start_date: string;
+    reading_end_date: string;
     locale: string;
     generated_at: string;
   }>;
@@ -85,7 +87,7 @@ export function WeeklyReadingGenerator({
               <li key={reading.id}>
                 <Link href={`/weekly-readings/${reading.id}`}>
                   {new Date(
-                    `${reading.week_start_date}T12:00:00Z`,
+                    `${reading.reading_start_date}T12:00:00Z`,
                   ).toLocaleDateString(locale, {
                     dateStyle: "long",
                     timeZone: "UTC",

@@ -15,8 +15,8 @@ import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
 import { weeklyReadingFlags } from "@/lib/commerce/flags";
 import { capabilityDecisionForUser } from "@/lib/entitlements/server";
 import {
-  assertIsoWeekStart,
   buildWeeklyReadingAnalysis,
+  isoDateInTimeZone,
   isoWeekStart,
   weeklyReadingCacheKey,
 } from "@/lib/weekly-readings/calculation";
@@ -46,10 +46,10 @@ export async function GET() {
   const { data, error } = await supabase
     .from("weekly_readings")
     .select(
-      "id,birth_profile_id,week_start_date,week_end_date,locale,status,generated_at,expires_at",
+      "id,birth_profile_id,week_start_date,week_end_date,reading_start_date,reading_end_date,locale,status,generated_at,expires_at",
     )
     .eq("user_id", auth.claims.sub)
-    .order("week_start_date", { ascending: false })
+    .order("reading_start_date", { ascending: false })
     .limit(24);
   if (error)
     return json({ error: "Weekly readings could not be loaded." }, 500);
@@ -105,15 +105,21 @@ export async function POST(request: Request) {
       (settings?.report_locale && isLocaleTag(settings.report_locale)
         ? settings.report_locale
         : defaultLocale);
-    const weekStartDate = input.weekStartDate
-      ? assertIsoWeekStart(input.weekStartDate)
-      : isoWeekStart();
+    const readingStartDate = isoDateInTimeZone(
+      new Date(),
+      primaryProfile.time_zone,
+    );
+    const entitlementWeekStart = isoWeekStart(
+      new Date(`${readingStartDate}T12:00:00Z`),
+    );
     const { data: existingWeek } = await admin
       .from("weekly_readings")
-      .select("id,status,content_schema_version")
+      .select(
+        "id,status,content_schema_version,prompt_version,reading_start_date",
+      )
       .eq("user_id", userId)
       .eq("birth_profile_id", primaryProfile.id)
-      .eq("week_start_date", weekStartDate)
+      .eq("week_start_date", entitlementWeekStart)
       .eq("locale", locale)
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
@@ -130,11 +136,15 @@ export async function POST(request: Request) {
       userId,
       birthProfileId: primaryProfile.id,
       birthProfileUpdatedAt: primaryProfile.updated_at,
-      weekStartDate,
+      entitlementWeekStart,
+      readingStartDate,
       observationTimeZone: primaryProfile.time_zone,
       locale,
     });
-    if (existingWeek?.content_schema_version === WEEKLY_READING_CONTENT_VERSION)
+    if (
+      existingWeek?.content_schema_version === WEEKLY_READING_CONTENT_VERSION &&
+      existingWeek.prompt_version === WEEKLY_READING_PROMPT_VERSION
+    )
       return json({
         readingId: existingWeek.id,
         status: existingWeek.status,
@@ -161,7 +171,7 @@ export async function POST(request: Request) {
     const natalChart = await calculateNatalChart(birthInput);
     const analysis = buildWeeklyReadingAnalysis({
       natalChart,
-      weekStartDate,
+      readingStartDate,
       observationTimeZone: primaryProfile.time_zone,
       locale,
     });
@@ -194,6 +204,7 @@ export async function POST(request: Request) {
           prompt_version: WEEKLY_READING_PROMPT_VERSION,
           calculation_version: analysis.method.calculationVersion,
           ephemeris_version: analysis.method.ephemerisVersion,
+          reading_start_date: readingStartDate,
           analysis: analysis as unknown as Json,
           content: content as unknown as Json,
           evidence: analysis.evidence as unknown as Json,
@@ -217,7 +228,8 @@ export async function POST(request: Request) {
       id: readingId,
       user_id: userId,
       birth_profile_id: primaryProfile.id,
-      week_start_date: weekStartDate,
+      week_start_date: entitlementWeekStart,
+      reading_start_date: readingStartDate,
       observation_time_zone: primaryProfile.time_zone,
       locale,
       capability: WEEKLY_READING_CAPABILITY,
@@ -251,7 +263,7 @@ export async function POST(request: Request) {
     if (insertError)
       return json({ error: "The weekly reading could not be saved." }, 500);
 
-    const periodStart = `${weekStartDate}T00:00:00.000Z`;
+    const periodStart = `${entitlementWeekStart}T00:00:00.000Z`;
     const periodEnd = new Date(
       Date.parse(periodStart) + 7 * 86_400_000,
     ).toISOString();
@@ -308,8 +320,11 @@ export async function POST(request: Request) {
       {
         error:
           error instanceof z.ZodError ||
-          (error instanceof Error && error.message === "INVALID_WEEK_START")
-            ? "Choose a valid primary chart and ISO week."
+          (error instanceof Error &&
+            ["INVALID_READING_START", "INVALID_READING_TIME_ZONE"].includes(
+              error.message,
+            ))
+            ? "Choose a valid primary chart and reading time zone."
             : "The weekly reading could not be generated.",
       },
       error instanceof z.ZodError ? 422 : 500,

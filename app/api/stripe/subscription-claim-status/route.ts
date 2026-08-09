@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     const { data: pending } = await admin
       .from("pending_chart_claims")
       .select(
-        "user_id,birth_profile_id,stripe_checkout_session_id,expires_at",
+        "user_id,birth_profile_id,requested_plan_key,stripe_checkout_session_id,expires_at",
       )
       .eq("claim_token_hash", pendingHash)
       .maybeSingle();
@@ -78,12 +78,56 @@ export async function POST(request: NextRequest) {
     ) {
       const { data: existingSubscription } = await admin
         .from("account_subscriptions")
-        .select("stripe_subscription_id")
+        .select("stripe_subscription_id,plan_key")
         .eq("user_id", pending.user_id)
         .in("status", ["active", "trialing", "past_due", "paused"])
         .neq("stripe_subscription_id", subscription.id)
         .maybeSingle();
       if (existingSubscription) {
+        const { data: requestedPlan } = await admin
+          .from("commerce_plans")
+          .select("plan_key,stripe_price_id,active")
+          .eq("plan_key", pending.requested_plan_key)
+          .maybeSingle();
+        const checkoutPriceId = subscription.items.data[0]?.price.id;
+        if (
+          !requestedPlan?.active ||
+          !requestedPlan.stripe_price_id ||
+          subscription.items.data.length !== 1 ||
+          checkoutPriceId !== requestedPlan.stripe_price_id
+        )
+          return json(
+            { error: "Subscription plan could not be verified." },
+            409,
+          );
+
+        const existingStripeSubscription =
+          await stripeClient().subscriptions.retrieve(
+            existingSubscription.stripe_subscription_id,
+          );
+        const existingItem = existingStripeSubscription.items.data[0];
+        if (!existingItem || existingStripeSubscription.items.data.length !== 1)
+          return json(
+            { error: "Subscription plan could not be reconciled." },
+            409,
+          );
+        if (existingItem.price.id !== requestedPlan.stripe_price_id)
+          await stripeClient().subscriptions.update(
+            existingStripeSubscription.id,
+            {
+              items: [
+                { id: existingItem.id, price: requestedPlan.stripe_price_id },
+              ],
+              proration_behavior: "none",
+              metadata: {
+                ...existingStripeSubscription.metadata,
+                application: "celestial_atlas",
+                user_id: pending.user_id,
+                celestial_atlas_plan_key: requestedPlan.plan_key,
+              },
+            },
+          );
+
         const expiresAt = new Date(
           Date.now() + SIGNIN_CLAIM_LIFETIME_SECONDS * 1000,
         ).toISOString();

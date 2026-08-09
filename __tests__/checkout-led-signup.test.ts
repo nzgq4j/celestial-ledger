@@ -44,14 +44,14 @@ describe("checkout-led signup", () => {
   });
 
   it("prefills the existing visitor email in Stripe Checkout", () => {
-    expect(checkoutRoute).toContain("email: z.string().trim().email().max(254)");
+    expect(checkoutRoute).toContain(
+      "email: z.string().trim().email().max(254)",
+    );
     expect(checkoutRoute).toContain("customer_email: input.email");
   });
 
   it("allows a fully discounted subscription to complete without card entry", () => {
-    expect(checkoutRoute).toContain(
-      'payment_method_collection: "if_required"',
-    );
+    expect(checkoutRoute).toContain('payment_method_collection: "if_required"');
   });
 
   it("uses opaque single-use claim tokens and stable server comparison", () => {
@@ -107,5 +107,19 @@ describe("checkout-led signup", () => {
     expect(claimRoute).toContain("subscriptions.cancel(subscription.id)");
     expect(claimRoute).toContain("existingSubscription");
     expect(webhookRoute).toContain("duplicate_subscription_ignored");
+  });
+
+  it("reconciles an existing Stripe line item to the plan selected at checkout", () => {
+    expect(claimRoute).toContain("requested_plan_key");
+    expect(claimRoute).toContain(
+      "checkoutPriceId !== requestedPlan.stripe_price_id",
+    );
+    expect(claimRoute).toContain(
+      "existingItem.price.id !== requestedPlan.stripe_price_id",
+    );
+    expect(claimRoute).toContain('proration_behavior: "none"');
+    expect(claimRoute).toContain(
+      "celestial_atlas_plan_key: requestedPlan.plan_key",
+    );
   });
 });

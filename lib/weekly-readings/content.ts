@@ -136,7 +136,26 @@ export function buildWeeklyReadingContent(
   readingId: string,
 ): WeeklyReadingContent {
   const text = copy[analysis.locale];
-  const dayParagraphs = analysis.dayByDay.map((day) => {
+  const readerDays = analysis.dayByDay.map((day) => {
+    const analysisDay = analysis.days.find(
+      (item) => item.readingDate === day.date,
+    );
+    const signal = analysisDay?.signals.find(
+      (item) => item.theme === day.themeLabel,
+    );
+    const guidance = [...(signal?.practicalApplications ?? [])];
+    if (guidance.length < 2) guidance.push(text.forward);
+    if (guidance.length < 2) guidance.push(text.closing);
+    return {
+      ...day,
+      narrative:
+        signal?.interpretation ??
+        "Treat this as a reflective emphasis: notice how the theme is already showing up, then choose a proportionate response.",
+      guidance: guidance.slice(0, 3),
+      watchFor: signal?.watchFor[0] ?? text.closing,
+    };
+  });
+  const dayParagraphs = readerDays.map((day) => {
     return text.day(
       day.label,
       day.themeLabel,
@@ -194,7 +213,7 @@ export function buildWeeklyReadingContent(
         evidenceIds: priorityDays.flatMap((day) => day.evidenceIds),
       },
     },
-    dayByDay: analysis.dayByDay,
+    dayByDay: readerDays,
     sections: priorityDays.slice(0, 3).map((day, index) => {
       const matchingDays = analysis.dayByDay.filter(
         (item) => item.themeLabel === day.themeLabel,

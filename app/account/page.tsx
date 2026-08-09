@@ -99,8 +99,10 @@ export default async function AccountPage({
     ? ((
         await supabase
           .from("weekly_readings")
-          .select("id,week_start_date,week_end_date,locale,generated_at,status")
-          .order("week_start_date", { ascending: false })
+          .select(
+            "id,week_start_date,week_end_date,reading_start_date,reading_end_date,locale,generated_at,status",
+          )
+          .order("reading_start_date", { ascending: false })
           .limit(24)
       ).data ?? [])
     : [];

@@ -385,6 +385,8 @@ export type Database = {
           method_version: string;
           observation_time_zone: string;
           prompt_version: string;
+          reading_end_date: string;
+          reading_start_date: string;
           rule_version: string;
           schema_version: string;
           status: string;
@@ -413,6 +415,8 @@ export type Database = {
           method_version: string;
           observation_time_zone: string;
           prompt_version: string;
+          reading_end_date?: string;
+          reading_start_date?: string;
           rule_version: string;
           schema_version: string;
           status?: string;
@@ -441,6 +445,8 @@ export type Database = {
           method_version?: string;
           observation_time_zone?: string;
           prompt_version?: string;
+          reading_end_date?: string;
+          reading_start_date?: string;
           rule_version?: string;
           schema_version?: string;
           status?: string;

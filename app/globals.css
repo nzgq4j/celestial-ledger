@@ -4511,6 +4511,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .report-viewer-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
@@ -7481,65 +7482,338 @@ body:has(.account-dashboard) .account-workspace {
   margin-top: 1rem;
 }
 
-.weekly-emphasis-map {
-  margin-top: 2rem;
-  padding: clamp(1.2rem, 3vw, 2.2rem);
-  border: 1px solid rgba(208, 171, 88, 0.3);
-  border-radius: 1rem;
-  background: rgba(13, 25, 41, 0.78);
+.weekly-reading-visuals,
+.weekly-day-guide {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--line);
+  background: var(--panel);
 }
 
-.weekly-emphasis-map > div {
+.weekly-reading-visuals {
+  overflow: hidden;
+  border-color: rgba(201, 167, 93, 0.48);
+  background:
+    radial-gradient(
+      circle at 18% 10%,
+      rgba(201, 167, 93, 0.12),
+      transparent 25rem
+    ),
+    linear-gradient(135deg, rgba(7, 19, 34, 0.94), rgba(3, 10, 19, 0.98));
+}
+
+.weekly-reading-visuals__heading {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-top: 1.25rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.65fr);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 2rem;
 }
 
-.weekly-emphasis-map article {
+.weekly-reading-visuals__heading h2,
+.weekly-day-guide > h2 {
+  margin: 0.45rem 0 0;
+  font:
+    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
+    serif;
+}
+
+.weekly-reading-visuals__heading > p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.65;
+}
+
+.weekly-reading-visuals__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(15rem, 0.62fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.weekly-rhythm-plot {
   min-width: 0;
-  padding: 0.9rem;
-  border: 1px solid rgba(160, 183, 215, 0.16);
-  border-radius: 0.75rem;
-  background: rgba(4, 14, 25, 0.56);
-}
-
-.weekly-emphasis-map time {
-  display: block;
+  margin: 0;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  border: 1px solid rgba(201, 167, 93, 0.22);
+  background: rgba(2, 10, 19, 0.58);
   color: var(--gold);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
 }
 
-.weekly-emphasis-map h3 {
-  margin: 0.6rem 0;
-  font-size: 1rem;
-}
-
-.weekly-emphasis-map meter {
+.weekly-rhythm-plot svg {
+  display: block;
   width: 100%;
-  accent-color: var(--gold);
+  overflow: visible;
 }
 
-.weekly-emphasis-map p,
-.weekly-emphasis-map details {
+.weekly-rhythm-plot__grid {
+  stroke: rgba(190, 202, 219, 0.18);
+  stroke-width: 1;
+}
+
+.weekly-rhythm-plot__area {
+  fill: url("#weekly-rhythm-fill");
+}
+
+.weekly-rhythm-plot__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.weekly-rhythm-plot__point {
+  fill: #071321;
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.weekly-rhythm-plot__day,
+.weekly-rhythm-plot__value {
+  fill: var(--paper);
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.weekly-rhythm-plot__value {
+  fill: var(--muted);
+  font-size: 9px;
+}
+
+.weekly-rhythm-plot figcaption {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.weekly-timeline {
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  border: 1px solid rgba(160, 183, 215, 0.16);
+  background: rgba(2, 10, 19, 0.48);
+}
+
+.weekly-timeline h3 {
+  margin: 0 0 1rem;
+  color: var(--paper);
+  font:
+    400 1.25rem Georgia,
+    serif;
+}
+
+.weekly-timeline ol {
+  position: relative;
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0 0 0 1.2rem;
+  list-style: none;
+}
+
+.weekly-timeline ol::before {
+  position: absolute;
+  inset: 0.45rem auto 0.45rem 0.2rem;
+  width: 1px;
+  content: "";
+  background: linear-gradient(var(--gold), rgba(201, 167, 93, 0.12));
+}
+
+.weekly-timeline li {
+  position: relative;
+  border-bottom: 1px solid rgba(160, 183, 215, 0.12);
+}
+
+.weekly-timeline li::before {
+  position: absolute;
+  top: 1rem;
+  left: -1.31rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  background: #071321;
+  content: "";
+}
+
+.weekly-timeline a {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.7rem 0;
+  color: inherit;
+}
+
+.weekly-timeline time {
+  color: var(--gold);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.weekly-timeline span {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.weekly-day-guide {
+  background:
+    linear-gradient(90deg, rgba(201, 167, 93, 0.045), transparent 34%),
+    var(--panel);
+}
+
+.weekly-day-guide__list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.weekly-day-guide__list > article {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: rgba(3, 11, 20, 0.66);
+  scroll-margin-top: 6rem;
+}
+
+.weekly-day-guide__marker {
+  position: relative;
+  display: grid;
+  place-items: start center;
+  overflow: hidden;
+  padding-top: 1.4rem;
+  border-right: 1px solid var(--line);
+  background: rgba(201, 167, 93, 0.035);
+}
+
+.weekly-day-guide__marker span {
+  position: relative;
+  z-index: 1;
+  color: var(--gold);
+  font:
+    0.7rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+}
+
+.weekly-day-guide__marker i {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(0deg, rgba(201, 167, 93, 0.23), transparent);
+}
+
+.weekly-day-guide__content {
+  min-width: 0;
+  padding: clamp(1.35rem, 3vw, 2.25rem);
+}
+
+.weekly-day-guide__content > time {
+  color: var(--gold);
+  font:
+    0.68rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.weekly-day-guide__content h3 {
+  margin: 0.5rem 0 0.9rem;
+  color: var(--paper);
+  font:
+    400 clamp(1.55rem, 3vw, 2.2rem) / 1.05 Georgia,
+    serif;
+}
+
+.weekly-day-guide__interpretation {
+  max-width: 72ch;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+.weekly-day-guide__practice {
+  max-width: 72ch;
+  margin: 1.35rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 2px solid var(--gold);
+  background: rgba(201, 167, 93, 0.06);
+}
+
+.weekly-day-guide__practice h4 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.weekly-day-guide__practice ul {
+  margin: 0.7rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.weekly-day-guide__practice li,
+.weekly-day-guide__watch,
+.weekly-day-guide details {
+  color: var(--text-soft);
+  line-height: 1.65;
+}
+
+.weekly-day-guide__watch {
+  max-width: 72ch;
+}
+
+.weekly-day-guide__watch strong {
+  color: var(--paper);
+}
+
+.weekly-day-guide details {
+  max-width: 72ch;
+  margin-top: 1.25rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
   font-size: 0.78rem;
 }
 
-.weekly-emphasis-map code {
-  display: block;
-  overflow-wrap: anywhere;
+.weekly-day-guide summary {
+  cursor: pointer;
+  color: var(--gold);
 }
 
-@media (max-width: 900px) {
-  .weekly-emphasis-map > div {
+.weekly-day-guide details ul {
+  margin-bottom: 0;
+}
+
+.weekly-reading-themes > section {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 820px) {
+  .weekly-reading-visuals__heading,
+  .weekly-reading-visuals__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weekly-timeline ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+  }
+
+  .weekly-timeline ol::before,
+  .weekly-timeline li::before {
+    display: none;
   }
 }
 
 @media (max-width: 560px) {
-  .weekly-emphasis-map > div {
+  .weekly-timeline ol {
     grid-template-columns: 1fr;
+  }
+
+  .weekly-day-guide__list > article {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
   }
 }
 .daily-reading-history a {
@@ -8037,6 +8311,7 @@ body:has(.account-dashboard) .account-workspace {
 
 @media print {
   .daily-reading-actions,
+  .report-viewer-actions,
   .site-header,
   .site-footer {
     display: none !important;
@@ -8048,7 +8323,10 @@ body:has(.account-dashboard) .account-workspace {
   .daily-reading-themes,
   .daily-reading-sections > section,
   .daily-reading-questions,
-  .daily-reading-technical {
+  .daily-reading-technical,
+  .weekly-reading-visuals,
+  .weekly-day-guide,
+  .weekly-day-guide__list > article {
     break-inside: avoid;
     border-color: #777;
     background: #fff;

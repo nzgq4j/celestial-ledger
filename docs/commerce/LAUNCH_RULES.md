@@ -23,8 +23,8 @@ Status: approved implementation baseline for test mode. Production activation re
 ## Allowances and credits
 
 - Free: one saved natal chart and one personal daily reading per rolling calendar week.
-- Personal: two saved natal charts, ten personal daily readings per billing month, and one on-demand primary-chart weekly reading per ISO Monday–Sunday week.
-- Premium: five saved natal charts, one primary-chart daily reading, ten companion-chart daily readings per billing month, one on-demand primary-chart weekly reading per ISO Monday–Sunday week, and one standard-report credit after each three successfully paid monthly periods.
+- Personal: two saved natal charts, ten personal daily readings per billing month, and one on-demand primary-chart weekly reading per ISO Monday–Sunday entitlement week. The reading itself starts on the profile-local request date and covers seven inclusive calendar dates.
+- Premium: five saved natal charts, one primary-chart daily reading, ten companion-chart daily readings per billing month, one on-demand primary-chart weekly reading per ISO Monday–Sunday entitlement week, and one standard-report credit after each three successfully paid monthly periods. The reading itself starts on the profile-local request date and covers seven inclusive calendar dates.
 - Weekly reading delivery is in-app with PDF download in the first release; it is not included in automated email delivery.
 - Allowance consumption is atomic, server-authoritative, and idempotent. Unknown capabilities deny by default.
 - Premium quarterly credits expire twelve months after grant, oldest-expiring credits are consumed first, and consumed credits are not restored automatically after report generation.

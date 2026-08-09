@@ -10,7 +10,7 @@ describe("weekly reading PDF", () => {
     const natalChart = await sampleChart();
     const analysis = buildWeeklyReadingAnalysis({
       natalChart,
-      weekStartDate: "2026-08-03",
+      readingStartDate: "2026-08-09",
       observationTimeZone: natalChart.input.place.timeZone,
       locale: "en-GB",
     });

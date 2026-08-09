@@ -43,21 +43,51 @@ export function assertIsoWeekStart(value: string) {
   return value;
 }
 
-export function weekDates(weekStartDate: string) {
-  const start = Date.parse(`${assertIsoWeekStart(weekStartDate)}T00:00:00Z`);
+export function assertReadingStart(value: string) {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+    !Number.isFinite(date.getTime()) ||
+    date.toISOString().slice(0, 10) !== value
+  )
+    throw new Error("INVALID_READING_START");
+  return value;
+}
+
+export function isoDateInTimeZone(value: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone,
+  }).formatToParts(value);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value;
+  const year = part("year");
+  const month = part("month");
+  const day = part("day");
+  if (!year || !month || !day) throw new Error("INVALID_READING_TIME_ZONE");
+  return `${year}-${month}-${day}`;
+}
+
+export function readingDates(readingStartDate: string) {
+  const start = Date.parse(`${assertReadingStart(readingStartDate)}T00:00:00Z`);
   return Array.from({ length: 7 }, (_, index) =>
     new Date(start + index * DAY_MS).toISOString().slice(0, 10),
   );
 }
 
+/** @deprecated Use readingDates; retained for older callers and fixtures. */
+export const weekDates = readingDates;
+
 export function buildWeeklyReadingAnalysis(input: {
   natalChart: NatalChart;
-  weekStartDate: string;
+  readingStartDate: string;
   observationTimeZone: string;
   locale: LocaleTag;
   calculatedAtUtc?: string;
 }): WeeklyReadingAnalysis {
-  const dates = weekDates(input.weekStartDate);
+  const dates = readingDates(input.readingStartDate);
   const calculatedAtUtc = input.calculatedAtUtc ?? new Date().toISOString();
   const days = dates.map((readingDate) =>
     buildDailyReadingAnalysis({
@@ -201,7 +231,8 @@ export function weeklyReadingCacheKey(input: {
   userId: string;
   birthProfileId: string;
   birthProfileUpdatedAt: string;
-  weekStartDate: string;
+  entitlementWeekStart: string;
+  readingStartDate: string;
   observationTimeZone: string;
   locale: LocaleTag;
 }) {

@@ -6,12 +6,15 @@ import {
   dailyThemeSchema,
 } from "@/lib/daily-readings/domain";
 
-export const WEEKLY_READING_SCHEMA_VERSION = "weekly-reading-v3";
-export const WEEKLY_READING_METHOD_VERSION = "weekly-method-v3";
-export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v3";
-export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v4";
-export const WEEKLY_READING_PROMPT_VERSION =
-  "weekly-cross-content-diversity-v4";
+export const WEEKLY_READING_LEGACY_SCHEMA_VERSION = "weekly-reading-v3";
+export const WEEKLY_READING_SCHEMA_VERSION = "weekly-reading-v4";
+export const WEEKLY_READING_LEGACY_METHOD_VERSION = "weekly-method-v3";
+export const WEEKLY_READING_METHOD_VERSION = "weekly-method-v4";
+export const WEEKLY_READING_LEGACY_RULE_VERSION = "weekly-rules-v3";
+export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v4";
+export const WEEKLY_READING_LEGACY_CONTENT_VERSION = "weekly-content-v4";
+export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v5";
+export const WEEKLY_READING_PROMPT_VERSION = "weekly-guidance-first-v5";
 export const WEEKLY_READING_CAPABILITY = "weekly_reading.primary";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -29,7 +32,10 @@ export const weeklyDayEmphasisSchema = z
 
 export const weeklyReadingAnalysisSchema = z
   .object({
-    schemaVersion: z.literal(WEEKLY_READING_SCHEMA_VERSION),
+    schemaVersion: z.enum([
+      WEEKLY_READING_LEGACY_SCHEMA_VERSION,
+      WEEKLY_READING_SCHEMA_VERSION,
+    ]),
     weekStartDate: isoDate,
     weekEndDate: isoDate,
     observationTimeZone: z.string().min(1).max(100),
@@ -38,8 +44,14 @@ export const weeklyReadingAnalysisSchema = z
     method: z
       .object({
         id: z.literal("celestial-atlas-weekly"),
-        version: z.literal(WEEKLY_READING_METHOD_VERSION),
-        ruleVersion: z.literal(WEEKLY_READING_RULE_VERSION),
+        version: z.enum([
+          WEEKLY_READING_LEGACY_METHOD_VERSION,
+          WEEKLY_READING_METHOD_VERSION,
+        ]),
+        ruleVersion: z.enum([
+          WEEKLY_READING_LEGACY_RULE_VERSION,
+          WEEKLY_READING_RULE_VERSION,
+        ]),
         dailyMethodVersion: z.string().min(1),
         calculationVersion: z.string().min(1),
         ephemerisVersion: z.string().min(1),
@@ -83,9 +95,17 @@ const linkedNarrativeSchema = z
   })
   .strict();
 
+export const weeklyReadingDayContentSchema = weeklyDayEmphasisSchema.extend({
+  guidance: z.array(z.string().min(1)).min(2).max(3).optional(),
+  watchFor: z.string().min(1).optional(),
+});
+
 export const weeklyReadingContentSchema = z
   .object({
-    schemaVersion: z.literal(WEEKLY_READING_CONTENT_VERSION),
+    schemaVersion: z.enum([
+      WEEKLY_READING_LEGACY_CONTENT_VERSION,
+      WEEKLY_READING_CONTENT_VERSION,
+    ]),
     readingId: z.string().uuid(),
     weekStartDate: isoDate,
     weekEndDate: isoDate,
@@ -117,7 +137,7 @@ export const weeklyReadingContentSchema = z
         forwardLook: linkedNarrativeSchema,
       })
       .strict(),
-    dayByDay: z.array(weeklyDayEmphasisSchema).length(7),
+    dayByDay: z.array(weeklyReadingDayContentSchema).length(7),
     sections: z
       .array(
         z
@@ -139,7 +159,6 @@ export const weeklyReadingContentSchema = z
 export const generateWeeklyReadingRequestSchema = z
   .object({
     birthProfileId: z.string().uuid(),
-    weekStartDate: isoDate.optional(),
     locale: z.enum(localeTags).optional(),
   })
   .strict();

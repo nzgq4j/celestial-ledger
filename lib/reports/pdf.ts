@@ -33,6 +33,16 @@ export type PdfReport = {
     body1?: string;
     body2?: string;
   }>;
+  weeklyRhythm?: {
+    title: string;
+    description: string;
+    timelineTitle: string;
+    days: Array<{
+      label: string;
+      theme: string;
+      strength: number;
+    }>;
+  };
   generatedAt: string;
   labels?: {
     bottomLine: string;
@@ -272,6 +282,116 @@ export async function buildReportPdf(report: PdfReport) {
     );
   };
 
+  const drawWeeklyRhythm = () => {
+    const rhythm = report.weeklyRhythm;
+    if (!rhythm?.days.length) return;
+    newPage();
+    text("SEVEN-DAY MAP", {
+      font: sansBold,
+      size: 8,
+      color: gold,
+      gap: 6,
+    });
+    text(rhythm.title, { font: serifBold, size: 22, gap: 7 });
+    text(rhythm.description, { font: sans, size: 9, color: muted, gap: 18 });
+
+    const chartLeft = MARGIN + 18;
+    const chartRight = PAGE_WIDTH - MARGIN - 18;
+    const chartTop = y;
+    const chartBottom = y - 142;
+    [0, 0.5, 1].forEach((level) => {
+      const lineY = chartBottom + (chartTop - chartBottom) * level;
+      page.drawLine({
+        start: { x: chartLeft, y: lineY },
+        end: { x: chartRight, y: lineY },
+        thickness: 0.45,
+        color: rgb(0.78, 0.79, 0.77),
+      });
+    });
+    const points = rhythm.days.map((day, index) => ({
+      x:
+        chartLeft +
+        ((chartRight - chartLeft) * index) /
+          Math.max(1, rhythm.days.length - 1),
+      y:
+        chartBottom +
+        (chartTop - chartBottom) * Math.max(0, Math.min(1, day.strength)),
+      day,
+    }));
+    points.forEach((point, index) => {
+      const next = points[index + 1];
+      if (next)
+        page.drawLine({
+          start: point,
+          end: next,
+          thickness: 2,
+          color: gold,
+        });
+      page.drawCircle({
+        x: point.x,
+        y: point.y,
+        size: 4.5,
+        color: navy,
+        borderColor: gold,
+        borderWidth: 1.4,
+      });
+      const shortDay = safeText(point.day.label.split(/\s+/)[0].slice(0, 3));
+      const labelWidth = sansBold.widthOfTextAtSize(shortDay, 7);
+      page.drawText(shortDay, {
+        x: point.x - labelWidth / 2,
+        y: chartBottom - 16,
+        size: 7,
+        font: sansBold,
+        color: ink,
+      });
+      const value = `${Math.round(point.day.strength * 100)}`;
+      const valueWidth = sans.widthOfTextAtSize(value, 6.5);
+      page.drawText(value, {
+        x: point.x - valueWidth / 2,
+        y: chartBottom - 27,
+        size: 6.5,
+        font: sans,
+        color: muted,
+      });
+    });
+    y = chartBottom - 54;
+    text("0-100 shows relative emphasis within this reading only.", {
+      font: sans,
+      size: 7,
+      color: muted,
+      gap: 15,
+    });
+    text(rhythm.timelineTitle.toUpperCase(), {
+      font: sansBold,
+      size: 8,
+      color: gold,
+      gap: 8,
+    });
+    rhythm.days.forEach((day, index) => {
+      ensure(36);
+      const nodeY = y - 2;
+      if (index < rhythm.days.length - 1)
+        page.drawLine({
+          start: { x: MARGIN + 5, y: nodeY - 4 },
+          end: { x: MARGIN + 5, y: nodeY - 31 },
+          thickness: 0.8,
+          color: gold,
+        });
+      page.drawCircle({
+        x: MARGIN + 5,
+        y: nodeY,
+        size: 3.2,
+        color: gold,
+      });
+      text(`${day.label}  /  ${day.theme}`, {
+        font: index === 0 ? sansBold : sans,
+        size: 9,
+        indent: 17,
+        gap: 4,
+      });
+    });
+  };
+
   newPage();
   page.drawRectangle({
     x: 0,
@@ -305,6 +425,8 @@ export async function buildReportPdf(report: PdfReport) {
     });
     text(note, { font: sans, size: 9, indent: 10, gap: 12 });
   }
+
+  drawWeeklyRhythm();
 
   report.sections.forEach((section, index) => {
     ensure(160);
