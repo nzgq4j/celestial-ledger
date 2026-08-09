@@ -11,7 +11,7 @@ import { recentContentInstruction } from "@/lib/content-similarity/recent-contex
 import { assertReportContentDiversity } from "@/lib/reports/similarity";
 
 export const RECOVERY_SCHEMA_VERSION = "recovery-6";
-export const RECOVERY_PROMPT_VERSION = "recovery-7";
+export const RECOVERY_PROMPT_VERSION = "recovery-8";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([

@@ -4,8 +4,12 @@ import {
   contentTokens,
 } from "@/lib/content-similarity/similarity";
 import {
+  assembleRecentContentContext,
+  recentContentInstruction,
   readerProse,
+  rollingLookbackStart,
   type RecentContentContext,
+  type RecentContentItem,
 } from "@/lib/content-similarity/recent-context";
 import { horoscopeSimilarity } from "@/lib/horoscopes/similarity";
 import {
@@ -13,7 +17,10 @@ import {
   WEEKLY_NARRATIVE_SIMILARITY_THRESHOLD,
 } from "@/lib/weekly-readings/calculation";
 import { assertDailyReadingDiversity } from "@/lib/daily-readings/generated";
-import { assertReportContentDiversity } from "@/lib/reports/similarity";
+import {
+  assertReportContentDiversity,
+  isReportDiversityFailure,
+} from "@/lib/reports/similarity";
 import fs from "node:fs";
 
 function legacyHoroscopeSimilarity(left: string, right: string) {
@@ -193,5 +200,127 @@ describe("shared generated-content similarity", () => {
         context([], [prior]),
       ),
     ).toThrow("DAILY_READING_CROSS_TYPE_SIMILARITY_FAILED");
+  });
+
+  it("catches a copied section even when the rest of a long document dilutes it", () => {
+    const distinctCandidate =
+      "Choose one unfinished obligation and reduce it to a bounded next action that can be completed without recruiting anyone else today.";
+    const distinctPrior =
+      "Protect unstructured time for a private experiment, allowing curiosity to lead before deciding whether the result deserves a public form.";
+    const candidate = {
+      sections: [{ narrative: repeated }, { narrative: distinctCandidate }],
+    };
+    const prior: RecentContentItem = {
+      id: "prior-long",
+      kind: "daily",
+      periodStart: "2026-08-07",
+      periodEnd: "2026-08-07",
+      generatedAt: "2026-08-07T12:00:00Z",
+      text: `${repeated}\n${distinctPrior}`,
+      segments: [repeated, distinctPrior],
+    };
+    expect(contentSimilarity(readerProse(candidate), prior.text)).toBeLessThan(
+      0.38,
+    );
+    expect(() =>
+      assertDailyReadingDiversity(candidate, context([prior])),
+    ).toThrow("DAILY_READING_HISTORICAL_SIMILARITY_FAILED");
+  });
+
+  it("uses a rolling seven-day window, newest-first ordering, and bounded context", () => {
+    expect(rollingLookbackStart("2026-08-09")).toBe("2026-08-03");
+    const makeItem = (
+      id: string,
+      kind: RecentContentItem["kind"],
+      periodStart: string,
+      generatedAt: string,
+    ): RecentContentItem => ({
+      id,
+      kind,
+      periodStart,
+      periodEnd: periodStart,
+      generatedAt,
+      text: `A sufficiently long reader-facing passage for context item ${id} remains distinct from every neighboring example in this regression test.`,
+    });
+    const sameType = Array.from({ length: 9 }, (_, index) =>
+      makeItem(
+        `daily-${index}`,
+        "daily",
+        "2026-07-20",
+        `2026-08-${String(index + 1).padStart(2, "0")}T12:00:00Z`,
+      ),
+    );
+    const crossType = Array.from({ length: 9 }, (_, index) =>
+      makeItem(
+        `weekly-${index}`,
+        "weekly",
+        index === 0 ? "2026-08-02" : "2026-08-03",
+        index === 0
+          ? "2026-08-20T13:00:00Z"
+          : `2026-08-${String(index + 1).padStart(2, "0")}T13:00:00Z`,
+      ),
+    );
+    const result = assembleRecentContentContext([...sameType, ...crossType], {
+      currentKind: "daily",
+      periodStart: "2026-08-09",
+      periodEnd: "2026-08-09",
+    });
+    expect(result.sameType).toHaveLength(7);
+    expect(result.sameType[0]?.id).toBe("daily-8");
+    expect(result.crossType).toHaveLength(7);
+    expect(result.crossType.some((item) => item.id === "weekly-0")).toBe(false);
+    expect(result.crossType[0]?.id).toBe("weekly-8");
+    const source = fs.readFileSync(
+      "lib/content-similarity/recent-context.ts",
+      "utf8",
+    );
+    expect(source).toContain('.lte("reading_start_date", input.periodEnd)');
+    expect(source).toContain("periodStart: row.reading_start_date");
+  });
+
+  it("sends representative prior passages instead of only the opening", () => {
+    const segments = [
+      "Opening passage establishes a grounded question about work, attention, timing, and the practical boundary that supports all four.",
+      "Second passage should not be selected because bounded context needs representative coverage without reproducing the complete private reading.",
+      "Middle passage introduces a different decision point and concrete guidance for testing the choice before making a larger commitment.",
+      "Fourth passage should also remain absent so that the prompt stays compact while still covering more than the opening words.",
+      "Closing passage turns the interpretation into a reflective question about what should continue, change, or be released after this week.",
+    ];
+    const instruction = recentContentInstruction(
+      context([
+        {
+          id: "prior",
+          kind: "daily",
+          periodStart: "2026-08-08",
+          periodEnd: "2026-08-08",
+          generatedAt: "2026-08-08T12:00:00Z",
+          text: segments.join("\n"),
+          segments,
+        },
+      ]),
+    );
+    expect(instruction).toContain("Opening passage establishes");
+    expect(instruction).toContain("Middle passage introduces");
+    expect(instruction).toContain("Closing passage turns");
+    expect(instruction).not.toContain("Second passage should not");
+    expect(instruction).not.toContain("Fourth passage should also");
+    expect(instruction).toContain("same real evidence");
+  });
+
+  it("marks only diversity failures as non-retryable report generation", () => {
+    for (const code of [
+      "REPORT_SECTION_DUPLICATION_FAILED",
+      "REPORT_HISTORICAL_SIMILARITY_FAILED",
+      "REPORT_CROSS_TYPE_SIMILARITY_FAILED",
+    ])
+      expect(isReportDiversityFailure(new Error(code))).toBe(true);
+    expect(isReportDiversityFailure(new Error("COMPLETION_FAILED"))).toBe(
+      false,
+    );
+    const worker = fs.readFileSync(
+      "app/api/internal/report-worker/route.ts",
+      "utf8",
+    );
+    expect(worker).toContain("!isReportDiversityFailure(error)");
   });
 });

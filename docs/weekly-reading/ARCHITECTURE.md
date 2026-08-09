@@ -16,7 +16,7 @@ Account server component
   -> seven daily calculation windows through the existing daily engine
   -> week-scoped evidence aggregation and day emphasis map
   -> interpretation-first model prose with practical guidance, bound to deterministic evidence
-  -> same-type and overlapping cross-type similarity validation
+  -> same-type and rolling seven-day/period-overlap cross-type similarity validation
   -> private one-year persistence
   -> atomic weekly capability consumption after successful persistence
   -> owner-only viewer and PDF

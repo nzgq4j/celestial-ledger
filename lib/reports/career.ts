@@ -8,7 +8,7 @@ import { recentContentInstruction } from "@/lib/content-similarity/recent-contex
 import { assertReportContentDiversity } from "@/lib/reports/similarity";
 
 export const CAREER_SCHEMA_VERSION = "career-6";
-export const CAREER_PROMPT_VERSION = "career-8";
+export const CAREER_PROMPT_VERSION = "career-9";
 export const CAREER_SAFETY_VERSION = "reflection-1";
 
 export const careerThemeSchema = z.enum([

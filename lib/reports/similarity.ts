@@ -7,6 +7,16 @@ import {
 
 export const REPORT_SECTION_SIMILARITY_THRESHOLD = 0.36;
 
+const REPORT_DIVERSITY_FAILURES = new Set([
+  "REPORT_SECTION_DUPLICATION_FAILED",
+  "REPORT_HISTORICAL_SIMILARITY_FAILED",
+  "REPORT_CROSS_TYPE_SIMILARITY_FAILED",
+]);
+
+export function isReportDiversityFailure(error: unknown) {
+  return error instanceof Error && REPORT_DIVERSITY_FAILURES.has(error.message);
+}
+
 export function assertReportContentDiversity(
   report: { sections: unknown[] },
   context?: RecentContentContext,

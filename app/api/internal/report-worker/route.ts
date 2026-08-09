@@ -23,6 +23,7 @@ import { bindEvidenceIds } from "@/lib/reports/evidence-schema";
 import { defaultLocale, isLocaleTag } from "@/lib/i18n/config";
 import { getConfiguredModel } from "@/lib/admin/settings";
 import { loadRecentContentContext } from "@/lib/content-similarity/recent-context";
+import { isReportDiversityFailure } from "@/lib/reports/similarity";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -103,14 +104,12 @@ export async function runNextReportJob() {
       maxRetries: 0,
     });
     const today = new Date().toISOString().slice(0, 10);
-    const periodStartDate = new Date(`${today}T00:00:00.000Z`);
-    periodStartDate.setUTCDate(periodStartDate.getUTCDate() - 6);
     const recentContext = await loadRecentContentContext({
       admin,
       userId: job.user_id,
       birthProfileId: job.birth_profile_id,
       currentKind: "report",
-      periodStart: periodStartDate.toISOString().slice(0, 10),
+      periodStart: today,
       periodEnd: today,
       locale: reportLocale,
       reportType: job.report_type,
@@ -236,7 +235,9 @@ export async function runNextReportJob() {
     await admin.rpc("fail_report_job", {
       p_report_id: job.id,
       p_failure_code: code,
-      p_retryable: !/UNSUPPORTED|BIRTH_PROFILE_NOT_FOUND/.test(code),
+      p_retryable:
+        !isReportDiversityFailure(error) &&
+        !/UNSUPPORTED|BIRTH_PROFILE_NOT_FOUND/.test(code),
     });
     console.error(
       JSON.stringify({

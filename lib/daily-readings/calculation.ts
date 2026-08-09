@@ -13,6 +13,7 @@ import { normalizeLongitude, longitudeToZodiac } from "@/lib/zodiac";
 import type { LocaleTag } from "@/lib/i18n/config";
 import {
   DAILY_READING_METHOD_VERSION,
+  DAILY_READING_PROMPT_VERSION,
   DAILY_READING_RULE_VERSION,
   DAILY_READING_SCHEMA_VERSION,
   dailyReadingAnalysisSchema,
@@ -596,6 +597,7 @@ export function dailyReadingCacheKey(input: {
         input.observationTimeZone,
         input.locale,
         DAILY_READING_METHOD_VERSION,
+        DAILY_READING_PROMPT_VERSION,
         DAILY_READING_RULE_VERSION,
         CALCULATION_VERSION,
         ASTRONOMY_ENGINE_VERSION,
