@@ -14,7 +14,7 @@ export const WEEKLY_READING_LEGACY_RULE_VERSION = "weekly-rules-v3";
 export const WEEKLY_READING_RULE_VERSION = "weekly-rules-v4";
 export const WEEKLY_READING_LEGACY_CONTENT_VERSION = "weekly-content-v4";
 export const WEEKLY_READING_CONTENT_VERSION = "weekly-content-v5";
-export const WEEKLY_READING_PROMPT_VERSION = "weekly-guidance-first-v6";
+export const WEEKLY_READING_PROMPT_VERSION = "weekly-reader-facing-v7";
 export const WEEKLY_READING_CAPABILITY = "weekly_reading.primary";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);

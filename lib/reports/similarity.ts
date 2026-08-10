@@ -2,8 +2,10 @@ import { maximumPairwiseSimilarity } from "@/lib/content-similarity/similarity";
 import {
   assertRecentContentDiversity,
   readerProse,
+  readerProseSegments,
   type RecentContentContext,
 } from "@/lib/content-similarity/recent-context";
+import { hasReaderFacingTechnicalLeak } from "@/lib/reader-facing-copy";
 
 export const REPORT_SECTION_SIMILARITY_THRESHOLD = 0.36;
 
@@ -12,6 +14,11 @@ const REPORT_DIVERSITY_FAILURES = new Set([
   "REPORT_HISTORICAL_SIMILARITY_FAILED",
   "REPORT_CROSS_TYPE_SIMILARITY_FAILED",
 ]);
+
+export function assertReportReaderFacingCopy(report: unknown) {
+  if (readerProseSegments(report).some(hasReaderFacingTechnicalLeak))
+    throw new Error("REPORT_TECHNICAL_COPY_LEAK");
+}
 
 export function isReportDiversityFailure(error: unknown) {
   return error instanceof Error && REPORT_DIVERSITY_FAILURES.has(error.message);

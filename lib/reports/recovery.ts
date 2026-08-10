@@ -8,10 +8,13 @@ import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 import type { RecentContentContext } from "@/lib/content-similarity/recent-context";
 import { recentContentInstruction } from "@/lib/content-similarity/recent-context";
-import { assertReportContentDiversity } from "@/lib/reports/similarity";
+import {
+  assertReportContentDiversity,
+  assertReportReaderFacingCopy,
+} from "@/lib/reports/similarity";
 
 export const RECOVERY_SCHEMA_VERSION = "recovery-6";
-export const RECOVERY_PROMPT_VERSION = "recovery-8";
+export const RECOVERY_PROMPT_VERSION = "recovery-reader-facing-9";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
 
 export const recoveryThemeSchema = z.enum([
@@ -157,7 +160,7 @@ export function recoveryPrompt(
   const labels = recoveryThemes
     .filter((theme) => themes.includes(theme.id))
     .map((theme) => `${theme.id}: ${theme.label} — ${theme.detail}`);
-  return `Create a Celestial Atlas Recovery Reflection from the immutable natal evidence and reviewed themes below.
+  return `Create a Celestial Atlas Recovery Reflection as reader-facing interpretation and practical guidance. Use only the chart evidence and reviewed themes below, but keep technical support out of the prose; the application attaches the evidence separately.
 
 Voice and craft:
 ${reportLanguageInstruction(locale)}
@@ -166,6 +169,8 @@ ${reportLanguageInstruction(locale)}
 - Use only the selected themes, with exactly one section per theme and no additional sections.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
 - Structure every section with: a concise bottomLine field (the BLUF), a narrative of 650-800 words of interpretation and analysis (always within the enforced 500-1,000 word range), a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
+- Do not put technical evidence in reader-facing prose. Do not write "Evidence:", "evidence bundle", "supplied evidence", "immutable evidence", raw IDs, scores, orb values, longitude, provenance, or calculation metadata in title, introduction, bottomLine, narrative, bringIntoLife, reflectionQuestions, journalingPrompts, or closing.
+- Let the evidence shape the meaning silently. The reader should feel a clear interpretation of steadiness, choice, repair, boundaries, support, and renewal, not a technical audit of chart mechanics.
 - Without naming, citing, or alluding to any recovery program or therapy model, weave in relevant principles such as honest self-inventory, acceptance of what cannot be controlled, responsibility for present choices, repair where safe and appropriate, connection with trusted support, attention to one day and one action at a time, identifying automatic thoughts, testing interpretations against evidence, reframing unhelpful patterns, noticing triggers, and choosing workable alternative responses.
 - Apply those principles specifically to the selected theme and supplied chart evidence; do not turn them into generic recovery advice or repeat the same principles in every section.
 - Never invent or recalculate chart facts. Every section must cite supplied evidence IDs.
@@ -259,4 +264,5 @@ export function validateRecoveryReport(
   )
     throw new Error("MISSING_RECOVERY_THEME");
   assertReportContentDiversity(report, recentContext);
+  assertReportReaderFacingCopy(report);
 }

@@ -5,10 +5,13 @@ import type { LocaleTag } from "@/lib/i18n/config";
 import { reportLanguageInstruction } from "@/lib/reports/language";
 import type { RecentContentContext } from "@/lib/content-similarity/recent-context";
 import { recentContentInstruction } from "@/lib/content-similarity/recent-context";
-import { assertReportContentDiversity } from "@/lib/reports/similarity";
+import {
+  assertReportContentDiversity,
+  assertReportReaderFacingCopy,
+} from "@/lib/reports/similarity";
 
 export const CAREER_SCHEMA_VERSION = "career-6";
-export const CAREER_PROMPT_VERSION = "career-9";
+export const CAREER_PROMPT_VERSION = "career-reader-facing-10";
 export const CAREER_SAFETY_VERSION = "reflection-1";
 
 export const careerThemeSchema = z.enum([
@@ -244,7 +247,7 @@ export function careerPrompt(
   const selectedThemes = careerThemes
     .filter((theme) => themes.includes(theme.id))
     .map((theme) => `${theme.id}: ${theme.label} — ${theme.detail}`);
-  return `Write a Career and Purpose reflection using only the immutable evidence bundle below.
+  return `Write a Career and Purpose reflection as reader-facing interpretation and practical guidance. Use only the chart evidence below, but keep the technical support out of the prose; the application attaches the evidence separately.
 
 Rules:
 ${reportLanguageInstruction(locale)}
@@ -254,9 +257,11 @@ ${reportLanguageInstruction(locale)}
 - Write exactly one section for each selected theme, set its theme field to that theme ID, and do not add sections for unselected themes.
 - Structure every section with: a concise bottomLine field (the BLUF), a narrative of 650-800 words of interpretation and analysis (always within the enforced 500-1,000 word range), a specific bringIntoLife field containing practical ways to embody the insight, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
+- Do not put technical evidence in reader-facing prose. Do not write "Evidence:", "evidence bundle", "supplied evidence", "immutable evidence", raw IDs, scores, orb values, longitude, provenance, or calculation metadata in title, introduction, bottomLine, narrative, bringIntoLife, reflectionQuestions, journalingPrompts, closing, or disclaimer.
+- Let the evidence shape the meaning silently. The reader should feel a clear interpretation of work, choice, timing, and contribution, not a technical audit of chart mechanics.
 - Do not predict employment, income, promotion, success, status, or outcomes.
 - Do not provide medical, legal, financial, or mental-health advice.
-- Use measured, non-deterministic language. Explain technical terms briefly.
+- Use measured, non-deterministic language. If an astrological term is named, make its practical meaning immediately clear without turning the section into technique notes.
 - If timeKnown is false, do not make house-, angle-, vocation-axis-, or exact-timing claims.
 - The disclaimer must explicitly describe the report as reflective rather than predictive.
 
@@ -313,4 +318,5 @@ export function validateEvidenceLinks(
   )
     throw new Error("MISSING_CAREER_THEME");
   assertReportContentDiversity(report, recentContext);
+  assertReportReaderFacingCopy(report);
 }
