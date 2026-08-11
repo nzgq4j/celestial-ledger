@@ -14,6 +14,8 @@ export const TAROT_DECK_BUCKET = "tarot-decks";
 export const TAROT_SIGNED_URL_SECONDS = 15 * 60;
 
 type TarotDeckRow = Database["public"]["Tables"]["tarot_decks"]["Row"];
+type TarotDeckCardFaceRow =
+  Database["public"]["Tables"]["tarot_deck_card_faces"]["Row"];
 
 const PLAN_KEYS = new Set<PlanKey>(["free", "personal", "premium"]);
 const ACCENT_TOKENS = new Set<TarotDeckAccent>([
@@ -163,4 +165,46 @@ export async function signTarotDeckArtworkForAdmin(row: TarotDeckRow) {
     signedUrl(row.card_back_image_path).catch(() => null),
   ]);
   return { coverImageUrl, cardBackImageUrl };
+}
+
+export async function signedTarotCardFaceUrlsForDeck(
+  deckId: string,
+  cardIds: readonly string[],
+) {
+  const uniqueCardIds = [...new Set(cardIds)];
+  const signedUrls = new Map<string, string>();
+  if (!uniqueCardIds.length) return signedUrls;
+
+  const { data, error } = await createAdminClient()
+    .from("tarot_deck_card_faces")
+    .select("card_id,image_path")
+    .eq("deck_id", deckId)
+    .in("card_id", uniqueCardIds);
+  if (error) return signedUrls;
+
+  const entries = await Promise.all(
+    (data as Pick<TarotDeckCardFaceRow, "card_id" | "image_path">[]).map(
+      async (row) => ({
+        cardId: row.card_id,
+        url: await signedUrl(row.image_path).catch(() => null),
+      }),
+    ),
+  );
+  for (const entry of entries) {
+    if (entry.url) signedUrls.set(entry.cardId, entry.url);
+  }
+  return signedUrls;
+}
+
+export async function listTarotDeckCardFaceCountsForAdmin() {
+  const { data, error } = await createAdminClient()
+    .from("tarot_deck_card_faces")
+    .select("deck_id,card_id");
+  if (error) return { counts: new Map<string, number>(), error };
+
+  const counts = new Map<string, number>();
+  for (const row of data as Pick<TarotDeckCardFaceRow, "deck_id">[]) {
+    counts.set(row.deck_id, (counts.get(row.deck_id) ?? 0) + 1);
+  }
+  return { counts, error: null };
 }

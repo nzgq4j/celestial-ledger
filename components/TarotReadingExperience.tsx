@@ -21,6 +21,7 @@ type ReadingCard = {
   arcana: "major" | "minor";
   suit: TarotSuit | null;
   number: number | null;
+  faceImageUrl: string | null;
   position: string;
   orientation: TarotOrientation;
   meaning: string;
@@ -61,8 +62,7 @@ export function TarotReadingExperience({
   const [error, setError] = useState("");
   const [result, setResult] = useState<DrawResponse | null>(null);
 
-  const selectedDeck =
-    visibleDecks.find((deck) => deck.id === deckId) ?? null;
+  const selectedDeck = visibleDecks.find((deck) => deck.id === deckId) ?? null;
   const selectedReading =
     readings.find((reading) => reading.id === readingId) ?? null;
   const stepNames = [
@@ -414,6 +414,7 @@ export function TarotReadingExperience({
                   suit={item.suit}
                   number={item.number}
                   name={item.name}
+                  imageUrl={item.faceImageUrl}
                   className="tarot-card-plate"
                 />
                 <div className="tarot-result-card__copy">

@@ -82,6 +82,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Manage deck access and private cover/card-back artwork. Images are normalised to WebP and served with short-lived signed URLs.",
     adminMigrationPending:
       "The tarot deck catalogue is waiting for its database migration.",
+    adminCardFacesMigrationPending:
+      "Card-face uploads are waiting for their database migration. Covers and card backs can still be managed.",
     adminCreateDeck: "Create deck",
     adminStableId: "Stable ID",
     adminStableIdHelp: "Lowercase letters, numbers, and hyphens",
@@ -116,8 +118,14 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "No tarot decks yet. Create the default Free deck first, then upload its cover and card back before activating it.",
     adminCover: "Deck cover",
     adminCardBack: "Card back",
+    adminCardFace: "Card face",
+    adminCardFaceSelect: "Card face",
+    adminChooseCardFace: "Choose a card",
+    adminCardFaceSelectHelp: "Pick the card face this image belongs to.",
     adminCoverHelp: "3:4 portrait · JPEG, PNG, WebP, or AVIF · 4 MB maximum",
     adminCardBackHelp: "5:8 portrait · JPEG, PNG, WebP, or AVIF · 4 MB maximum",
+    adminCardFaceHelp: "5:8 portrait · JPEG, PNG, WebP, or AVIF · 4 MB maximum",
+    adminCardFacesSummary: "{count} of {total} card faces uploaded",
     adminUpload: "Upload",
     adminReplace: "Replace",
     adminUploading: "Uploading…",
@@ -130,6 +138,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminTooSmall: "The image dimensions are too small.",
     adminWrongAspect:
       "The image does not match the required portrait proportions.",
+    adminInvalidCard: "Choose a valid tarot card before uploading.",
     adminSessionExpired: "Your administrator session has expired.",
     adminForbidden: "Your role cannot manage tarot artwork.",
     adminUploadFailed: "The image could not be saved.",
@@ -218,6 +227,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Gestiona el acceso y las imágenes privadas de portada y reverso. Las imágenes se normalizan a WebP y se sirven con URL firmadas de corta duración.",
     adminMigrationPending:
       "El catálogo de barajas de tarot está esperando su migración de base de datos.",
+    adminCardFacesMigrationPending:
+      "La carga de caras de cartas está esperando su migración de base de datos. Las portadas y reversos aún se pueden gestionar.",
     adminCreateDeck: "Crear baraja",
     adminStableId: "ID estable",
     adminStableIdHelp: "Letras minúsculas, números y guiones",
@@ -252,8 +263,14 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Aún no hay barajas. Crea primero la baraja gratuita predeterminada y carga la portada y el reverso antes de activarla.",
     adminCover: "Portada de la baraja",
     adminCardBack: "Reverso de la carta",
+    adminCardFace: "Cara de la carta",
+    adminCardFaceSelect: "Cara de la carta",
+    adminChooseCardFace: "Elige una carta",
+    adminCardFaceSelectHelp: "Elige la carta a la que pertenece esta imagen.",
     adminCoverHelp: "Retrato 3:4 · JPEG, PNG, WebP o AVIF · máximo 4 MB",
     adminCardBackHelp: "Retrato 5:8 · JPEG, PNG, WebP o AVIF · máximo 4 MB",
+    adminCardFaceHelp: "Retrato 5:8 · JPEG, PNG, WebP o AVIF · máximo 4 MB",
+    adminCardFacesSummary: "{count} de {total} caras de cartas cargadas",
     adminUpload: "Cargar",
     adminReplace: "Sustituir",
     adminUploading: "Cargando…",
@@ -266,6 +283,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminTooSmall: "Las dimensiones de la imagen son demasiado pequeñas.",
     adminWrongAspect:
       "La imagen no tiene las proporciones verticales requeridas.",
+    adminInvalidCard: "Elige una carta de tarot válida antes de cargarla.",
     adminSessionExpired: "Tu sesión de administración ha caducado.",
     adminForbidden: "Tu rol no puede gestionar imágenes de tarot.",
     adminUploadFailed: "No se pudo guardar la imagen.",
@@ -354,6 +372,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Gérez l’accès et les images privées de couverture et de dos. Les images sont normalisées en WebP et servies par des URL signées de courte durée.",
     adminMigrationPending:
       "Le catalogue des jeux de tarot attend sa migration de base de données.",
+    adminCardFacesMigrationPending:
+      "L’envoi des faces de carte attend sa migration de base de données. Les couvertures et dos restent gérables.",
     adminCreateDeck: "Créer un jeu",
     adminStableId: "Identifiant stable",
     adminStableIdHelp: "Lettres minuscules, chiffres et tirets",
@@ -388,8 +408,15 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Aucun jeu pour le moment. Créez d’abord le jeu Gratuit par défaut, puis envoyez sa couverture et son dos avant de l’activer.",
     adminCover: "Couverture du jeu",
     adminCardBack: "Dos de carte",
+    adminCardFace: "Face de carte",
+    adminCardFaceSelect: "Face de carte",
+    adminChooseCardFace: "Choisir une carte",
+    adminCardFaceSelectHelp:
+      "Choisissez la carte à laquelle cette image appartient.",
     adminCoverHelp: "Portrait 3:4 · JPEG, PNG, WebP ou AVIF · 4 Mo maximum",
     adminCardBackHelp: "Portrait 5:8 · JPEG, PNG, WebP ou AVIF · 4 Mo maximum",
+    adminCardFaceHelp: "Portrait 5:8 · JPEG, PNG, WebP ou AVIF · 4 Mo maximum",
+    adminCardFacesSummary: "{count} faces de carte sur {total} envoyées",
     adminUpload: "Envoyer",
     adminReplace: "Remplacer",
     adminUploading: "Envoi…",
@@ -402,6 +429,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminTooSmall: "Les dimensions de l’image sont insuffisantes.",
     adminWrongAspect:
       "L’image ne respecte pas les proportions verticales requises.",
+    adminInvalidCard: "Choisissez une carte de tarot valide avant l’envoi.",
     adminSessionExpired: "Votre session d’administration a expiré.",
     adminForbidden: "Votre rôle ne permet pas de gérer les images de tarot.",
     adminUploadFailed: "L’image n’a pas pu être enregistrée.",
@@ -490,6 +518,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Verwalte Deck-Zugriff sowie private Cover- und Kartenrückseiten. Bilder werden als WebP normalisiert und über kurzlebige signierte URLs ausgeliefert.",
     adminMigrationPending:
       "Der Tarot-Deck-Katalog wartet auf seine Datenbankmigration.",
+    adminCardFacesMigrationPending:
+      "Uploads für Kartenvorderseiten warten auf ihre Datenbankmigration. Cover und Kartenrückseiten können weiter verwaltet werden.",
     adminCreateDeck: "Deck erstellen",
     adminStableId: "Stabile ID",
     adminStableIdHelp: "Kleinbuchstaben, Zahlen und Bindestriche",
@@ -524,9 +554,16 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Noch keine Tarot-Decks. Erstelle zuerst das standardmäßige Free-Deck und lade Cover sowie Kartenrückseite hoch, bevor du es aktivierst.",
     adminCover: "Deck-Cover",
     adminCardBack: "Kartenrückseite",
+    adminCardFace: "Kartenvorderseite",
+    adminCardFaceSelect: "Kartenvorderseite",
+    adminChooseCardFace: "Karte auswählen",
+    adminCardFaceSelectHelp: "Wähle die Karte aus, zu der dieses Bild gehört.",
     adminCoverHelp: "Hochformat 3:4 · JPEG, PNG, WebP oder AVIF · maximal 4 MB",
     adminCardBackHelp:
       "Hochformat 5:8 · JPEG, PNG, WebP oder AVIF · maximal 4 MB",
+    adminCardFaceHelp:
+      "Hochformat 5:8 · JPEG, PNG, WebP oder AVIF · maximal 4 MB",
+    adminCardFacesSummary: "{count} von {total} Kartenvorderseiten hochgeladen",
     adminUpload: "Hochladen",
     adminReplace: "Ersetzen",
     adminUploading: "Wird hochgeladen…",
@@ -539,6 +576,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminTooSmall: "Die Bildabmessungen sind zu klein.",
     adminWrongAspect:
       "Das Bild entspricht nicht den erforderlichen Hochformatproportionen.",
+    adminInvalidCard: "Wähle vor dem Hochladen eine gültige Tarotkarte.",
     adminSessionExpired: "Deine Administratorsitzung ist abgelaufen.",
     adminForbidden: "Deine Rolle darf keine Tarot-Bilder verwalten.",
     adminUploadFailed: "Das Bild konnte nicht gespeichert werden.",

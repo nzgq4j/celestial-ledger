@@ -17,7 +17,12 @@ import { requireAdmin, adminRoles } from "@/lib/admin/auth";
 import { getAdminSettings } from "@/lib/admin/settings";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TarotDeckArtworkForm } from "@/components/TarotDeckArtworkForm";
-import { signTarotDeckArtworkForAdmin } from "@/lib/tarot/decks";
+import {
+  listTarotDeckCardFaceCountsForAdmin,
+  signTarotDeckArtworkForAdmin,
+} from "@/lib/tarot/decks";
+import { tarotCardsForLocale } from "@/lib/tarot/card-locales";
+import type { TarotLocale } from "@/lib/tarot/types";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { formatTarotMessage } from "@/lib/tarot/ui-locales";
 
@@ -106,6 +111,15 @@ export default async function AdminPage({
       ...deck,
       ...(await signTarotDeckArtworkForAdmin(deck)),
     })),
+  );
+  const tarotCardFaceCounts = decksResult.error
+    ? { counts: new Map<string, number>(), error: null }
+    : await listTarotDeckCardFaceCountsForAdmin();
+  const tarotCardOptions = tarotCardsForLocale(pack.tag as TarotLocale).map(
+    (card) => ({
+      id: card.id,
+      name: card.name,
+    }),
   );
   const notices: Record<string, string> = {
     role_updated: "Administrator role updated.",
@@ -824,262 +838,287 @@ export default async function AdminPage({
                 </form>
 
                 <div className="admin-tarot-decks">
-                  {tarotDecks.map((deck) => (
-                    <article className="admin-tarot-deck" key={deck.id}>
-                      <header>
-                        <div className="admin-tarot-artwork-pair">
-                          <div
-                            className="admin-tarot-artwork"
-                            role={deck.coverImageUrl ? "img" : undefined}
-                            aria-label={
-                              deck.coverImageUrl
-                                ? formatTarotMessage(tarotCopy.deckCoverLabel, {
-                                    name: deck.name,
-                                  })
-                                : undefined
-                            }
-                            style={
-                              deck.coverImageUrl
-                                ? {
-                                    backgroundImage: `url("${deck.coverImageUrl}")`,
-                                  }
-                                : undefined
-                            }
-                          >
-                            {!deck.coverImageUrl && (
-                              <span>{tarotCopy.adminCoverNeeded}</span>
-                            )}
-                          </div>
-                          <div
-                            className="admin-tarot-artwork admin-tarot-artwork--back"
-                            role={deck.cardBackImageUrl ? "img" : undefined}
-                            aria-label={
-                              deck.cardBackImageUrl
-                                ? formatTarotMessage(tarotCopy.cardBackLabel, {
-                                    name: deck.name,
-                                  })
-                                : undefined
-                            }
-                            style={
-                              deck.cardBackImageUrl
-                                ? {
-                                    backgroundImage: `url("${deck.cardBackImageUrl}")`,
-                                  }
-                                : undefined
-                            }
-                          >
-                            {!deck.cardBackImageUrl && (
-                              <span>{tarotCopy.adminBackNeeded}</span>
-                            )}
-                          </div>
-                        </div>
-                        <span
-                          className={`admin-tarot-state ${
-                            deck.active ? "is-active" : ""
-                          }`}
-                        >
-                          {deck.active
-                            ? tarotCopy.adminActive
-                            : tarotCopy.adminInactive}
-                        </span>
-                      </header>
-
-                      <form className="admin-form" action={saveTarotDeck}>
-                        <input type="hidden" name="id" value={deck.id} />
-                        <code>{deck.id}</code>
-                        <label>
-                          {tarotCopy.adminName}
-                          <input
-                            name="name"
-                            defaultValue={deck.name}
-                            required
-                            minLength={2}
-                            maxLength={80}
-                          />
-                        </label>
-                        <label>
-                          {tarotCopy.adminTagline}
-                          <textarea
-                            name="tagline"
-                            defaultValue={deck.tagline}
-                            required
-                            minLength={10}
-                            maxLength={240}
-                          />
-                        </label>
-                        <fieldset className="admin-localization-fields">
-                          <legend>{tarotCopy.adminLocalizedMetadata}</legend>
-                          <label>
-                            {tarotCopy.adminSpanishName}
-                            <input
-                              name="name_es"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "es-ES",
-                                "name",
-                              )}
-                              required
-                              minLength={2}
-                              maxLength={80}
-                            />
-                          </label>
-                          <label>
-                            {tarotCopy.adminSpanishTagline}
-                            <textarea
-                              name="tagline_es"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "es-ES",
-                                "tagline",
-                              )}
-                              required
-                              minLength={10}
-                              maxLength={240}
-                            />
-                          </label>
-                          <label>
-                            {tarotCopy.adminFrenchName}
-                            <input
-                              name="name_fr"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "fr-FR",
-                                "name",
-                              )}
-                              required
-                              minLength={2}
-                              maxLength={80}
-                            />
-                          </label>
-                          <label>
-                            {tarotCopy.adminFrenchTagline}
-                            <textarea
-                              name="tagline_fr"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "fr-FR",
-                                "tagline",
-                              )}
-                              required
-                              minLength={10}
-                              maxLength={240}
-                            />
-                          </label>
-                          <label>
-                            {tarotCopy.adminGermanName}
-                            <input
-                              name="name_de"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "de-DE",
-                                "name",
-                              )}
-                              required
-                              minLength={2}
-                              maxLength={80}
-                            />
-                          </label>
-                          <label>
-                            {tarotCopy.adminGermanTagline}
-                            <textarea
-                              name="tagline_de"
-                              defaultValue={translatedDeckField(
-                                deck.translations,
-                                "de-DE",
-                                "tagline",
-                              )}
-                              required
-                              minLength={10}
-                              maxLength={240}
-                            />
-                          </label>
-                        </fieldset>
-                        <div className="admin-form__split">
-                          <label>
-                            {tarotCopy.adminAccent}
-                            <select
-                              name="accent_token"
-                              defaultValue={deck.accent_token}
+                  {tarotCardFaceCounts.error && (
+                    <p className="admin-empty-state">
+                      {tarotCopy.adminCardFacesMigrationPending}
+                    </p>
+                  )}
+                  {tarotDecks.map((deck) => {
+                    const cardFaceCount =
+                      tarotCardFaceCounts.counts.get(deck.id) ?? 0;
+                    return (
+                      <article className="admin-tarot-deck" key={deck.id}>
+                        <header>
+                          <div className="admin-tarot-artwork-pair">
+                            <div
+                              className="admin-tarot-artwork"
+                              role={deck.coverImageUrl ? "img" : undefined}
+                              aria-label={
+                                deck.coverImageUrl
+                                  ? formatTarotMessage(
+                                      tarotCopy.deckCoverLabel,
+                                      {
+                                        name: deck.name,
+                                      },
+                                    )
+                                  : undefined
+                              }
+                              style={
+                                deck.coverImageUrl
+                                  ? {
+                                      backgroundImage: `url("${deck.coverImageUrl}")`,
+                                    }
+                                  : undefined
+                              }
                             >
-                              <option value="gold">
-                                {tarotCopy.adminAccentGold}
-                              </option>
-                              <option value="copper">
-                                {tarotCopy.adminAccentCopper}
-                              </option>
-                              <option value="map-cyan">
-                                {tarotCopy.adminAccentMapCyan}
-                              </option>
-                              <option value="map-red">
-                                {tarotCopy.adminAccentMapRed}
-                              </option>
-                              <option value="map-chalk">
-                                {tarotCopy.adminAccentMapChalk}
-                              </option>
-                            </select>
+                              {!deck.coverImageUrl && (
+                                <span>{tarotCopy.adminCoverNeeded}</span>
+                              )}
+                            </div>
+                            <div
+                              className="admin-tarot-artwork admin-tarot-artwork--back"
+                              role={deck.cardBackImageUrl ? "img" : undefined}
+                              aria-label={
+                                deck.cardBackImageUrl
+                                  ? formatTarotMessage(
+                                      tarotCopy.cardBackLabel,
+                                      {
+                                        name: deck.name,
+                                      },
+                                    )
+                                  : undefined
+                              }
+                              style={
+                                deck.cardBackImageUrl
+                                  ? {
+                                      backgroundImage: `url("${deck.cardBackImageUrl}")`,
+                                    }
+                                  : undefined
+                              }
+                            >
+                              {!deck.cardBackImageUrl && (
+                                <span>{tarotCopy.adminBackNeeded}</span>
+                              )}
+                            </div>
+                          </div>
+                          <span
+                            className={`admin-tarot-state ${
+                              deck.active ? "is-active" : ""
+                            }`}
+                          >
+                            {deck.active
+                              ? tarotCopy.adminActive
+                              : tarotCopy.adminInactive}
+                          </span>
+                        </header>
+
+                        <form className="admin-form" action={saveTarotDeck}>
+                          <input type="hidden" name="id" value={deck.id} />
+                          <code>{deck.id}</code>
+                          <label>
+                            {tarotCopy.adminName}
+                            <input
+                              name="name"
+                              defaultValue={deck.name}
+                              required
+                              minLength={2}
+                              maxLength={80}
+                            />
                           </label>
                           <label>
-                            {tarotCopy.adminMinimumPlan}
-                            <select
-                              name="minimum_plan"
-                              defaultValue={deck.minimum_plan}
-                            >
-                              <option value="free">
-                                {tarotCopy.adminPlanFree}
-                              </option>
-                              <option value="personal">
-                                {tarotCopy.adminPlanPersonal}
-                              </option>
-                              <option value="premium">
-                                {tarotCopy.adminPlanPremium}
-                              </option>
-                            </select>
+                            {tarotCopy.adminTagline}
+                            <textarea
+                              name="tagline"
+                              defaultValue={deck.tagline}
+                              required
+                              minLength={10}
+                              maxLength={240}
+                            />
                           </label>
-                        </div>
-                        <label>
-                          {tarotCopy.adminSortOrder}
-                          <input
-                            name="sort_order"
-                            type="number"
-                            min={0}
-                            max={1000}
-                            defaultValue={deck.sort_order}
-                          />
-                        </label>
-                        <label className="admin-check-row">
-                          <input
-                            name="active"
-                            type="checkbox"
-                            defaultChecked={deck.active}
-                          />
-                          {tarotCopy.adminActive}
-                        </label>
-                        <button
-                          className="button-primary"
-                          disabled={!canManageContent}
-                        >
-                          {tarotCopy.adminSaveAction}
-                        </button>
-                      </form>
+                          <fieldset className="admin-localization-fields">
+                            <legend>{tarotCopy.adminLocalizedMetadata}</legend>
+                            <label>
+                              {tarotCopy.adminSpanishName}
+                              <input
+                                name="name_es"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "es-ES",
+                                  "name",
+                                )}
+                                required
+                                minLength={2}
+                                maxLength={80}
+                              />
+                            </label>
+                            <label>
+                              {tarotCopy.adminSpanishTagline}
+                              <textarea
+                                name="tagline_es"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "es-ES",
+                                  "tagline",
+                                )}
+                                required
+                                minLength={10}
+                                maxLength={240}
+                              />
+                            </label>
+                            <label>
+                              {tarotCopy.adminFrenchName}
+                              <input
+                                name="name_fr"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "fr-FR",
+                                  "name",
+                                )}
+                                required
+                                minLength={2}
+                                maxLength={80}
+                              />
+                            </label>
+                            <label>
+                              {tarotCopy.adminFrenchTagline}
+                              <textarea
+                                name="tagline_fr"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "fr-FR",
+                                  "tagline",
+                                )}
+                                required
+                                minLength={10}
+                                maxLength={240}
+                              />
+                            </label>
+                            <label>
+                              {tarotCopy.adminGermanName}
+                              <input
+                                name="name_de"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "de-DE",
+                                  "name",
+                                )}
+                                required
+                                minLength={2}
+                                maxLength={80}
+                              />
+                            </label>
+                            <label>
+                              {tarotCopy.adminGermanTagline}
+                              <textarea
+                                name="tagline_de"
+                                defaultValue={translatedDeckField(
+                                  deck.translations,
+                                  "de-DE",
+                                  "tagline",
+                                )}
+                                required
+                                minLength={10}
+                                maxLength={240}
+                              />
+                            </label>
+                          </fieldset>
+                          <div className="admin-form__split">
+                            <label>
+                              {tarotCopy.adminAccent}
+                              <select
+                                name="accent_token"
+                                defaultValue={deck.accent_token}
+                              >
+                                <option value="gold">
+                                  {tarotCopy.adminAccentGold}
+                                </option>
+                                <option value="copper">
+                                  {tarotCopy.adminAccentCopper}
+                                </option>
+                                <option value="map-cyan">
+                                  {tarotCopy.adminAccentMapCyan}
+                                </option>
+                                <option value="map-red">
+                                  {tarotCopy.adminAccentMapRed}
+                                </option>
+                                <option value="map-chalk">
+                                  {tarotCopy.adminAccentMapChalk}
+                                </option>
+                              </select>
+                            </label>
+                            <label>
+                              {tarotCopy.adminMinimumPlan}
+                              <select
+                                name="minimum_plan"
+                                defaultValue={deck.minimum_plan}
+                              >
+                                <option value="free">
+                                  {tarotCopy.adminPlanFree}
+                                </option>
+                                <option value="personal">
+                                  {tarotCopy.adminPlanPersonal}
+                                </option>
+                                <option value="premium">
+                                  {tarotCopy.adminPlanPremium}
+                                </option>
+                              </select>
+                            </label>
+                          </div>
+                          <label>
+                            {tarotCopy.adminSortOrder}
+                            <input
+                              name="sort_order"
+                              type="number"
+                              min={0}
+                              max={1000}
+                              defaultValue={deck.sort_order}
+                            />
+                          </label>
+                          <label className="admin-check-row">
+                            <input
+                              name="active"
+                              type="checkbox"
+                              defaultChecked={deck.active}
+                            />
+                            {tarotCopy.adminActive}
+                          </label>
+                          <button
+                            className="button-primary"
+                            disabled={!canManageContent}
+                          >
+                            {tarotCopy.adminSaveAction}
+                          </button>
+                        </form>
 
-                      <div className="admin-tarot-uploads">
-                        <TarotDeckArtworkForm
-                          deckId={deck.id}
-                          kind="cover"
-                          hasArtwork={Boolean(deck.cover_image_path)}
-                          disabled={!canManageContent}
-                          copy={tarotCopy}
-                        />
-                        <TarotDeckArtworkForm
-                          deckId={deck.id}
-                          kind="card-back"
-                          hasArtwork={Boolean(deck.card_back_image_path)}
-                          disabled={!canManageContent}
-                          copy={tarotCopy}
-                        />
-                      </div>
-                    </article>
-                  ))}
+                        <div className="admin-tarot-uploads">
+                          <TarotDeckArtworkForm
+                            deckId={deck.id}
+                            kind="cover"
+                            hasArtwork={Boolean(deck.cover_image_path)}
+                            disabled={!canManageContent}
+                            copy={tarotCopy}
+                          />
+                          <TarotDeckArtworkForm
+                            deckId={deck.id}
+                            kind="card-back"
+                            hasArtwork={Boolean(deck.card_back_image_path)}
+                            disabled={!canManageContent}
+                            copy={tarotCopy}
+                          />
+                          <TarotDeckArtworkForm
+                            deckId={deck.id}
+                            kind="card-face"
+                            hasArtwork={cardFaceCount > 0}
+                            disabled={!canManageContent}
+                            copy={tarotCopy}
+                            cards={tarotCardOptions}
+                            faceCount={cardFaceCount}
+                            totalFaces={tarotCardOptions.length}
+                          />
+                        </div>
+                      </article>
+                    );
+                  })}
                   {!tarotDecks.length && (
                     <p className="admin-empty-state">
                       {tarotCopy.adminNoDecks}

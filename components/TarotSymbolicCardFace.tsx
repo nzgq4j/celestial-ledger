@@ -56,12 +56,14 @@ export function TarotSymbolicCardFace({
   suit,
   number,
   name,
+  imageUrl,
   className = "",
 }: {
   arcana: "major" | "minor";
   suit: TarotSuit | null;
   number: number | null;
   name: string;
+  imageUrl?: string | null;
   className?: string;
 }) {
   const index = tarotCardIndex(arcana, number);
@@ -69,10 +71,21 @@ export function TarotSymbolicCardFace({
     "tarot-symbolic-face",
     `tarot-symbolic-face--${arcana}`,
     suit ? `tarot-symbolic-face--${suit}` : "",
+    imageUrl ? "tarot-symbolic-face--artwork" : "",
     className,
   ]
     .filter(Boolean)
     .join(" ");
+
+  if (imageUrl) {
+    return (
+      <div
+        className={faceClassName}
+        aria-hidden="true"
+        style={{ backgroundImage: `url("${imageUrl}")` }}
+      />
+    );
+  }
 
   return (
     <div className={faceClassName} aria-hidden="true">

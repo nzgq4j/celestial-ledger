@@ -175,6 +175,7 @@ export function dailySkyFor(
       elementPrompt: copy.elements[signIndex % copy.elements.length],
       variant: variantSeed % 4,
       signature: copy.signatures[signIndex],
+      cardVoice: copy.cardVoices?.[signIndex],
     };
     const theme = `${moonTopic[0].toUpperCase()}${moonTopic.slice(1)}`;
     const moonSign = localizeAstroTerm(moon.sign, locale);
@@ -221,8 +222,21 @@ export function dailySkyFor(
       phaseLevel(rulerHouse + signIndex + variantSeed),
       phaseLevel(sunHouse + signIndex + variantSeed),
     ] as const;
-    const dayParts = copy.phases(context).map((phase, index) => ({
+    const phaseCopies = copy.phases(context);
+    const repeatedPhaseThemes = new Set(
+      phaseCopies
+        .map((phase) => phase.theme)
+        .filter(
+          (theme, _index, themes) =>
+            themes.filter((candidate) => candidate === theme).length > 1,
+        ),
+    );
+    const dayParts = phaseCopies.map((phase, index) => ({
       ...phase,
+      theme:
+        repeatedPhaseThemes.has(phase.theme) && copy.phaseTheme
+          ? copy.phaseTheme(phase.period, phase.theme)
+          : phase.theme,
       level: phaseLevels[index],
     }));
     return {

@@ -14,7 +14,7 @@ import {
 import type { Json } from "@/lib/supabase/database.types";
 import { horoscopeSimilarity } from "@/lib/horoscopes/similarity";
 
-export const HOROSCOPE_PROMPT_VERSION = "daily-horoscope-1";
+export const HOROSCOPE_PROMPT_VERSION = "daily-horoscope-2";
 
 const angleSchema = z.object({
   slug: z.enum(zodiacSlugs as [string, ...string[]]),
@@ -331,7 +331,7 @@ async function generateEnglishEdition(date: Date) {
       model,
       "daily_horoscope_editorial_plan",
       planJsonSchema,
-      `Create today's editorial map for all twelve sun signs. Assign every sign a genuinely different interpretive thesis, metaphor, opening construction, practical focus and closing mode. Avoid generic symmetry and do not merely rotate topics. The twelve angles must feel written by an adventurous human editor, while remaining grounded in the supplied astronomy.\n\nImmutable sky evidence:\n${JSON.stringify(evidenceBundle(sky))}\n\nRecent openings to avoid:\n${JSON.stringify(recentOpenings)}`,
+      `Create today's editorial map for all twelve sun signs. Assign every sign a genuinely different interpretive thesis, metaphor, opening construction, practical focus and closing mode. Avoid generic symmetry and do not merely rotate topics. The twelve angles must feel written by an adventurous human editor, while remaining grounded in the supplied astronomy.\n\nThe listing-card fields for each sign must be especially distinct: do not repeat sentence architecture, "two tempos" framing, Moon/Sun formula openings, repeated advice verbs, or a shared opportunity/reflection pattern across signs.\n\nImmutable sky evidence:\n${JSON.stringify(evidenceBundle(sky))}\n\nRecent openings to avoid:\n${JSON.stringify(recentOpenings)}`,
     ),
   );
   const angleBySlug = new Map(plan.angles.map((angle) => [angle.slug, angle]));
@@ -348,7 +348,7 @@ async function generateEnglishEdition(date: Date) {
         model,
         `daily_${fallback.slug}_horoscope`,
         readingJsonSchema,
-        `Write today's complete ${fallback.sign} sun-sign horoscope. Be daring in metaphor and interpretation, concrete in advice, and unmistakably different from every other sign and from recent ${fallback.sign} editions. Do not reuse the syntax, examples, conclusions or advice in previous copy. Use the assigned editorial direction exactly, cite 2-4 supplied evidence IDs, and never introduce an astronomical fact not present in evidence.\n\nDaily editorial summary: ${plan.dailySummary}\nCentral tension: ${plan.centralTension}\nCentral opportunity: ${plan.centralOpportunity}\nAssigned direction: ${JSON.stringify(angle)}\nOther signs' reserved directions (do not imitate): ${JSON.stringify(plan.angles.filter((item) => item.slug !== fallback.slug))}\nImmutable ${fallback.sign} evidence: ${JSON.stringify(evidence)}\nPrevious seven editions to avoid imitating: ${JSON.stringify(prior)}`,
+        `Write today's complete ${fallback.sign} sun-sign horoscope. Be daring in metaphor and interpretation, concrete in advice, and unmistakably different from every other sign and from recent ${fallback.sign} editions. Do not reuse the syntax, examples, conclusions or advice in previous copy. Use the assigned editorial direction exactly, cite 2-4 supplied evidence IDs, and never introduce an astronomical fact not present in evidence.\n\nThe public listing card uses overview, opportunity, question, and dayParts. Treat those as a miniature editorial column, not as templated summary fields. Give this sign a unique opening rhythm, metaphor family, practical gesture, and reflection question. Avoid any wording pattern that another sign could share by swapping only topic nouns.\n\nDaily editorial summary: ${plan.dailySummary}\nCentral tension: ${plan.centralTension}\nCentral opportunity: ${plan.centralOpportunity}\nAssigned direction: ${JSON.stringify(angle)}\nOther signs' reserved directions (do not imitate): ${JSON.stringify(plan.angles.filter((item) => item.slug !== fallback.slug))}\nImmutable ${fallback.sign} evidence: ${JSON.stringify(evidence)}\nPrevious seven editions to avoid imitating: ${JSON.stringify(prior)}`,
       );
       const reading = generatedReadingSchema.parse(raw);
       if (reading.slug !== fallback.slug)
@@ -474,6 +474,7 @@ export async function publishedDailySky(
       .select("edition_date,daily_summary,readings")
       .eq("locale", locale)
       .eq("status", "published")
+      .eq("prompt_version", HOROSCOPE_PROMPT_VERSION)
       .lte("edition_date", fallback.date)
       .order("edition_date", { ascending: false })
       .limit(1)

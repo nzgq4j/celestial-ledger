@@ -11,7 +11,8 @@ export const TAROT_ARTWORK_INPUT_TYPES = [
 
 export const TAROT_ARTWORK_MAX_BYTES = 4 * 1024 * 1024;
 
-export type TarotArtworkKind = "cover" | "card-back";
+export type TarotDeckArtworkKind = "cover" | "card-back";
+export type TarotArtworkKind = TarotDeckArtworkKind | "card-face";
 
 const REQUIREMENTS: Record<
   TarotArtworkKind,
@@ -33,6 +34,14 @@ const REQUIREMENTS: Record<
     outputHeight: 1200,
   },
   "card-back": {
+    minimumWidth: 750,
+    minimumHeight: 1200,
+    minimumAspect: 0.58,
+    maximumAspect: 0.67,
+    outputWidth: 800,
+    outputHeight: 1280,
+  },
+  "card-face": {
     minimumWidth: 750,
     minimumHeight: 1200,
     minimumAspect: 0.58,
@@ -114,6 +123,14 @@ export async function normaliseTarotArtwork(input: {
     .toBuffer();
 }
 
-export function tarotArtworkPath(deckId: string, kind: TarotArtworkKind) {
+export function tarotArtworkPath(deckId: string, kind: TarotDeckArtworkKind) {
   return `${deckId}/${kind}.webp`;
+}
+
+export function tarotCardFaceArtworkPath(
+  deckId: string,
+  cardId: string,
+  contentHash: string,
+) {
+  return `${deckId}/faces/${cardId}-${contentHash.slice(0, 12)}.webp`;
 }

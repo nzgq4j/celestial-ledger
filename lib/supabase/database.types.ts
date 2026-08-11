@@ -1262,6 +1262,58 @@ export type Database = {
         };
         Relationships: [];
       };
+      tarot_deck_card_faces: {
+        Row: {
+          card_id: string;
+          created_at: string;
+          created_by: string | null;
+          deck_id: string;
+          image_path: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          card_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          deck_id: string;
+          image_path: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          card_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          deck_id?: string;
+          image_path?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tarot_deck_card_faces_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tarot_deck_card_faces_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "tarot_decks";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tarot_deck_card_faces_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tarot_decks: {
         Row: {
           accent_token: string;

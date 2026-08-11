@@ -27,9 +27,15 @@ describe("generated horoscope editorial editions", () => {
   });
 
   it("plans twelve distinct angles and generates each sign from evidence", () => {
+    expect(generator).toContain(
+      'HOROSCOPE_PROMPT_VERSION = "daily-horoscope-2"',
+    );
     expect(generator).toContain("daily_horoscope_editorial_plan");
     expect(generator).toContain("Other signs' reserved directions");
     expect(generator).toContain("Previous seven editions to avoid imitating");
+    expect(generator).toContain("listing-card fields");
+    expect(generator).toContain("miniature editorial column");
+    expect(generator).toContain("Avoid any wording pattern");
     expect(generator).toContain("HOROSCOPE_UNKNOWN_EVIDENCE");
     expect(generator).toContain("HOROSCOPE_WITHIN_DAY_SIMILARITY_FAILED");
     expect(generator).toContain("HOROSCOPE_HISTORICAL_SIMILARITY_FAILED");
@@ -39,6 +45,9 @@ describe("generated horoscope editorial editions", () => {
     expect(migration).toContain("unique (edition_date, locale)");
     expect(migration).toContain("status = 'published'");
     expect(generator).toContain("return fallback");
+    expect(generator).toContain(
+      '.eq("prompt_version", HOROSCOPE_PROMPT_VERSION)',
+    );
     expect(rollover).toContain("preservedPreviousEdition: true");
     expect(listing).toContain("await publishedDailySky");
     expect(listing).toContain("sky.summary ?? copy.introduction");

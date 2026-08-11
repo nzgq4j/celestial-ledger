@@ -8,6 +8,7 @@ import { tarotCardsForLocale } from "@/lib/tarot/card-locales";
 import {
   activeTarotDeckMinimumPlan,
   findActiveTarotDeckForPlan,
+  signedTarotCardFaceUrlsForDeck,
 } from "@/lib/tarot/decks";
 import { drawTarotCards } from "@/lib/tarot/draw";
 import { decideTarotAccess } from "@/lib/tarot/entitlement";
@@ -115,6 +116,10 @@ export async function POST(request: Request) {
     tarotCardsForLocale(parsed.data.locale),
     localizedReading,
   );
+  const cardFaceImageUrls = await signedTarotCardFaceUrlsForDeck(
+    deck.id,
+    drawnCards.map(({ card }) => card.id),
+  );
 
   return NextResponse.json(
     {
@@ -133,6 +138,7 @@ export async function POST(request: Request) {
         arcana: card.arcana,
         suit: card.suit ?? null,
         number: card.number ?? null,
+        faceImageUrl: cardFaceImageUrls.get(card.id) ?? null,
         position,
         orientation,
         meaning: card[orientation],

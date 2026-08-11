@@ -3673,7 +3673,7 @@ html[data-admin-theme="light"] .admin-theme-toggle__track i {
 
 .admin-tarot-uploads {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -10832,6 +10832,19 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
       color-mix(in srgb, var(--tarot-face-gold) 12%, transparent),
     inset 0 0 2.8rem rgba(8, 1, 4, 0.48);
   color: var(--tarot-face-gold);
+}
+
+.tarot-symbolic-face--artwork {
+  grid-template-rows: 1fr;
+  padding: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.tarot-symbolic-face--artwork::before,
+.tarot-symbolic-face--artwork::after {
+  display: none;
 }
 
 .tarot-symbolic-face::before,

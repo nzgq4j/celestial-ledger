@@ -4,6 +4,7 @@ import sharp from "sharp";
 import {
   normaliseTarotArtwork,
   TAROT_ARTWORK_MAX_BYTES,
+  tarotCardFaceArtworkPath,
   tarotArtworkPath,
 } from "@/lib/tarot/artwork";
 
@@ -18,6 +19,10 @@ const experience = readFileSync(
 );
 const migration = readFileSync(
   "supabase/migrations/20260809110121_add_tarot_decks.sql",
+  "utf8",
+);
+const cardFaceMigration = readFileSync(
+  "supabase/migrations/20260811090811_add_tarot_deck_card_faces.sql",
   "utf8",
 );
 
@@ -45,6 +50,32 @@ describe("tarot artwork and access security", () => {
     expect(metadata.height).toBe(1200);
     expect(tarotArtworkPath("traditional", "cover")).toBe(
       "traditional/cover.webp",
+    );
+  });
+
+  it("normalises card faces to the private deck-card ratio", async () => {
+    const input = await sharp({
+      create: {
+        width: 800,
+        height: 1280,
+        channels: 3,
+        background: "#541426",
+      },
+    })
+      .png()
+      .toBuffer();
+    const output = await normaliseTarotArtwork({
+      bytes: input,
+      contentType: "image/png",
+      kind: "card-face",
+    });
+    const metadata = await sharp(output).metadata();
+
+    expect(metadata.format).toBe("webp");
+    expect(metadata.width).toBe(800);
+    expect(metadata.height).toBe(1280);
+    expect(tarotCardFaceArtworkPath("cat", "major-0", "abcdef1234567890")).toBe(
+      "cat/faces/major-0-abcdef123456.webp",
     );
   });
 
@@ -103,16 +134,21 @@ describe("tarot artwork and access security", () => {
     ).rejects.toMatchObject({ code: "wrong_aspect" });
   });
 
-  it("requires a content administrator and overwrites stable paths without orphans", () => {
+  it("requires a content administrator and validates deck-specific card faces", () => {
     expect(uploadRoute).toContain("getAdminIdentity");
     expect(uploadRoute).toContain('"site_admin", "content_admin"');
     expect(uploadRoute).toContain("ensureTarotDeckBucket");
     expect(uploadRoute).toContain(".storage.createBucket");
-    expect(uploadRoute).toContain("allowedMimeTypes: [\"image/webp\"]");
+    expect(uploadRoute).toContain('allowedMimeTypes: ["image/webp"]');
     expect(uploadRoute).not.toContain(".storage.updateBucket");
     expect(uploadRoute).toContain("new Blob([new Uint8Array(output)]");
     expect(uploadRoute).toContain("upsert: true");
     expect(uploadRoute).toContain("tarotArtworkPath");
+    expect(uploadRoute).toContain("tarotCardFaceArtworkPath");
+    expect(uploadRoute).toContain("findTarotCard");
+    expect(uploadRoute).toContain('"card-face"');
+    expect(uploadRoute).toContain("tarot_deck_card_faces");
+    expect(uploadRoute).toContain("tarot.deck.card_face.updated");
     expect(uploadRoute).toContain("remove([path])");
   });
 
@@ -136,12 +172,24 @@ describe("tarot artwork and access security", () => {
     }
     expect(migration).toContain("'traditional',\n    'Traditional'");
     expect(migration).toContain("'free',\n    false");
+    expect(cardFaceMigration).toContain(
+      "alter table public.tarot_deck_card_faces enable row level security",
+    );
+    expect(cardFaceMigration).toContain(
+      "revoke all on public.tarot_deck_card_faces from public, anon, authenticated",
+    );
+    expect(cardFaceMigration).toContain(
+      "grant all on public.tarot_deck_card_faces to service_role",
+    );
+    expect(cardFaceMigration).toContain("deck_id || '/faces/' || card_id");
   });
 
   it("keeps authoritative card selection and entitlement checks on the server", () => {
     expect(drawRoute).toContain("decideTarotAccess");
     expect(drawRoute).toContain("drawTarotCards");
     expect(drawRoute).toContain("tarotCardsForLocale");
+    expect(drawRoute).toContain("signedTarotCardFaceUrlsForDeck");
+    expect(drawRoute).toContain("faceImageUrl");
     expect(drawRoute).toContain('"Cache-Control": "private, no-store');
     expect(experience).not.toContain("Math.random");
     expect(drawRoute).not.toContain("!deck?.cardBackImageUrl");

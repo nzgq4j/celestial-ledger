@@ -9,6 +9,12 @@ type SignSignature = {
   money: string;
 };
 
+type SignCardVoice = {
+  overview: (context: DailyCopyContext) => string;
+  opportunity: (context: DailyCopyContext) => string;
+  question: (context: DailyCopyContext) => string;
+};
+
 export type DailyCopyContext = {
   moonTopic: string;
   sunTopic: string;
@@ -20,6 +26,7 @@ export type DailyCopyContext = {
   elementPrompt: string;
   variant: number;
   signature: SignSignature;
+  cardVoice?: SignCardVoice;
 };
 
 export type DailyPhaseCopy = {
@@ -32,6 +39,7 @@ type DailyCopy = {
   topics: readonly string[];
   elements: readonly string[];
   signatures: readonly SignSignature[];
+  cardVoices?: readonly SignCardVoice[];
   overview: (context: DailyCopyContext) => string;
   bottomLine: (context: DailyCopyContext) => string;
   relationships: (context: DailyCopyContext) => string;
@@ -41,11 +49,39 @@ type DailyCopy = {
   opportunity: (context: DailyCopyContext) => string;
   caution: (context: DailyCopyContext) => string;
   question: (context: DailyCopyContext) => string;
+  phaseTheme?: (period: DailyPhaseCopy["period"], theme: string) => string;
   phases: (context: DailyCopyContext) => DailyPhaseCopy[];
 };
 
 function pick<T>(variant: number, choices: readonly T[]): T {
   return choices[variant % choices.length];
+}
+
+function cardDayTurn(c: DailyCopyContext) {
+  return pick(c.variant, [
+    "Begin before the day turns into a committee meeting.",
+    "Choose the hinge, not the whole door.",
+    "Let the first honest adjustment be enough.",
+    "Make the move small enough to finish and sharp enough to matter.",
+  ]);
+}
+
+function cardOpportunityTurn(c: DailyCopyContext) {
+  return pick(c.variant + 1, [
+    "Keep the gesture visible, specific, and complete.",
+    "Let the evidence, not the mood, set the size of the move.",
+    "Trade performance for precision.",
+    "Give the useful thing a name before it dissolves.",
+  ]);
+}
+
+function cardQuestionTurn(c: DailyCopyContext) {
+  return pick(c.variant + 2, [
+    "What changes if timing is part of the message?",
+    "Which smaller action would make the truth easier to keep?",
+    "Where is the cleanest place to begin again?",
+    "What would become simpler if you stopped rehearsing the old version?",
+  ]);
 }
 
 const shared = {
@@ -147,13 +183,113 @@ const shared = {
         money: "compassionate spending with a firm edge",
       },
     ],
+    cardVoices: [
+      {
+        overview: (c) =>
+          `Do not wait for the room to agree before you move. ${c.moonTopic} is the spark underfoot, ${c.sunTopic} is the fire you are tending, and ${c.rulerTopic} is where courage becomes useful rather than noisy. Make the first cut cleanly; the day respects decisive beginnings with practical edges.`,
+        opportunity: (c) =>
+          `Make one brave first cut in ${c.rulerTopic}. The win is not speed for its own sake; it is removing the hesitation that keeps ${c.sunTopic} theoretical.`,
+        question: () =>
+          "What would you choose first if you trusted your courage but refused to rush the consequences?",
+      },
+      {
+        overview: (c) =>
+          `A quiet inventory has more power than a dramatic declaration. Let ${c.moonTopic} show what needs shelter, then let ${c.sunTopic} decide what deserves to keep receiving your time. ${c.rulerTopic} is the practical altar today: touch the real thing, price the real cost, keep the real promise.`,
+        opportunity: (c) =>
+          `Strengthen the part of ${c.sunTopic} that can still feed you next month. A patient repair, purchase, or boundary may be the most luxurious move available.`,
+        question: () =>
+          "Which comfort is genuinely nourishing, and which one is only asking you to avoid a needed choice?",
+      },
+      {
+        overview: (c) =>
+          `The day behaves like a switchboard: one conversation lights another, then a third reveals the pattern. Follow ${c.moonTopic} without scattering yourself. The Sun keeps ${c.sunTopic} in view, while ${c.rulerTopic} asks you to sort signal from static and name the sentence everyone has been circling.`,
+        opportunity: () =>
+          "Translate a messy impression into language someone can use. The opening is hidden in a message, question, note, or clarification that changes the whole exchange.",
+        question: () =>
+          "Which conversation becomes simpler the moment you stop performing cleverness and say the true thing plainly?",
+      },
+      {
+        overview: (c) =>
+          `Your radar is working before the evidence arrives in full. Let ${c.moonTopic} register softly, without turning every tremor into an obligation. ${c.sunTopic} asks for continuity, and ${c.rulerTopic} shows where protection must become design: a door, a schedule, a sentence, a limit.`,
+        opportunity: (c) =>
+          `Choose the container before you pour more feeling into the day. One boundary around ${c.rulerTopic} can make ${c.sunTopic} feel safer and more alive.`,
+        question: () =>
+          "What are you sensing that deserves respect, even if it does not deserve immediate action?",
+      },
+      {
+        overview: (c) =>
+          `Put warmth where it can actually illuminate something. ${c.moonTopic} wants a response with colour and nerve, but ${c.sunTopic} asks you to make the performance serve the purpose. ${c.rulerTopic} becomes the stagecraft: choose the audience, sharpen the gesture, leave the room brighter.`,
+        opportunity: (c) =>
+          `Offer a vivid contribution around ${c.sunTopic}. Specific praise, visible craft, or a well-timed invitation will travel further than another bid for approval.`,
+        question: () =>
+          "Where can you be unmistakably present without making the whole room responsible for reflecting you back?",
+      },
+      {
+        overview: (c) =>
+          `The useful thread is hiding in the smallest irregularity. Study ${c.moonTopic} like a margin note, not a verdict. The Sun keeps ${c.sunTopic} on the horizon, and ${c.rulerTopic} gives you the method: refine the hinge, label the drawer, ask the exact question, improve the system without apologising for precision.`,
+        opportunity: (c) =>
+          `Fix the tiny mechanism inside ${c.rulerTopic}. One clean adjustment can release more energy than a grand overhaul of ${c.sunTopic}.`,
+        question: () =>
+          "Which detail is asking for devotion rather than criticism?",
+      },
+      {
+        overview: (c) =>
+          `The scales are not decorative today; they are instruments. Weigh ${c.moonTopic} against ${c.sunTopic} without pretending every side carries equal truth. ${c.rulerTopic} is where grace needs a spine. Say the elegant thing, yes, but make sure it has an actual position inside it.`,
+        opportunity: (c) =>
+          `Broker a fairer shape in ${c.sunTopic}. Beauty helps, but clarity is what makes the agreement hold.`,
+        question: () =>
+          "Where has keeping the peace started to cost more than naming the imbalance?",
+      },
+      {
+        overview: (c) =>
+          `Something private wants a cleaner container. Do not interrogate ${c.moonTopic} until it becomes dramatic; notice where energy is leaking and seal that place first. ${c.sunTopic} gives the wider motive, while ${c.rulerTopic} points to the leverage: fewer exposures, stronger terms, deeper trust earned slowly.`,
+        opportunity: (c) =>
+          `Renegotiate access around ${c.rulerTopic}. A quiet change in terms may restore power without requiring a public confrontation.`,
+        question: () =>
+          "What becomes possible when you stop confusing intensity with intimacy?",
+      },
+      {
+        overview: (c) =>
+          `Treat the day like a map with one road circled in ink. ${c.moonTopic} supplies movement, but ${c.sunTopic} asks for meaning that can survive contact with reality. ${c.rulerTopic} is the compass test: if the next step enlarges your world and sharpens your ethics, follow it.`,
+        opportunity: (c) =>
+          `Aim an adventurous choice through ${c.sunTopic}, then give it a deadline, route, or promise. Freedom improves when it knows where it is going.`,
+        question: () =>
+          "Which horizon is calling for commitment rather than escape?",
+      },
+      {
+        overview: (c) =>
+          `Authority is quieter than pressure. Let ${c.moonTopic} show the live demand, then measure it against the structure ${c.sunTopic} requires. ${c.rulerTopic} is the scaffold, not the cage. Build the next support carefully enough that future-you does not have to keep rescuing present-you.`,
+        opportunity: (c) =>
+          `Put one durable support under ${c.sunTopic}. A boundary, sequence, or written commitment can turn ambition into something others can trust.`,
+        question: () =>
+          "What responsibility would feel less heavy if it had a better structure?",
+      },
+      {
+        overview: (c) =>
+          `A system wants one intelligent disruption. Listen to ${c.moonTopic} for the place where the old pattern has gone stale, then let ${c.sunTopic} supply the humane reason for changing it. ${c.rulerTopic} is your laboratory: alter one variable, invite the right witness, keep the experiment honest.`,
+        opportunity: (c) =>
+          `Prototype a different route through ${c.rulerTopic}. The point is not rebellion; it is proving that a kinder, smarter pattern can function.`,
+        question: () =>
+          "Where would one unusual choice make the whole arrangement more honest?",
+      },
+      {
+        overview: (c) =>
+          `Mist is not confusion if you stop demanding straight lines from it. Let ${c.moonTopic} soften the day’s edges, then use ${c.sunTopic} as the vessel that keeps compassion from spilling everywhere. ${c.rulerTopic} is where intuition needs a handle: image, ritual, rest, music, note, limit.`,
+        opportunity: (c) =>
+          `Give form to the feeling around ${c.sunTopic}. A gentle container can make the invisible useful without flattening its mystery.`,
+        question: () =>
+          "What tenderness needs a boundary so it can remain generous?",
+      },
+    ],
     overview: (c) =>
-      pick(c.variant, [
-        `${c.signature.presence}. The Moon foregrounds ${c.moonTopic}, while the Sun keeps ${c.sunTopic} as the larger destination. ${c.elementPrompt}`,
-        `Begin with ${c.moonTopic}; that is where the day reveals its true temperature. ${c.signature.presence}, and the Sun’s emphasis on ${c.sunTopic} shows where to carry that awareness next.`,
-        `${c.ruler} in ${c.rulerSign} directs your attention toward ${c.rulerTopic}. ${c.signature.presence}. Let the Moon’s movement through ${c.moonTopic} tell you what needs an answer now, not someday.`,
-        `Today has two tempos: the Moon asks for responsiveness around ${c.moonTopic}, while the Sun asks for continuity around ${c.sunTopic}. ${c.signature.presence}; use that quality to join the two.`,
-      ]),
+      c.cardVoice
+        ? `${c.cardVoice.overview(c)} ${cardDayTurn(c)}`
+        : pick(c.variant, [
+            `${c.signature.presence}. The Moon foregrounds ${c.moonTopic}, while the Sun keeps ${c.sunTopic} as the larger destination. ${c.elementPrompt}`,
+            `Begin with ${c.moonTopic}; that is where the day reveals its true temperature. ${c.signature.presence}, and the Sun’s emphasis on ${c.sunTopic} shows where to carry that awareness next.`,
+            `${c.ruler} in ${c.rulerSign} directs your attention toward ${c.rulerTopic}. ${c.signature.presence}. Let the Moon’s movement through ${c.moonTopic} tell you what needs an answer now, not someday.`,
+            `Start where the signal is sharpest: ${c.moonTopic}. Then give ${c.sunTopic} one visible commitment, using ${c.rulerTopic} as the test of whether the choice has real weight.`,
+          ]),
     bottomLine: (c) =>
       pick(c.variant, [
         `${c.signature.presence}. The immediate story is ${c.moonTopic}: respond to what is actually happening rather than to the version you rehearsed in advance. The Sun places the longer purpose in ${c.sunTopic}, so the best decision will satisfy the present moment without abandoning the larger direction. Your ruler, ${c.ruler} in ${c.rulerSign}, brings ${c.rulerTopic} into the method. ${c.retrograde ? "Revisit an unfinished choice, recover the useful part, and leave the old reflex behind." : "Choose a clear next step and let action clarify what thought alone cannot."} ${c.elementPrompt}`,
@@ -185,21 +321,31 @@ const shared = {
     wellbeing: (c) =>
       `Protect enough quiet to distinguish your own rhythm from the atmosphere around you. A small ritual connected with ${c.moonTopic} can restore steadiness today.`,
     opportunity: (c) =>
-      pick(c.variant, [
-        `Lead with ${c.signature.business}. One concrete move around ${c.sunTopic} can establish a direction that others understand and trust.`,
-        `A door opens through ${c.rulerTopic}. Meet the useful invitation already in front of you with ${c.signature.business}, then give it your full attention.`,
-        `Say yes to the part of ${c.sunTopic} that asks for genuine participation. ${c.signature.business} will carry the idea further than waiting for perfect conditions.`,
-        `Turn today’s awareness of ${c.moonTopic} into momentum. A timely conversation or practical gesture can make ${c.sunTopic} feel possible rather than distant.`,
-      ]),
+      c.cardVoice
+        ? `${c.cardVoice.opportunity(c)} ${cardOpportunityTurn(c)}`
+        : pick(c.variant, [
+            `Lead with ${c.signature.business}. One concrete move around ${c.sunTopic} can establish a direction that others understand and trust.`,
+            `A door opens through ${c.rulerTopic}. Meet the useful invitation already in front of you with ${c.signature.business}, then give it your full attention.`,
+            `Say yes to the part of ${c.sunTopic} that asks for genuine participation. ${c.signature.business} will carry the idea further than waiting for perfect conditions.`,
+            `Choose one practical proof around ${c.sunTopic}. The day becomes less abstract when ${c.rulerTopic} is handled in the open.`,
+          ]),
     caution: (c) =>
       `Do not treat a passing mood as a final verdict, especially around ${c.moonTopic}.`,
     question: (c) =>
-      pick(c.variant, [
-        `Where would ${c.signature.relating} change the pattern around ${c.moonTopic}?`,
-        `What are you ready to build in ${c.sunTopic} once you stop waiting for complete certainty?`,
-        `Which truth about ${c.rulerTopic} deserves a direct answer before the day closes?`,
-        `Where are you being invited to choose ${c.signature.business} instead of repeating a familiar habit?`,
-      ]),
+      c.cardVoice
+        ? `${c.cardVoice.question(c)} ${cardQuestionTurn(c)}`
+        : pick(c.variant, [
+            `Where would ${c.signature.relating} change the pattern around ${c.moonTopic}?`,
+            `What are you ready to build in ${c.sunTopic} once you stop waiting for complete certainty?`,
+            `Which truth about ${c.rulerTopic} deserves a direct answer before the day closes?`,
+            `Which small decision would make ${c.moonTopic} more honest and ${c.sunTopic} easier to sustain?`,
+          ]),
+    phaseTheme: (period, theme) =>
+      period === "morning"
+        ? `First signal · ${theme}`
+        : period === "afternoon"
+          ? `Working move · ${theme}`
+          : `Carry forward · ${theme}`,
     phases: (c) => [
       {
         period: "morning",

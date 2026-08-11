@@ -32,6 +32,8 @@ describe("tarot accessibility and content safety", () => {
     expect(experience).toContain("copy.locked");
     expect(accountDraw).toContain('role="alert"');
     expect(uploadForm).toContain('aria-live="polite"');
+    expect(uploadForm).toContain('name="cardId"');
+    expect(uploadForm).toContain("copy.adminCardFaceSelect");
   });
 
   it("provides keyboard focus treatment and a reduced-motion alternative", () => {

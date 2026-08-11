@@ -4,6 +4,7 @@ import {
   horoscopeUtcDateKey,
   millisecondsUntilNextUtcMidnight,
 } from "@/lib/horoscopes/rollover";
+import { horoscopeSimilarity } from "@/lib/horoscopes/similarity";
 
 describe("daily horoscopes", () => {
   const sky = dailySkyFor(new Date("2026-08-03T09:00:00.000Z"));
@@ -67,6 +68,50 @@ describe("daily horoscopes", () => {
         ),
       ).size,
     ).toBeGreaterThanOrEqual(4);
+  });
+
+  it("keeps fallback listing cards from sharing a reusable sentence skeleton", () => {
+    const forbiddenTemplateFragments = [
+      "Today has two tempos",
+      "Moon asks for responsiveness",
+      "use that quality to join the two",
+      "Turn today’s awareness",
+      "Where are you being invited to choose",
+    ];
+    const cardTexts = sky.horoscopes.map((item) =>
+      [item.overview, item.opportunity, item.question].join(" "),
+    );
+
+    for (const text of cardTexts) {
+      for (const fragment of forbiddenTemplateFragments) {
+        expect(text).not.toContain(fragment);
+      }
+    }
+
+    let highestSimilarity = 0;
+    for (let left = 0; left < cardTexts.length; left += 1) {
+      for (let right = left + 1; right < cardTexts.length; right += 1) {
+        highestSimilarity = Math.max(
+          highestSimilarity,
+          horoscopeSimilarity(cardTexts[left], cardTexts[right]),
+        );
+      }
+    }
+    expect(highestSimilarity).toBeLessThan(0.18);
+  });
+
+  it("disambiguates compact day arc labels when calculated topics repeat", () => {
+    const repeatedArcSky = dailySkyFor(new Date("2026-08-11T09:00:00.000Z"));
+    const gemini = repeatedArcSky.horoscopes.find(
+      (item) => item.slug === "gemini",
+    );
+    expect(gemini).toBeTruthy();
+    expect(new Set(gemini!.dayParts.map((part) => part.theme)).size).toBe(3);
+    expect(gemini!.dayParts.map((part) => part.theme)).toEqual([
+      expect.stringContaining("First signal"),
+      expect.stringContaining("Working move"),
+      expect.stringContaining("Carry forward"),
+    ]);
   });
 
   it("rolls every horoscope to new wording at midnight UTC", () => {

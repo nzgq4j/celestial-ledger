@@ -19,6 +19,7 @@ type DailyDrawResponse = {
     arcana: "major" | "minor";
     suit: TarotSuit | null;
     number: number | null;
+    faceImageUrl: string | null;
     position: string;
     orientation: TarotOrientation;
     meaning: string;
@@ -115,6 +116,7 @@ export function AccountTarotDailyDraw({
             suit={card.suit}
             number={card.number}
             name={card.name}
+            imageUrl={card.faceImageUrl}
             className="account-tarot-result__plate"
           />
           <div>
