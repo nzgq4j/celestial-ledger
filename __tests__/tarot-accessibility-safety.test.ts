@@ -34,6 +34,8 @@ describe("tarot accessibility and content safety", () => {
     expect(uploadForm).toContain('aria-live="polite"');
     expect(uploadForm).toContain('name="cardId"');
     expect(uploadForm).toContain("copy.adminCardFaceSelect");
+    expect(uploadForm).toContain("uploadedCardIds");
+    expect(uploadForm).toContain("admin-card-face-list");
   });
 
   it("provides keyboard focus treatment and a reduced-motion alternative", () => {
@@ -43,6 +45,8 @@ describe("tarot accessibility and content safety", () => {
     expect(experience).toContain('className="tarot-shuffle__axis"');
     expect(styles).toContain(".tarot-shuffle__axis");
     expect(styles).toContain(".tarot-card-back.tarot-shuffle__card");
+    expect(styles).toContain(".admin-artwork-form__button");
+    expect(styles).toContain(".admin-card-face-list");
     expect(styles).not.toContain(".tarot-shuffle > span");
     expect(styles).toMatch(
       /prefers-reduced-motion:[\s\S]*?\.tarot-shuffle[\s\S]*?animation: none/,

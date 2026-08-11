@@ -17,6 +17,7 @@ const experience = readFileSync(
   "components/TarotReadingExperience.tsx",
   "utf8",
 );
+const decksLibrary = readFileSync("lib/tarot/decks.ts", "utf8");
 const migration = readFileSync(
   "supabase/migrations/20260809110121_add_tarot_decks.sql",
   "utf8",
@@ -150,6 +151,8 @@ describe("tarot artwork and access security", () => {
     expect(uploadRoute).toContain("tarot_deck_card_faces");
     expect(uploadRoute).toContain("tarot.deck.card_face.updated");
     expect(uploadRoute).toContain("remove([path])");
+    expect(decksLibrary).toContain("listTarotDeckCardFaceStatusForAdmin");
+    expect(decksLibrary).toContain('select("deck_id,card_id")');
   });
 
   it("keeps the catalogue and image bucket private", () => {

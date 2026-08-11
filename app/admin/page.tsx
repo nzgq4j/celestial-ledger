@@ -18,7 +18,7 @@ import { getAdminSettings } from "@/lib/admin/settings";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TarotDeckArtworkForm } from "@/components/TarotDeckArtworkForm";
 import {
-  listTarotDeckCardFaceCountsForAdmin,
+  listTarotDeckCardFaceStatusForAdmin,
   signTarotDeckArtworkForAdmin,
 } from "@/lib/tarot/decks";
 import { tarotCardsForLocale } from "@/lib/tarot/card-locales";
@@ -112,9 +112,13 @@ export default async function AdminPage({
       ...(await signTarotDeckArtworkForAdmin(deck)),
     })),
   );
-  const tarotCardFaceCounts = decksResult.error
-    ? { counts: new Map<string, number>(), error: null }
-    : await listTarotDeckCardFaceCountsForAdmin();
+  const tarotCardFaceStatus = decksResult.error
+    ? {
+        counts: new Map<string, number>(),
+        cardIds: new Map<string, string[]>(),
+        error: null,
+      }
+    : await listTarotDeckCardFaceStatusForAdmin();
   const tarotCardOptions = tarotCardsForLocale(pack.tag as TarotLocale).map(
     (card) => ({
       id: card.id,
@@ -838,14 +842,16 @@ export default async function AdminPage({
                 </form>
 
                 <div className="admin-tarot-decks">
-                  {tarotCardFaceCounts.error && (
+                  {tarotCardFaceStatus.error && (
                     <p className="admin-empty-state">
                       {tarotCopy.adminCardFacesMigrationPending}
                     </p>
                   )}
                   {tarotDecks.map((deck) => {
                     const cardFaceCount =
-                      tarotCardFaceCounts.counts.get(deck.id) ?? 0;
+                      tarotCardFaceStatus.counts.get(deck.id) ?? 0;
+                    const uploadedCardIds =
+                      tarotCardFaceStatus.cardIds.get(deck.id) ?? [];
                     return (
                       <article className="admin-tarot-deck" key={deck.id}>
                         <header>
@@ -1112,6 +1118,7 @@ export default async function AdminPage({
                             disabled={!canManageContent}
                             copy={tarotCopy}
                             cards={tarotCardOptions}
+                            uploadedCardIds={uploadedCardIds}
                             faceCount={cardFaceCount}
                             totalFaces={tarotCardOptions.length}
                           />

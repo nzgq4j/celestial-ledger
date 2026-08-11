@@ -11,6 +11,7 @@ export function TarotDeckArtworkForm({
   disabled,
   copy,
   cards = [],
+  uploadedCardIds = [],
   faceCount,
   totalFaces,
 }: {
@@ -20,6 +21,7 @@ export function TarotDeckArtworkForm({
   disabled: boolean;
   copy: Record<string, string>;
   cards?: readonly { id: string; name: string }[];
+  uploadedCardIds?: readonly string[];
   faceCount?: number;
   totalFaces?: number;
 }) {
@@ -53,6 +55,8 @@ export function TarotDeckArtworkForm({
     CATALOGUE_FAILED: copy.adminUploadFailed,
     UPLOAD_FAILED: copy.adminUploadFailed,
   };
+  const uploadedCardIdSet = new Set(uploadedCardIds);
+  const uploadedCards = cards.filter((card) => uploadedCardIdSet.has(card.id));
 
   return (
     <form
@@ -112,7 +116,9 @@ export function TarotDeckArtworkForm({
             <option value="">{copy.adminChooseCardFace}</option>
             {cards.map((card) => (
               <option value={card.id} key={card.id}>
-                {card.name}
+                {uploadedCardIdSet.has(card.id)
+                  ? `${copy.adminUploadedLabel}: ${card.name}`
+                  : card.name}
               </option>
             ))}
           </select>
@@ -130,7 +136,7 @@ export function TarotDeckArtworkForm({
         />
       </label>
       <button
-        className="button-quiet"
+        className="admin-artwork-form__button"
         disabled={disabled || pending}
         type="submit"
       >
@@ -143,6 +149,34 @@ export function TarotDeckArtworkForm({
       <span className="admin-upload-status" role="status" aria-live="polite">
         {status}
       </span>
+      {kind === "card-face" && (
+        <section
+          className="admin-card-face-status"
+          aria-label={copy.adminUploadedCardFaces}
+        >
+          <div className="admin-card-face-status__heading">
+            <strong>{copy.adminUploadedCardFaces}</strong>
+            <small>
+              {formatTarotMessage(copy.adminCardFacesSummary, {
+                count: uploadedCards.length,
+                total: cards.length,
+              })}
+            </small>
+          </div>
+          {uploadedCards.length ? (
+            <ul className="admin-card-face-list">
+              {uploadedCards.map((card) => (
+                <li key={card.id}>
+                  <span>{copy.adminUploadedLabel}</span>
+                  {card.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{copy.adminNoCardFacesUploaded}</p>
+          )}
+        </section>
+      )}
     </form>
   );
 }

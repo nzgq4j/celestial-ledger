@@ -196,15 +196,40 @@ export async function signedTarotCardFaceUrlsForDeck(
   return signedUrls;
 }
 
-export async function listTarotDeckCardFaceCountsForAdmin() {
+export async function listTarotDeckCardFaceStatusForAdmin() {
   const { data, error } = await createAdminClient()
     .from("tarot_deck_card_faces")
     .select("deck_id,card_id");
-  if (error) return { counts: new Map<string, number>(), error };
+  if (error) {
+    return {
+      counts: new Map<string, number>(),
+      cardIds: new Map<string, string[]>(),
+      error,
+    };
+  }
 
   const counts = new Map<string, number>();
-  for (const row of data as Pick<TarotDeckCardFaceRow, "deck_id">[]) {
+  const cardIds = new Map<string, string[]>();
+  for (const row of data as Pick<
+    TarotDeckCardFaceRow,
+    "deck_id" | "card_id"
+  >[]) {
     counts.set(row.deck_id, (counts.get(row.deck_id) ?? 0) + 1);
+    cardIds.set(row.deck_id, [
+      ...(cardIds.get(row.deck_id) ?? []),
+      row.card_id,
+    ]);
   }
-  return { counts, error: null };
+  for (const [deckId, ids] of cardIds) {
+    cardIds.set(
+      deckId,
+      ids.sort((left, right) => left.localeCompare(right)),
+    );
+  }
+  return { counts, cardIds, error: null };
+}
+
+export async function listTarotDeckCardFaceCountsForAdmin() {
+  const { counts, error } = await listTarotDeckCardFaceStatusForAdmin();
+  return { counts, error };
 }
