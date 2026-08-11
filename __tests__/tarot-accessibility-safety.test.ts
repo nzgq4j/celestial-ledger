@@ -39,7 +39,7 @@ describe("tarot accessibility and content safety", () => {
   });
 
   it("provides keyboard focus treatment and a reduced-motion alternative", () => {
-    expect(styles).toContain(".tarot-progress button:focus-visible");
+    expect(styles).toContain(".tarot-progress a:focus-visible");
     expect(styles).toContain(".tarot-deck:focus-visible");
     expect(styles).toContain(".tarot-shuffle:focus-visible");
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
@@ -59,10 +59,18 @@ describe("tarot accessibility and content safety", () => {
     expect(experience).not.toContain("shuffleComplete");
     expect(experience).not.toContain("copy.selectDeck");
     expect(experience).not.toContain("copy.reveal");
+    expect(experience).toContain("function stepHref");
+    expect(experience).toContain('href={stepHref(step)}');
+    expect(experience).toContain("goToStep(step)");
+    expect(experience).toContain("selectedDeck.cardBackImageUrl");
+    expect(experience).toContain("has-selected-back");
     expect(experience).toContain("function beginShuffleAndReveal()");
     expect(experience).toContain("void reveal();");
     expect(experience).toContain('role="button"');
     expect(experience).toContain('className="tarot-spread__select"');
+    expect(styles).toContain(".tarot-progress a");
+    expect(styles).toContain(".tarot-progress a[aria-disabled=\"true\"]");
+    expect(styles).toContain(".tarot-spread__count i.has-selected-back");
     expect(styles).toMatch(
       /\.tarot-shuffle\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
     );

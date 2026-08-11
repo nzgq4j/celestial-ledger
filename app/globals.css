@@ -10393,7 +10393,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   border-bottom: 1px solid var(--line);
 }
 
-.tarot-progress button {
+.tarot-progress a {
   min-height: 4rem;
   display: flex;
   gap: 0.65rem;
@@ -10407,31 +10407,32 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   font: inherit;
   font-size: 0.75rem;
   letter-spacing: 0.09em;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
-.tarot-progress button:last-child {
+.tarot-progress a:last-child {
   border-right: 0;
 }
 
-.tarot-progress button span {
+.tarot-progress a span {
   color: var(--gold);
   font:
     400 0.68rem/1 Georgia,
     serif;
 }
 
-.tarot-progress button.is-current {
+.tarot-progress a.is-current {
   background: color-mix(in srgb, var(--gold) 7%, transparent);
   color: var(--ivory);
 }
 
-.tarot-progress button:disabled {
+.tarot-progress a[aria-disabled="true"] {
   cursor: default;
   opacity: 0.55;
 }
 
-.tarot-progress button:focus-visible,
+.tarot-progress a:focus-visible,
 .tarot-deck:focus-visible,
 .tarot-shuffle:focus-visible,
 .tarot-spread button:focus-visible {
@@ -10664,7 +10665,13 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin-left: -0.45rem;
   border: 1px solid color-mix(in srgb, var(--gold) 65%, var(--line));
   background: var(--panel);
+  background-position: center;
+  background-size: cover;
   transform: rotate(calc((var(--i, 0) - 2) * 2deg));
+}
+
+.tarot-spread__count i.has-selected-back {
+  border-color: color-mix(in srgb, var(--gold) 80%, var(--line));
 }
 
 .tarot-spread__count span {
@@ -11327,7 +11334,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 }
 
 @media (max-width: 720px) {
-  .tarot-progress button {
+  .tarot-progress a {
     min-height: 3.5rem;
     flex-direction: column;
     gap: 0.25rem;

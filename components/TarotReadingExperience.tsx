@@ -71,6 +71,27 @@ export function TarotReadingExperience({
     copy.readingStep,
   ];
 
+  function stepHref(step: 1 | 2 | 3 | 4) {
+    if (step === 1) return "#tarot-deck-heading";
+    if (step === 2) return "#tarot-spread-heading";
+    if (step === 3) return "#tarot-shuffle-heading";
+    return "#tarot-reading-heading";
+  }
+
+  function stepIsReachable(step: 1 | 2 | 3 | 4) {
+    if (shuffling || pending) return step === stage;
+    if (step === 1) return true;
+    if (step === 2) return Boolean(deckId);
+    if (step === 3) return Boolean(deckId && readingId);
+    return Boolean(result);
+  }
+
+  function goToStep(step: 1 | 2 | 3 | 4) {
+    if (!stepIsReachable(step)) return;
+    setError("");
+    setStage(step);
+  }
+
   function reset() {
     setStage(1);
     setDeckId("");
@@ -150,18 +171,23 @@ export function TarotReadingExperience({
       >
         {stepNames.map((name, index) => {
           const step = (index + 1) as 1 | 2 | 3 | 4;
+          const reachable = stepIsReachable(step);
           return (
-            <button
-              type="button"
+            <a
               key={name}
+              href={stepHref(step)}
               className={stage === step ? "is-current" : ""}
               aria-current={stage === step ? "step" : undefined}
-              disabled={step > stage || stage === 4 || shuffling || pending}
-              onClick={() => step < stage && setStage(step)}
+              aria-disabled={!reachable}
+              tabIndex={reachable ? undefined : -1}
+              onClick={(event) => {
+                event.preventDefault();
+                goToStep(step);
+              }}
             >
               <span>{String(step).padStart(2, "0")}</span>
               {name}
-            </button>
+            </a>
           );
         })}
       </nav>
@@ -271,7 +297,22 @@ export function TarotReadingExperience({
                   >
                     {Array.from({ length: Math.min(reading.cardCount, 5) }).map(
                       (_, index) => (
-                        <i key={index} aria-hidden="true" />
+                        <i
+                          key={index}
+                          aria-hidden="true"
+                          className={
+                            selectedDeck?.cardBackImageUrl
+                              ? "has-selected-back"
+                              : undefined
+                          }
+                          style={
+                            selectedDeck?.cardBackImageUrl
+                              ? {
+                                  backgroundImage: `url("${selectedDeck.cardBackImageUrl}")`,
+                                }
+                              : undefined
+                          }
+                        />
                       ),
                     )}
                     {reading.cardCount > 5 && (
@@ -326,7 +367,10 @@ export function TarotReadingExperience({
       )}
 
       {stage === 3 && selectedDeck && selectedReading && (
-        <div className="tarot-stage tarot-shuffle-stage">
+        <div
+          className="tarot-stage tarot-shuffle-stage"
+          aria-labelledby="tarot-shuffle-heading"
+        >
           <header className="tarot-stage__heading">
             <p className="eyebrow">
               {formatTarotMessage(copy.stepProgress, {
@@ -334,7 +378,7 @@ export function TarotReadingExperience({
                 total: 4,
               })}
             </p>
-            <h2>{copy.beginShuffle}</h2>
+            <h2 id="tarot-shuffle-heading">{copy.beginShuffle}</h2>
             <p>{copy.shuffleCopy}</p>
           </header>
           <div
@@ -382,12 +426,15 @@ export function TarotReadingExperience({
       )}
 
       {stage === 4 && result && (
-        <div className="tarot-stage tarot-results">
+        <div
+          className="tarot-stage tarot-results"
+          aria-labelledby="tarot-reading-heading"
+        >
           <header className="tarot-stage__heading">
             <p className="eyebrow">
               {result.deck.name} · {result.reading.name}
             </p>
-            <h2>{copy.yourReading}</h2>
+            <h2 id="tarot-reading-heading">{copy.yourReading}</h2>
           </header>
           <div className="tarot-results__table">
             {result.cards.map((item, index) => (
