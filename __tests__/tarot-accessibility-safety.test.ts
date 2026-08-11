@@ -40,6 +40,8 @@ describe("tarot accessibility and content safety", () => {
 
   it("provides keyboard focus treatment and a reduced-motion alternative", () => {
     expect(styles).toContain(".tarot-progress button:focus-visible");
+    expect(styles).toContain(".tarot-deck:focus-visible");
+    expect(styles).toContain(".tarot-shuffle:focus-visible");
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
     expect(styles).toContain(".tarot-shuffle.is-shuffling");
     expect(experience).toContain('className="tarot-shuffle__axis"');
@@ -50,6 +52,28 @@ describe("tarot accessibility and content safety", () => {
     expect(styles).not.toContain(".tarot-shuffle > span");
     expect(styles).toMatch(
       /prefers-reduced-motion:[\s\S]*?\.tarot-shuffle[\s\S]*?animation: none/,
+    );
+  });
+
+  it("keeps the beta tarot draw flow direct and card-shaped", () => {
+    expect(experience).not.toContain("shuffleComplete");
+    expect(experience).not.toContain("copy.selectDeck");
+    expect(experience).not.toContain("copy.reveal");
+    expect(experience).toContain("function beginShuffleAndReveal()");
+    expect(experience).toContain("void reveal();");
+    expect(experience).toContain('role="button"');
+    expect(experience).toContain('className="tarot-spread__select"');
+    expect(styles).toMatch(
+      /\.tarot-shuffle\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
+    );
+    expect(styles).toMatch(
+      /\.tarot-card-back\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
+    );
+    expect(styles).toMatch(
+      /\.tarot-card-plate\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
+    );
+    expect(styles).toMatch(
+      /\.tarot-symbolic-face\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
     );
   });
 

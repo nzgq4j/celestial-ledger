@@ -57,7 +57,6 @@ export function TarotReadingExperience({
   const [deckId, setDeckId] = useState("");
   const [readingId, setReadingId] = useState("");
   const [shuffling, setShuffling] = useState(false);
-  const [shuffleComplete, setShuffleComplete] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<DrawResponse | null>(null);
@@ -77,7 +76,6 @@ export function TarotReadingExperience({
     setDeckId("");
     setReadingId("");
     setShuffling(false);
-    setShuffleComplete(false);
     setPending(false);
     setError("");
     setResult(null);
@@ -86,15 +84,15 @@ export function TarotReadingExperience({
   function chooseDeck(nextDeckId: string) {
     setDeckId(nextDeckId);
     setReadingId("");
-    setShuffleComplete(false);
     setError("");
+    setResult(null);
     setStage(2);
   }
 
   function chooseReading(nextReadingId: string) {
     setReadingId(nextReadingId);
-    setShuffleComplete(false);
     setError("");
+    setResult(null);
     setStage(3);
   }
 
@@ -117,6 +115,19 @@ export function TarotReadingExperience({
     } finally {
       setPending(false);
     }
+  }
+
+  function beginShuffleAndReveal() {
+    if (shuffling || pending || !selectedDeck || !selectedReading) return;
+    setShuffling(true);
+    setError("");
+    window.setTimeout(
+      () => {
+        setShuffling(false);
+        void reveal();
+      },
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200,
+    );
   }
 
   if (!visibleDecks.length) {
@@ -145,7 +156,7 @@ export function TarotReadingExperience({
               key={name}
               className={stage === step ? "is-current" : ""}
               aria-current={stage === step ? "step" : undefined}
-              disabled={step > stage || stage === 4}
+              disabled={step > stage || stage === 4 || shuffling || pending}
               onClick={() => step < stage && setStage(step)}
             >
               <span>{String(step).padStart(2, "0")}</span>
@@ -180,7 +191,17 @@ export function TarotReadingExperience({
                     selected ? "is-selected" : ""
                   }`}
                   key={deck.id}
+                  role={unlocked ? "button" : undefined}
+                  tabIndex={unlocked ? 0 : undefined}
+                  aria-pressed={unlocked ? selected : undefined}
                   onClick={() => unlocked && chooseDeck(deck.id)}
+                  onKeyDown={(event) => {
+                    if (!unlocked) return;
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      chooseDeck(deck.id);
+                    }
+                  }}
                 >
                   <div
                     className="tarot-deck__cover"
@@ -203,22 +224,7 @@ export function TarotReadingExperience({
                     <p>{deck.name}</p>
                     <small>{deck.tagline}</small>
                   </div>
-                  {unlocked ? (
-                    <button
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        chooseDeck(deck.id);
-                      }}
-                    >
-                      {selected
-                        ? copy.selected
-                        : formatTarotMessage(copy.selectDeck, {
-                            name: deck.name,
-                          })}
-                    </button>
-                  ) : (
+                  {!unlocked && (
                     <div className="tarot-deck__upgrade">
                       <span>{requirementLabel(copy, deck.minimumPlan)}</span>
                       <Link href="/membership">{copy.upgrade}</Link>
@@ -287,6 +293,7 @@ export function TarotReadingExperience({
                   </div>
                   {unlocked ? (
                     <button
+                      className="tarot-spread__select"
                       type="button"
                       aria-pressed={selected}
                       onClick={(event) => {
@@ -332,7 +339,17 @@ export function TarotReadingExperience({
           </header>
           <div
             className={`tarot-shuffle ${shuffling ? "is-shuffling" : ""}`}
-            aria-hidden="true"
+            role="button"
+            tabIndex={0}
+            aria-label={copy.beginShuffle}
+            aria-disabled={shuffling || pending}
+            onClick={beginShuffleAndReveal}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                beginShuffleAndReveal();
+              }
+            }}
           >
             {["a", "b", "c"].map((layer) => (
               <TarotSymbolicCardBack
@@ -360,37 +377,6 @@ export function TarotReadingExperience({
             >
               {copy.back}
             </button>
-            {!shuffleComplete ? (
-              <button
-                className="button-primary"
-                type="button"
-                disabled={shuffling}
-                onClick={() => {
-                  setShuffling(true);
-                  window.setTimeout(
-                    () => {
-                      setShuffling(false);
-                      setShuffleComplete(true);
-                    },
-                    window.matchMedia("(prefers-reduced-motion: reduce)")
-                      .matches
-                      ? 0
-                      : 1200,
-                  );
-                }}
-              >
-                {shuffling ? copy.shuffling : copy.beginShuffle}
-              </button>
-            ) : (
-              <button
-                className="button-primary"
-                type="button"
-                disabled={pending}
-                onClick={reveal}
-              >
-                {pending ? copy.shuffling : copy.reveal}
-              </button>
-            )}
           </div>
         </div>
       )}

@@ -10432,7 +10432,8 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 }
 
 .tarot-progress button:focus-visible,
-.tarot-deck button:focus-visible,
+.tarot-deck:focus-visible,
+.tarot-shuffle:focus-visible,
 .tarot-spread button:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: -3px;
@@ -10475,7 +10476,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   --deck-accent: var(--gold);
   min-width: 0;
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto auto;
   gap: 1rem;
   padding: 1rem;
   background: var(--navy);
@@ -10484,7 +10485,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
     box-shadow 180ms ease;
 }
 
-.tarot-deck:has(> button),
+.tarot-deck[role="button"],
 .tarot-spread:has(> button) {
   cursor: pointer;
 }
@@ -10578,23 +10579,28 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   text-transform: uppercase;
 }
 
-.tarot-deck > button,
-.tarot-spread > button {
+.tarot-spread__select {
   align-self: end;
   min-height: 2.75rem;
-  padding: 0.6rem 0;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: transparent;
-  color: var(--deck-accent, var(--gold));
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 58%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  color: var(--gold);
   cursor: pointer;
   font:
     700 0.68rem/1.2 "Avenir Next",
     Avenir,
     sans-serif;
   letter-spacing: 0.08em;
-  text-align: left;
+  text-align: center;
   text-transform: uppercase;
+}
+
+.tarot-spread__select:hover,
+.tarot-spread__select[aria-pressed="true"] {
+  background: var(--gold);
+  color: #08101d;
 }
 
 .tarot-deck__upgrade,
@@ -10669,7 +10675,6 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 
 .tarot-spread > button {
   min-width: 10rem;
-  text-align: right;
 }
 
 .tarot-spread__upgrade {
@@ -10689,8 +10694,13 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-shuffle {
   position: relative;
   width: min(15rem, 62vw);
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 5 / 8;
   margin-block: 1rem;
+  cursor: pointer;
+}
+
+.tarot-shuffle[aria-disabled="true"] {
+  cursor: progress;
 }
 
 .tarot-shuffle__axis {
@@ -10718,6 +10728,8 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   --tarot-back-burgundy: #541426;
   --tarot-back-deep: #260811;
   position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 8;
   display: block;
   overflow: hidden;
   background:
@@ -10905,7 +10917,9 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 }
 
 .tarot-card-plate {
-  min-height: 18rem;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 5 / 8;
   border-bottom: 1px solid var(--line);
 }
 
@@ -10914,6 +10928,8 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   --tarot-face-burgundy-deep: #260811;
   --tarot-face-gold: var(--gold);
   position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 8;
   min-width: 0;
   display: grid;
   grid-template-rows: 1fr auto;
