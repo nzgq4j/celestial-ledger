@@ -10971,6 +10971,15 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   background-repeat: no-repeat;
 }
 
+.tarot-symbolic-face--reversed {
+  transform: rotate(180deg);
+}
+
+.tarot-card-plate.tarot-symbolic-face--reversed {
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+}
+
 .tarot-symbolic-face--artwork::before,
 .tarot-symbolic-face--artwork::after {
   display: none;

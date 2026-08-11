@@ -401,6 +401,7 @@ export function TarotReadingExperience({
                   number={item.number}
                   name={item.name}
                   imageUrl={item.faceImageUrl}
+                  orientation={item.orientation}
                   className="tarot-card-plate"
                 />
                 <div className="tarot-result-card__copy">

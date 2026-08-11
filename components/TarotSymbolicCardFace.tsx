@@ -1,4 +1,4 @@
-import type { TarotSuit } from "@/lib/tarot/types";
+import type { TarotOrientation, TarotSuit } from "@/lib/tarot/types";
 
 const ROMAN_NUMERALS = [
   "0",
@@ -57,6 +57,7 @@ export function TarotSymbolicCardFace({
   number,
   name,
   imageUrl,
+  orientation = "upright",
   className = "",
 }: {
   arcana: "major" | "minor";
@@ -64,6 +65,7 @@ export function TarotSymbolicCardFace({
   number: number | null;
   name: string;
   imageUrl?: string | null;
+  orientation?: TarotOrientation;
   className?: string;
 }) {
   const index = tarotCardIndex(arcana, number);
@@ -72,6 +74,7 @@ export function TarotSymbolicCardFace({
     `tarot-symbolic-face--${arcana}`,
     suit ? `tarot-symbolic-face--${suit}` : "",
     imageUrl ? "tarot-symbolic-face--artwork" : "",
+    orientation === "reversed" ? "tarot-symbolic-face--reversed" : "",
     className,
   ]
     .filter(Boolean)

@@ -117,6 +117,7 @@ export function AccountTarotDailyDraw({
             number={card.number}
             name={card.name}
             imageUrl={card.faceImageUrl}
+            orientation={card.orientation}
             className="account-tarot-result__plate"
           />
           <div>

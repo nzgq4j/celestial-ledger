@@ -79,6 +79,12 @@ describe("tarot accessibility and content safety", () => {
 
   it("provides a decorative, art-independent symbolic card face", () => {
     expect(symbolicFace).toContain('aria-hidden="true"');
+    expect(symbolicFace).toContain("orientation?: TarotOrientation");
+    expect(symbolicFace).toContain("tarot-symbolic-face--reversed");
+    expect(experience).toContain("orientation={item.orientation}");
+    expect(accountDraw).toContain("orientation={card.orientation}");
+    expect(styles).toContain(".tarot-symbolic-face--reversed");
+    expect(styles).toContain("transform: rotate(180deg)");
     expect(symbolicFace).toContain("tarot-symbolic-face__index--top");
     expect(symbolicFace).toContain("tarot-symbolic-face__index--bottom");
     expect(styles).toContain(".tarot-symbolic-face__emblem--major");
