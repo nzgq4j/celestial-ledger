@@ -10,7 +10,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 300;
+export const maxDuration = 800;
 
 const responseHeaders = {
   "Cache-Control": "private, no-store",
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
       {
         ok: false,
         date,
-        preservedPreviousEdition: true,
+        retryScheduled: true,
         error: "The new horoscope edition could not be published.",
       },
       500,

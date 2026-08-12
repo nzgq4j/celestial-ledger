@@ -41,14 +41,18 @@ describe("generated horoscope editorial editions", () => {
     expect(generator).toContain("HOROSCOPE_HISTORICAL_SIMILARITY_FAILED");
   });
 
-  it("publishes stored editions while retaining a deterministic fallback", () => {
+  it("publishes only complete stored editions and never serves fallback copy", () => {
     expect(migration).toContain("unique (edition_date, locale)");
     expect(migration).toContain("status = 'published'");
-    expect(generator).toContain("return fallback");
+    expect(generator).not.toContain("return fallback");
+    expect(generator).toContain("HoroscopeEditionUnavailableError");
+    expect(generator).toContain("HOROSCOPE_GENERATION_ATTEMPTS");
+    expect(generator).toContain('status: "generating"');
+    expect(generator).toContain('status: "failed"');
     expect(generator).toContain(
       '.eq("prompt_version", HOROSCOPE_PROMPT_VERSION)',
     );
-    expect(rollover).toContain("preservedPreviousEdition: true");
+    expect(rollover).toContain("retryScheduled: true");
     expect(listing).toContain("await publishedDailySky");
     expect(listing).toContain("sky.summary ?? copy.introduction");
     expect(detail).toContain("await publishedDailySky");
