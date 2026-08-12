@@ -101,14 +101,19 @@ export default async function HoroscopeDetailPage({
           publisher: { "@type": "Organization", name: SITE_NAME },
         }}
       />
-      <Link
-        className="horoscope-back"
-        href={
-          pack.tag === "en-GB" ? "/horoscopes" : `/horoscopes?lang=${pack.tag}`
-        }
-      >
-        ← {copy.allHoroscopes}
-      </Link>
+      <nav className="horoscope-breadcrumb" aria-label="Breadcrumb">
+        <Link
+          href={
+            pack.tag === "en-GB"
+              ? "/horoscopes"
+              : `/horoscopes?lang=${pack.tag}`
+          }
+        >
+          {copy.allHoroscopes}
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{reading.sign}</span>
+      </nav>
       <header>
         <span className="horoscope-detail__glyph" aria-hidden="true">
           {reading.glyph}

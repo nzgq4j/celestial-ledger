@@ -5370,6 +5370,32 @@ input:focus-visible {
 .daily-horoscopes {
   max-width: 78rem;
 }
+.page-shell.daily-horoscopes,
+.page-shell.horoscope-detail {
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding-top: clamp(0.75rem, 2vw, 1.5rem);
+}
+.horoscope-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+.horoscope-breadcrumb a {
+  color: var(--gold);
+  text-decoration: none;
+}
+.horoscope-breadcrumb a:hover {
+  color: var(--paper);
+}
+.horoscope-breadcrumb a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
 .horoscope-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(19rem, 0.6fr);

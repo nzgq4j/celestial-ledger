@@ -59,6 +59,11 @@ export default async function DailyHoroscopesPage({
   return (
     <main className="page-shell daily-horoscopes">
       <HoroscopeMidnightRefresh />
+      <nav className="horoscope-breadcrumb" aria-label="Breadcrumb">
+        <Link href="/">Celestial Atlas</Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{copy.title}</span>
+      </nav>
       <header className="horoscope-hero">
         <div>
           <p className="eyebrow">
