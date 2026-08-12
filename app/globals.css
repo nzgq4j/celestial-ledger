@@ -10916,6 +10916,11 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   border: 1px solid var(--line);
 }
 
+.tarot-results__table:has(> .tarot-result-card:only-child) {
+  width: min(100%, 15rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .tarot-result-card {
   min-width: 0;
   display: grid;
