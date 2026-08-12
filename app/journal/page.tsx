@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createPageMetadata } from "@/lib/seo";
+import { journalFeaturedImage } from "@/lib/journal/featured-images";
 
 export const dynamic = "force-dynamic";
 export const metadata = createPageMetadata({
@@ -40,7 +41,7 @@ export default async function JournalPage() {
               aria-label={`Read ${post.title}`}
             >
               <Image
-                src={`/journal/${post.slug}/opengraph-image`}
+                src={journalFeaturedImage(post.slug)}
                 alt={`${post.title} featured celestial illustration`}
                 width={1200}
                 height={630}

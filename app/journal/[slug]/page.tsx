@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StructuredData } from "@/components/StructuredData";
+import { journalFeaturedImage } from "@/lib/journal/featured-images";
 import { createPageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 export const revalidate = 300;
@@ -33,7 +34,7 @@ export async function generateMetadata({
     description: post.seo_description || post.excerpt,
     path: `/journal/${post.slug}`,
     type: "article",
-    image: `/journal/${post.slug}/opengraph-image`,
+    image: journalFeaturedImage(post.slug),
     publishedTime: post.published_at ?? undefined,
     modifiedTime: post.updated_at ?? undefined,
     authors: [post.author_name],
@@ -60,7 +61,7 @@ export default async function JournalPostPage({
           "@type": "BlogPosting",
           headline: post.title,
           description: post.seo_description || post.excerpt,
-          image: [`${SITE_URL}/journal/${post.slug}/opengraph-image`],
+          image: [new URL(journalFeaturedImage(post.slug), SITE_URL).toString()],
           datePublished: post.published_at,
           dateModified: post.updated_at,
           mainEntityOfPage: `${SITE_URL}/journal/${post.slug}`,
@@ -75,7 +76,7 @@ export default async function JournalPostPage({
         <header>
           <Image
             className="journal-entry__featured-image"
-            src={`/journal/${post.slug}/opengraph-image`}
+            src={journalFeaturedImage(post.slug)}
             alt={`${post.title} featured celestial illustration`}
             width={1200}
             height={630}
