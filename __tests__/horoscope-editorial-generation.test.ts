@@ -31,6 +31,8 @@ describe("generated horoscope editorial editions", () => {
       'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-5"',
     );
     expect(generator).toContain("daily_horoscope_complete_edition");
+    expect(generator).toContain("timeout: 210_000");
+    expect(generator).toContain("OPENAI_REQUEST_ATTEMPTS = 1");
     expect(generator).toContain("rankedEvidenceFor");
     expect(generator).toContain("They have already been selected and ranked");
     expect(generator).toContain("whole-sign solar houses");

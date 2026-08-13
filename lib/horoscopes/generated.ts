@@ -20,7 +20,7 @@ import {
 
 export const HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-5";
 const HOROSCOPE_GENERATION_ATTEMPTS = 3;
-const OPENAI_REQUEST_ATTEMPTS = 2;
+const OPENAI_REQUEST_ATTEMPTS = 1;
 
 export class HoroscopeEditionUnavailableError extends Error {
   constructor(
@@ -242,7 +242,7 @@ function validateEdition(
 function openAiClient() {
   return new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    timeout: 90_000,
+    timeout: 210_000,
     maxRetries: 0,
   });
 }
