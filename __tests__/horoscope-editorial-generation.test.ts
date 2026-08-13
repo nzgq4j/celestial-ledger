@@ -28,7 +28,7 @@ describe("generated horoscope editorial editions", () => {
 
   it("plans twelve distinct angles and generates each sign from evidence", () => {
     expect(generator).toContain(
-      'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-3"',
+      'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-4"',
     );
     expect(generator).toContain("daily_horoscope_editorial_plan");
     expect(generator).toContain("Other signs' reserved directions");
@@ -37,8 +37,13 @@ describe("generated horoscope editorial editions", () => {
       "Silently rank the three to six most useful signals",
     );
     expect(generator).toContain("whole-sign solar chart");
-    expect(generator).toContain("The server owns every astronomical fact");
-    expect(generator).toContain("not reliable morning-to-evening event timing");
+    expect(generator).toContain("Use only server-supplied astronomical facts");
+    expect(generator).toContain(
+      "Reader-facing fields contain only the horoscope itself",
+    );
+    expect(generator).toContain(
+      "No complete sentence or reusable clause may appear in more than one sign",
+    );
     expect(generator).toContain("HOROSCOPE_UNKNOWN_EVIDENCE");
     expect(generator).toContain("HOROSCOPE_WITHIN_DAY_SIMILARITY_FAILED");
     expect(generator).toContain("HOROSCOPE_HISTORICAL_SIMILARITY_FAILED");
