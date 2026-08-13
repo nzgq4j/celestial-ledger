@@ -56,6 +56,17 @@ describe("generated horoscope editorial editions", () => {
     expect(detail).toContain("reading.wellbeing");
   });
 
+  it("uses a clean two-line horoscope title over the landing hero", () => {
+    const styles = fs.readFileSync("app/globals.css", "utf8");
+    expect(detail).toContain("<h1>{reading.sign}</h1>");
+    expect(detail).toContain('className="horoscope-detail__subtitle"');
+    expect(detail).not.toContain("{reading.sign} —");
+    expect(detail).not.toContain("dailyHoroscope} —");
+    expect(listing).not.toContain("{copy.title} —");
+    expect(styles).toContain(".horoscope-detail > header {");
+    expect(styles).toContain('url("/hero1.png") center 46% / cover no-repeat');
+  });
+
   it("keeps a validated current-day edition visible during regeneration", () => {
     expect(migration).toContain("unique (edition_date, locale)");
     expect(migration).toContain("status = 'published'");

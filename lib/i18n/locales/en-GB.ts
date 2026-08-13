@@ -329,7 +329,7 @@ const pack = {
       readFull: "Read the full horoscope for",
       allHoroscopes: "All daily horoscopes",
       sunSignReading: "Sun sign reading",
-      dailyHoroscope: "daily horoscope",
+      dailyHoroscope: "Daily Horoscope",
       bottomLine: "Bottom line up front",
       relationships: "Relationships and connection",
       business: "Business and direction",

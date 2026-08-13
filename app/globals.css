@@ -5692,12 +5692,27 @@ input:focus-visible {
   padding-bottom: 3.25rem;
 }
 .horoscope-detail > header {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 1rem;
   align-items: center;
+  overflow: hidden;
   padding-bottom: 1.75rem;
   border-bottom: 1px solid var(--line);
+  --hero-panel-background:
+    linear-gradient(
+      90deg,
+      rgba(2, 8, 16, 0.96) 0%,
+      rgba(3, 11, 22, 0.75) 48%,
+      rgba(3, 9, 18, 0.3) 100%
+    ),
+    linear-gradient(180deg, rgba(4, 11, 21, 0.12) 44%, rgba(3, 8, 17, 0.88)),
+    url("/hero1.png") center 46% / cover no-repeat;
+  background: var(--hero-panel-background);
+  box-shadow:
+    inset 0 0 5rem rgba(1, 5, 10, 0.2),
+    0 1.5rem 4rem rgba(0, 0, 0, 0.16);
 }
 .horoscope-detail__glyph {
   color: var(--gold);
@@ -5705,7 +5720,18 @@ input:focus-visible {
     clamp(3rem, 7vw, 5rem)/1 Georgia,
     serif;
 }
-.horoscope-detail header > div > p:last-child {
+.horoscope-detail__subtitle {
+  margin: 0.15rem 0 1.15rem;
+  color: var(--paper);
+  font:
+    400 clamp(1.35rem, 2.5vw, 2rem) / 1.1 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.02em;
+}
+.horoscope-detail__theme {
+  max-width: 44rem;
+  margin: 0;
   color: var(--gold);
   font:
     0.7rem ui-monospace,
@@ -8920,13 +8946,15 @@ body:has(.account-dashboard) .account-workspace {
   align-items: end;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
-  background:
+  background: var(
+    --hero-panel-background,
     radial-gradient(
       circle at 86% 10%,
       rgba(79, 183, 197, 0.09),
       transparent 22rem
     ),
-    linear-gradient(145deg, rgba(13, 26, 43, 0.94), rgba(5, 11, 19, 0.96));
+    linear-gradient(145deg, rgba(13, 26, 43, 0.94), rgba(5, 11, 19, 0.96))
+  );
 }
 
 :is(.collection-hero, .membership-hero, .horoscope-detail > header) {

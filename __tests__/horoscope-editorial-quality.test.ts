@@ -40,4 +40,12 @@ describe("horoscope editorial quality gate", () => {
   it("allows clear, coherent and distinct horoscope language", () => {
     expect(horoscopeCopyViolations(reading())).toEqual([]);
   });
+
+  it("rejects em dashes in generated title fields", () => {
+    expect(
+      horoscopeCopyViolations(
+        reading({ theme: "Clear choices — clean action" }),
+      ),
+    ).toContain("TITLE_EM_DASH");
+  });
 });

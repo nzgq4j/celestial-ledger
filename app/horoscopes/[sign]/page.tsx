@@ -43,7 +43,7 @@ export async function generateMetadata({
   const path = localizedPublicUrl(route, pack.tag);
   const publishedAt = `${sky.date}T00:00:00.000Z`;
   const metadata = createPageMetadata({
-    title: `${reading.sign} ${pack.messages.horoscopes.dailyHoroscope} — ${reading.displayDate}`,
+    title: `${reading.sign} ${pack.messages.horoscopes.dailyHoroscope} | ${reading.displayDate}`,
     description: reading.bottomLine,
     path,
     locale: pack.tag,
@@ -76,7 +76,7 @@ export default async function HoroscopeDetailPage({
   const shareUrl = localizedPublicUrl(route, pack.tag);
   const imageUrl = `${SITE_URL}${route}/opengraph-image`;
   const pinterestImageUrl = `${SITE_URL}${route}/pinterest-image`;
-  const title = `${reading.sign} ${copy.dailyHoroscope} — ${reading.displayDate}`;
+  const title = `${reading.sign} ${copy.dailyHoroscope} | ${reading.displayDate}`;
   const publishedAt = `${sky.date}T00:00:00.000Z`;
   const periodLabels = {
     morning: copy.morning,
@@ -122,10 +122,9 @@ export default async function HoroscopeDetailPage({
           <p className="eyebrow">
             {reading.displayDate} · {copy.sunSignReading}
           </p>
-          <h1>
-            {reading.sign} — {copy.dailyHoroscope}
-          </h1>
-          <p>{reading.theme}</p>
+          <h1>{reading.sign}</h1>
+          <p className="horoscope-detail__subtitle">{copy.dailyHoroscope}</p>
+          <p className="horoscope-detail__theme">{reading.theme}</p>
         </div>
       </header>
       <SocialShareLinks

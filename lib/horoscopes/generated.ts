@@ -442,6 +442,7 @@ EDITORIAL STANDARD
 - Avoid keyword soup, theatrical language, strained cleverness, therapy-speak, mystical filler, canned uplift, generic symmetry, and interchangeable advice.
 - Do not mention a planet merely to prove that it appeared in the evidence. Translate the relevant astrological basis into recognisable human concerns.
 - Keep overviews suitable for cards: one compact paragraph. Keep the full sections useful but disciplined. No sentence may exceed 55 words.
+- Never use an em dash in a theme or other title field.
 - Morning, midday, and evening are editorial checkpoints: orientation, practical action, and integration. They are not claims about when a transit begins or peaks. Return the midday checkpoint using the schema value "afternoon".
 - Write the horoscope directly. Do not explain astrology's status and do not include caveats about prediction.
 - Avoid asserting a specific external event as certain. Do not give medical, legal, or investment instructions or make fear claims about illness, accidents, betrayal, pregnancy, job loss, or financial outcomes.

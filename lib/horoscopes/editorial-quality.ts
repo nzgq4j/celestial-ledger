@@ -17,7 +17,8 @@ export type HoroscopeCopyViolation =
   | "META_COPY"
   | "FORCED_ANALOGY"
   | "OVERLONG_SENTENCE"
-  | "EXCESSIVE_LENGTH";
+  | "EXCESSIVE_LENGTH"
+  | "TITLE_EM_DASH";
 
 export function readerFacingHoroscopeText(reading: ReaderFacingHoroscope) {
   return [
@@ -59,6 +60,11 @@ export function horoscopeCopyViolations(reading: ReaderFacingHoroscope) {
     reading.dayParts.some((part) => part.guidance.length > 320)
   )
     violations.add("EXCESSIVE_LENGTH");
+  if (
+    reading.theme.includes("—") ||
+    reading.dayParts.some((part) => part.theme.includes("—"))
+  )
+    violations.add("TITLE_EM_DASH");
 
   for (const sentence of text.split(/(?<=[.!?])\s+/)) {
     if (sentence.trim().split(/\s+/).length > 55) {

@@ -28,7 +28,7 @@ export async function generateMetadata({
   const sky = await publishedDailySky(new Date(), pack.tag);
   const path = localizedPublicUrl("/horoscopes", pack.tag);
   const metadata = createPageMetadata({
-    title: `${copy.title} — ${sky.displayDate}`,
+    title: `${copy.title} | ${sky.displayDate}`,
     description: copy.introduction,
     path,
     locale: pack.tag,
