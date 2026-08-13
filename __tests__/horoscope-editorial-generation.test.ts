@@ -9,6 +9,7 @@ const rollover = fs.readFileSync(
 );
 const listing = fs.readFileSync("app/horoscopes/page.tsx", "utf8");
 const detail = fs.readFileSync("app/horoscopes/[sign]/page.tsx", "utf8");
+const rootLayout = fs.readFileSync("app/layout.tsx", "utf8");
 const migration = fs.readFileSync(
   "supabase/migrations/20260807170833_generated_daily_horoscope_editions.sql",
   "utf8",
@@ -63,6 +64,7 @@ describe("generated horoscope editorial editions", () => {
     expect(detail).not.toContain("{reading.sign} —");
     expect(detail).not.toContain("dailyHoroscope} —");
     expect(listing).not.toContain("{copy.title} —");
+    expect(rootLayout).toContain("template: `%s | ${settings.seo.title}`");
     expect(styles).toContain(".horoscope-detail > header {");
     expect(styles).toContain('url("/hero1.png") center 46% / cover no-repeat');
   });

@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(settings.seo.canonicalBase),
     title: {
       default: settings.seo.title,
-      template: `%s — ${settings.seo.title}`,
+      template: `%s | ${settings.seo.title}`,
     },
     description: settings.seo.description,
     keywords: [...coreKeywords],
