@@ -471,6 +471,16 @@ function hydrateReadings(
 export async function publishGeneratedHoroscopes(date = new Date()) {
   const admin = createAdminClient();
   const editionSky = dailySkyFor(date, "en-GB");
+  const { data: storedEnglishEdition } = await admin
+    .from("daily_horoscope_editions")
+    .select("readings")
+    .eq("edition_date", editionSky.date)
+    .eq("locale", "en-GB")
+    .maybeSingle();
+  const hasStoredFallback = generatedReadingSchema
+    .array()
+    .length(12)
+    .safeParse(storedEnglishEdition?.readings).success;
   const { data: existingEditions } = await admin
     .from("daily_horoscope_editions")
     .select("locale,status,prompt_version,readings")
@@ -488,23 +498,25 @@ export async function publishGeneratedHoroscopes(date = new Date()) {
   ) {
     return publishedDailySky(date, "en-GB");
   }
-  const { error: generatingStateError } = await admin
-    .from("daily_horoscope_editions")
-    .upsert(
-      {
-        edition_date: editionSky.date,
-        locale: "en-GB",
-        status: "generating",
-        evidence: evidenceBundle(editionSky) as unknown as Json,
-        calculation_version: "celestial-atlas-daily-v1",
-        prompt_version: HOROSCOPE_PROMPT_VERSION,
-        generated_at: new Date().toISOString(),
-        failure_code: null,
-      },
-      { onConflict: "edition_date,locale" },
-    );
-  if (generatingStateError)
-    throw new Error("HOROSCOPE_GENERATING_STATE_FAILED");
+  if (!hasStoredFallback) {
+    const { error: generatingStateError } = await admin
+      .from("daily_horoscope_editions")
+      .upsert(
+        {
+          edition_date: editionSky.date,
+          locale: "en-GB",
+          status: "generating",
+          evidence: evidenceBundle(editionSky) as unknown as Json,
+          calculation_version: "celestial-atlas-daily-v1",
+          prompt_version: HOROSCOPE_PROMPT_VERSION,
+          generated_at: new Date().toISOString(),
+          failure_code: null,
+        },
+        { onConflict: "edition_date,locale" },
+      );
+    if (generatingStateError)
+      throw new Error("HOROSCOPE_GENERATING_STATE_FAILED");
+  }
   let generated: Awaited<ReturnType<typeof generateEnglishEdition>> | null =
     null;
   let generationError: unknown;
@@ -534,11 +546,12 @@ export async function publishGeneratedHoroscopes(date = new Date()) {
       generationError instanceof Error
         ? generationError.message.slice(0, 120)
         : "HOROSCOPE_GENERATION_FAILED";
-    await admin
-      .from("daily_horoscope_editions")
-      .update({ status: "failed", failure_code: failureCode })
-      .eq("edition_date", editionSky.date)
-      .eq("locale", "en-GB");
+    if (!hasStoredFallback)
+      await admin
+        .from("daily_horoscope_editions")
+        .update({ status: "failed", failure_code: failureCode })
+        .eq("edition_date", editionSky.date)
+        .eq("locale", "en-GB");
     throw generationError;
   }
   const englishSky: DailySky = {
@@ -629,17 +642,29 @@ export async function publishedDailySky(
     .eq("prompt_version", HOROSCOPE_PROMPT_VERSION)
     .eq("edition_date", requestedSky.date)
     .maybeSingle();
-  if (error || !data || !Array.isArray(data.readings))
-    throw new HoroscopeEditionUnavailableError(requestedSky.date, locale);
-  const parsed = z
+  let edition = data;
+  let parsed = z
     .array(generatedReadingSchema)
     .length(12)
-    .safeParse(data.readings);
-  if (!parsed.success)
+    .safeParse(edition?.readings);
+  if (error || !edition || !parsed.success) {
+    const { data: storedEdition } = await admin
+      .from("daily_horoscope_editions")
+      .select("edition_date,daily_summary,readings")
+      .eq("locale", locale)
+      .eq("edition_date", requestedSky.date)
+      .maybeSingle();
+    edition = storedEdition;
+    parsed = z
+      .array(generatedReadingSchema)
+      .length(12)
+      .safeParse(edition?.readings);
+  }
+  if (!edition || !parsed.success)
     throw new HoroscopeEditionUnavailableError(requestedSky.date, locale);
   return {
     ...requestedSky,
-    summary: data.daily_summary ?? undefined,
+    summary: edition.daily_summary ?? undefined,
     horoscopes: hydrateReadings(requestedSky, parsed.data),
   };
 }

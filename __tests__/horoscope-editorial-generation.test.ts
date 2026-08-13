@@ -55,12 +55,14 @@ describe("generated horoscope editorial editions", () => {
     expect(detail).toContain("reading.wellbeing");
   });
 
-  it("publishes only complete stored editions and never serves fallback copy", () => {
+  it("keeps a validated current-day edition visible during regeneration", () => {
     expect(migration).toContain("unique (edition_date, locale)");
     expect(migration).toContain("status = 'published'");
     expect(generator).not.toContain("return fallback");
     expect(generator).toContain("HoroscopeEditionUnavailableError");
     expect(generator).toContain("HOROSCOPE_GENERATION_ATTEMPTS");
+    expect(generator).toContain("hasStoredFallback");
+    expect(generator).toContain("storedEdition");
     expect(generator).toContain('status: "generating"');
     expect(generator).toContain('status: "failed"');
     expect(generator).toContain(
