@@ -12,6 +12,11 @@ const publicRoutes = [
   { path: "/membership", changeFrequency: "monthly", priority: 0.75 },
   { path: "/samples", changeFrequency: "monthly", priority: 0.8 },
   {
+    path: "/samples/natal-chart",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
     path: "/samples/daily-reading",
     changeFrequency: "monthly",
     priority: 0.75,

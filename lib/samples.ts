@@ -3,7 +3,7 @@ import { calculateNatalChart } from "@/lib/chart";
 
 export const sampleBirthInput: BirthInput = {
   date: "1967-05-24",
-  time: "08:47",
+  time: "08:43",
   timeUnknown: false,
   place: {
     id: "tuscaloosa-alabama",
@@ -24,6 +24,6 @@ export async function sampleChart() {
 export const sampleIdentity = {
   name: "Atlas Sample",
   sex: "Male",
-  born: "24 May 1967 · 8:47 AM",
+  born: "24 May 1967 · 8:43 AM",
   place: "Tuscaloosa, Alabama",
 };

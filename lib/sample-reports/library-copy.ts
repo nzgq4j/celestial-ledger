@@ -30,6 +30,21 @@ export const sampleLibraryCopy: Record<LocaleTag, SampleLibraryCopy> = {
       "Each edition reflects the depth, structure and practical guidance of a typical Celestial Atlas reading. Your own report will be shaped by the distinct patterns held in your natal chart.",
     editions: [
       {
+        label: "Foundational chart",
+        title: "Natal Chart",
+        description:
+          "A complete calculated birth chart and full interpretation for a person born on 24 May 1967 at 8:43 AM in Tuscaloosa, Alabama. The edition brings the planetary pattern, angles and houses together as one coherent portrait.",
+        contentsHeading: "Inside this chart",
+        contents: [
+          "Full natal wheel with planetary positions and aspect lines",
+          "Sun, Moon, Ascendant and Midheaven at a glance",
+          "Nine-chapter interpretation of identity, relationship and direction",
+          "Complete tables for placements, houses, angles and major aspects",
+        ],
+        action: "Explore the complete Natal Chart",
+        href: "/samples/natal-chart",
+      },
+      {
         label: "One-time report",
         title: "Career and Purpose",
         description:
@@ -100,6 +115,21 @@ export const sampleLibraryCopy: Record<LocaleTag, SampleLibraryCopy> = {
     introduction:
       "Cada edición refleja la profundidad, la estructura y la orientación práctica de una lectura habitual de Celestial Atlas. Tu propio informe estará determinado por los patrones particulares de tu carta natal.",
     editions: [
+      {
+        label: "Carta fundamental",
+        title: "Carta natal",
+        description:
+          "Una carta natal completa y calculada, con una interpretación extensa para una persona nacida el 24 de mayo de 1967 a las 8:43 en Tuscaloosa, Alabama. La edición reúne el patrón planetario, los ángulos y las casas en un retrato coherente.",
+        contentsHeading: "Qué contiene la carta",
+        contents: [
+          "Rueda natal completa con posiciones y líneas de aspectos",
+          "Sol, Luna, Ascendente y Medio Cielo de un vistazo",
+          "Interpretación en nueve capítulos sobre identidad, relaciones y dirección",
+          "Tablas completas de posiciones, casas, ángulos y aspectos mayores",
+        ],
+        action: "Explorar la Carta natal completa",
+        href: "/samples/natal-chart",
+      },
       {
         label: "Informe único",
         title: "Carrera y propósito",
@@ -172,6 +202,21 @@ export const sampleLibraryCopy: Record<LocaleTag, SampleLibraryCopy> = {
       "Chaque édition reflète la profondeur, la structure et les conseils pratiques d'une lecture Celestial Atlas typique. Votre propre rapport sera façonné par les motifs distinctifs de votre thème natal.",
     editions: [
       {
+        label: "Thème fondateur",
+        title: "Thème natal",
+        description:
+          "Un thème natal complet et calculé, accompagné d'une interprétation approfondie pour une personne née le 24 mai 1967 à 8 h 43 à Tuscaloosa, Alabama. Cette édition réunit le motif planétaire, les angles et les maisons en un portrait cohérent.",
+        contentsHeading: "Dans ce thème",
+        contents: [
+          "Roue natale complète avec positions et lignes d'aspects",
+          "Soleil, Lune, Ascendant et Milieu du Ciel en un coup d'œil",
+          "Interprétation en neuf chapitres sur l'identité, les relations et la direction",
+          "Tableaux complets des positions, maisons, angles et aspects majeurs",
+        ],
+        action: "Explorer le Thème natal complet",
+        href: "/samples/natal-chart",
+      },
+      {
         label: "Rapport ponctuel",
         title: "Carrière et vocation",
         description:
@@ -242,6 +287,21 @@ export const sampleLibraryCopy: Record<LocaleTag, SampleLibraryCopy> = {
     introduction:
       "Jede Ausgabe zeigt die Tiefe, Struktur und praktische Orientierung eines typischen Celestial-Atlas-Readings. Ihr eigener Bericht wird von den besonderen Mustern Ihres Geburtshoroskops geprägt.",
     editions: [
+      {
+        label: "Grundlegendes Horoskop",
+        title: "Geburtshoroskop",
+        description:
+          "Ein vollständig berechnetes Geburtshoroskop mit ausführlicher Deutung für eine Person, die am 24. Mai 1967 um 8:43 Uhr in Tuscaloosa, Alabama, geboren wurde. Die Ausgabe verbindet Planetenmuster, Achsen und Häuser zu einem stimmigen Porträt.",
+        contentsHeading: "In diesem Horoskop",
+        contents: [
+          "Vollständiges Horoskoprad mit Positionen und Aspektlinien",
+          "Sonne, Mond, Aszendent und Medium Coeli auf einen Blick",
+          "Deutung in neun Kapiteln zu Identität, Beziehungen und Ausrichtung",
+          "Vollständige Tabellen zu Positionen, Häusern, Achsen und Hauptaspekten",
+        ],
+        action: "Vollständiges Geburtshoroskop ansehen",
+        href: "/samples/natal-chart",
+      },
       {
         label: "Einmaliger Bericht",
         title: "Beruf und Bestimmung",

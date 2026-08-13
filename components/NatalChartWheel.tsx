@@ -40,9 +40,11 @@ const zodiacSigns = [
 
 function point(longitude: number, radius: number, center = 210) {
   const angle = ((longitude - 90) * Math.PI) / 180;
+  const x = center + radius * Math.cos(angle);
+  const y = center + radius * Math.sin(angle);
   return {
-    x: center + radius * Math.cos(angle),
-    y: center + radius * Math.sin(angle),
+    x: Number(x.toFixed(6)),
+    y: Number(y.toFixed(6)),
   };
 }
 

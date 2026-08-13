@@ -70,6 +70,7 @@ ${signLinks}
 ## Complete samples
 
 - [Sample library](${base}/samples): Full examples of Celestial Atlas readings.
+- [Complete sample natal chart](${base}/samples/natal-chart): A calculated chart wheel, angles, planetary positions, houses, aspects, and a full interpretation.
 - [Sample daily reading](${base}/samples/daily-reading): Current transits to a natal chart with ranked themes, practical applications, visuals, and evidence.
 - [Sample career and purpose report](${base}/samples/career-purpose)
 - [Sample recovery reflection report](${base}/samples/recovery-reflection)

@@ -1638,6 +1638,241 @@ a {
 .sample-chart-data tbody th {
   color: var(--paper);
 }
+.sample-natal-chart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-section);
+}
+.sample-natal-chart__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: end;
+  min-height: clamp(22rem, 42vw, 34rem);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(
+      circle at 76% 18%,
+      rgba(201, 167, 93, 0.16),
+      transparent 18rem
+    ),
+    linear-gradient(145deg, rgba(13, 26, 43, 0.97), rgba(3, 9, 18, 0.98));
+}
+.sample-natal-chart__hero h1 {
+  max-width: 10ch;
+  margin: 0.55rem 0 1rem;
+  color: var(--paper);
+  font:
+    400 clamp(3.3rem, 8vw, 7rem) / 0.9 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.05em;
+}
+.sample-natal-chart__hero > div > p:last-child {
+  max-width: 38rem;
+  margin-bottom: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+.sample-natal-chart__hero dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: rgba(3, 9, 18, 0.48);
+}
+.sample-natal-chart__hero dl div {
+  min-height: 6.5rem;
+  padding: 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sample-natal-chart__hero dt,
+.sample-natal-chart__calculation dt {
+  color: var(--gold);
+  font:
+    0.6rem ui-monospace,
+    monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.sample-natal-chart__hero dd,
+.sample-natal-chart__calculation dd {
+  margin: 0.55rem 0 0;
+  color: var(--paper);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+}
+.sample-natal-chart__anchors > header,
+.sample-natal-chart__interpretation > header {
+  max-width: 48rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+.sample-natal-chart__anchors h2,
+.sample-natal-chart__interpretation > header h2,
+.sample-natal-chart__cta h2 {
+  margin: 0.5rem 0 0;
+  color: var(--paper);
+  font:
+    400 clamp(2rem, 4vw, 3.35rem) / 1.04 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.sample-natal-chart__anchors > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.sample-natal-chart__anchors article {
+  min-width: 0;
+  min-height: 15rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    155deg,
+    rgba(201, 167, 93, 0.08),
+    rgba(7, 17, 31, 0.52) 48%
+  );
+}
+.sample-natal-chart__anchors article > span {
+  display: block;
+  min-height: 4.8rem;
+  color: var(--gold);
+  font:
+    400 clamp(2.7rem, 5vw, 4.5rem) / 1 Georgia,
+    "Times New Roman",
+    serif;
+}
+.sample-natal-chart__anchors article > p {
+  margin: 1rem 0 0.45rem;
+  color: var(--muted);
+  font:
+    0.6rem ui-monospace,
+    monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.sample-natal-chart__anchors h3 {
+  margin: 0;
+  color: var(--paper);
+  font:
+    400 1.15rem/1.35 Georgia,
+    "Times New Roman",
+    serif;
+}
+.sample-natal-chart__anchors small {
+  display: block;
+  margin-top: 0.55rem;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.sample-natal-chart > .chart-wheel {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background:
+    radial-gradient(
+      circle at 33% 33%,
+      rgba(79, 183, 197, 0.06),
+      transparent 28rem
+    ),
+    color-mix(in srgb, var(--surface) 95%, transparent);
+}
+.sample-natal-chart__interpretation {
+  padding-top: clamp(1rem, 3vw, 2rem);
+}
+.sample-natal-chart__interpretation > header > p:last-child,
+.sample-chart-data > header > p:last-child,
+.sample-natal-chart__cta p {
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+.sample-natal-chart__interpretation > article {
+  border-bottom: 1px solid var(--line);
+}
+.sample-natal-chart__table-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+.sample-natal-chart__calculation {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1.5rem 0 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.sample-natal-chart__calculation div {
+  min-width: 0;
+  padding: 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sample-natal-chart__calculation dd {
+  color: var(--text-soft);
+  font-family: ui-monospace, monospace;
+  font-size: 0.73rem;
+  overflow-wrap: anywhere;
+}
+.sample-natal-chart__cta {
+  display: flex;
+  gap: 2rem;
+  align-items: end;
+  justify-content: space-between;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+.sample-natal-chart__cta > div {
+  max-width: 43rem;
+}
+.sample-natal-chart__cta p:last-child {
+  margin-bottom: 0;
+}
+.sample-natal-chart__cta .button-primary {
+  flex: 0 0 auto;
+}
+@media (max-width: 820px) {
+  .sample-natal-chart__hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .sample-natal-chart__anchors > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sample-natal-chart__calculation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .sample-natal-chart__hero dl,
+  .sample-natal-chart__anchors > div,
+  .sample-natal-chart__calculation {
+    grid-template-columns: 1fr;
+  }
+  .sample-natal-chart__hero dl div,
+  .sample-natal-chart__anchors article,
+  .sample-natal-chart__calculation div {
+    min-height: 0;
+  }
+  .sample-natal-chart__anchors article > span {
+    min-height: 3.5rem;
+  }
+  .sample-natal-chart__cta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .sample-natal-chart__cta .button-primary {
+    width: 100%;
+  }
+}
 .weekly-offer__grid {
   display: grid;
   grid-template-columns: 1.5fr 0.8fr;

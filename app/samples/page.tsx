@@ -3,7 +3,7 @@ import { createPageMetadata } from "@/lib/seo";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { sampleLibraryCopy } from "@/lib/sample-reports/library-copy";
 
-const folioMarkers = ["I", "II", "III", "IV"];
+const folioMarkers = ["I", "II", "III", "IV", "V"];
 
 export async function generateMetadata() {
   const pack = await getServerTranslationPack();
