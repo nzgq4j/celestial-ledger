@@ -2,11 +2,11 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("daily horoscope rollover", () => {
-  it("retries hourly and protects the rollover endpoint", () => {
+  it("retries every ten minutes and protects the rollover endpoint", () => {
     const vercelConfig = JSON.parse(fs.readFileSync("vercel.json", "utf8"));
     expect(vercelConfig.crons).toContainEqual({
       path: "/api/internal/horoscope-rollover",
-      schedule: "0 * * * *",
+      schedule: "*/10 * * * *",
     });
 
     const route = fs.readFileSync(

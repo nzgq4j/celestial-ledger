@@ -341,7 +341,7 @@ const pack = {
       dailyArcIntroduction:
         "Folge dem wechselnden Schwerpunkt vom ersten Licht bis zum Tagesende.",
       morning: "Morgen",
-      afternoon: "Nachmittag",
+      afternoon: "Mittag",
       evening: "Abend",
       watchFor: "Achte auf",
       questionForDay: "Frage des Tages",

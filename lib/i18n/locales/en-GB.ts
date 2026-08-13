@@ -340,7 +340,7 @@ const pack = {
       dailyArcIntroduction:
         "Follow the changing emphasis from first light to the day’s close.",
       morning: "Morning",
-      afternoon: "Afternoon",
+      afternoon: "Midday",
       evening: "Evening",
       watchFor: "Watch for",
       questionForDay: "Question for the day",

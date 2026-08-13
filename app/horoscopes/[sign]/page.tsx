@@ -6,6 +6,7 @@ import { publishedDailySky } from "@/lib/horoscopes/generated";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
+import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { StructuredData } from "@/components/StructuredData";
 import {
@@ -77,6 +78,11 @@ export default async function HoroscopeDetailPage({
   const pinterestImageUrl = `${SITE_URL}${route}/pinterest-image`;
   const title = `${reading.sign} ${copy.dailyHoroscope} — ${reading.displayDate}`;
   const publishedAt = `${sky.date}T00:00:00.000Z`;
+  const periodLabels = {
+    morning: copy.morning,
+    afternoon: copy.afternoon,
+    evening: copy.evening,
+  };
   return (
     <main className="page-shell horoscope-detail">
       <HoroscopeMidnightRefresh />
@@ -138,6 +144,12 @@ export default async function HoroscopeDetailPage({
           <p className="section-kicker">{copy.bottomLine}</p>
           <p>{reading.bottomLine}</p>
         </article>
+        <HoroscopeDayArc
+          parts={reading.dayParts}
+          labels={periodLabels}
+          heading={copy.dailyArc}
+          introduction={copy.dailyArcIntroduction}
+        />
         <div className="horoscope-reading__chapters">
           <article>
             <h2>{copy.relationships}</h2>

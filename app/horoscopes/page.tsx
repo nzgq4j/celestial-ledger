@@ -5,6 +5,7 @@ import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
+import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 import {
   createPageMetadata,
   localizedAlternates,
@@ -50,6 +51,11 @@ export default async function DailyHoroscopesPage({
   const pack = await getServerTranslationPack(requestedLocale);
   const copy = pack.messages.horoscopes;
   const sky = await publishedDailySky(new Date(), pack.tag);
+  const periodLabels = {
+    morning: copy.morning,
+    afternoon: copy.afternoon,
+    evening: copy.evening,
+  };
   return (
     <main className="page-shell daily-horoscopes">
       <HoroscopeMidnightRefresh />
@@ -86,6 +92,12 @@ export default async function DailyHoroscopesPage({
               </div>
             </div>
             <p className="horoscope-card__overview">{item.overview}</p>
+            <HoroscopeDayArc
+              parts={item.dayParts}
+              labels={periodLabels}
+              heading={copy.dailyArc}
+              compact
+            />
             <dl>
               <div>
                 <dt>{copy.opportunity}</dt>

@@ -26,32 +26,31 @@ describe("generated horoscope editorial editions", () => {
     expect(horoscopeSimilarity(original, distinct)).toBeLessThan(0.1);
   });
 
-  it("plans twelve distinct angles and generates each sign from evidence", () => {
+  it("generates and reviews one coherent twelve-sign edition from ranked evidence", () => {
     expect(generator).toContain(
-      'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-4"',
+      'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-5"',
     );
-    expect(generator).toContain("daily_horoscope_editorial_plan");
-    expect(generator).toContain("Other signs' reserved directions");
-    expect(generator).toContain("Previous seven editions to avoid imitating");
-    expect(generator).toContain(
-      "Silently rank the three to six most useful signals",
-    );
-    expect(generator).toContain("whole-sign solar chart");
+    expect(generator).toContain("daily_horoscope_complete_edition");
+    expect(generator).toContain("rankedEvidenceFor");
+    expect(generator).toContain("They have already been selected and ranked");
+    expect(generator).toContain("whole-sign solar houses");
     expect(generator).toContain("Use only server-supplied astronomical facts");
-    expect(generator).toContain(
-      "Reader-facing fields contain only the horoscope itself",
-    );
-    expect(generator).toContain(
-      "No complete sentence or reusable clause may appear in more than one sign",
-    );
+    expect(generator).toContain("does not come from forced novelty");
+    expect(generator).toContain("Do not open with an analogy");
+    expect(generator).toContain("daily_horoscope_editorial_quality_review");
+    expect(generator).toContain("HOROSCOPE_EDITORIAL_QUALITY_FAILED");
+    expect(generator).not.toContain("metaphor: z.string");
     expect(generator).toContain("HOROSCOPE_UNKNOWN_EVIDENCE");
     expect(generator).toContain("HOROSCOPE_WITHIN_DAY_SIMILARITY_FAILED");
     expect(generator).toContain("HOROSCOPE_HISTORICAL_SIMILARITY_FAILED");
   });
 
-  it("does not present a fabricated intraday arc from the noon snapshot", () => {
-    expect(listing).not.toContain("<HoroscopeDayArc");
-    expect(detail).not.toContain("<HoroscopeDayArc");
+  it("presents morning, midday and evening as an editorial day rhythm", () => {
+    expect(listing).toContain("<HoroscopeDayArc");
+    expect(listing).toContain("compact");
+    expect(detail).toContain("<HoroscopeDayArc");
+    expect(generator).toContain("editorial checkpoints");
+    expect(generator).toContain('schema value "afternoon"');
     expect(detail).toContain("reading.wellbeing");
   });
 
