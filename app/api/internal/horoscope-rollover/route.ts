@@ -32,8 +32,9 @@ export async function GET(request: Request) {
 
   const generatedAt = new Date();
   const date = horoscopeUtcDateKey(generatedAt);
+  const force = new URL(request.url).searchParams.get("force") === "true";
   try {
-    await publishGeneratedHoroscopes(generatedAt);
+    await publishGeneratedHoroscopes(generatedAt, { force });
   } catch (error) {
     console.error(
       JSON.stringify({
@@ -93,6 +94,7 @@ export async function GET(request: Request) {
     ok: true,
     date,
     generatedAt: generatedAt.toISOString(),
+    forced: force,
     timeZone: "UTC",
     signs: zodiacSlugs.length,
     fingerprints,

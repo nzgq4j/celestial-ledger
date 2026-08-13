@@ -16,6 +16,10 @@ describe("daily horoscope rollover", () => {
     expect(route).toContain("process.env.CRON_SECRET");
     expect(route).toContain("authorization");
     expect(route).toContain('timeZone: "UTC"');
+    expect(route).toContain('searchParams.get("force") === "true"');
+    expect(route).toContain(
+      "publishGeneratedHoroscopes(generatedAt, { force })",
+    );
     expect(route).toContain('revalidatePath("/horoscopes")');
     expect(route).toContain("opengraph-image");
     expect(route).toContain("pinterest-image");

@@ -528,7 +528,10 @@ function hydrateReadings(
   });
 }
 
-export async function publishGeneratedHoroscopes(date = new Date()) {
+export async function publishGeneratedHoroscopes(
+  date = new Date(),
+  options: { force?: boolean } = {},
+) {
   const admin = createAdminClient();
   const editionSky = dailySkyFor(date, "en-GB");
   const { data: storedEnglishEdition } = await admin
@@ -547,6 +550,7 @@ export async function publishGeneratedHoroscopes(date = new Date()) {
     .eq("edition_date", editionSky.date)
     .eq("prompt_version", HOROSCOPE_PROMPT_VERSION);
   if (
+    !options.force &&
     localeTags.every((locale) => {
       const edition = existingEditions?.find((row) => row.locale === locale);
       return (

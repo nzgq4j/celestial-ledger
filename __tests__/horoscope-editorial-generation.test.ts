@@ -63,6 +63,7 @@ describe("generated horoscope editorial editions", () => {
     expect(generator).toContain("HoroscopeEditionUnavailableError");
     expect(generator).toContain("HOROSCOPE_GENERATION_ATTEMPTS");
     expect(generator).toContain("hasStoredFallback");
+    expect(generator).toContain("!options.force");
     expect(generator).toContain("storedEdition");
     expect(generator).toContain('status: "generating"');
     expect(generator).toContain('status: "failed"');
