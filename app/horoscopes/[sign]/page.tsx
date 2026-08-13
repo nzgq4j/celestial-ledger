@@ -5,7 +5,6 @@ import { zodiacSlugs } from "@/lib/horoscopes/daily";
 import { publishedDailySky } from "@/lib/horoscopes/generated";
 import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
-import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { StructuredData } from "@/components/StructuredData";
@@ -72,11 +71,6 @@ export default async function HoroscopeDetailPage({
     (item) => item.slug === slug.toLowerCase(),
   );
   if (!reading) notFound();
-  const periodLabels = {
-    morning: copy.morning,
-    afternoon: copy.afternoon,
-    evening: copy.evening,
-  };
   const route = `/horoscopes/${reading.slug}`;
   const shareUrl = localizedPublicUrl(route, pack.tag);
   const imageUrl = `${SITE_URL}${route}/opengraph-image`;
@@ -144,12 +138,6 @@ export default async function HoroscopeDetailPage({
           <p className="section-kicker">{copy.bottomLine}</p>
           <p>{reading.bottomLine}</p>
         </article>
-        <HoroscopeDayArc
-          heading={copy.dailyArc}
-          introduction={copy.dailyArcIntroduction}
-          labels={periodLabels}
-          parts={reading.dayParts}
-        />
         <div className="horoscope-reading__chapters">
           <article>
             <h2>{copy.relationships}</h2>
@@ -172,6 +160,10 @@ export default async function HoroscopeDetailPage({
           <div>
             <h2>{copy.watchFor}</h2>
             <p>{reading.caution}</p>
+          </div>
+          <div>
+            <h2>{copy.wellbeing}</h2>
+            <p>{reading.wellbeing}</p>
           </div>
         </article>
         <article className="horoscope-question">

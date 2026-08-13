@@ -321,7 +321,7 @@ const pack = {
       almanac: "Daily celestial almanac",
       title: "Daily horoscopes",
       introduction:
-        "Choose your Sun sign for today’s bottom line, relationship, business, and money themes, followed through morning, afternoon, and evening and grounded in the calculated sky.",
+        "Choose your Sun sign for a grounded daily reading shaped by the calculated sky, with clear themes for relationships, work, money, and practical choices.",
       todaysSky: "Today’s sky",
       twelveHoroscopes: "Twelve daily horoscopes",
       opportunity: "Opportunity",

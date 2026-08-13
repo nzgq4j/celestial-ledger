@@ -319,7 +319,7 @@ const pack = {
       almanac: "Almanaque celeste diario",
       title: "Horóscopos diarios",
       introduction:
-        "Elige tu signo solar para conocer lo esencial del día en relaciones, negocios y dinero, seguir su ritmo durante la mañana, la tarde y la noche, y consultar el cielo calculado que lo sostiene.",
+        "Elige tu signo solar para una lectura diaria basada en el cielo calculado, con temas claros sobre relaciones, trabajo, dinero y decisiones prácticas.",
       todaysSky: "El cielo de hoy",
       twelveHoroscopes: "Doce horóscopos diarios",
       opportunity: "Oportunidad",

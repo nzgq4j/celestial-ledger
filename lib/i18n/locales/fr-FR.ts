@@ -328,7 +328,7 @@ const pack = {
       almanac: "Almanach céleste du jour",
       title: "Horoscopes du jour",
       introduction:
-        "Choisissez votre signe solaire pour découvrir l’essentiel du jour en matière de relations, d’activité et d’argent, suivre son rythme du matin au soir et consulter le ciel calculé qui le sous-tend.",
+        "Choisissez votre signe solaire pour une lecture quotidienne fondée sur le ciel calculé, avec des thèmes clairs pour les relations, le travail, l’argent et les choix concrets.",
       todaysSky: "Le ciel du jour",
       twelveHoroscopes: "Douze horoscopes du jour",
       opportunity: "Occasion",

@@ -28,17 +28,26 @@ describe("generated horoscope editorial editions", () => {
 
   it("plans twelve distinct angles and generates each sign from evidence", () => {
     expect(generator).toContain(
-      'HOROSCOPE_PROMPT_VERSION = "daily-horoscope-2"',
+      'HOROSCOPE_PROMPT_VERSION = "daily-sun-sign-ephemeris-3"',
     );
     expect(generator).toContain("daily_horoscope_editorial_plan");
     expect(generator).toContain("Other signs' reserved directions");
     expect(generator).toContain("Previous seven editions to avoid imitating");
-    expect(generator).toContain("listing-card fields");
-    expect(generator).toContain("miniature editorial column");
-    expect(generator).toContain("Avoid any wording pattern");
+    expect(generator).toContain(
+      "Silently rank the three to six most useful signals",
+    );
+    expect(generator).toContain("whole-sign solar chart");
+    expect(generator).toContain("The server owns every astronomical fact");
+    expect(generator).toContain("not reliable morning-to-evening event timing");
     expect(generator).toContain("HOROSCOPE_UNKNOWN_EVIDENCE");
     expect(generator).toContain("HOROSCOPE_WITHIN_DAY_SIMILARITY_FAILED");
     expect(generator).toContain("HOROSCOPE_HISTORICAL_SIMILARITY_FAILED");
+  });
+
+  it("does not present a fabricated intraday arc from the noon snapshot", () => {
+    expect(listing).not.toContain("<HoroscopeDayArc");
+    expect(detail).not.toContain("<HoroscopeDayArc");
+    expect(detail).toContain("reading.wellbeing");
   });
 
   it("publishes only complete stored editions and never serves fallback copy", () => {

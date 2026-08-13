@@ -322,7 +322,7 @@ const pack = {
       almanac: "Täglicher Himmelsalmanach",
       title: "Tageshoroskope",
       introduction:
-        "Wähle dein Sonnenzeichen für das Wichtigste zu Beziehungen, Geschäft und Geld, folge dem Rhythmus von Morgen bis Abend und lies den berechneten Himmel dahinter.",
+        "Wähle dein Sonnenzeichen für eine fundierte Tagesdeutung aus dem berechneten Himmel, mit klaren Themen zu Beziehungen, Arbeit, Geld und praktischen Entscheidungen.",
       todaysSky: "Der heutige Himmel",
       twelveHoroscopes: "Zwölf Tageshoroskope",
       opportunity: "Chance",
