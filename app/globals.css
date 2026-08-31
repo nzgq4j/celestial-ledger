@@ -6924,6 +6924,10 @@ th {
 /* Membership — widening orbital bands, not a generic pricing-card grid */
 .membership-page {
   max-width: 76rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+.membership-page > * {
+  min-width: 0;
 }
 .membership-hero {
   display: grid;
@@ -7162,6 +7166,7 @@ th {
     serif;
 }
 .membership-comparison__scroll {
+  max-width: 100%;
   margin-top: 2rem;
   overflow-x: auto;
   border: 1px solid var(--line);

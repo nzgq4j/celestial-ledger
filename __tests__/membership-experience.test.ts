@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { localeTags } from "@/lib/i18n/config";
 import { membershipCopy } from "@/lib/membership/content";
+
+const css = readFileSync("app/globals.css", "utf8");
 
 describe("membership discovery experience", () => {
   it.each(localeTags)(
@@ -50,5 +53,15 @@ describe("membership discovery experience", () => {
         .map((step) => step.description)
         .join(" "),
     ).not.toContain("launch list");
+  });
+
+  it("contains wide comparison content within the mobile page grid", () => {
+    expect(css).toMatch(
+      /\.membership-page\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s,
+    );
+    expect(css).toMatch(/\.membership-page\s*>\s*\*\s*\{[^}]*min-width:\s*0/s);
+    expect(css).toMatch(
+      /\.membership-comparison__scroll\s*\{[^}]*max-width:\s*100%[^}]*overflow-x:\s*auto/s,
+    );
   });
 });
