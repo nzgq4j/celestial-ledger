@@ -355,10 +355,10 @@ export default function HoroscopeApp({
               )}
             </p>
           )}
-          <div className="grid md:grid-cols-2 gap-5 mt-5">
+          <div className="chart-fields grid md:grid-cols-2 gap-5 mt-5">
             {!account && (
               <>
-                <div>
+                <div className="chart-field">
                   <label className="label" htmlFor="first-name">
                     {pack.messages.chartForm.name}
                   </label>
@@ -372,7 +372,7 @@ export default function HoroscopeApp({
                     placeholder={pack.messages.chartForm.namePlaceholder}
                   />
                 </div>
-                <div>
+                <div className="chart-field">
                   <label className="label" htmlFor="marketing-email">
                     {pack.messages.chartForm.email}
                   </label>
@@ -389,7 +389,7 @@ export default function HoroscopeApp({
                 </div>
               </>
             )}
-            <div>
+            <div className="chart-field">
               <label className="label" htmlFor="birth-date">
                 {pack.messages.chartForm.birthDate}
               </label>
@@ -401,7 +401,7 @@ export default function HoroscopeApp({
                 onChange={(e) => setDate(e.target.value)}
               />
             </div>
-            <div>
+            <div className="chart-field">
               <label className="label" htmlFor="birth-time">
                 {pack.messages.chartForm.birthTime}
               </label>
@@ -422,7 +422,7 @@ export default function HoroscopeApp({
                 {pack.messages.chartForm.unknownTime}
               </label>
             </div>
-            <div className="md:col-span-2">
+            <div className="chart-field md:col-span-2">
               <label className="label" htmlFor="place">
                 {pack.messages.chartForm.birthplace}
               </label>
@@ -494,28 +494,30 @@ export default function HoroscopeApp({
             </div>
           )}
           {!unknown && (
-            <div className="mt-4">
+            <div className="chart-ambiguity mt-4">
               <span className="label">
                 Repeated-clock interpretation, only when requested
               </span>
-              <label className="mr-4 text-sm">
-                <input
-                  type="radio"
-                  name="amb"
-                  checked={ambiguity === "earlier"}
-                  onChange={() => setAmbiguity("earlier")}
-                />{" "}
-                Earlier occurrence
-              </label>
-              <label className="text-sm">
-                <input
-                  type="radio"
-                  name="amb"
-                  checked={ambiguity === "later"}
-                  onChange={() => setAmbiguity("later")}
-                />{" "}
-                Later occurrence
-              </label>
+              <div className="chart-ambiguity__options">
+                <label className="text-sm">
+                  <input
+                    type="radio"
+                    name="amb"
+                    checked={ambiguity === "earlier"}
+                    onChange={() => setAmbiguity("earlier")}
+                  />
+                  Earlier occurrence
+                </label>
+                <label className="text-sm">
+                  <input
+                    type="radio"
+                    name="amb"
+                    checked={ambiguity === "later"}
+                    onChange={() => setAmbiguity("later")}
+                  />
+                  Later occurrence
+                </label>
+              </div>
             </div>
           )}
           {!account && (

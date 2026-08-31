@@ -6153,6 +6153,32 @@ input:focus-visible {
   display: flex;
   gap: 0.5rem;
 }
+.chart-fields,
+.chart-field {
+  min-width: 0;
+}
+.chart-input-panel .input {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+.chart-input-panel input[type="date"],
+.chart-input-panel input[type="time"] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.chart-ambiguity__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.25rem;
+}
+.chart-ambiguity__options label {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin: 0;
+}
 .place-search-row .input {
   min-width: 0;
 }
