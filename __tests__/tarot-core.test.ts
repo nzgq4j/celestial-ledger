@@ -154,5 +154,13 @@ describe("tarot domain", () => {
     expect(narrative).toContain("In the position of today");
     expect(narrative).toContain("The Fool");
     expect(narrative).toContain("invites you to consider");
+
+    const multiCardReading = configureTarotReadings(planMatrix)[1];
+    const multiCardDraw = drawTarotCards(
+      TAROT_CARDS,
+      multiCardReading,
+      () => 0,
+    );
+    expect(buildNarrative(multiCardDraw)).toContain("\n\n");
   });
 });

@@ -17,6 +17,13 @@ describe("primary navigation grouping", () => {
     expect(chrome).toContain('className="mobile-nav__group"');
   });
 
+  it("presents tarot without beta labels or a page watermark", () => {
+    expect(chrome.match(/href="\/tarot"/g)).toHaveLength(2);
+    expect(chrome).not.toContain("(Beta)");
+    expect(css).not.toContain(".tarot-page::after");
+    expect(css).not.toContain('content: "BETA"');
+  });
+
   it("provides visible keyboard focus and a positioned submenu", () => {
     expect(css).toContain(".site-nav-group summary:focus-visible");
     expect(css).toContain(".site-nav-group__menu");

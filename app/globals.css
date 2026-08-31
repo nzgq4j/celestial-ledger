@@ -10654,23 +10654,6 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   content: "";
 }
 
-.tarot-page::after {
-  content: "BETA";
-  position: fixed;
-  inset: 50% auto auto 50%;
-  z-index: 0;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  color: var(--gold);
-  font-family: var(--font-display);
-  font-size: clamp(7rem, 18vw, 20rem);
-  letter-spacing: 0.18em;
-  line-height: 1;
-  opacity: 0.1;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-}
-
 .tarot-hero {
   width: min(100%, 58rem);
   display: grid;
@@ -11589,8 +11572,57 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   background: color-mix(in srgb, var(--gold) 5%, transparent);
 }
 
-.tarot-narrative > p:last-child {
-  margin: 0.8rem 0 0;
+.tarot-narrative__sections {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  margin-top: 1.25rem;
+}
+
+.tarot-narrative__sections > section {
+  display: grid;
+  gap: 0.8rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+}
+
+.tarot-narrative__sections > section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tarot-narrative__sections header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.tarot-narrative__sections header > span {
+  color: var(--gold);
+  font:
+    0.62rem/1.4 ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+}
+
+.tarot-narrative__sections h3 {
+  margin: 0;
+  color: var(--gold);
+  font:
+    400 1.05rem/1.25 Georgia,
+    serif;
+}
+
+.tarot-narrative__sections header p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tarot-narrative__sections section > p {
+  margin: 0;
   color: var(--ivory);
   font:
     400 clamp(1.05rem, 2vw, 1.3rem) / 1.8 Georgia,

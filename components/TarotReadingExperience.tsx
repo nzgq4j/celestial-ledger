@@ -465,7 +465,30 @@ export function TarotReadingExperience({
           </div>
           <aside className="tarot-narrative">
             <p className="eyebrow">{copy.readingSummary}</p>
-            <p>{result.narrative}</p>
+            <div className="tarot-narrative__sections">
+              {result.narrative.split(/\n\s*\n/).map((paragraph, index) => {
+                const card = result.cards[index];
+                return (
+                  <section key={`${card?.id ?? "reading"}-${index}`}>
+                    {card && (
+                      <header>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div>
+                          <h3>{card.position}</h3>
+                          <p>
+                            {card.name} ·{" "}
+                            {card.orientation === "upright"
+                              ? result.labels.upright
+                              : result.labels.reversed}
+                          </p>
+                        </div>
+                      </header>
+                    )}
+                    <p>{paragraph}</p>
+                  </section>
+                );
+              })}
+            </div>
           </aside>
           <p className="tarot-disclaimer">{copy.disclaimer}</p>
           <div className="tarot-stage__actions">

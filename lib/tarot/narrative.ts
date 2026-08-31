@@ -55,5 +55,5 @@ export function buildNarrative(
         meaning: card[orientation],
       }),
     )
-    .join(" ");
+    .join("\n\n");
 }

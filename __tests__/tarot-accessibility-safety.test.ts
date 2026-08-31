@@ -65,7 +65,7 @@ describe("tarot accessibility and content safety", () => {
     );
   });
 
-  it("keeps the beta tarot draw flow direct and card-shaped", () => {
+  it("keeps the tarot draw flow direct and card-shaped", () => {
     expect(experience).not.toContain("shuffleComplete");
     expect(experience).not.toContain("copy.selectDeck");
     expect(experience).not.toContain("copy.reveal");
