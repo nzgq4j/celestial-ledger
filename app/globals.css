@@ -3940,6 +3940,43 @@ html[data-admin-theme="light"] .admin-theme-toggle__track i {
   font-weight: 400;
 }
 
+.admin-card-face-select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--admin-input);
+  color: var(--admin-copy);
+  color-scheme: dark;
+  font: inherit;
+}
+
+.admin-card-face-select option {
+  background: #101b29;
+  color: #eef1f3;
+}
+
+.admin-card-face-select:focus-visible {
+  border-color: var(--admin-accent);
+  outline: 2px solid color-mix(in srgb, var(--admin-accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.admin-card-face-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+html[data-admin-theme="light"] .admin-card-face-select {
+  color-scheme: light;
+}
+
+html[data-admin-theme="light"] .admin-card-face-select option {
+  background: #ffffff;
+  color: #18233a;
+}
+
 .admin-artwork-form input[type="file"] {
   width: 100%;
   min-width: 0;

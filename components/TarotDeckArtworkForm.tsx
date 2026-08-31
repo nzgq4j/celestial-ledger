@@ -112,7 +112,12 @@ export function TarotDeckArtworkForm({
                 })
               : copy.adminCardFaceSelectHelp}
           </small>
-          <select name="cardId" required disabled={disabled || pending}>
+          <select
+            className="admin-card-face-select"
+            name="cardId"
+            required
+            disabled={disabled || pending}
+          >
             <option value="">{copy.adminChooseCardFace}</option>
             {cards.map((card) => (
               <option value={card.id} key={card.id}>

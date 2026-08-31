@@ -55,12 +55,22 @@ describe("tarot accessibility and content safety", () => {
     );
   });
 
+  it("keeps the native admin card selector legible in both themes", () => {
+    expect(uploadForm).toContain('className="admin-card-face-select"');
+    expect(styles).toMatch(
+      /\.admin-card-face-select option\s*{[\s\S]*?background:\s*#101b29;[\s\S]*?color:\s*#eef1f3/,
+    );
+    expect(styles).toMatch(
+      /html\[data-admin-theme="light"\] \.admin-card-face-select option\s*{[\s\S]*?background:\s*#ffffff;[\s\S]*?color:\s*#18233a/,
+    );
+  });
+
   it("keeps the beta tarot draw flow direct and card-shaped", () => {
     expect(experience).not.toContain("shuffleComplete");
     expect(experience).not.toContain("copy.selectDeck");
     expect(experience).not.toContain("copy.reveal");
     expect(experience).toContain("function stepHref");
-    expect(experience).toContain('href={stepHref(step)}');
+    expect(experience).toContain("href={stepHref(step)}");
     expect(experience).toContain("goToStep(step)");
     expect(experience).toContain("selectedDeck.cardBackImageUrl");
     expect(experience).toContain("has-selected-back");
@@ -69,11 +79,9 @@ describe("tarot accessibility and content safety", () => {
     expect(experience).toContain('role="button"');
     expect(experience).toContain('className="tarot-spread__select"');
     expect(styles).toContain(".tarot-progress a");
-    expect(styles).toContain(".tarot-progress a[aria-disabled=\"true\"]");
+    expect(styles).toContain('.tarot-progress a[aria-disabled="true"]');
     expect(styles).toContain(".tarot-spread__count i.has-selected-back");
-    expect(styles).toMatch(
-      /\.tarot-shuffle\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
-    );
+    expect(styles).toMatch(/\.tarot-shuffle\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/);
     expect(styles).toMatch(
       /\.tarot-card-back\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
     );
