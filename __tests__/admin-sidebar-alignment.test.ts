@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync("app/globals.css", "utf8");
+const css = readFileSync("app/globals.css", "utf8").replaceAll("\r\n", "\n");
 
 describe("admin sidebar alignment", () => {
   it("anchors the desktop sidebar to the dashboard top edge", () => {

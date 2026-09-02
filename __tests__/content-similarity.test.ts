@@ -21,6 +21,7 @@ import {
   assertReportContentDiversity,
   isReportDiversityFailure,
 } from "@/lib/reports/similarity";
+import { shouldRetryReportFailure } from "@/lib/reports/generation-control";
 import fs from "node:fs";
 
 function legacyHoroscopeSimilarity(left: string, right: string) {
@@ -312,15 +313,13 @@ describe("shared generated-content similarity", () => {
       "REPORT_SECTION_DUPLICATION_FAILED",
       "REPORT_HISTORICAL_SIMILARITY_FAILED",
       "REPORT_CROSS_TYPE_SIMILARITY_FAILED",
-    ])
+    ]) {
       expect(isReportDiversityFailure(new Error(code))).toBe(true);
+      expect(shouldRetryReportFailure(code, 1)).toBe(false);
+    }
     expect(isReportDiversityFailure(new Error("COMPLETION_FAILED"))).toBe(
       false,
     );
-    const worker = fs.readFileSync(
-      "app/api/internal/report-worker/route.ts",
-      "utf8",
-    );
-    expect(worker).toContain("!isReportDiversityFailure(error)");
+    expect(shouldRetryReportFailure("COMPLETION_FAILED", 1)).toBe(true);
   });
 });
