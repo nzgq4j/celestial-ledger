@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
 import { ReportDeleteModal } from "@/components/ReportDeleteModal";
+import { hasScheduledAutomaticReportRetry } from "@/lib/reports/retry-state";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 type LibraryReport = {
@@ -13,9 +14,23 @@ type LibraryReport = {
   report_type: string;
   status: string;
   locale: string;
+  attempts: number;
+  next_attempt_at: string;
   expires_at: string | null;
   created_at: string;
 };
+
+function isActiveReport(report: LibraryReport) {
+  return (
+    report.status === "queued" ||
+    report.status === "generating" ||
+    hasScheduledAutomaticReportRetry(
+      report.status,
+      report.next_attempt_at,
+      report.attempts,
+    )
+  );
+}
 
 function normalizeReports(reports: LibraryReport[]) {
   return reports.map((report) => ({
@@ -46,9 +61,7 @@ export function AccountReportList({
   const { locale, pack } = useLocale();
   const router = useRouter();
   const copy = pack.messages.account;
-  const hasActiveReports = reports.some(
-    (report) => report.status === "queued" || report.status === "generating",
-  );
+  const hasActiveReports = reports.some(isActiveReport);
 
   useEffect(() => {
     setReports(normalizeReports(initialReports));
@@ -79,18 +92,9 @@ export function AccountReportList({
   }, [hasActiveReports]);
 
   useEffect(() => {
-    if (
-      !reports.some(
-        (report) =>
-          report.status === "queued" || report.status === "generating",
-      )
-    )
-      return;
+    if (!reports.some(isActiveReport)) return;
     const poll = window.setInterval(async () => {
-      const active = reports.filter(
-        (report) =>
-          report.status === "queued" || report.status === "generating",
-      );
+      const active = reports.filter(isActiveReport);
       const updates = await Promise.all(
         active.map(async (report) => {
           try {
@@ -102,6 +106,8 @@ export function AccountReportList({
             return (await response.json()) as {
               id: string;
               status: ReportStatus;
+              attempts: number;
+              nextAttemptAt: string;
             };
           } catch {
             return null;
@@ -111,7 +117,14 @@ export function AccountReportList({
       setReports((current) =>
         current.map((report) => {
           const update = updates.find((item) => item?.id === report.id);
-          return update ? { ...report, status: update.status } : report;
+          return update
+            ? {
+                ...report,
+                status: update.status,
+                attempts: update.attempts,
+                next_attempt_at: update.nextAttemptAt,
+              }
+            : report;
         }),
       );
     }, 2000);
@@ -124,7 +137,14 @@ export function AccountReportList({
     if (response.ok)
       setReports((current) =>
         current.map((report) =>
-          report.id === id ? { ...report, status: "queued" } : report,
+          report.id === id
+            ? {
+                ...report,
+                status: "queued",
+                attempts: 0,
+                next_attempt_at: new Date().toISOString(),
+              }
+            : report,
         ),
       );
     setBusyId(undefined);
@@ -157,15 +177,21 @@ export function AccountReportList({
   return (
     <div className="report-library-list">
       {reports.map((report, index) => {
-        const active =
-          report.status === "queued" || report.status === "generating";
+        const retryScheduled = hasScheduledAutomaticReportRetry(
+          report.status,
+          report.next_attempt_at,
+          report.attempts,
+        );
+        const active = isActiveReport(report);
         const title =
           report.report_type === "recovery_reflection"
             ? copy.recoveryReflection
             : copy.careerPurpose;
-        const statusLabel = active
-          ? progressPhrases[(progressPhase + index) % progressPhrases.length]
-          : labels[report.status];
+        const statusLabel = retryScheduled
+          ? copy.restarting
+          : active
+            ? progressPhrases[(progressPhase + index) % progressPhrases.length]
+            : labels[report.status];
         return (
           <article
             className="report-library-row"
@@ -190,10 +216,12 @@ export function AccountReportList({
               </span>
               {active && (
                 <div
-                  className={`report-row-progress report-row-progress--${report.status}`}
+                  className={`report-row-progress report-row-progress--${retryScheduled ? "queued" : report.status}`}
                   role="progressbar"
                   aria-label={copy.reportProgress}
-                  aria-valuetext={labels[report.status]}
+                  aria-valuetext={
+                    retryScheduled ? copy.restarting : labels[report.status]
+                  }
                 >
                   <i />
                 </div>
@@ -217,7 +245,7 @@ export function AccountReportList({
                   {copy.printReport}
                 </a>
               )}
-              {report.status === "failed" && (
+              {report.status === "failed" && !retryScheduled && (
                 <button
                   className="report-action report-action--primary"
                   type="button"

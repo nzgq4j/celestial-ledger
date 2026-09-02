@@ -29,7 +29,7 @@ export async function GET(
   const { data, error } = await supabase
     .from("reports")
     .select(
-      "id, report_type, status, schema_version, model_version, output, failure_code, started_at, completed_at, expires_at, report_evidence(evidence)",
+      "id, report_type, status, schema_version, model_version, output, failure_code, attempts, started_at, next_attempt_at, completed_at, expires_at, report_evidence(evidence)",
     )
     .eq("id", id)
     .single();
@@ -54,11 +54,12 @@ export async function GET(
       .eq("id", id)
       .eq("user_id", auth.claims.sub as string)
       .eq("status", "generating")
-      .select("status,failure_code")
+      .select("status,failure_code,next_attempt_at")
       .maybeSingle();
     if (recovered) {
       data.status = recovered.status;
       data.failure_code = recovered.failure_code;
+      data.next_attempt_at = recovered.next_attempt_at;
     }
   }
   const summary = new URL(request.url).searchParams.has("summary");
@@ -68,6 +69,8 @@ export async function GET(
           id: data.id,
           status: data.status,
           failureCode: data.failure_code,
+          attempts: data.attempts,
+          nextAttemptAt: data.next_attempt_at,
           completedAt: data.completed_at,
         }
       : data,
@@ -105,6 +108,8 @@ export async function POST(
     .update({
       status: "queued",
       failure_code: null,
+      attempts: 0,
+      started_at: null,
       next_attempt_at: new Date().toISOString(),
     })
     .eq("id", id)

@@ -21,7 +21,7 @@ const decksLibrary = readFileSync("lib/tarot/decks.ts", "utf8");
 const migration = readFileSync(
   "supabase/migrations/20260809110121_add_tarot_decks.sql",
   "utf8",
-);
+).replaceAll("\r\n", "\n");
 const cardFaceMigration = readFileSync(
   "supabase/migrations/20260811090811_add_tarot_deck_card_faces.sql",
   "utf8",

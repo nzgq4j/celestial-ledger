@@ -84,7 +84,7 @@ export default async function AccountPage({
     supabase
       .from("reports")
       .select(
-        "id, entitlement_id, report_type, status, locale, expires_at, created_at",
+        "id, entitlement_id, report_type, status, locale, attempts, next_attempt_at, expires_at, created_at",
       )
       .order("created_at", { ascending: false }),
     supabase

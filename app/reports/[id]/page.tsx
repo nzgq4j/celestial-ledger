@@ -33,7 +33,7 @@ export default async function ReportPage({
     supabase
       .from("reports")
       .select(
-        "id,report_type,status,locale,output,failure_code,attempts,created_at,completed_at,expires_at",
+        "id,report_type,status,locale,output,failure_code,attempts,next_attempt_at,created_at,completed_at,expires_at",
       )
       .eq("id", id)
       .single(),
@@ -67,6 +67,8 @@ export default async function ReportPage({
         <ReportGenerationProgress
           reportId={report.id}
           initialStatus={report.status as "queued" | "generating" | "failed"}
+          initialAttempts={report.attempts}
+          initialNextAttemptAt={report.next_attempt_at}
         />
         <Link className="button-quiet" href="/account">
           {copy.returnToLibrary}
