@@ -14,8 +14,10 @@ import {
 } from "@/lib/reports/similarity";
 
 export const RECOVERY_SCHEMA_VERSION = "recovery-6";
-export const RECOVERY_PROMPT_VERSION = "recovery-reader-facing-9";
+export const RECOVERY_PROMPT_VERSION = "recovery-reader-facing-10";
 export const RECOVERY_SAFETY_VERSION = "recovery-safety-1";
+export const RECOVERY_NARRATIVE_MIN_WORDS = 450;
+export const RECOVERY_NARRATIVE_MAX_WORDS = 1000;
 
 export const recoveryThemeSchema = z.enum([
   "grounding",
@@ -120,7 +122,7 @@ export const recoveryReportJsonSchema = {
           title: { type: "string", minLength: 1, maxLength: 100 },
           theme: { type: "string", enum: recoveryThemeSchema.options },
           bottomLine: { type: "string", minLength: 1, maxLength: 1200 },
-          narrative: { type: "string", minLength: 4000, maxLength: 9000 },
+          narrative: { type: "string", minLength: 4500, maxLength: 9000 },
           bringIntoLife: { type: "string", minLength: 1, maxLength: 2400 },
           evidenceIds: {
             type: "array",
@@ -168,7 +170,7 @@ ${reportLanguageInstruction(locale)}
 - Reveal constructive patterns without forced optimism, shame or fatalism.
 - Use only the selected themes, with exactly one section per theme and no additional sections.
 - Give each section a distinct interpretive focus. Do not repeat sentences, chart interpretations, section titles, or reflection questions across sections.
-- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 650-800 words of interpretation and analysis (always within the enforced 500-1,000 word range), a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
+- Structure every section with: a concise bottomLine field (the BLUF), a narrative of 700-850 words of interpretation and analysis (never fewer than 600 words and never more than 1,000), a specific bringIntoLife field containing grounded practices, and 3-5 distinct writing-based journalingPrompts. Keep reflectionQuestions as 1-3 short questions that can be carried into the day.
 - Do not put technical evidence in reader-facing prose. Do not write "Evidence:", "evidence bundle", "supplied evidence", "immutable evidence", raw IDs, scores, orb values, longitude, provenance, or calculation metadata in title, introduction, bottomLine, narrative, bringIntoLife, reflectionQuestions, journalingPrompts, or closing.
 - Let the evidence shape the meaning silently. The reader should feel a clear interpretation of steadiness, choice, repair, boundaries, support, and renewal, not a technical audit of chart mechanics.
 - Without naming, citing, or alluding to any recovery program or therapy model, weave in relevant principles such as honest self-inventory, acceptance of what cannot be controlled, responsibility for present choices, repair where safe and appropriate, connection with trusted support, attention to one day and one action at a time, identifying automatic thoughts, testing interpretations against evidence, reframing unhelpful patterns, noticing triggers, and choosing workable alternative responses.
@@ -247,8 +249,10 @@ export function validateRecoveryReport(
         .trim()
         .split(/\s+/)
         .filter(Boolean).length;
-      if (narrativeWords < 500) throw new Error("RECOVERY_SECTION_TOO_SHORT");
-      if (narrativeWords > 1000) throw new Error("RECOVERY_SECTION_TOO_LONG");
+      if (narrativeWords < RECOVERY_NARRATIVE_MIN_WORDS)
+        throw new Error("RECOVERY_SECTION_TOO_SHORT");
+      if (narrativeWords > RECOVERY_NARRATIVE_MAX_WORDS)
+        throw new Error("RECOVERY_SECTION_TOO_LONG");
     }
     if (!selectedThemes.has(section.theme))
       throw new Error("UNSELECTED_RECOVERY_THEME");

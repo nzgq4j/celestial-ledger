@@ -272,6 +272,7 @@ const pack = {
       deletingReport: "Deleting…",
       retryReport: "Try again",
       restarting: "Restarting…",
+      retryScheduled: "Another attempt is queued…",
       reportActions: "Report actions",
       reportLanguage: "Report language",
       useSelectedLanguage: "Use selected language for report",

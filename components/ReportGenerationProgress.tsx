@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
-import { hasScheduledAutomaticReportRetry } from "@/lib/reports/retry-state";
+import {
+  hasScheduledAutomaticReportRetry,
+  reportStatusPollInterval,
+} from "@/lib/reports/retry-state";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 
@@ -32,8 +35,12 @@ export function ReportGenerationProgress({
   );
 
   useEffect(() => {
-    if (status === "completed" || (status === "failed" && !retryScheduled))
-      return;
+    const pollInterval = reportStatusPollInterval(
+      status,
+      nextAttemptAt,
+      attempts,
+    );
+    if (pollInterval === null) return;
     const poll = window.setInterval(async () => {
       const response = await fetch(`/api/reports/${reportId}?summary=1`, {
         cache: "no-store",
@@ -48,9 +55,9 @@ export function ReportGenerationProgress({
       setAttempts(payload.attempts);
       setNextAttemptAt(payload.nextAttemptAt);
       if (payload.status === "completed") router.refresh();
-    }, 2000);
+    }, pollInterval);
     return () => window.clearInterval(poll);
-  }, [reportId, retryScheduled, router, status]);
+  }, [attempts, nextAttemptAt, reportId, router, status]);
 
   async function retry() {
     setRetrying(true);
@@ -88,17 +95,21 @@ export function ReportGenerationProgress({
             role="progressbar"
             aria-label={copy.reportProgress}
             aria-valuetext={
-              status === "queued" || retryScheduled
-                ? copy.preparingChartEvidence
-                : copy.writingReflection
+              retryScheduled
+                ? copy.retryScheduled
+                : status === "queued"
+                  ? copy.preparingChartEvidence
+                  : copy.writingReflection
             }
           >
             <i />
           </div>
           <p className="report-status-copy">
-            {status === "queued" || retryScheduled
-              ? copy.preparingNatalEvidence
-              : copy.checkingChartReferences}
+            {retryScheduled
+              ? copy.retryScheduled
+              : status === "queued"
+                ? copy.preparingNatalEvidence
+                : copy.checkingChartReferences}
           </p>
           <small>{copy.canLeaveReportPage}</small>
         </>

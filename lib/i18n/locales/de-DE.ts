@@ -273,6 +273,7 @@ const pack = {
       deletingReport: "Wird gelöscht…",
       retryReport: "Erneut versuchen",
       restarting: "Neustart…",
+      retryScheduled: "Ein weiterer Versuch ist vorgemerkt…",
       reportActions: "Berichtsaktionen",
       reportLanguage: "Berichtssprache",
       useSelectedLanguage: "Ausgewählte Sprache für den Bericht verwenden",

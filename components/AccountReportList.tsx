@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
 import { ReportDeleteModal } from "@/components/ReportDeleteModal";
-import { hasScheduledAutomaticReportRetry } from "@/lib/reports/retry-state";
+import {
+  hasScheduledAutomaticReportRetry,
+  reportStatusPollInterval,
+} from "@/lib/reports/retry-state";
 
 type ReportStatus = "queued" | "generating" | "failed" | "completed";
 type LibraryReport = {
@@ -92,42 +95,54 @@ export function AccountReportList({
   }, [hasActiveReports]);
 
   useEffect(() => {
-    if (!reports.some(isActiveReport)) return;
-    const poll = window.setInterval(async () => {
-      const active = reports.filter(isActiveReport);
-      const updates = await Promise.all(
-        active.map(async (report) => {
-          try {
-            const response = await fetch(
-              `/api/reports/${report.id}?summary=1`,
-              { cache: "no-store" },
-            );
-            if (!response.ok) return null;
-            return (await response.json()) as {
-              id: string;
-              status: ReportStatus;
-              attempts: number;
-              nextAttemptAt: string;
-            };
-          } catch {
-            return null;
-          }
-        }),
-      );
-      setReports((current) =>
-        current.map((report) => {
-          const update = updates.find((item) => item?.id === report.id);
-          return update
-            ? {
-                ...report,
-                status: update.status,
-                attempts: update.attempts,
-                next_attempt_at: update.nextAttemptAt,
-              }
-            : report;
-        }),
-      );
-    }, 2000);
+    const pollIntervals = reports
+      .map((report) =>
+        reportStatusPollInterval(
+          report.status,
+          report.next_attempt_at,
+          report.attempts,
+        ),
+      )
+      .filter((interval): interval is number => interval !== null);
+    if (pollIntervals.length === 0) return;
+    const poll = window.setInterval(
+      async () => {
+        const active = reports.filter(isActiveReport);
+        const updates = await Promise.all(
+          active.map(async (report) => {
+            try {
+              const response = await fetch(
+                `/api/reports/${report.id}?summary=1`,
+                { cache: "no-store" },
+              );
+              if (!response.ok) return null;
+              return (await response.json()) as {
+                id: string;
+                status: ReportStatus;
+                attempts: number;
+                nextAttemptAt: string;
+              };
+            } catch {
+              return null;
+            }
+          }),
+        );
+        setReports((current) =>
+          current.map((report) => {
+            const update = updates.find((item) => item?.id === report.id);
+            return update
+              ? {
+                  ...report,
+                  status: update.status,
+                  attempts: update.attempts,
+                  next_attempt_at: update.nextAttemptAt,
+                }
+              : report;
+          }),
+        );
+      },
+      Math.min(...pollIntervals),
+    );
     return () => window.clearInterval(poll);
   }, [reports]);
 
@@ -188,7 +203,7 @@ export function AccountReportList({
             ? copy.recoveryReflection
             : copy.careerPurpose;
         const statusLabel = retryScheduled
-          ? copy.restarting
+          ? copy.retryScheduled
           : active
             ? progressPhrases[(progressPhase + index) % progressPhrases.length]
             : labels[report.status];
@@ -220,7 +235,7 @@ export function AccountReportList({
                   role="progressbar"
                   aria-label={copy.reportProgress}
                   aria-valuetext={
-                    retryScheduled ? copy.restarting : labels[report.status]
+                    retryScheduled ? copy.retryScheduled : labels[report.status]
                   }
                 >
                   <i />

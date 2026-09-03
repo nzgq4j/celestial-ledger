@@ -7,7 +7,12 @@ import {
   reportOutputTokenBudget,
   shouldRetryReportFailure,
 } from "@/lib/reports/generation-control";
-import { hasScheduledAutomaticReportRetry } from "@/lib/reports/retry-state";
+import {
+  ACTIVE_REPORT_POLL_INTERVAL_MS,
+  hasScheduledAutomaticReportRetry,
+  reportStatusPollInterval,
+  SCHEDULED_RETRY_POLL_INTERVAL_MS,
+} from "@/lib/reports/retry-state";
 
 describe("report generation reliability", () => {
   it("classifies provider and validation failures without storing raw details", () => {
@@ -71,6 +76,9 @@ describe("report generation reliability", () => {
       ),
     ).toBe(true);
     expect(hasScheduledAutomaticReportRetry("failed", "infinity")).toBe(false);
+    expect(hasScheduledAutomaticReportRetry("failed", "not-a-date")).toBe(
+      false,
+    );
     expect(
       hasScheduledAutomaticReportRetry(
         "failed",
@@ -84,6 +92,20 @@ describe("report generation reliability", () => {
         "2026-09-02T21:44:02.265817+00:00",
       ),
     ).toBe(false);
+  });
+
+  it("polls active work promptly and backs off while a retry is waiting", () => {
+    const now = Date.parse("2026-09-03T16:00:00.000Z");
+    expect(reportStatusPollInterval("generating", null, 1, now)).toBe(
+      ACTIVE_REPORT_POLL_INTERVAL_MS,
+    );
+    expect(
+      reportStatusPollInterval("failed", "2026-09-03T16:01:00.000Z", 1, now),
+    ).toBe(SCHEDULED_RETRY_POLL_INTERVAL_MS);
+    expect(
+      reportStatusPollInterval("failed", "2026-09-03T16:00:02.000Z", 1, now),
+    ).toBe(ACTIVE_REPORT_POLL_INTERVAL_MS);
+    expect(reportStatusPollInterval("failed", "infinity", 1, now)).toBeNull();
   });
 
   it("makes one bounded low-reasoning model request per worker invocation", () => {
