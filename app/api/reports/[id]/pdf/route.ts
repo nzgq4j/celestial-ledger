@@ -8,9 +8,13 @@ import { recoveryReportSchema } from "@/lib/reports/recovery";
 import { buildReportPdf } from "@/lib/reports/pdf";
 import { defaultLocale, isLocaleTag, localeRegistry } from "@/lib/i18n/config";
 import { localizeEvidenceLabel } from "@/lib/reports/evidence-label";
+import { PRIVATE_RESPONSE_HEADERS } from "@/lib/api-security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const json = (body: unknown, status: number) =>
+  Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
 export async function GET(
   _request: Request,
@@ -20,12 +24,10 @@ export async function GET(
     .string()
     .uuid()
     .safeParse((await params).id);
-  if (!id.success)
-    return Response.json({ error: "Invalid report." }, { status: 400 });
+  if (!id.success) return json({ error: "Invalid report." }, 400);
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
-  if (!auth?.claims?.sub)
-    return Response.json({ error: "Sign in required." }, { status: 401 });
+  if (!auth?.claims?.sub) return json({ error: "Sign in required." }, 401);
   const [{ data: report }, { data: evidenceRow }] = await Promise.all([
     supabase
       .from("reports")
@@ -39,14 +41,14 @@ export async function GET(
       .maybeSingle(),
   ]);
   if (!report || report.status !== "completed" || !evidenceRow?.evidence)
-    return Response.json({ error: "Report unavailable." }, { status: 404 });
+    return json({ error: "Report unavailable." }, 404);
   const isRecovery = report.report_type === "recovery_reflection";
   const output = isRecovery
     ? recoveryReportSchema.safeParse(report.output)
     : careerReportSchema.safeParse(report.output);
   const evidence = evidenceRow.evidence as unknown as CareerEvidenceBundle;
   if (!output.success || !evidence?.items)
-    return Response.json({ error: "Report unavailable." }, { status: 422 });
+    return json({ error: "Report unavailable." }, 422);
   const locale = isLocaleTag(report.locale) ? report.locale : defaultLocale;
   const pack = await localeRegistry[locale].load();
   const copy = pack.messages.account;

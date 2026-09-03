@@ -83,6 +83,17 @@ describe("API-key isolation", () => {
     expect(config).toContain("frame-ancestors 'none'");
   });
 
+  it("marks every private report PDF response as no-store", () => {
+    const reportPdfRoute = fs.readFileSync(
+      "app/api/reports/[id]/pdf/route.ts",
+      "utf8",
+    );
+    expect(reportPdfRoute).toContain("PRIVATE_RESPONSE_HEADERS");
+    expect(reportPdfRoute).toContain(
+      '"Cache-Control": "private, no-store, max-age=0"',
+    );
+  });
+
   it("offers deliberate sharing controls on public and private readings", () => {
     const publicReading = fs.readFileSync(
       "app/horoscopes/[sign]/page.tsx",
