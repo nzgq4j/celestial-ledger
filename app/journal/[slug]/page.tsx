@@ -61,7 +61,9 @@ export default async function JournalPostPage({
           "@type": "BlogPosting",
           headline: post.title,
           description: post.seo_description || post.excerpt,
-          image: [new URL(journalFeaturedImage(post.slug), SITE_URL).toString()],
+          image: [
+            new URL(journalFeaturedImage(post.slug), SITE_URL).toString(),
+          ],
           datePublished: post.published_at,
           dateModified: post.updated_at,
           mainEntityOfPage: `${SITE_URL}/journal/${post.slug}`,

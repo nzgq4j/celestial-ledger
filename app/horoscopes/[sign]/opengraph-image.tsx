@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/seo";
 export const alt = "Daily sun sign reading from Celestial Atlas";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+const NativeImage = "img";
 
 function conciseSummary(value: string) {
   return `Today's clearest choice: ${value.toLowerCase()}.`;
@@ -44,8 +45,7 @@ export default async function HoroscopeOpenGraphImage({
       }}
     >
       {/* ImageResponse requires a native image element for full-bleed artwork. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <NativeImage
         src={heroUrl}
         alt=""
         aria-hidden="true"

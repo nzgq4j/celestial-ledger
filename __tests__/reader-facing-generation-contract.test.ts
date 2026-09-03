@@ -34,7 +34,7 @@ describe("reader-facing generation contracts", () => {
       'CAREER_PROMPT_VERSION = "career-reader-facing-10"',
     );
     expect(recovery).toContain(
-      'RECOVERY_PROMPT_VERSION = "recovery-reader-facing-9"',
+      'RECOVERY_PROMPT_VERSION = "recovery-reader-facing-10"',
     );
     expect(career).toContain("keep the technical support out of the prose");
     expect(recovery).toContain("keep technical support out of the prose");

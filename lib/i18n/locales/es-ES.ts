@@ -271,6 +271,7 @@ const pack = {
       deletingReport: "Eliminando…",
       retryReport: "Intentar de nuevo",
       restarting: "Reiniciando…",
+      retryScheduled: "Hay otro intento en cola…",
       reportActions: "Acciones del informe",
       reportLanguage: "Idioma del informe",
       useSelectedLanguage: "Usar el idioma seleccionado para el informe",

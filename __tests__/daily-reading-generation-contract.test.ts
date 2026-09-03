@@ -7,7 +7,9 @@ describe("daily reading generation contract", () => {
     expect(source).toContain("DAILY_READING_TECHNICAL_COPY_LEAK");
     expect(source).toContain("DAILY_READING_SECTION_LENGTH_FAILED");
     expect(source).toContain("Each section narrative must be 350-500 words");
-    expect(source).toContain("Do not put technical evidence in reader-facing prose");
+    expect(source).toContain(
+      "Do not put technical evidence in reader-facing prose",
+    );
     expect(source).toContain("dailyUserFacingText");
     expect(source).toContain("expandReaderSection");
     expect(source).toContain("sanitizeReaderFacingDailyCopy(raw, base)");

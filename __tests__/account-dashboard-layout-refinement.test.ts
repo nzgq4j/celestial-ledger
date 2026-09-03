@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const page = readFileSync("app/account/page.tsx", "utf8");
+const page = readFileSync("app/account/page.tsx", "utf8").replaceAll(
+  "\r\n",
+  "\n",
+);
 const css = readFileSync("app/globals.css", "utf8");
 
 describe("My Atlas dashboard layout refinement", () => {

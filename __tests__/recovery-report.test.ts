@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildRecoveryEvidence,
+  RECOVERY_NARRATIVE_MIN_WORDS,
   recoveryReportJsonSchema,
   recoveryReportSchema,
   validateRecoveryReport,
@@ -48,6 +49,43 @@ function report(narrative?: string) {
   });
 }
 
+function formattedSingleThemeReport(narrativeWords: number) {
+  const vocabulary = [
+    "steady",
+    "attention",
+    "choice",
+    "rhythm",
+    "support",
+    "renewal",
+    "practice",
+    "reflection",
+  ];
+  return recoveryReportSchema.parse({
+    title: "The Returning Ground",
+    introduction: "A focused reflection on steadiness and choice.",
+    sections: [
+      {
+        title: "Grounding",
+        theme: "grounding",
+        bottomLine: "Return to the next steady choice.",
+        narrative: Array.from(
+          { length: narrativeWords },
+          (_, index) => vocabulary[index % vocabulary.length],
+        ).join(" "),
+        bringIntoLife: "Pause, notice what is present, and choose one step.",
+        evidenceIds: ["placement:sun"],
+        reflectionQuestions: ["What helps you return to centre?"],
+        journalingPrompts: [
+          "Name one source of steadiness.",
+          "Describe one workable next choice.",
+          "Notice what support feels available.",
+        ],
+      },
+    ],
+    closing: "Carry this point of orientation with you.",
+  });
+}
+
 describe("Recovery Reflection safety and evidence", () => {
   it("constrains generated citations to immutable evidence IDs", () => {
     const schema = bindEvidenceIds(recoveryReportJsonSchema, [
@@ -65,11 +103,29 @@ describe("Recovery Reflection safety and evidence", () => {
   it("binds provider text lengths to the runtime validation limits", () => {
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties.narrative,
-    ).toMatchObject({ minLength: 4000, maxLength: 9000 });
+    ).toMatchObject({ minLength: 4500, maxLength: 9000 });
     expect(
       recoveryReportJsonSchema.properties.sections.items.properties
         .reflectionQuestions.items,
     ).toMatchObject({ minLength: 1, maxLength: 240 });
+  });
+
+  it("keeps substantive near-boundary drafts instead of discarding them", async () => {
+    const bundle = await evidence();
+    expect(() =>
+      validateRecoveryReport(
+        formattedSingleThemeReport(RECOVERY_NARRATIVE_MIN_WORDS),
+        bundle,
+        ["grounding"],
+      ),
+    ).not.toThrow();
+    expect(() =>
+      validateRecoveryReport(
+        formattedSingleThemeReport(RECOVERY_NARRATIVE_MIN_WORDS - 1),
+        bundle,
+        ["grounding"],
+      ),
+    ).toThrow("RECOVERY_SECTION_TOO_SHORT");
   });
 
   it("accepts selected reviewed themes linked to natal evidence", async () => {

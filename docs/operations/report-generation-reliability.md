@@ -22,8 +22,14 @@ entitlement consumption, report expiry, or recovery-language safety validation.
 - Failure codes are normalized before persistence and logging. Provider messages,
   report prose, birth data, evidence IDs, and user identifiers are not logged.
 - A failed row with a finite `next_attempt_at` and fewer than three attempts is
-  presented as restarting and continues polling. Terminal failures expose the
-  manual retry action.
+  presented as a queued automatic attempt. The UI polls less frequently while it
+  waits for that timestamp, then returns to the active polling cadence. Terminal
+  failures expose the manual retry action.
+- Recovery narratives target 700-850 words. Provider output is constrained to at
+  least 4,500 characters, while runtime validation allows a 450-word lower
+  tolerance so an otherwise complete report is not discarded for a small word
+  count variance. The 1,000-word ceiling and all recovery safety checks remain in
+  force.
 
 ## Monitoring
 
