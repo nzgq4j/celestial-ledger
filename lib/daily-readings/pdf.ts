@@ -86,14 +86,16 @@ function interpretiveDailySection(
   ];
 
   let narrative = paragraphs.join("\n\n");
-  const fallback =
-    `Stay with ${theme.toLowerCase()} as a practical theme rather than a technical chart fact. Let it guide one clear choice, one cleaner boundary and one point of review before the day closes.`;
+  const fallback = `Stay with ${theme.toLowerCase()} as a practical theme rather than a technical chart fact. Let it guide one clear choice, one cleaner boundary and one point of review before the day closes.`;
   while (countWords(narrative) < DAILY_PDF_SECTION_MIN_WORDS) {
     narrative = `${narrative}\n\n${fallback}`;
   }
   const words = narrative.split(/\s+/);
   if (words.length > DAILY_PDF_SECTION_MAX_WORDS)
-    narrative = `${words.slice(0, DAILY_PDF_SECTION_MAX_WORDS).join(" ").replace(/[,:;]$/, "")}.`;
+    narrative = `${words
+      .slice(0, DAILY_PDF_SECTION_MAX_WORDS)
+      .join(" ")
+      .replace(/[,:;]$/, "")}.`;
   return narrative;
 }
 
@@ -122,7 +124,9 @@ function interpretiveDailyBluf(
       (priority) => `${priority.title}: ${priority.narrative}`,
     ),
   );
-  const forward = userFacingText(content.bottomLineUpFront.forwardLook.narrative);
+  const forward = userFacingText(
+    content.bottomLineUpFront.forwardLook.narrative,
+  );
   const tension = userFacingText(
     content.bottomLineUpFront.tensionToHold?.narrative ??
       `Hold ${leadingTheme.toLowerCase()} together with ${secondTheme.toLowerCase()} so the day stays both honest and proportionate.`,
@@ -143,7 +147,10 @@ function interpretiveDailyBluf(
   }
   const words = narrative.split(/\s+/);
   if (words.length > DAILY_PDF_SECTION_MAX_WORDS)
-    narrative = `${words.slice(0, DAILY_PDF_SECTION_MAX_WORDS).join(" ").replace(/[,:;]$/, "")}.`;
+    narrative = `${words
+      .slice(0, DAILY_PDF_SECTION_MAX_WORDS)
+      .join(" ")
+      .replace(/[,:;]$/, "")}.`;
   return { activeNow, narrative };
 }
 
@@ -206,10 +213,7 @@ export async function buildDailyReadingPdf(input: {
         narrative:
           "Carry the local-noon reading through the day in three deliberate movements: receive the signal, act where the pattern is strongest, and integrate what the day has revealed.",
         bringIntoLife: dayArc
-          .map(
-            (phase) =>
-              `${phase.label} - ${phase.title}: ${phase.guidance}`,
-          )
+          .map((phase) => `${phase.label} - ${phase.title}: ${phase.guidance}`)
           .join("\n\n"),
         reflectionQuestions: [],
         evidence: [],

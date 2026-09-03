@@ -111,7 +111,10 @@ function wordCount(value: string) {
 function trimToWordLimit(value: string, maxWords: number) {
   const words = value.trim().split(/\s+/).filter(Boolean);
   if (words.length <= maxWords) return value.trim();
-  return `${words.slice(0, maxWords).join(" ").replace(/[,:;]$/, "")}.`;
+  return `${words
+    .slice(0, maxWords)
+    .join(" ")
+    .replace(/[,:;]$/, "")}.`;
 }
 
 function expandReaderSection(input: {
