@@ -15,7 +15,7 @@ export function DailyReadingActions({ readingId }: { readingId: string }) {
       method: "DELETE",
     });
     if (response.ok) {
-      router.push("/account#daily-reading");
+      router.push("/account?view=library");
       router.refresh();
       return;
     }

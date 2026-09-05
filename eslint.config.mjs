@@ -11,5 +11,11 @@ export default defineConfig([
       "react-hooks/set-state-in-effect": "off",
     },
   },
-  globalIgnores([".next/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores([
+    "tmp/**",
+    ".codex-*/**",
+    ".next/**",
+    "coverage/**",
+    "next-env.d.ts",
+  ]),
 ]);

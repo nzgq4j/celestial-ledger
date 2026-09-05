@@ -13,6 +13,8 @@ import type {
 import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
 
 type DailyDrawResponse = {
+  savedReadingId?: string | null;
+  saveStatus?: "saved" | "failed" | "guest";
   cards: Array<{
     id: string;
     name: string;
@@ -129,6 +131,18 @@ export function AccountTarotDailyDraw({
                 : result.labels.reversed}
             </small>
             <p>{card.meaning}</p>
+            <p role="status">
+              {result.saveStatus === "saved"
+                ? copy.savedNotice
+                : result.saveStatus === "failed"
+                  ? copy.unsavedNotice
+                  : copy.guestNotice}
+            </p>
+            {result.savedReadingId && (
+              <Link href={`/account/tarot/${result.savedReadingId}`}>
+                {copy.myLibrary}
+              </Link>
+            )}
             <div className="account-tarot-result__actions">
               <button
                 type="button"
@@ -137,7 +151,10 @@ export function AccountTarotDailyDraw({
               >
                 {copy.newReading}
               </button>
-              <Link className="button-secondary" href="/tarot">
+              <Link
+                className="button-secondary"
+                href={`/tarot?deck=${encodeURIComponent(deckId)}`}
+              >
                 {copy.chooseSpread}
               </Link>
             </div>

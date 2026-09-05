@@ -21,7 +21,7 @@ export function WeeklyReadingActions({ readingId }: { readingId: string }) {
   }
   return (
     <div className="report-viewer-actions">
-      <Link className="button-secondary" href="/account">
+      <Link className="button-secondary" href="/account?view=library">
         {
           {
             "en-GB": "Back to account",

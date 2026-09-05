@@ -23,8 +23,8 @@ describe("header identity menu", () => {
   it("renders explicit signed-out and signed-in paths on desktop and mobile", () => {
     expect(header.match(/identity \?/g)).toHaveLength(2);
     expect(header.match(/href="\/auth\/login"/g)).toHaveLength(2);
-    expect(header.match(/href="\/account#account-settings"/g)).toHaveLength(2);
-    expect(header.match(/href="\/account#billing"/g)).toHaveLength(2);
+    expect(header.match(/href="\/account\?view=settings"/g)).toHaveLength(2);
+    expect(header.match(/href="\/account\?view=membership"/g)).toHaveLength(2);
     expect(header).toContain('className="site-nav-group site-nav-identity"');
     expect(header).toContain(
       'className="mobile-nav__group mobile-nav__identity"',

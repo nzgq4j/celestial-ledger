@@ -4,6 +4,20 @@ type TarotUiMessages = Record<string, string>;
 
 export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
   "en-GB": {
+    savedNotice: "Saved privately in My library. Available for one year.",
+    unsavedNotice:
+      "This reading could not be saved. Keep this page open to read it.",
+    guestNotice:
+      "This reading is not saved. Sign in before your next draw to keep it in My library.",
+    deleteReading: "Delete reading",
+    deleteConfirmation: "Delete this saved reading permanently?",
+    cancel: "Cancel",
+    deleteError: "The reading could not be deleted. Try again.",
+    shuffleAndReveal: "Shuffle and reveal",
+    preparing: "Preparing your reading…",
+    availableChoices: "Available spreads",
+    otherSpreads: "Explore other spreads",
+    myLibrary: "My library",
     pageEyebrow: "A symbolic reading table",
     pageTitle: "Choose the cards. Make space to reflect.",
     pageIntroduction:
@@ -151,6 +165,19 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Upload both a cover and card back before activating a deck.",
   },
   "es-ES": {
+    savedNotice: "Guardado en Mi biblioteca durante un año.",
+    unsavedNotice: "No se pudo guardar. Mantén esta página abierta.",
+    guestNotice:
+      "Esta lectura no se guarda. Inicia sesión antes de tu próxima tirada para guardarla.",
+    deleteReading: "Eliminar lectura",
+    deleteConfirmation: "¿Eliminar esta lectura permanentemente?",
+    cancel: "Cancelar",
+    deleteError: "No se pudo eliminar. Inténtalo de nuevo.",
+    shuffleAndReveal: "Barajar y revelar",
+    preparing: "Preparando tu lectura…",
+    availableChoices: "Tiradas disponibles",
+    otherSpreads: "Explorar otras tiradas",
+    myLibrary: "Mi biblioteca",
     pageEyebrow: "Una mesa de lectura simbólica",
     pageTitle: "Elige las cartas. Haz espacio para reflexionar.",
     pageIntroduction:
@@ -299,6 +326,19 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Carga una portada y un reverso antes de activar una baraja.",
   },
   "fr-FR": {
+    savedNotice: "Enregistré dans Ma bibliothèque pendant un an.",
+    unsavedNotice: "Impossible d’enregistrer. Gardez cette page ouverte.",
+    guestNotice:
+      "Cette lecture n’est pas enregistrée. Connectez-vous avant le prochain tirage pour la conserver.",
+    deleteReading: "Supprimer la lecture",
+    deleteConfirmation: "Supprimer définitivement cette lecture ?",
+    cancel: "Annuler",
+    deleteError: "Impossible de supprimer. Réessayez.",
+    shuffleAndReveal: "Mélanger et révéler",
+    preparing: "Préparation de votre lecture…",
+    availableChoices: "Tirages disponibles",
+    otherSpreads: "Explorer les autres tirages",
+    myLibrary: "Ma bibliothèque",
     pageEyebrow: "Une table de lecture symbolique",
     pageTitle: "Choisissez les cartes. Prenez le temps de réfléchir.",
     pageIntroduction:
@@ -449,6 +489,19 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Envoyez une couverture et un dos de carte avant d’activer un jeu.",
   },
   "de-DE": {
+    savedNotice: "Ein Jahr lang privat in Meine Bibliothek gespeichert.",
+    unsavedNotice: "Speichern fehlgeschlagen. Lass diese Seite geöffnet.",
+    guestNotice:
+      "Diese Lesung wird nicht gespeichert. Melde dich vor dem nächsten Ziehen an.",
+    deleteReading: "Lesung löschen",
+    deleteConfirmation: "Diese Lesung dauerhaft löschen?",
+    cancel: "Abbrechen",
+    deleteError: "Löschen fehlgeschlagen. Versuche es erneut.",
+    shuffleAndReveal: "Mischen und aufdecken",
+    preparing: "Deine Lesung wird vorbereitet…",
+    availableChoices: "Verfügbare Legungen",
+    otherSpreads: "Weitere Legungen ansehen",
+    myLibrary: "Meine Bibliothek",
     pageEyebrow: "Ein Tisch für symbolische Deutung",
     pageTitle: "Wähle die Karten. Schaffe Raum zum Nachdenken.",
     pageIntroduction:

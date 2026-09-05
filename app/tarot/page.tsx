@@ -14,7 +14,7 @@ import { localizeTarotReadings } from "@/lib/tarot/reading-locales";
 export const dynamic = "force-dynamic";
 
 type TarotPageProps = {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; deck?: string }>;
 };
 
 export async function generateMetadata({
@@ -35,7 +35,7 @@ export async function generateMetadata({
 export default async function TarotPage({ searchParams }: TarotPageProps) {
   if (!tarotReadingFlags().enabled) notFound();
 
-  const { lang } = await searchParams;
+  const { lang, deck } = await searchParams;
   const pack = await getServerTranslationPack(
     lang && isLocaleTag(lang) ? lang : undefined,
   );
@@ -58,6 +58,7 @@ export default async function TarotPage({ searchParams }: TarotPageProps) {
       <TarotReadingExperience
         decks={[...decks]}
         readings={[...readings]}
+        initialDeckId={deck}
         currentPlan={currentPlan}
         locale={pack.tag}
         copy={pack.messages.tarot}

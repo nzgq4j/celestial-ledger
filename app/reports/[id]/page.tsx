@@ -70,7 +70,7 @@ export default async function ReportPage({
           initialAttempts={report.attempts}
           initialNextAttemptAt={report.next_attempt_at}
         />
-        <Link className="button-quiet" href="/account">
+        <Link className="button-quiet" href="/account?view=library">
           {copy.returnToLibrary}
         </Link>
       </main>

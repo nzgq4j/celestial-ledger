@@ -12,3 +12,8 @@ npm-debug.log*
 *.tsbuildinfo
 
 .env*
+
+/tmp/
+/.codex-*/
+
+/outputs-*-check.txt

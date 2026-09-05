@@ -9,7 +9,9 @@ const css = readFileSync("app/globals.css", "utf8");
 
 describe("My Atlas dashboard layout refinement", () => {
   it("uses one global navigation system plus a slim account anchor rail", () => {
-    expect(page).toContain('className="account-jump-links"');
+    expect(readFileSync("components/AccountNavigation.tsx", "utf8")).toContain(
+      'className="account-jump-links"',
+    );
     expect(page).not.toContain('className="account-sidebar"');
     expect(page).not.toContain("Member observatory");
     expect(css).toContain(".account-jump-links");
@@ -33,10 +35,10 @@ describe("My Atlas dashboard layout refinement", () => {
 
   it("keeps daily and weekly reading controls collapsed by default", () => {
     expect(page).toContain(
-      '<details\n              className="account-reading-card account-reading-card--daily"',
+      'className="account-reading-card account-reading-card--daily"',
     );
     expect(page).toContain(
-      '<details\n              className="account-reading-card account-reading-card--weekly"',
+      'className="account-reading-card account-reading-card--weekly"',
     );
     expect(page).toContain('className="account-reading-card__summary"');
     expect(page).not.toContain("<details open");

@@ -1,3 +1,6 @@
+import { createAdminClient } from "@/lib/supabase/admin";
+import { tarotSnapshot, savedTarotSchema } from "@/lib/tarot/saved-schema";
+import { isSameOrigin, readLimitedJson } from "@/lib/api-security";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { tarotReadingFlags } from "@/lib/commerce/flags";
@@ -20,14 +23,16 @@ import { TAROT_LOCALES } from "@/lib/tarot/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const inputSchema = z.object({
-  deckId: z
-    .string()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-    .max(80),
-  readingId: z.enum(["daily", "ppf", "love5", "celtic", "grand"]),
-  locale: z.enum(TAROT_LOCALES),
-});
+const inputSchema = z
+  .object({
+    deckId: z
+      .string()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .max(80),
+    readingId: z.enum(["daily", "ppf", "love5", "celtic", "grand"]),
+    locale: z.enum(TAROT_LOCALES),
+  })
+  .strict();
 
 const noStoreHeaders = {
   "Cache-Control": "private, no-store, max-age=0",
@@ -35,6 +40,11 @@ const noStoreHeaders = {
 };
 
 export async function POST(request: Request) {
+  if (!isSameOrigin(request))
+    return NextResponse.json(
+      { error: "Forbidden" },
+      { status: 403, headers: noStoreHeaders },
+    );
   if (!tarotReadingFlags().enabled) {
     return NextResponse.json(
       { error: "NOT_AVAILABLE" },
@@ -44,7 +54,7 @@ export async function POST(request: Request) {
 
   let body: unknown;
   try {
-    body = await request.json();
+    body = await readLimitedJson(request, 2048);
   } catch {
     return NextResponse.json(
       { error: "INVALID_REQUEST" },
@@ -121,36 +131,61 @@ export async function POST(request: Request) {
     drawnCards.map(({ card }) => card.id),
   );
 
+  const payload = savedTarotSchema.parse({
+    deck: {
+      id: deck.id,
+      name: deck.name,
+      cardBackImageUrl: deck.cardBackImageUrl,
+    },
+    reading: {
+      id: localizedReading.id,
+      name: localizedReading.name,
+    },
+    cards: drawnCards.map(({ card, position, orientation }) => ({
+      id: card.id,
+      name: card.name,
+      arcana: card.arcana,
+      suit: card.suit ?? null,
+      number: card.number ?? null,
+      faceImageUrl: cardFaceImageUrls.get(card.id) ?? null,
+      position,
+      orientation,
+      meaning: card[orientation],
+    })),
+    narrative: buildNarrative(
+      drawnCards,
+      tarotNarrativeFormatter(parsed.data.locale),
+    ),
+    labels: {
+      upright: pack.messages.tarot.upright,
+      reversed: pack.messages.tarot.reversed,
+    },
+  });
+  let savedReadingId: string | null = null;
+  if (auth.user) {
+    try {
+      const saved = await createAdminClient()
+        .from("tarot_readings")
+        .insert({
+          user_id: auth.user.id,
+          deck_id: deck.id,
+          reading_id: localizedReading.id,
+          title: `${localizedReading.name} � ${deck.name}`,
+          locale: parsed.data.locale,
+          payload: tarotSnapshot(payload),
+        })
+        .select("id")
+        .single();
+      if (!saved.error) savedReadingId = saved.data.id;
+    } catch {
+      /* Preserve the original draw even if persistence is unavailable. */
+    }
+  }
   return NextResponse.json(
     {
-      deck: {
-        id: deck.id,
-        name: deck.name,
-        cardBackImageUrl: deck.cardBackImageUrl,
-      },
-      reading: {
-        id: localizedReading.id,
-        name: localizedReading.name,
-      },
-      cards: drawnCards.map(({ card, position, orientation }) => ({
-        id: card.id,
-        name: card.name,
-        arcana: card.arcana,
-        suit: card.suit ?? null,
-        number: card.number ?? null,
-        faceImageUrl: cardFaceImageUrls.get(card.id) ?? null,
-        position,
-        orientation,
-        meaning: card[orientation],
-      })),
-      narrative: buildNarrative(
-        drawnCards,
-        tarotNarrativeFormatter(parsed.data.locale),
-      ),
-      labels: {
-        upright: pack.messages.tarot.upright,
-        reversed: pack.messages.tarot.reversed,
-      },
+      ...payload,
+      savedReadingId,
+      saveStatus: auth.user ? (savedReadingId ? "saved" : "failed") : "guest",
     },
     { headers: noStoreHeaders },
   );

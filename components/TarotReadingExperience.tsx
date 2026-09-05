@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PlanKey } from "@/lib/entitlements/domain";
 import { planMeetsTarotMinimum } from "@/lib/tarot/entitlement";
 import type {
@@ -27,7 +27,9 @@ type ReadingCard = {
   meaning: string;
 };
 
-type DrawResponse = {
+export type DrawResponse = {
+  savedReadingId?: string | null;
+  saveStatus?: "saved" | "failed" | "guest";
   deck: { id: string; name: string; cardBackImageUrl: string | null };
   reading: { id: string; name: string };
   cards: ReadingCard[];
@@ -45,21 +47,52 @@ export function TarotReadingExperience({
   currentPlan,
   locale,
   copy,
+  initialDeckId = "",
+  initialResult = null,
 }: {
   decks: TarotDeck[];
   readings: TarotReading[];
   currentPlan: PlanKey;
   locale: TarotLocale;
   copy: Record<string, string>;
+  initialDeckId?: string;
+  initialResult?: DrawResponse | null;
 }) {
   const visibleDecks = decks.filter((deck) => deck.active);
-  const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
-  const [deckId, setDeckId] = useState("");
+  const initialDeck = visibleDecks.find(
+    (deck) =>
+      deck.id === initialDeckId &&
+      planMeetsTarotMinimum(currentPlan, deck.minimumPlan),
+  );
+  const [stage, setStage] = useState<1 | 2 | 3 | 4>(
+    initialResult ? 4 : initialDeck ? 2 : 1,
+  );
+  const [deckId, setDeckId] = useState(initialDeck?.id ?? "");
   const [readingId, setReadingId] = useState("");
   const [shuffling, setShuffling] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<DrawResponse | null>(null);
+  const [result, setResult] = useState<DrawResponse | null>(initialResult);
+  const [activeCard, setActiveCard] = useState(0);
+  const [showLocked, setShowLocked] = useState(false);
+  const workspace = useRef<HTMLElement>(null);
+  const previousStage = useRef(stage);
+  const shuffleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (shuffleTimer.current) clearTimeout(shuffleTimer.current);
+    },
+    [],
+  );
+  useEffect(() => {
+    if (previousStage.current === stage) return;
+    previousStage.current = stage;
+    const heading =
+      workspace.current?.querySelector<HTMLElement>(".tarot-stage h2");
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [stage]);
 
   const selectedDeck = visibleDecks.find((deck) => deck.id === deckId) ?? null;
   const selectedReading =
@@ -79,6 +112,7 @@ export function TarotReadingExperience({
   }
 
   function stepIsReachable(step: 1 | 2 | 3 | 4) {
+    if (initialResult) return step === 4;
     if (shuffling || pending) return step === stage;
     if (step === 1) return true;
     if (step === 2) return Boolean(deckId);
@@ -93,6 +127,10 @@ export function TarotReadingExperience({
   }
 
   function reset() {
+    if (initialResult) {
+      window.location.assign("/tarot");
+      return;
+    }
     setStage(1);
     setDeckId("");
     setReadingId("");
@@ -130,6 +168,7 @@ export function TarotReadingExperience({
       const body = (await response.json()) as DrawResponse & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "DRAW_FAILED");
       setResult(body);
+      setActiveCard(0);
       setStage(4);
     } catch {
       setError(copy.error);
@@ -142,7 +181,7 @@ export function TarotReadingExperience({
     if (shuffling || pending || !selectedDeck || !selectedReading) return;
     setShuffling(true);
     setError("");
-    window.setTimeout(
+    shuffleTimer.current = setTimeout(
       () => {
         setShuffling(false);
         void reveal();
@@ -151,7 +190,7 @@ export function TarotReadingExperience({
     );
   }
 
-  if (!visibleDecks.length) {
+  if (!visibleDecks.length && !result) {
     return (
       <section className="tarot-empty" aria-live="polite">
         <span aria-hidden="true">✦</span>
@@ -161,7 +200,12 @@ export function TarotReadingExperience({
   }
 
   return (
-    <section className="tarot-workspace">
+    <section
+      className="tarot-workspace"
+      ref={workspace}
+      data-stage={stage}
+      aria-busy={pending || shuffling}
+    >
       <nav
         className="tarot-progress"
         aria-label={formatTarotMessage(copy.stepProgress, {
@@ -201,7 +245,9 @@ export function TarotReadingExperience({
                 total: 4,
               })}
             </p>
-            <h2 id="tarot-deck-heading">{copy.chooseDeck}</h2>
+            <h2 id="tarot-deck-heading" tabIndex={-1}>
+              {copy.chooseDeck}
+            </h2>
             <p>{copy.chooseDeckCopy}</p>
           </header>
           <div className="tarot-deck-grid">
@@ -272,31 +318,42 @@ export function TarotReadingExperience({
                 total: 4,
               })}
             </p>
-            <h2 id="tarot-spread-heading">{copy.chooseSpread}</h2>
+            <h2 id="tarot-spread-heading" tabIndex={-1}>
+              {copy.chooseSpread}
+            </h2>
             <p>{copy.chooseSpreadCopy}</p>
           </header>
           <div className="tarot-spread-list">
-            {readings.map((reading) => {
-              const unlocked = planMeetsTarotMinimum(
-                currentPlan,
-                reading.minimumPlan,
-              );
-              const selected = reading.id === readingId;
-              return (
-                <article
-                  className={`tarot-spread ${selected ? "is-selected" : ""}`}
-                  key={reading.id}
-                  onClick={() => unlocked && chooseReading(reading.id)}
-                >
-                  <div
-                    className="tarot-spread__count"
-                    aria-label={formatTarotMessage(
-                      reading.cardCount === 1 ? copy.oneCard : copy.cardsCount,
-                      { count: reading.cardCount },
-                    )}
+            {readings
+              .filter(
+                (reading) =>
+                  showLocked ||
+                  planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
+              )
+              .map((reading) => {
+                const unlocked = planMeetsTarotMinimum(
+                  currentPlan,
+                  reading.minimumPlan,
+                );
+                const selected = reading.id === readingId;
+                return (
+                  <article
+                    className={`tarot-spread ${selected ? "is-selected" : ""}`}
+                    key={reading.id}
+                    onClick={() => unlocked && chooseReading(reading.id)}
                   >
-                    {Array.from({ length: Math.min(reading.cardCount, 5) }).map(
-                      (_, index) => (
+                    <div
+                      className="tarot-spread__count"
+                      aria-label={formatTarotMessage(
+                        reading.cardCount === 1
+                          ? copy.oneCard
+                          : copy.cardsCount,
+                        { count: reading.cardCount },
+                      )}
+                    >
+                      {Array.from({
+                        length: Math.min(reading.cardCount, 5),
+                      }).map((_, index) => (
                         <i
                           key={index}
                           aria-hidden="true"
@@ -313,52 +370,66 @@ export function TarotReadingExperience({
                               : undefined
                           }
                         />
-                      ),
-                    )}
-                    {reading.cardCount > 5 && (
-                      <span aria-hidden="true">+{reading.cardCount - 5}</span>
-                    )}
-                  </div>
-                  <div>
-                    <p>{reading.name}</p>
-                    <small>{reading.blurb}</small>
-                    <span className="tarot-spread__meta">
-                      {reading.cardCount === 1
-                        ? copy.oneCard
-                        : formatTarotMessage(copy.cardsCount, {
-                            count: reading.cardCount,
-                          })}
-                      {" · "}
-                      {reading.durationLabel}
-                    </span>
-                  </div>
-                  {unlocked ? (
-                    <button
-                      className="tarot-spread__select"
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        chooseReading(reading.id);
-                      }}
-                    >
-                      {selected
-                        ? copy.selected
-                        : formatTarotMessage(copy.selectSpread, {
-                            name: reading.name,
-                          })}
-                    </button>
-                  ) : (
-                    <div className="tarot-spread__upgrade">
-                      <span>{requirementLabel(copy, reading.minimumPlan)}</span>
-                      <Link href="/membership">{copy.upgrade}</Link>
+                      ))}
+                      {reading.cardCount > 5 && (
+                        <span aria-hidden="true">+{reading.cardCount - 5}</span>
+                      )}
                     </div>
-                  )}
-                </article>
-              );
-            })}
+                    <div>
+                      <p>{reading.name}</p>
+                      <small>{reading.blurb}</small>
+                      <span className="tarot-spread__meta">
+                        {reading.cardCount === 1
+                          ? copy.oneCard
+                          : formatTarotMessage(copy.cardsCount, {
+                              count: reading.cardCount,
+                            })}
+                        {" · "}
+                        {reading.durationLabel}
+                      </span>
+                    </div>
+                    {unlocked ? (
+                      <button
+                        className="tarot-spread__select"
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          chooseReading(reading.id);
+                        }}
+                      >
+                        {selected
+                          ? copy.selected
+                          : formatTarotMessage(copy.selectSpread, {
+                              name: reading.name,
+                            })}
+                      </button>
+                    ) : (
+                      <div className="tarot-spread__upgrade">
+                        <span>
+                          {requirementLabel(copy, reading.minimumPlan)}
+                        </span>
+                        <Link href="/membership">{copy.upgrade}</Link>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
           </div>
           <div className="tarot-stage__actions">
+            {readings.some(
+              (reading) =>
+                !planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
+            ) && (
+              <button
+                type="button"
+                className="button-quiet"
+                aria-expanded={showLocked}
+                onClick={() => setShowLocked(!showLocked)}
+              >
+                {showLocked ? copy.availableChoices : copy.otherSpreads}
+              </button>
+            )}
             <button className="button-quiet" onClick={() => setStage(1)}>
               {copy.back}
             </button>
@@ -378,7 +449,9 @@ export function TarotReadingExperience({
                 total: 4,
               })}
             </p>
-            <h2 id="tarot-shuffle-heading">{copy.beginShuffle}</h2>
+            <h2 id="tarot-shuffle-heading" tabIndex={-1}>
+              {copy.beginShuffle}
+            </h2>
             <p>{copy.shuffleCopy}</p>
           </header>
           <div
@@ -414,6 +487,20 @@ export function TarotReadingExperience({
           )}
           <div className="tarot-stage__actions">
             <button
+              className="button-primary"
+              type="button"
+              disabled={shuffling || pending}
+              onClick={beginShuffleAndReveal}
+            >
+              {pending
+                ? copy.preparing
+                : shuffling
+                  ? copy.shuffling
+                  : error
+                    ? copy.retry
+                    : copy.shuffleAndReveal}
+            </button>
+            <button
               className="button-quiet"
               type="button"
               disabled={shuffling || pending}
@@ -434,36 +521,66 @@ export function TarotReadingExperience({
             <p className="eyebrow">
               {result.deck.name} · {result.reading.name}
             </p>
-            <h2 id="tarot-reading-heading">{copy.yourReading}</h2>
+            <h2 id="tarot-reading-heading" tabIndex={-1}>
+              {copy.yourReading}
+            </h2>
+            <p role="status">
+              {result.saveStatus === "saved"
+                ? copy.savedNotice
+                : result.saveStatus === "failed"
+                  ? copy.unsavedNotice
+                  : copy.guestNotice}
+            </p>
+            <div className="tarot-result-navigation">
+              <Link href="/account?view=library">{copy.myLibrary}</Link>
+              <button className="button-quiet" type="button" onClick={reset}>
+                {copy.newReading}
+              </button>
+            </div>
           </header>
-          <div className="tarot-results__table">
-            {result.cards.map((item, index) => (
-              <article
-                className="tarot-result-card"
-                key={`${item.id}-${index}`}
+          <nav className="tarot-card-index" aria-label={copy.position}>
+            {result.cards.map((card, index) => (
+              <button
+                key={card.id}
+                type="button"
+                aria-pressed={activeCard === index}
+                onClick={() => setActiveCard(index)}
               >
-                <TarotSymbolicCardFace
-                  arcana={item.arcana}
-                  suit={item.suit}
-                  number={item.number}
-                  name={item.name}
-                  imageUrl={item.faceImageUrl}
-                  orientation={item.orientation}
-                  className="tarot-card-plate"
-                />
-                <div className="tarot-result-card__copy">
-                  <p>{item.position}</p>
-                  <small>
-                    {item.orientation === "upright"
-                      ? result.labels.upright
-                      : result.labels.reversed}
-                  </small>
-                  <p>{item.meaning}</p>
-                </div>
-              </article>
+                {index + 1}. {card.position}
+              </button>
             ))}
+          </nav>
+          <div className="tarot-results__table">
+            {result.cards
+              .slice(activeCard, activeCard + 1)
+              .map((item, index) => (
+                <article
+                  className="tarot-result-card"
+                  key={`${item.id}-${index}`}
+                >
+                  <TarotSymbolicCardFace
+                    arcana={item.arcana}
+                    suit={item.suit}
+                    number={item.number}
+                    name={item.name}
+                    imageUrl={item.faceImageUrl}
+                    orientation={item.orientation}
+                    className="tarot-card-plate"
+                  />
+                  <div className="tarot-result-card__copy">
+                    <p>{item.position}</p>
+                    <small>
+                      {item.orientation === "upright"
+                        ? result.labels.upright
+                        : result.labels.reversed}
+                    </small>
+                    <p>{item.meaning}</p>
+                  </div>
+                </article>
+              ))}
           </div>
-          <aside className="tarot-narrative">
+          <details className="tarot-narrative">
+            <summary>{copy.readingSummary}</summary>
             <p className="eyebrow">{copy.readingSummary}</p>
             <div className="tarot-narrative__sections">
               {result.narrative.split(/\n\s*\n/).map((paragraph, index) => {
@@ -489,7 +606,7 @@ export function TarotReadingExperience({
                 );
               })}
             </div>
-          </aside>
+          </details>
           <p className="tarot-disclaimer">{copy.disclaimer}</p>
           <div className="tarot-stage__actions">
             <button className="button-primary" type="button" onClick={reset}>

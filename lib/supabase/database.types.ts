@@ -14,6 +14,58 @@ export type Database = {
   };
   public: {
     Tables: {
+      capability_usage: {
+        Row: {
+          id: number;
+          user_id: string;
+          capability_key: string;
+          quantity: number;
+          period_start: string;
+          period_end: string;
+          idempotency_key: string;
+          source_reference: string | null;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          capability_key: string;
+          quantity: number;
+          period_start: string;
+          period_end: string;
+          idempotency_key: string;
+          source_reference?: string | null;
+        };
+        Update: { quantity?: number };
+        Relationships: [];
+      };
+      tarot_readings: {
+        Row: {
+          id: string;
+          user_id: string;
+          deck_id: string;
+          reading_id: string;
+          title: string;
+          locale: string;
+          payload: Json;
+          content_version: string;
+          created_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          deck_id: string;
+          reading_id: string;
+          title: string;
+          locale: string;
+          payload: Json;
+          content_version?: string;
+          created_at?: string;
+          expires_at?: string;
+        };
+        Update: { title?: string };
+        Relationships: [];
+      };
       admin_audit_log: {
         Row: {
           id: number;

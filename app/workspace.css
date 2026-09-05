@@ -1,0 +1,247 @@
+/* Shared private workspace: keep the atlas character, make actions easy to find. */
+.tarot-page .tarot-hero {
+  margin-bottom: 1.25rem;
+  text-align: left;
+  justify-items: start;
+  width: 100%;
+}
+.tarot-page .tarot-hero h1 {
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
+  max-width: none;
+  margin: 0.4rem 0;
+}
+.tarot-page .tarot-hero aside {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+}
+.tarot-workspace {
+  min-height: 0;
+}
+.tarot-workspace .tarot-stage {
+  padding: clamp(1rem, 2.5vw, 2rem);
+  gap: 1rem;
+}
+.tarot-stage h2 {
+  scroll-margin-top: 6rem;
+}
+.tarot-stage h2:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 0.3rem;
+}
+.tarot-workspace .tarot-stage__heading h2 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+.tarot-workspace .tarot-shuffle {
+  width: min(10rem, 35vw);
+  margin-block: 0.25rem;
+}
+.tarot-workspace .tarot-stage__actions {
+  width: 100%;
+}
+.tarot-workspace .tarot-spread {
+  padding-block: 0.85rem;
+}
+.tarot-result-navigation,
+.tarot-card-index {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.tarot-card-index button {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ivory);
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.tarot-card-index button[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 15%, var(--panel));
+}
+.tarot-results .tarot-results__table:has(> .tarot-result-card:only-child) {
+  width: 100%;
+}
+.tarot-results .tarot-result-card {
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  grid-template-rows: auto;
+  gap: 1.25rem;
+}
+.tarot-results .tarot-result-card__copy {
+  align-content: start;
+}
+.tarot-narrative summary {
+  cursor: pointer;
+  padding: 0.75rem;
+}
+@media (max-width: 720px) {
+  .tarot-page:has(.tarot-workspace:not([data-stage="1"])) .tarot-hero {
+    display: none;
+  }
+  .tarot-workspace .tarot-stage__actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: var(--panel);
+    padding: 0.75rem 0.25rem max(0.75rem, env(safe-area-inset-bottom));
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+  }
+  .tarot-workspace .tarot-stage__actions button {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+  .tarot-results .tarot-result-card {
+    grid-template-columns: minmax(5rem, 7rem) minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .tarot-workspace .tarot-deck-grid {
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  }
+}
+
+body:has(.account-dashboard) .account-dashboard {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+body:has(.account-dashboard) .account-jump-links {
+  grid-column: 1;
+  position: sticky;
+  top: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  overflow: visible;
+}
+body:has(.account-dashboard) .account-jump-links a {
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  white-space: normal;
+  border-radius: 0.5rem;
+}
+body:has(.account-dashboard) .account-jump-links a[aria-current="page"] {
+  background: var(--panel);
+  color: var(--ivory);
+  box-shadow: inset 3px 0 var(--gold);
+}
+body:has(.account-dashboard) .account-workspace {
+  grid-column: 2;
+  min-width: 0;
+}
+body:has(.account-dashboard) .dashboard-panel {
+  padding: clamp(1rem, 2vw, 1.6rem);
+}
+body:has(.account-dashboard) .account-command-bar__membership small {
+  font-size: 0.8rem;
+}
+body:has(.account-dashboard) .account-stats {
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+.access-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.access-list > div {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.8rem;
+}
+.access-list dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.access-list dd {
+  margin: 0.4rem 0 0;
+  color: var(--ivory);
+  font-size: 1rem;
+}
+.account-access > a {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.saved-reading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 0;
+}
+.saved-reading-row h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+.saved-reading-row p,
+.saved-reading-row small {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+.library-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.library-filters button {
+  min-height: 44px;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  color: var(--ivory);
+  background: var(--panel);
+  cursor: pointer;
+}
+.library-filters button[aria-pressed="true"] {
+  border-color: var(--gold);
+}
+.workspace-guide {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+.workspace-guide summary {
+  cursor: pointer;
+}
+@media (max-width: 850px) {
+  body:has(.account-dashboard) .account-dashboard {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  body:has(.account-dashboard) .account-jump-links {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  body:has(.account-dashboard) .account-workspace {
+    grid-column: 1;
+  }
+  body:has(.account-dashboard) .account-jump-links a {
+    font-size: 0.85rem;
+    padding: 0.65rem;
+  }
+}
+@media (min-width: 641px) and (max-width: 1100px) {
+  body:has(.account-dashboard) .account-command-bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}
+@media (max-width: 480px) {
+  .access-list {
+    grid-template-columns: 1fr;
+  }
+  .saved-reading-row {
+    align-items: start;
+  }
+}

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { workspaceCopy } from "@/lib/account/workspace-copy";
 import { useRef } from "react";
 import { SitePreferences } from "@/components/SitePreferences";
 import { useLocale } from "@/components/LocaleProvider";
@@ -15,7 +16,8 @@ export function SiteHeader({
   identity: HeaderIdentity | null;
   tarotEnabled: boolean;
 }) {
-  const { pack } = useLocale();
+  const { pack, locale } = useLocale();
+  const workspace = workspaceCopy[locale];
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   const membershipMenu = useRef<HTMLDetailsElement>(null);
   const identityMenu = useRef<HTMLDetailsElement>(null);
@@ -64,7 +66,7 @@ export function SiteHeader({
             {tarotEnabled && (
               <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
             )}
-            <Link href="/reports">{pack.messages.navigation.reports}</Link>
+            <Link href="/reports">{workspace.explore}</Link>
             <details
               className="site-nav-group"
               ref={membershipMenu}
@@ -140,10 +142,13 @@ export function SiteHeader({
                   <Link href="/account">
                     {pack.messages.navigation.dashboard}
                   </Link>
-                  <Link href="/account#account-settings">
+                  <Link href="/account?view=library">
+                    <strong>{workspace.library}</strong>
+                  </Link>
+                  <Link href="/account?view=settings">
                     {pack.messages.navigation.accountSettings}
                   </Link>
-                  <Link href="/account#billing">
+                  <Link href="/account?view=membership">
                     {pack.messages.navigation.billing}
                   </Link>
                   <form action={signOut}>
@@ -186,11 +191,14 @@ export function SiteHeader({
                   <strong>{pack.messages.navigation.dashboard}</strong>
                   <small>{pack.messages.navigation.library}</small>
                 </Link>
-                <Link href="/account#account-settings">
+                <Link href="/account?view=library">
+                  <strong>{workspace.library}</strong>
+                </Link>
+                <Link href="/account?view=settings">
                   <strong>{pack.messages.navigation.accountSettings}</strong>
                   <small>{identity.email}</small>
                 </Link>
-                <Link href="/account#billing">
+                <Link href="/account?view=membership">
                   <strong>{pack.messages.navigation.billing}</strong>
                   <small>{pack.messages.navigation.membership}</small>
                 </Link>
@@ -264,7 +272,7 @@ export function SiteFooter() {
           </nav>
           <nav aria-labelledby="footer-atlas">
             <h3 id="footer-atlas">{copy.yourAtlas}</h3>
-            <Link href="/account">{navigation.library}</Link>
+            <Link href="/account?view=library">{navigation.library}</Link>
             <Link href="/#chart">{navigation.birthChart}</Link>
             <Link href="/reports">{copy.collection}</Link>
             <Link href="/membership">{navigation.membershipPlans}</Link>

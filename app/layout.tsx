@@ -3,6 +3,7 @@ import Script from "next/script";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import "./globals.css";
+import "./workspace.css";
 import { getAdminSettings } from "@/lib/admin/settings";
 import { GoogleIntegrations } from "@/components/GoogleIntegrations";
 import { getServerTranslationPack } from "@/lib/i18n/server";

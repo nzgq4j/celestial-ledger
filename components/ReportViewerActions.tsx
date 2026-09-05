@@ -17,7 +17,7 @@ export function ReportViewerActions({ reportId }: { reportId: string }) {
     const response = await fetch(`/api/reports/${reportId}`, {
       method: "DELETE",
     });
-    if (response.ok) router.push("/account#reports");
+    if (response.ok) router.push("/account?view=library");
     else setDeleting(false);
   }
 
