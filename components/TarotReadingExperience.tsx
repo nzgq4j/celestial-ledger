@@ -454,29 +454,6 @@ export function TarotReadingExperience({
             </h2>
             <p>{copy.shuffleCopy}</p>
           </header>
-          <div
-            className={`tarot-shuffle ${shuffling ? "is-shuffling" : ""}`}
-            role="button"
-            tabIndex={0}
-            aria-label={copy.beginShuffle}
-            aria-disabled={shuffling || pending}
-            onClick={beginShuffleAndReveal}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                beginShuffleAndReveal();
-              }
-            }}
-          >
-            {["a", "b", "c"].map((layer) => (
-              <TarotSymbolicCardBack
-                key={layer}
-                imageUrl={selectedDeck.cardBackImageUrl}
-                className={`tarot-shuffle__card tarot-shuffle__card--${layer}`}
-              />
-            ))}
-            <span className="tarot-shuffle__axis" />
-          </div>
           <p className="tarot-shuffle__selection">
             {selectedDeck.name} · {selectedReading.name}
           </p>
@@ -508,6 +485,29 @@ export function TarotReadingExperience({
             >
               {copy.back}
             </button>
+          </div>
+          <div
+            className={`tarot-shuffle ${shuffling ? "is-shuffling" : ""}`}
+            role="button"
+            tabIndex={0}
+            aria-label={copy.beginShuffle}
+            aria-disabled={shuffling || pending}
+            onClick={beginShuffleAndReveal}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                beginShuffleAndReveal();
+              }
+            }}
+          >
+            {["a", "b", "c"].map((layer) => (
+              <TarotSymbolicCardBack
+                key={layer}
+                imageUrl={selectedDeck.cardBackImageUrl}
+                className={`tarot-shuffle__card tarot-shuffle__card--${layer}`}
+              />
+            ))}
+            <span className="tarot-shuffle__axis" />
           </div>
         </div>
       )}

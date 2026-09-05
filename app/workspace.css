@@ -1,3 +1,10 @@
+.page-shell.tarot-page {
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+.tarot-page:has(.tarot-workspace:not([data-stage="1"])) .tarot-hero {
+  display: none;
+}
 /* Shared private workspace: keep the atlas character, make actions easy to find. */
 .tarot-page .tarot-hero {
   margin-bottom: 1.25rem;
@@ -77,9 +84,6 @@
   padding: 0.75rem;
 }
 @media (max-width: 720px) {
-  .tarot-page:has(.tarot-workspace:not([data-stage="1"])) .tarot-hero {
-    display: none;
-  }
   .tarot-workspace .tarot-stage__actions {
     position: sticky;
     bottom: 0;
