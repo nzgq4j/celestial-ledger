@@ -4,6 +4,7 @@ type TarotUiMessages = Record<string, string>;
 
 export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
   "en-GB": {
+    revealHint: "Choose a card to reveal it and read its reflection.",
     savedNotice: "Saved privately in My library. Available for one year.",
     unsavedNotice:
       "This reading could not be saved. Keep this page open to read it.",
@@ -165,6 +166,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Upload both a cover and card back before activating a deck.",
   },
   "es-ES": {
+    revealHint: "Elige una carta para revelarla y leer su reflexión.",
     savedNotice: "Guardado en Mi biblioteca durante un año.",
     unsavedNotice: "No se pudo guardar. Mantén esta página abierta.",
     guestNotice:
@@ -326,6 +328,7 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Carga una portada y un reverso antes de activar una baraja.",
   },
   "fr-FR": {
+    revealHint: "Choisissez une carte pour la révéler et lire sa réflexion.",
     savedNotice: "Enregistré dans Ma bibliothèque pendant un an.",
     unsavedNotice: "Impossible d’enregistrer. Gardez cette page ouverte.",
     guestNotice:
@@ -489,6 +492,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Envoyez une couverture et un dos de carte avant d’activer un jeu.",
   },
   "de-DE": {
+    revealHint:
+      "Wähle eine Karte, um sie aufzudecken und ihre Reflexion zu lesen.",
     savedNotice: "Ein Jahr lang privat in Meine Bibliothek gespeichert.",
     unsavedNotice: "Speichern fehlgeschlagen. Lass diese Seite geöffnet.",
     guestNotice:

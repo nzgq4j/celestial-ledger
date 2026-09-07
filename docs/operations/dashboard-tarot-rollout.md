@@ -27,3 +27,7 @@ Release f86d274 deployed successfully through the existing GitHub-main integrati
 Format, typecheck, lint, build, all 292 unit/integration tests (including safety and workflow focus checks), production dependency audit (zero vulnerabilities), license review, and ephemeris gate passed. Supabase verified RLS enabled, no anonymous read, and no authenticated insert/update on the new table. Security advisors reported no new tarot-table finding; the existing project warning for disabled leaked-password protection remains outside this change.
 
 The daily generator currently grants access by authenticated account; it does not consume the marketing catalogue's daily quota. The dashboard therefore says account-included instead of presenting a misleading remaining count. Weekly remaining allowance comes from the same capability and primary-chart week boundary used by generation. No calculation or commerce flags were changed.
+
+## Face-down spread follow-up (2026-09-07)
+
+All drawn positions now appear together as card backs. Selecting a card reveals its face and reflection; revealed faces remain visible when selecting another card. The draw and saved payload are unchanged. A ten-card interaction test verifies initial concealment, persistent reveals, reflection switching, and a single draw request. Desktop uses a side panel; mobile wraps the cards above the reflection.

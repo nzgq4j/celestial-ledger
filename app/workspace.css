@@ -1,3 +1,60 @@
+.tarot-draw-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.tarot-draw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: 0.75rem;
+}
+.tarot-draw-card {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+  background: var(--panel);
+  color: var(--ivory);
+  cursor: pointer;
+  min-width: 0;
+}
+.tarot-draw-card[aria-pressed="true"],
+.tarot-draw-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.tarot-draw-card__position {
+  font-size: 0.85rem;
+  min-height: 3.5em;
+}
+.tarot-draw-card .tarot-card-back,
+.tarot-draw-card .tarot-card-plate {
+  width: 100%;
+  max-width: 10rem;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  justify-self: center;
+}
+.tarot-card-reflection {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  scroll-margin-top: 6rem;
+}
+.tarot-card-reflection h3 {
+  margin-top: 0;
+  color: var(--gold);
+}
+@media (max-width: 720px) {
+  .tarot-draw-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tarot-draw-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 .page-shell.tarot-page {
   padding-top: 1rem;
   padding-bottom: 2rem;

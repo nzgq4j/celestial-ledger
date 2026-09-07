@@ -73,7 +73,8 @@ export function TarotReadingExperience({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<DrawResponse | null>(initialResult);
-  const [activeCard, setActiveCard] = useState(0);
+  const [activeCard, setActiveCard] = useState<number | null>(null);
+  const [revealedCards, setRevealedCards] = useState<number[]>([]);
   const [showLocked, setShowLocked] = useState(false);
   const workspace = useRef<HTMLElement>(null);
   const previousStage = useRef(stage);
@@ -168,7 +169,8 @@ export function TarotReadingExperience({
       const body = (await response.json()) as DrawResponse & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "DRAW_FAILED");
       setResult(body);
-      setActiveCard(0);
+      setActiveCard(null);
+      setRevealedCards([]);
       setStage(4);
     } catch {
       setError(copy.error);
@@ -538,46 +540,79 @@ export function TarotReadingExperience({
               </button>
             </div>
           </header>
-          <nav className="tarot-card-index" aria-label={copy.position}>
-            {result.cards.map((card, index) => (
-              <button
-                key={card.id}
-                type="button"
-                aria-pressed={activeCard === index}
-                onClick={() => setActiveCard(index)}
-              >
-                {index + 1}. {card.position}
-              </button>
-            ))}
-          </nav>
-          <div className="tarot-results__table">
-            {result.cards
-              .slice(activeCard, activeCard + 1)
-              .map((item, index) => (
-                <article
-                  className="tarot-result-card"
-                  key={`${item.id}-${index}`}
+
+          <p>{copy.revealHint}</p>
+          <div className="tarot-draw-layout">
+            <div
+              className="tarot-draw-grid"
+              role="group"
+              aria-label={copy.position}
+            >
+              {result.cards.map((card, index) => (
+                <button
+                  className="tarot-draw-card"
+                  key={index}
+                  type="button"
+                  aria-pressed={activeCard === index}
+                  aria-controls="tarot-card-reflection"
+                  aria-label={
+                    index +
+                    1 +
+                    ". " +
+                    card.position +
+                    (revealedCards.includes(index) ? ": " + card.name : "")
+                  }
+                  onClick={() => {
+                    setActiveCard(index);
+                    setRevealedCards((previous) =>
+                      previous.includes(index)
+                        ? previous
+                        : [...previous, index],
+                    );
+                  }}
                 >
-                  <TarotSymbolicCardFace
-                    arcana={item.arcana}
-                    suit={item.suit}
-                    number={item.number}
-                    name={item.name}
-                    imageUrl={item.faceImageUrl}
-                    orientation={item.orientation}
-                    className="tarot-card-plate"
-                  />
-                  <div className="tarot-result-card__copy">
-                    <p>{item.position}</p>
-                    <small>
-                      {item.orientation === "upright"
-                        ? result.labels.upright
-                        : result.labels.reversed}
-                    </small>
-                    <p>{item.meaning}</p>
-                  </div>
-                </article>
+                  <span className="tarot-draw-card__position">
+                    {index + 1}. {card.position}
+                  </span>
+                  {revealedCards.includes(index) ? (
+                    <TarotSymbolicCardFace
+                      arcana={card.arcana}
+                      suit={card.suit}
+                      number={card.number}
+                      name={card.name}
+                      imageUrl={card.faceImageUrl}
+                      orientation={card.orientation}
+                      className="tarot-card-plate"
+                    />
+                  ) : (
+                    <TarotSymbolicCardBack
+                      imageUrl={result.deck.cardBackImageUrl}
+                    />
+                  )}
+                </button>
               ))}
+            </div>
+            <section
+              id="tarot-card-reflection"
+              className="tarot-card-reflection"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {activeCard === null ? (
+                <p>{copy.revealHint}</p>
+              ) : (
+                <>
+                  <h3>{result.cards[activeCard].position}</h3>
+                  <p>
+                    {result.cards[activeCard].name} ·{" "}
+                    {result.cards[activeCard].orientation === "upright"
+                      ? result.labels.upright
+                      : result.labels.reversed}
+                  </p>
+                  <p>{result.cards[activeCard].meaning}</p>
+                </>
+              )}
+            </section>
           </div>
           <details className="tarot-narrative">
             <summary>{copy.readingSummary}</summary>

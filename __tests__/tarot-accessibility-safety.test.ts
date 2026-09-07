@@ -68,7 +68,7 @@ describe("tarot accessibility and content safety", () => {
   it("keeps the tarot draw flow direct and card-shaped", () => {
     expect(experience).not.toContain("shuffleComplete");
     expect(experience).not.toContain("copy.selectDeck");
-    expect(experience).not.toContain("copy.reveal");
+    expect(experience).not.toContain("{copy.reveal}");
     expect(experience).toContain("function stepHref");
     expect(experience).toContain("href={stepHref(step)}");
     expect(experience).toContain("goToStep(step)");
@@ -97,7 +97,7 @@ describe("tarot accessibility and content safety", () => {
     expect(symbolicFace).toContain('aria-hidden="true"');
     expect(symbolicFace).toContain("orientation?: TarotOrientation");
     expect(symbolicFace).toContain("tarot-symbolic-face--reversed");
-    expect(experience).toContain("orientation={item.orientation}");
+    expect(experience).toContain("orientation={card.orientation}");
     expect(accountDraw).toContain("orientation={card.orientation}");
     expect(styles).toContain(".tarot-symbolic-face--reversed");
     expect(styles).toContain("transform: rotate(180deg)");

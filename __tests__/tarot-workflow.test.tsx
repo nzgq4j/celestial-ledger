@@ -75,6 +75,48 @@ function mount(initialDeckId?: string) {
   );
 }
 describe("tarot progression", () => {
+  it("shows the whole draw face down and keeps revealed cards when switching reflections", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        ...payload,
+        cards: Array.from({ length: 10 }, (_, index) => ({
+          ...payload.cards[0],
+          id: `major-${index}`,
+          number: index,
+          position: `Position ${index + 1}`,
+          meaning: `Reflection ${index + 1}`,
+        })),
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const { container } = mount("traditional");
+    fireEvent.click(screen.getByRole("button", { name: "Select Daily Draw" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: copy.shuffleAndReveal }),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("group", { name: copy.position })).toBeTruthy(),
+    );
+    expect(
+      container.querySelectorAll(".tarot-draw-card .tarot-card-back"),
+    ).toHaveLength(10);
+    expect(screen.queryByText("Reflection 1")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "1. Position 1" }));
+    expect(screen.getByText("Reflection 1")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "10. Position 10" }));
+    expect(screen.getByText("Reflection 10")).toBeTruthy();
+    expect(
+      container.querySelectorAll(".tarot-draw-card .tarot-card-back"),
+    ).toHaveLength(8);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "1. Position 1: The Fool",
+      }),
+    );
+    expect(screen.getByText("Reflection 1")).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
   it("moves focus to each next heading and reveals exactly one draw", async () => {
     const fetchMock = vi
       .fn()
