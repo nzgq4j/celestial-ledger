@@ -80,6 +80,7 @@ describe("tarot progression", () => {
       ok: true,
       json: async () => ({
         ...payload,
+        reading: { id: "celtic", name: "Celtic Cross" },
         cards: Array.from({ length: 10 }, (_, index) => ({
           ...payload.cards[0],
           id: `major-${index}`,
@@ -101,6 +102,14 @@ describe("tarot progression", () => {
     expect(
       container.querySelectorAll(".tarot-draw-card .tarot-card-back"),
     ).toHaveLength(10);
+    expect(
+      container
+        .querySelector(".tarot-draw-layout")
+        ?.getAttribute("data-spread"),
+    ).toBe("celtic");
+    expect(
+      container.querySelector("details.tarot-narrative")?.hasAttribute("open"),
+    ).toBe(true);
     expect(screen.queryByText("Reflection 1")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "1. Position 1" }));
     expect(screen.getByText("Reflection 1")).toBeTruthy();

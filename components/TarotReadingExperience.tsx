@@ -542,55 +542,62 @@ export function TarotReadingExperience({
           </header>
 
           <p>{copy.revealHint}</p>
-          <div className="tarot-draw-layout">
+          <div className="tarot-draw-layout" data-spread={result.reading.id}>
             <div
-              className="tarot-draw-grid"
-              role="group"
-              aria-label={copy.position}
+              className="tarot-spread-scroll"
+              tabIndex={0}
+              role="region"
+              aria-label={result.reading.name}
             >
-              {result.cards.map((card, index) => (
-                <button
-                  className="tarot-draw-card"
-                  key={index}
-                  type="button"
-                  aria-pressed={activeCard === index}
-                  aria-controls="tarot-card-reflection"
-                  aria-label={
-                    index +
-                    1 +
-                    ". " +
-                    card.position +
-                    (revealedCards.includes(index) ? ": " + card.name : "")
-                  }
-                  onClick={() => {
-                    setActiveCard(index);
-                    setRevealedCards((previous) =>
-                      previous.includes(index)
-                        ? previous
-                        : [...previous, index],
-                    );
-                  }}
-                >
-                  <span className="tarot-draw-card__position">
-                    {index + 1}. {card.position}
-                  </span>
-                  {revealedCards.includes(index) ? (
-                    <TarotSymbolicCardFace
-                      arcana={card.arcana}
-                      suit={card.suit}
-                      number={card.number}
-                      name={card.name}
-                      imageUrl={card.faceImageUrl}
-                      orientation={card.orientation}
-                      className="tarot-card-plate"
-                    />
-                  ) : (
-                    <TarotSymbolicCardBack
-                      imageUrl={result.deck.cardBackImageUrl}
-                    />
-                  )}
-                </button>
-              ))}
+              <div
+                className="tarot-draw-grid"
+                role="group"
+                aria-label={copy.position}
+              >
+                {result.cards.map((card, index) => (
+                  <button
+                    className="tarot-draw-card"
+                    key={index}
+                    type="button"
+                    aria-pressed={activeCard === index}
+                    aria-controls="tarot-card-reflection"
+                    aria-label={
+                      index +
+                      1 +
+                      ". " +
+                      card.position +
+                      (revealedCards.includes(index) ? ": " + card.name : "")
+                    }
+                    onClick={() => {
+                      setActiveCard(index);
+                      setRevealedCards((previous) =>
+                        previous.includes(index)
+                          ? previous
+                          : [...previous, index],
+                      );
+                    }}
+                  >
+                    <span className="tarot-draw-card__position">
+                      {index + 1}. {card.position}
+                    </span>
+                    {revealedCards.includes(index) ? (
+                      <TarotSymbolicCardFace
+                        arcana={card.arcana}
+                        suit={card.suit}
+                        number={card.number}
+                        name={card.name}
+                        imageUrl={card.faceImageUrl}
+                        orientation={card.orientation}
+                        className="tarot-card-plate"
+                      />
+                    ) : (
+                      <TarotSymbolicCardBack
+                        imageUrl={result.deck.cardBackImageUrl}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
             <section
               id="tarot-card-reflection"
@@ -623,7 +630,7 @@ export function TarotReadingExperience({
               )}
             </section>
           </div>
-          <details className="tarot-narrative">
+          <details className="tarot-narrative" open>
             <summary>{copy.readingSummary}</summary>
             <p className="eyebrow">{copy.readingSummary}</p>
             <div className="tarot-narrative__sections">

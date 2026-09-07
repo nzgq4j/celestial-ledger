@@ -328,3 +328,113 @@ body:has(.account-dashboard) .account-stats {
     align-items: start;
   }
 }
+/* Preserve spread geometry instead of reflowing meaningful positions. */
+.tarot-spread-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  padding: 0.4rem;
+}
+.tarot-spread-scroll:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.tarot-draw-layout[data-spread="daily"] .tarot-draw-grid {
+  grid-template-columns: minmax(12rem, 18rem);
+  justify-content: center;
+}
+.tarot-draw-layout[data-spread="ppf"] .tarot-draw-grid {
+  grid-template-columns: repeat(3, minmax(12rem, 1fr));
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-grid {
+  grid-template-columns: repeat(3, 12rem) 14rem;
+  grid-template-rows: repeat(4, auto);
+  gap: 2rem 3rem;
+  width: max-content;
+  padding: 1rem;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card {
+  align-self: start;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(1) {
+  grid-area: 2 / 2;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(2) {
+  grid-area: 2 / 2;
+  z-index: 2;
+  width: 80%;
+  align-self: center;
+  justify-self: center;
+  transform: rotate(90deg);
+}
+.tarot-draw-layout[data-spread="celtic"]
+  .tarot-draw-card:nth-child(2)
+  .tarot-draw-card__position {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(2)::after {
+  content: "2";
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--navy);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  transform: rotate(-90deg);
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(3) {
+  grid-area: 3 / 2;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(4) {
+  grid-area: 2 / 1;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(5) {
+  grid-area: 1 / 2;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(6) {
+  grid-area: 2 / 3;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(7) {
+  grid-area: 4 / 4;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(8) {
+  grid-area: 3 / 4;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(9) {
+  grid-area: 2 / 4;
+}
+.tarot-draw-layout[data-spread="celtic"] .tarot-draw-card:nth-child(10) {
+  grid-area: 1 / 4;
+}
+/* The custom relationship spread centres the connection between both views. */
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-grid {
+  grid-template-columns: repeat(3, minmax(12rem, 1fr));
+}
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-card:nth-child(1) {
+  grid-area: 2 / 1;
+}
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-card:nth-child(2) {
+  grid-area: 2 / 3;
+}
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-card:nth-child(3) {
+  grid-area: 2 / 2;
+}
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-card:nth-child(4) {
+  grid-area: 3 / 2;
+}
+.tarot-draw-layout[data-spread="love5"] .tarot-draw-card:nth-child(5) {
+  grid-area: 1 / 2;
+}
+/* Grand spread: context, love, practical life, then guidance and direction. */
+.tarot-draw-layout[data-spread="grand"] .tarot-draw-grid {
+  grid-template-columns: repeat(4, minmax(12rem, 1fr));
+}
+.tarot-draw-layout[data-spread="grand"] .tarot-draw-card:nth-child(4),
+.tarot-draw-layout[data-spread="grand"] .tarot-draw-card:nth-child(7),
+.tarot-draw-layout[data-spread="grand"] .tarot-draw-card:nth-child(11) {
+  grid-column: 1;
+}
