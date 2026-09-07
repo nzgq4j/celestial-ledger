@@ -610,6 +610,15 @@ export function TarotReadingExperience({
                       : result.labels.reversed}
                   </p>
                   <p>{result.cards[activeCard].meaning}</p>
+                  <TarotSymbolicCardFace
+                    arcana={result.cards[activeCard].arcana}
+                    suit={result.cards[activeCard].suit}
+                    number={result.cards[activeCard].number}
+                    name={result.cards[activeCard].name}
+                    imageUrl={result.cards[activeCard].faceImageUrl}
+                    orientation={result.cards[activeCard].orientation}
+                    className="tarot-card-plate tarot-card-detail"
+                  />
                 </>
               )}
             </section>

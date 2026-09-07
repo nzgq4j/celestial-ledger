@@ -31,3 +31,5 @@ The daily generator currently grants access by authenticated account; it does no
 ## Face-down spread follow-up (2026-09-07)
 
 All drawn positions now appear together as card backs. Selecting a card reveals its face and reflection; revealed faces remain visible when selecting another card. The draw and saved payload are unchanged. A ten-card interaction test verifies initial concealment, persistent reveals, reflection switching, and a single draw request. Desktop uses a side panel; mobile wraps the cards above the reflection.
+
+Card readability follow-up: spread columns now target at least 12rem instead of 6rem; artwork can grow to 18rem with its original 5:8 proportions. Phones use two columns. The selected reflection includes a larger card face, and the desktop panel remains available while scrolling the spread.
