@@ -74,8 +74,14 @@ export function TarotReadingExperience({
   const [error, setError] = useState("");
   const [result, setResult] = useState<DrawResponse | null>(initialResult);
   const [activeCard, setActiveCard] = useState<number | null>(null);
+  const [traditionalView, setTraditionalView] = useState(false);
   const [revealedCards, setRevealedCards] = useState<number[]>([]);
   const [showLocked, setShowLocked] = useState(false);
+  const cardDialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = cardDialog.current;
+    if (activeCard !== null && dialog && !dialog.open) dialog.showModal();
+  }, [activeCard]);
   const workspace = useRef<HTMLElement>(null);
   const previousStage = useRef(stage);
   const shuffleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -542,7 +548,24 @@ export function TarotReadingExperience({
           </header>
 
           <p>{copy.revealHint}</p>
-          <div className="tarot-draw-layout" data-spread={result.reading.id}>
+          {result.cards.length > 1 && (
+            <div className="tarot-view-controls">
+              <button
+                type="button"
+                className="button-quiet"
+                aria-pressed={traditionalView}
+                aria-describedby="tarot-traditional-note"
+                onClick={() => setTraditionalView((value) => !value)}
+              >
+                {traditionalView ? copy.gridView : copy.traditionalView}
+              </button>
+              <p id="tarot-traditional-note">{copy.traditionalNote}</p>
+            </div>
+          )}
+          <div
+            className="tarot-draw-layout"
+            data-spread={traditionalView ? result.reading.id : "grid"}
+          >
             <div
               className="tarot-spread-scroll"
               tabIndex={0}
@@ -599,17 +622,27 @@ export function TarotReadingExperience({
                 ))}
               </div>
             </div>
-            <section
+            <dialog
+              ref={cardDialog}
+              onClose={() => setActiveCard(null)}
+              aria-labelledby="tarot-card-dialog-title"
               id="tarot-card-reflection"
-              className="tarot-card-reflection"
-              aria-live="polite"
-              aria-atomic="true"
+              className="tarot-card-dialog"
             >
               {activeCard === null ? (
                 <p>{copy.revealHint}</p>
               ) : (
                 <>
-                  <h3>{result.cards[activeCard].position}</h3>
+                  <button
+                    type="button"
+                    className="button-quiet tarot-card-dialog__close"
+                    onClick={() => cardDialog.current?.close()}
+                  >
+                    {copy.closeCard}
+                  </button>
+                  <h3 id="tarot-card-dialog-title">
+                    {result.cards[activeCard].position}
+                  </h3>
                   <p>
                     {result.cards[activeCard].name} ·{" "}
                     {result.cards[activeCard].orientation === "upright"
@@ -628,7 +661,7 @@ export function TarotReadingExperience({
                   />
                 </>
               )}
-            </section>
+            </dialog>
           </div>
           <details className="tarot-narrative" open>
             <summary>{copy.readingSummary}</summary>

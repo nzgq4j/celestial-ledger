@@ -53,6 +53,13 @@ const payload = {
 };
 beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn();
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+    this.dispatchEvent(new Event("close"));
+  };
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
     value: vi.fn(() => ({ matches: true })),
@@ -106,15 +113,25 @@ describe("tarot progression", () => {
       container
         .querySelector(".tarot-draw-layout")
         ?.getAttribute("data-spread"),
+    ).toBe("grid");
+    fireEvent.click(screen.getByRole("button", { name: copy.traditionalView }));
+    expect(
+      container
+        .querySelector(".tarot-draw-layout")
+        ?.getAttribute("data-spread"),
     ).toBe("celtic");
+    expect(screen.getByText(copy.traditionalNote)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: copy.gridView }));
     expect(
       container.querySelector("details.tarot-narrative")?.hasAttribute("open"),
     ).toBe(true);
     expect(screen.queryByText("Reflection 1")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "1. Position 1" }));
     expect(screen.getByText("Reflection 1")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: copy.closeCard }));
     fireEvent.click(screen.getByRole("button", { name: "10. Position 10" }));
     expect(screen.getByText("Reflection 10")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: copy.closeCard }));
     expect(
       container.querySelectorAll(".tarot-draw-card .tarot-card-back"),
     ).toHaveLength(8);

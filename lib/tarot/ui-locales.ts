@@ -4,6 +4,11 @@ type TarotUiMessages = Record<string, string>;
 
 export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
   "en-GB": {
+    traditionalView: "Traditional view",
+    gridView: "Rows and columns",
+    traditionalNote:
+      "In traditional view, you may need to scroll to see all the cards.",
+    closeCard: "Return to spread",
     revealHint: "Choose a card to reveal it and read its reflection.",
     savedNotice: "Saved privately in My library. Available for one year.",
     unsavedNotice:
@@ -166,6 +171,11 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Upload both a cover and card back before activating a deck.",
   },
   "es-ES": {
+    traditionalView: "Vista tradicional",
+    gridView: "Filas y columnas",
+    traditionalNote:
+      "En la vista tradicional, puede que tengas que desplazarte para ver todas las cartas.",
+    closeCard: "Volver a la tirada",
     revealHint: "Elige una carta para revelarla y leer su reflexión.",
     savedNotice: "Guardado en Mi biblioteca durante un año.",
     unsavedNotice: "No se pudo guardar. Mantén esta página abierta.",
@@ -328,6 +338,11 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Carga una portada y un reverso antes de activar una baraja.",
   },
   "fr-FR": {
+    traditionalView: "Vue traditionnelle",
+    gridView: "Lignes et colonnes",
+    traditionalNote:
+      "Dans la vue traditionnelle, vous devrez peut-être faire défiler la page pour voir toutes les cartes.",
+    closeCard: "Revenir au tirage",
     revealHint: "Choisissez une carte pour la révéler et lire sa réflexion.",
     savedNotice: "Enregistré dans Ma bibliothèque pendant un an.",
     unsavedNotice: "Impossible d’enregistrer. Gardez cette page ouverte.",
@@ -492,6 +507,11 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
       "Envoyez une couverture et un dos de carte avant d’activer un jeu.",
   },
   "de-DE": {
+    traditionalView: "Traditionelle Ansicht",
+    gridView: "Zeilen und Spalten",
+    traditionalNote:
+      "In der traditionellen Ansicht musst du möglicherweise scrollen, um alle Karten zu sehen.",
+    closeCard: "Zurück zur Legung",
     revealHint:
       "Wähle eine Karte, um sie aufzudecken und ihre Reflexion zu lesen.",
     savedNotice: "Ein Jahr lang privat in Meine Bibliothek gespeichert.",
