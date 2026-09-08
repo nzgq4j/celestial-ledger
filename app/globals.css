@@ -9209,7 +9209,8 @@ body:has(.account-dashboard) .account-workspace {
   max-width: var(--layout-wide);
   min-height: 70vh;
   margin-inline: auto;
-  padding: var(--space-page-block) var(--layout-gutter);
+  padding: clamp(1rem, 2vw, 1.75rem) var(--layout-gutter)
+    var(--space-page-block);
 }
 
 :is(
@@ -9243,10 +9244,10 @@ body:has(.account-dashboard) .account-workspace {
 ) {
   width: 100%;
   max-width: none;
-  min-height: clamp(17rem, 34vw, 27rem);
+  min-height: 0;
   margin: 0;
-  padding: clamp(1.5rem, 4vw, 3rem);
-  align-items: end;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  align-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(
