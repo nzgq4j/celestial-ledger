@@ -7197,6 +7197,20 @@ th {
   overflow-x: auto;
   border: 1px solid var(--line);
 }
+
+.membership-usage {
+  margin-top: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+.membership-usage summary {
+  cursor: pointer;
+}
+.membership-usage p {
+  max-width: 80ch;
+  margin-top: 0.75rem;
+  line-height: 1.65;
+}
 .membership-comparison table {
   width: 100%;
   min-width: 48rem;

@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
+import {
+  dailyAllowanceLabel,
+  type DailyAllowance,
+} from "@/lib/daily-readings/allowance";
 
 type BirthProfileOption = { id: string; label: string };
 
@@ -16,25 +20,38 @@ function localDateValue() {
 export function DailyReadingGenerator({
   profiles,
   existingReadings,
+  allowances = {},
+  primaryProfileId,
 }: {
   profiles: BirthProfileOption[];
+  allowances?: Record<string, DailyAllowance | undefined>;
+  primaryProfileId?: string;
   existingReadings: Array<{
     id: string;
     reading_date: string;
     locale: string;
     generated_at: string;
+    birth_profile_id: string;
   }>;
 }) {
   const { locale, pack } = useLocale();
   const copy = pack.messages.account;
   const router = useRouter();
-  const [profileId, setProfileId] = useState(profiles[0]?.id ?? "");
+  const [profileId, setProfileId] = useState(
+    primaryProfileId ?? profiles[0]?.id ?? "",
+  );
   const [readingDate, setReadingDate] = useState(localDateValue);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const existingForDate = useMemo(
-    () => existingReadings.find((item) => item.reading_date === readingDate),
-    [existingReadings, readingDate],
+    () =>
+      existingReadings.find(
+        (item) =>
+          item.reading_date === readingDate &&
+          item.birth_profile_id === profileId &&
+          item.locale === locale,
+      ),
+    [existingReadings, readingDate, profileId, locale],
   );
 
   async function generate() {
@@ -79,6 +96,7 @@ export function DailyReadingGenerator({
 
   return (
     <div className="daily-reading-generator">
+      <p role="status">{dailyAllowanceLabel(allowances[profileId], locale)}</p>
       <div className="daily-reading-generator__controls">
         <label>
           <span>{copy.useProfile}</span>
@@ -106,7 +124,12 @@ export function DailyReadingGenerator({
           className="button-secondary"
           type="button"
           onClick={() => void generate()}
-          disabled={busy || !readingDate || !profileId}
+          disabled={
+            busy ||
+            !readingDate ||
+            !profileId ||
+            (allowances[profileId]?.remaining === 0 && !existingForDate)
+          }
         >
           {busy ? copy.dailyReadingCalculating : copy.generateDailyReading}
         </button>

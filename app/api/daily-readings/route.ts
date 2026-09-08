@@ -62,6 +62,7 @@ export async function POST(request: Request) {
   if (typeof userId !== "string")
     return json({ error: "Sign in to generate your daily reading." }, 401);
 
+  let reservationId: string | undefined;
   try {
     const input = generateDailyReadingRequestSchema.parse(
       await readLimitedJson(request, 1_024),
@@ -126,6 +127,59 @@ export async function POST(request: Request) {
         200,
       );
 
+    const readingId = randomUUID();
+    const { data: reservation, error: reservationError } = await admin.rpc(
+      "reserve_daily_reading",
+      {
+        p_user_id: userId,
+        p_birth_profile_id: profile!.id,
+        p_cache_key: cacheKey,
+        p_reading_id: readingId,
+      },
+    );
+    if (reservationError)
+      return json(
+        {
+          error:
+            "Your reading allowance could not be checked. Please try again.",
+        },
+        503,
+      );
+    const access = z
+      .object({
+        status: z.string(),
+        readingId: z.string().uuid().optional(),
+        resetsAt: z.string().optional(),
+      })
+      .parse(reservation);
+    if (access.status === "cached" && access.readingId)
+      return json({
+        readingId: access.readingId,
+        status: "completed",
+        cacheStatus: "cached",
+      });
+    if (access.status === "in_progress")
+      return json(
+        {
+          error:
+            "This reading is already being generated. Please wait a moment and try again.",
+        },
+        409,
+      );
+    if (access.status !== "reserved")
+      return json(
+        {
+          error:
+            access.status === "allowance_exhausted"
+              ? "You have used your daily-reading allowance for this period. Your saved readings are still available in My library."
+              : "This chart is not eligible for a daily reading on your current membership.",
+          code: access.status,
+          resetsAt: access.resetsAt,
+        },
+        403,
+      );
+    reservationId = readingId;
+
     const birthInput: BirthInput = {
       date: profile!.birth_date,
       time: profile!.birth_time ?? undefined,
@@ -149,7 +203,6 @@ export async function POST(request: Request) {
       observationTimeZone: profile!.time_zone,
       locale,
     });
-    const readingId = randomUUID();
     const recentContext = await loadRecentContentContext({
       admin,
       userId,
@@ -211,7 +264,7 @@ export async function POST(request: Request) {
           error instanceof z.ZodError
             ? "INVALID_REQUEST"
             : error instanceof Error
-              ? error.message.slice(0, 80)
+              ? "GENERATION_FAILED"
               : "UNKNOWN",
       }),
     );
@@ -224,5 +277,15 @@ export async function POST(request: Request) {
       },
       error instanceof z.ZodError ? 422 : 500,
     );
+  } finally {
+    if (reservationId) {
+      // Completed reservations are retained; only failed attempts are released.
+      // A crashed process also releases its slot automatically after the lease.
+      const { error } = await createAdminClient().rpc("release_daily_reading", {
+        p_user_id: userId,
+        p_reading_id: reservationId,
+      });
+      if (error) console.error("Daily reading reservation release failed");
+    }
   }
 }

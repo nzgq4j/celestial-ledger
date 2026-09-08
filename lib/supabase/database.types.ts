@@ -1430,6 +1430,23 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      daily_reading_allowance: {
+        Args: { p_user_id: string; p_birth_profile_id: string };
+        Returns: Json;
+      };
+      reserve_daily_reading: {
+        Args: {
+          p_user_id: string;
+          p_birth_profile_id: string;
+          p_cache_key: string;
+          p_reading_id: string;
+        };
+        Returns: Json;
+      };
+      release_daily_reading: {
+        Args: { p_user_id: string; p_reading_id: string };
+        Returns: undefined;
+      };
       attach_pending_chart_claim: {
         Args: {
           p_claim_token_hash: string;

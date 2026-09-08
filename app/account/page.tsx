@@ -35,6 +35,11 @@ import {
   primaryAccountReportAction,
 } from "@/lib/account/report-states";
 import { listActiveTarotDecksForPlan } from "@/lib/tarot/decks";
+import {
+  dailyAllowanceSchema,
+  dailyAllowanceLabel,
+} from "@/lib/daily-readings/allowance";
+import { membershipCopy } from "@/lib/membership/content";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -100,7 +105,7 @@ export default async function AccountPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("daily_readings")
-      .select("id,reading_date,locale,generated_at,expires_at")
+      .select("id,birth_profile_id,reading_date,locale,generated_at,expires_at")
       .order("reading_date", { ascending: false })
       .gt("expires_at", new Date().toISOString()),
     supabase
@@ -200,7 +205,22 @@ export default async function AccountPage({
   const activeProfiles = birthProfiles.filter(
     (profile) => new Date(profile.expires_at) > new Date(),
   );
-  const primaryProfile = activeProfiles.at(-1);
+  const primaryProfile = [...activeProfiles].sort(
+    (a, b) =>
+      a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
+  )[0];
+  const dailyAllowances = Object.fromEntries(
+    await Promise.all(
+      activeProfiles.map(async (profile) => {
+        const { data, error } = await adminClient.rpc(
+          "daily_reading_allowance",
+          { p_user_id: authData.user.id, p_birth_profile_id: profile.id },
+        );
+        const parsed = error ? undefined : dailyAllowanceSchema.safeParse(data);
+        return [profile.id, parsed?.success ? parsed.data : undefined];
+      }),
+    ),
+  );
   const chartDecision = await capabilityDecisionForUser(
     authData.user.id,
     "birth_profiles.saved",
@@ -448,7 +468,12 @@ export default async function AccountPage({
             <dl className="access-list">
               <div>
                 <dt>{ui.daily}</dt>
-                <dd>{ui.accountIncluded}</dd>
+                <dd>
+                  {
+                    membershipCopy[pack.tag].page.tiers[commercePlanKey]
+                      .features[1]
+                  }
+                </dd>
               </div>
               <div>
                 <dt>{ui.weekly}</dt>
@@ -586,7 +611,12 @@ export default async function AccountPage({
                     </div>
                     <span className="account-reading-card__status">
                       <span className="dashboard-panel__meta">
-                        {copy.registeredUserEntitlement}
+                        {dailyAllowanceLabel(
+                          primaryProfile
+                            ? dailyAllowances[primaryProfile.id]
+                            : undefined,
+                          pack.tag,
+                        )}
                       </span>
                       <small>{ui.create}</small>
                     </span>
@@ -596,7 +626,12 @@ export default async function AccountPage({
                       {copy.dailyReadingDescription}
                     </p>
                     <DailyReadingGenerator
-                      profiles={reportProfiles}
+                      profiles={activeProfiles.map(({ id, label }) => ({
+                        id,
+                        label,
+                      }))}
+                      allowances={dailyAllowances}
+                      primaryProfileId={primaryProfile?.id}
                       existingReadings={dailyReadings}
                     />
                   </div>

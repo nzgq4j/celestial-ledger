@@ -39,6 +39,8 @@ type MembershipCopy = {
     comparisonKicker: string;
     comparisonTitle: string;
     comparisonIntroduction: string;
+    usageTitle: string;
+    usageNotes: string;
     feature: string;
     comparison: {
       feature: string;
@@ -113,7 +115,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "1 saved natal chart",
             "1 personal daily reading each week",
             "All twelve public daily sun-sign horoscopes",
-            "Additional reading-credit packs from $5",
+            "One-card daily tarot draw",
           ],
           action: "Create a free account",
         },
@@ -126,10 +128,11 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "For following your own sky regularly while keeping one additional chart for someone important to you.",
           features: [
             "2 saved natal charts",
-            "Up to 10 personal daily readings each month",
+            "10 daily readings per billing month, shared across your charts",
             "A weekly reading for your primary chart",
             "Detailed reports available à la carte",
-            "10% member price on detailed reports",
+            "10% off detailed reports",
+            "Daily, Past–Present–Future and five-card Love tarot spreads",
           ],
           action: "Create account to begin",
         },
@@ -139,14 +142,14 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           price: "$19.99",
           cadence: "USD per month",
           purpose:
-            "For a household or close circle of charts, with daily delivery and deeper reports woven into the year.",
+            "For a household or close circle of charts, with daily readings in your atlas and deeper reports included.",
           features: [
             "5 saved natal charts",
             "Daily reading for your primary chart",
-            "Primary daily reading delivered by email",
             "10 companion-chart daily readings each month",
             "Weekly reading for your primary chart",
             "Career and Recovery detailed reports included",
+            "All five tarot spreads, including Celtic Cross and Life & Love Grand Spread",
           ],
           action: "Create account to begin",
         },
@@ -154,7 +157,10 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       comparisonKicker: "The entitlement ledger",
       comparisonTitle: "See exactly what changes at each level.",
       comparisonIntroduction:
-        "Limits are monthly unless a different cadence is shown. Access is attached to the account, while every chart and report remains private to its owner.",
+        "Compare chart spaces, reading allowances and included reports. All prices are in USD.",
+      usageTitle: "How reading allowances work",
+      usageNotes:
+        "Generate readings in My atlas and return to them in My library. Your oldest active saved chart is your primary chart. Daily allowances reset at midnight UTC; weekly daily-reading allowances reset on Monday UTC. Monthly allowances follow your billing period (calendar months for access without a current billing period). Saved readings remain available for one year; opening them again uses no allowance. Tarot decks available depend on your plan.",
       feature: "Feature",
       comparison: [
         {
@@ -171,8 +177,8 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         },
         {
           feature: "Companion-chart daily readings",
-          free: "Credit pack",
-          personal: "Credit pack",
+          free: "—",
+          personal: "Shared within the 10-reading allowance",
           premium: "10 monthly",
         },
         {
@@ -182,15 +188,16 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           premium: "Included",
         },
         {
-          feature: "Email delivery",
-          free: "—",
-          personal: "—",
-          premium: "Daily primary reading",
+          feature: "Tarot spreads",
+          free: "Daily draw (1 card)",
+          personal: "Daily, Past–Present–Future (3), Love (5)",
+          premium:
+            "All Personal spreads + Celtic Cross (10), Life & Love Grand (14)",
         },
         {
-          feature: "Detailed reports",
+          feature: "Career and Purpose / Recovery Reflection reports",
           free: "Standard price",
-          personal: "10% member price",
+          personal: "10% off",
           premium: "Included",
         },
       ],
@@ -275,7 +282,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "1 carta natal guardada",
             "1 lectura diaria personal por semana",
             "Los doce horóscopos solares diarios públicos",
-            "Paquetes de créditos de lectura desde $5",
+            "Tirada diaria de tarot de una carta",
           ],
           action: "Crear una cuenta gratis",
         },
@@ -288,10 +295,11 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "Para seguir tu propio cielo con regularidad y guardar una carta adicional de alguien importante para ti.",
           features: [
             "2 cartas natales guardadas",
-            "Hasta 10 lecturas diarias personales al mes",
+            "10 lecturas diarias por mes de facturación, compartidas entre tus cartas",
             "Una lectura semanal para tu carta principal",
             "Informes detallados a la carta",
             "10% de descuento para miembros en informes",
+            "Tarot diario, Pasado–Presente–Futuro y Amor de cinco cartas",
           ],
           action: "Crear cuenta para comenzar",
         },
@@ -301,14 +309,14 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           price: "$19.99",
           cadence: "USD al mes",
           purpose:
-            "Para un hogar o círculo cercano de cartas, con entrega diaria e informes profundos integrados en el año.",
+            "Para un hogar o círculo cercano de cartas, con lecturas diarias en tu atlas e informes detallados incluidos.",
           features: [
             "5 cartas natales guardadas",
             "Lectura diaria para tu carta principal",
-            "Lectura principal diaria por correo",
             "10 lecturas mensuales para cartas acompañantes",
             "Lectura semanal para tu carta principal",
             "Informes detallados de Carrera y Recuperación incluidos",
+            "Las cinco tiradas de tarot, incluidas Cruz Celta y Gran Tirada de Vida y Amor",
           ],
           action: "Crear cuenta para comenzar",
         },
@@ -316,7 +324,10 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       comparisonKicker: "El registro de acceso",
       comparisonTitle: "Mira exactamente qué cambia en cada nivel.",
       comparisonIntroduction:
-        "Los límites son mensuales salvo que se indique otro ritmo. El acceso pertenece a la cuenta y cada carta e informe sigue siendo privado.",
+        "Compara cartas guardadas, cupos de lectura e informes incluidos. Los precios están en USD.",
+      usageTitle: "Cómo funcionan los cupos de lectura",
+      usageNotes:
+        "Genera lecturas en Mi atlas y ábrelas en Mi biblioteca. Tu carta activa más antigua es la principal. El cupo diario se renueva a medianoche UTC; el cupo semanal de lecturas diarias, los lunes UTC. Los cupos mensuales siguen tu periodo de facturación (meses naturales si no hay periodo vigente). Las lecturas se guardan un año y volver a abrirlas no consume cupo. Los mazos de tarot disponibles dependen del plan.",
       feature: "Función",
       comparison: [
         {
@@ -333,8 +344,8 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         },
         {
           feature: "Lecturas de cartas acompañantes",
-          free: "Paquete de créditos",
-          personal: "Paquete de créditos",
+          free: "—",
+          personal: "Dentro del cupo compartido de 10 lecturas",
           premium: "10 mensuales",
         },
         {
@@ -344,15 +355,16 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           premium: "Incluida",
         },
         {
-          feature: "Entrega por correo",
-          free: "—",
-          personal: "—",
-          premium: "Lectura principal diaria",
+          feature: "Tiradas de tarot",
+          free: "Diaria (1 carta)",
+          personal: "Diaria, Pasado–Presente–Futuro (3), Amor (5)",
+          premium: "Todas las de Personal + Cruz Celta (10), Vida y Amor (14)",
         },
         {
-          feature: "Informes detallados",
+          feature:
+            "Informes de Carrera y Propósito / Reflexión de Recuperación",
           free: "Precio estándar",
-          personal: "10% para miembros",
+          personal: "10% de descuento",
           premium: "Incluidos",
         },
       ],
@@ -437,7 +449,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "1 thème natal enregistré",
             "1 lecture quotidienne personnelle par semaine",
             "Les douze horoscopes solaires publics",
-            "Packs de crédits de lecture dès 5 $",
+            "Tirage quotidien de tarot à une carte",
           ],
           action: "Créer un compte gratuit",
         },
@@ -450,10 +462,11 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "Pour suivre régulièrement votre ciel et conserver un thème supplémentaire pour une personne importante.",
           features: [
             "2 thèmes natals enregistrés",
-            "Jusqu’à 10 lectures quotidiennes personnelles par mois",
+            "10 lectures quotidiennes par mois de facturation, partagées entre vos thèmes",
             "Une lecture hebdomadaire pour le thème principal",
             "Rapports détaillés à la carte",
-            "10 % de tarif membre sur les rapports",
+            "10 % de réduction sur les rapports",
+            "Tarot quotidien, Passé–Présent–Futur et Amour à cinq cartes",
           ],
           action: "Créer un compte pour commencer",
         },
@@ -463,14 +476,14 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           price: "$19.99",
           cadence: "USD par mois",
           purpose:
-            "Pour un foyer ou un cercle proche de thèmes, avec livraison quotidienne et rapports profonds au fil de l’année.",
+            "Pour un foyer ou un cercle proche de thèmes, avec des lectures quotidiennes dans votre atlas et des rapports détaillés inclus.",
           features: [
             "5 thèmes natals enregistrés",
             "Lecture quotidienne du thème principal",
-            "Lecture principale envoyée par e-mail",
             "10 lectures mensuelles pour les thèmes compagnons",
             "Lecture hebdomadaire du thème principal",
             "Rapports détaillés Carrière et Rétablissement inclus",
+            "Les cinq tirages, dont la Croix Celtique et le Grand Tirage Vie et Amour",
           ],
           action: "Créer un compte pour commencer",
         },
@@ -478,7 +491,10 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       comparisonKicker: "Le registre des droits",
       comparisonTitle: "Voyez précisément ce qui change à chaque niveau.",
       comparisonIntroduction:
-        "Les limites sont mensuelles sauf indication contraire. L’accès est lié au compte et chaque thème et rapport reste privé.",
+        "Comparez les thèmes enregistrés, les quotas de lecture et les rapports inclus. Les prix sont en USD.",
+      usageTitle: "Comment fonctionnent les quotas de lecture",
+      usageNotes:
+        "Créez vos lectures dans Mon atlas et retrouvez-les dans Ma bibliothèque. Votre plus ancien thème actif est le thème principal. Le quota quotidien se renouvelle à minuit UTC ; le quota hebdomadaire de lectures quotidiennes, le lundi UTC. Les quotas mensuels suivent la facturation (mois civils sans période de facturation en cours). Les lectures restent disponibles un an ; les rouvrir ne consomme aucun quota. Les jeux de tarot disponibles dépendent du niveau.",
       feature: "Fonctionnalité",
       comparison: [
         {
@@ -495,8 +511,8 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         },
         {
           feature: "Lectures des thèmes compagnons",
-          free: "Pack de crédits",
-          personal: "Pack de crédits",
+          free: "—",
+          personal: "Dans le quota partagé de 10 lectures",
           premium: "10 par mois",
         },
         {
@@ -506,15 +522,17 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           premium: "Incluse",
         },
         {
-          feature: "Envoi par e-mail",
-          free: "—",
-          personal: "—",
-          premium: "Lecture principale quotidienne",
+          feature: "Tirages de tarot",
+          free: "Quotidien (1 carte)",
+          personal: "Quotidien, Passé–Présent–Futur (3), Amour (5)",
+          premium:
+            "Tous ceux de Personnel + Croix Celtique (10), Vie et Amour (14)",
         },
         {
-          feature: "Rapports détaillés",
+          feature:
+            "Rapports Carrière et Vocation / Réflexion sur le Rétablissement",
           free: "Tarif standard",
-          personal: "10 % membre",
+          personal: "10 % de réduction",
           premium: "Inclus",
         },
       ],
@@ -600,7 +618,7 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "1 gespeichertes Geburtshoroskop",
             "1 persönliche Tageslesung pro Woche",
             "Alle zwölf öffentlichen Tageshoroskope",
-            "Leseguthaben-Pakete ab 5 $",
+            "Tägliche Tarotziehung mit einer Karte",
           ],
           action: "Kostenloses Konto erstellen",
         },
@@ -613,10 +631,11 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
             "Um deinem eigenen Himmel regelmäßig zu folgen und ein weiteres Horoskop für einen wichtigen Menschen zu bewahren.",
           features: [
             "2 gespeicherte Geburtshoroskope",
-            "Bis zu 10 persönliche Tageslesungen pro Monat",
+            "10 Tageslesungen pro Abrechnungsmonat, gemeinsam für deine Horoskope",
             "Eine Wochenlesung für das Haupthoroskop",
             "Detaillierte Berichte einzeln erhältlich",
-            "10 % Mitgliedspreis auf Berichte",
+            "10 % Rabatt auf Berichte",
+            "Tageskarte, Vergangenheit–Gegenwart–Zukunft und Liebeslegung mit fünf Karten",
           ],
           action: "Konto erstellen und beginnen",
         },
@@ -626,14 +645,14 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           price: "$19.99",
           cadence: "USD pro Monat",
           purpose:
-            "Für einen Haushalt oder engen Kreis von Horoskopen, mit täglicher Zustellung und tieferen Berichten durch das Jahr.",
+            "Für einen Haushalt oder engen Kreis von Horoskopen, mit Tageslesungen im Atlas und enthaltenen ausführlichen Berichten.",
           features: [
             "5 gespeicherte Geburtshoroskope",
             "Tägliche Lesung für das Haupthoroskop",
-            "Tägliche Hauptlesung per E-Mail",
             "10 Tageslesungen für Begleithoroskope pro Monat",
             "Wochenlesung für das Haupthoroskop",
             "Detaillierte Karriere- und Erholungsberichte inklusive",
+            "Alle fünf Tarotlegungen, einschließlich Keltischem Kreuz und großer Legung für Leben und Liebe",
           ],
           action: "Konto erstellen und beginnen",
         },
@@ -641,7 +660,10 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
       comparisonKicker: "Das Berechtigungsregister",
       comparisonTitle: "Sieh genau, was sich auf jeder Stufe verändert.",
       comparisonIntroduction:
-        "Grenzen gelten monatlich, sofern kein anderer Rhythmus genannt ist. Der Zugang gehört zum Konto; jedes Horoskop und jeder Bericht bleibt privat.",
+        "Vergleiche Speicherplätze, Lesekontingente und enthaltene Berichte. Alle Preise sind in USD.",
+      usageTitle: "So funktionieren die Lesekontingente",
+      usageNotes:
+        "Erstelle Lesungen in Mein Atlas und öffne sie in Meine Bibliothek. Dein ältestes aktives Horoskop ist das Haupthoroskop. Das Tageskontingent wird um Mitternacht UTC erneuert; das Wochenkontingent für Tageslesungen montags UTC. Monatskontingente folgen der Abrechnung (Kalendermonate ohne laufenden Abrechnungszeitraum). Lesungen bleiben ein Jahr verfügbar; erneutes Öffnen verbraucht kein Kontingent. Verfügbare Tarotdecks hängen vom Tarif ab.",
       feature: "Funktion",
       comparison: [
         {
@@ -658,8 +680,8 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
         },
         {
           feature: "Lesungen für Begleithoroskope",
-          free: "Guthabenpaket",
-          personal: "Guthabenpaket",
+          free: "—",
+          personal: "Im gemeinsamen Kontingent von 10 Lesungen",
           premium: "10 monatlich",
         },
         {
@@ -669,15 +691,17 @@ export const membershipCopy: Record<LocaleTag, MembershipCopy> = {
           premium: "Enthalten",
         },
         {
-          feature: "E-Mail-Zustellung",
-          free: "—",
-          personal: "—",
-          premium: "Tägliche Hauptlesung",
+          feature: "Tarotlegungen",
+          free: "Tageskarte (1)",
+          personal:
+            "Tageskarte, Vergangenheit–Gegenwart–Zukunft (3), Liebe (5)",
+          premium:
+            "Alle Personal-Legungen + Keltisches Kreuz (10), Leben und Liebe (14)",
         },
         {
-          feature: "Detaillierte Berichte",
+          feature: "Berichte zu Karriere und Berufung / Erholungsreflexion",
           free: "Standardpreis",
-          personal: "10 % Mitgliedspreis",
+          personal: "10 % Rabatt",
           premium: "Inklusive",
         },
       ],

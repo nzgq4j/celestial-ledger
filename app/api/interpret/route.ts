@@ -219,6 +219,14 @@ Formatting requirements:
         })
         .select("id")
         .single();
+      if (saveError?.message.includes("SAVED_CHART_ALLOWANCE_EXHAUSTED"))
+        return Response.json(
+          {
+            error:
+              "You have reached your saved-chart allowance. Remove an unused chart or choose a membership with more chart spaces.",
+          },
+          { status: 403, headers: { "Cache-Control": "private, no-store" } },
+        );
       if (saveError || !saved)
         return Response.json(
           {

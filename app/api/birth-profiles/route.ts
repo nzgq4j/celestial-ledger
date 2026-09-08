@@ -58,6 +58,15 @@ export async function POST(request: Request): Promise<Response> {
       })
       .select("id, label, expires_at, created_at")
       .single();
+    if (error?.message.includes("SAVED_CHART_ALLOWANCE_EXHAUSTED"))
+      return json(
+        {
+          error:
+            "You have reached your saved-chart allowance. Remove an unused chart or choose a membership with more chart spaces.",
+          code: "chart_limit_reached",
+        },
+        403,
+      );
     if (error) return json({ error: "The profile could not be saved." }, 500);
     return json({ birthProfile: data }, 201);
   } catch (error) {

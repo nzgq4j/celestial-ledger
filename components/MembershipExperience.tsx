@@ -112,16 +112,16 @@ export function MembershipExperience({
           <table>
             <thead>
               <tr>
-                <th>{copy.feature}</th>
-                <th>{copy.tiers.free.name}</th>
-                <th>{copy.tiers.personal.name}</th>
-                <th>{copy.tiers.premium.name}</th>
+                <th scope="col">{copy.feature}</th>
+                <th scope="col">{copy.tiers.free.name}</th>
+                <th scope="col">{copy.tiers.personal.name}</th>
+                <th scope="col">{copy.tiers.premium.name}</th>
               </tr>
             </thead>
             <tbody>
               {copy.comparison.map((row) => (
                 <tr key={row.feature}>
-                  <th>{row.feature}</th>
+                  <th scope="row">{row.feature}</th>
                   <td>{row.free}</td>
                   <td>{row.personal}</td>
                   <td>{row.premium}</td>
@@ -130,6 +130,10 @@ export function MembershipExperience({
             </tbody>
           </table>
         </div>
+        <details className="membership-usage">
+          <summary>{copy.usageTitle}</summary>
+          <p>{copy.usageNotes}</p>
+        </details>
       </section>
 
       <section
