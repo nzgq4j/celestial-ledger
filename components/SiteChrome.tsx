@@ -104,6 +104,7 @@ export function SiteHeader({
               </div>
             </details>
             <Link href="/journal">{pack.messages.navigation.journal}</Link>
+            <Link href="/clock">Celestial Clock</Link>
           </div>
           <details className="mobile-nav" ref={mobileMenu}>
             <summary>
@@ -134,6 +135,7 @@ export function SiteHeader({
                 </Link>
               </div>
               <Link href="/journal">{pack.messages.navigation.journal}</Link>
+              <Link href="/clock">Celestial Clock</Link>
               {identity ? (
                 <div className="mobile-nav__group mobile-nav__identity">
                   <span>

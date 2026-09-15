@@ -1,0 +1,646 @@
+.clock-page {
+  width: min(1440px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3rem 0 5rem;
+}
+.clock-page-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2.4rem;
+}
+.clock-page-heading h1 {
+  font:
+    400 clamp(2.8rem, 5vw, 5rem)/1.05 Georgia,
+    serif;
+  color: var(--ivory);
+  margin: 0 0 0.6rem;
+}
+.clock-page-heading > div p {
+  color: var(--gold);
+  font:
+    1.3rem/1.5 Georgia,
+    serif;
+}
+.clock-page-heading > p {
+  max-width: 24rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.celestial-clock {
+  --clock-border: var(--line);
+  color: var(--ivory);
+}
+.clock-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: start;
+  gap: 2.7rem;
+}
+.clock-instrument {
+  min-width: 0;
+  background: #081421;
+  color: #ede6d8;
+  border: 1px solid #344252;
+  border-radius: 50% 50% 0 0 / 3% 3% 0 0;
+  box-shadow: inset 0 0 80px #0004;
+}
+.clock-instrument-heading {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.6rem 1.8rem 0;
+  font-size: 0.8rem;
+  color: #c1c8d0;
+}
+.clock-instrument-heading > span:first-child {
+  color: #e3c777;
+}
+.clock-dial-window {
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.celestial-dial {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.celestial-dial text {
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-family: Arial, sans-serif;
+}
+.clock-ring-label {
+  fill: #f3eedd;
+  font-size: 8px;
+}
+.clock-month-label {
+  fill: #eee9d9;
+  font-size: 11px;
+}
+.clock-zodiac-label {
+  fill: #d9caa9;
+  font-size: 17px;
+}
+.clock-planet-glyph {
+  font-size: 17px;
+}
+.celestial-dial .clock-center-time {
+  font-family: Georgia, serif;
+  font-size: 35px;
+  fill: #f3e8cf;
+}
+.clock-center-date {
+  font-size: 16px;
+  fill: #d6deea;
+}
+.clock-center-zone {
+  font-size: 11px;
+  fill: #c4bdac;
+}
+.clock-scale-caption {
+  font-size: 9px;
+  fill: #aebdca;
+}
+.clock-mark {
+  cursor: pointer;
+}
+.clock-mark:hover circle:last-of-type,
+.clock-mark:focus-visible circle:last-of-type {
+  stroke: #fff;
+  stroke-width: 3;
+}
+.clock-dial-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.3rem 1.5rem;
+  font-size: 0.75rem;
+  color: #c1c8d0;
+}
+.clock-dial-tools > div {
+  display: flex;
+}
+.celestial-clock button,
+.celestial-clock input,
+.celestial-clock select {
+  font: inherit;
+}
+.celestial-clock button {
+  cursor: pointer;
+}
+.celestial-clock button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.clock-dial-tools button {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid #536177;
+  color: #ede6d8;
+  background: transparent;
+  padding: 0.2rem 0.7rem;
+}
+.clock-scales {
+  padding: 0.9rem 1.5rem 1.5rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: #bdc5d0;
+  max-width: 85ch;
+}
+.clock-inspector {
+  padding-top: 0.8rem;
+  min-width: 0;
+}
+.clock-now > p {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+.clock-now h2 {
+  font:
+    400 2.4rem/1.1 Georgia,
+    serif;
+  margin: 0.8rem 0;
+}
+.clock-illumination {
+  height: 3px;
+  background: var(--line);
+  margin-top: 1rem;
+}
+.clock-illumination span {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+.clock-season {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.clock-season strong {
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+.clock-season select {
+  background: var(--surface-field);
+  color: var(--ivory);
+  border: 1px solid var(--control-border);
+  font-size: 0.75rem;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.25rem;
+}
+.clock-detail {
+  scroll-margin-top: 7rem;
+  border-block: 1px solid var(--line);
+  padding: 1.4rem 0;
+}
+.clock-detail h3,
+.clock-upcoming h3,
+.clock-weather h3 {
+  font:
+    400 1.4rem/1.3 Georgia,
+    serif;
+  margin-bottom: 0.6rem;
+}
+.clock-detail p,
+.clock-detail time {
+  display: block;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.clock-detail time {
+  margin-top: 0.65rem;
+  color: var(--gold);
+}
+.clock-detail details {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+}
+.celestial-clock summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.6rem 0;
+}
+.celestial-clock code {
+  overflow-wrap: anywhere;
+  font-size: 0.75rem;
+}
+.clock-upcoming {
+  padding: 1.5rem 0;
+}
+.clock-upcoming ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.clock-upcoming button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 0;
+  background: transparent;
+  border: 0;
+  color: var(--ivory);
+}
+.clock-upcoming time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+.celestial-clock h2 {
+  scroll-margin-top: 6rem;
+}
+.clock-explorer {
+  margin: 2rem 0 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 1.5rem 3rem;
+  border-block: 1px solid var(--line);
+  padding: 1.8rem 0;
+}
+.clock-explorer h2,
+.clock-register h2,
+.clock-weather h2,
+.clock-method h2 {
+  font:
+    400 1.9rem/1.2 Georgia,
+    serif;
+  margin: 0 0 0.6rem;
+}
+.clock-explorer p,
+.clock-register p,
+.clock-weather p,
+.clock-method p {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  max-width: 75ch;
+}
+.clock-explorer label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.clock-date-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.clock-date-actions input {
+  flex: 1;
+  min-width: 180px;
+  max-width: 100%;
+  padding: 0.6rem;
+  background: var(--surface-field);
+  border: 1px solid var(--control-border);
+  color: var(--ivory);
+}
+.clock-date-actions button,
+.clock-detail > button,
+.clock-method button,
+.clock-explorer > button,
+.clock-weather p button {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--control-border);
+  color: var(--ivory);
+  background: var(--surface);
+  min-height: 44px;
+}
+.clock-date-actions button[type="submit"] {
+  color: var(--navy);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.clock-year-slider {
+  grid-column: 1 / -1;
+}
+.clock-year-slider input {
+  width: 100%;
+  min-height: 30px;
+  accent-color: var(--gold);
+  cursor: ew-resize;
+}
+.clock-year-slider > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.clock-explorer > p {
+  grid-column: 1 / -1;
+}
+.clock-register header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.clock-planets {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+.clock-planets button {
+  text-align: left;
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom-color: var(--line);
+  color: var(--ivory);
+}
+.clock-planets button[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: var(--surface);
+}
+.clock-planets strong {
+  font:
+    400 1.2rem Georgia,
+    serif;
+}
+.clock-planets span {
+  font-size: 0.86rem;
+  color: var(--gold);
+}
+.clock-planets small {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.clock-register > p {
+  margin: 1rem 0;
+}
+.clock-weather {
+  margin-top: 3rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+}
+.clock-weather header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.clock-weather-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  flex-shrink: 0;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+.clock-weather-toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--gold);
+}
+.clock-weather article {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+}
+.clock-weather a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.clock-observations {
+  max-height: 240px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+}
+.clock-observations button {
+  text-align: left;
+  background: transparent;
+  color: var(--ivory);
+  border: 0;
+  padding: 0.6rem 0;
+  font-size: 0.8rem;
+  min-height: 44px;
+}
+.clock-year-events {
+  border-block: 1px solid var(--line);
+  margin-top: 2rem;
+  padding: 0.8rem 0;
+}
+.clock-year-events > ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem 2rem;
+  padding: 0;
+  list-style: none;
+}
+.clock-year-events button {
+  display: grid;
+  text-align: left;
+  padding: 0.6rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ivory);
+}
+.clock-year-events time {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.clock-method {
+  margin-top: 2.5rem;
+}
+.clock-method details {
+  margin-top: 1rem;
+}
+.clock-method dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+.clock-method dt {
+  color: var(--muted);
+  min-width: 160px;
+}
+.clock-method dd {
+  overflow-wrap: anywhere;
+}
+.celestial-clock
+  :is(button, input, select, summary, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .clock-seconds {
+    display: none;
+  }
+}
+@media (max-width: 1050px) {
+  .clock-workspace {
+    grid-template-columns: minmax(0, 1fr) 265px;
+    gap: 1.5rem;
+  }
+  .clock-explorer {
+    grid-template-columns: 1fr;
+  }
+  .clock-planets {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .clock-page {
+    width: calc(100% - 2rem);
+    padding-top: 2rem;
+  }
+  .clock-page-heading {
+    display: block;
+  }
+  .clock-page-heading > p {
+    margin-top: 1rem;
+  }
+  .clock-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+  .clock-instrument-heading {
+    padding: 1rem 1rem 0;
+    font-size: 0.72rem;
+  }
+  .clock-dial-tools {
+    padding: 0.3rem 0.8rem;
+    flex-wrap: wrap;
+  }
+  .clock-scales {
+    padding: 1rem;
+  }
+  .clock-inspector {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .clock-now h2 {
+    font-size: 2rem;
+  }
+  .clock-planets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .clock-planets button {
+    padding: 1rem 0.5rem;
+  }
+  .clock-weather header {
+    display: block;
+  }
+  .clock-weather-toggle {
+    margin-top: 1rem;
+  }
+  .clock-weather article {
+    display: block;
+    width: 100%;
+  }
+  .clock-year-events > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+.clock-ring-guide {
+  padding: 0 1.5rem 1rem;
+  color: #c1c8d0;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+.clock-ring-guide ol {
+  padding-left: 1.3rem;
+  list-style: decimal;
+}
+.clock-ring-guide li {
+  margin-bottom: 0.5rem;
+}
+.clock-ring-guide p {
+  margin-top: 0.8rem;
+}
+
+/* Pointer and keyboard inspection share a single, evidence-linked tooltip. */
+.clock-hover-target {
+  cursor: help;
+}
+.clock-hover-target.clock-mark {
+  cursor: pointer;
+}
+.clock-hover-target[data-active="true"] {
+  filter: brightness(1.55) drop-shadow(0 0 3px #e3c77788);
+}
+.clock-hover-target:focus-visible {
+  outline: 2px solid #e3c777;
+  outline-offset: 3px;
+}
+.clock-orbit:has(.clock-hover-target[data-active="true"]) .clock-orbit-track {
+  stroke-opacity: 0.75;
+  stroke-width: 2;
+}
+.clock-mark[data-active="true"] circle:not([fill="transparent"]) {
+  stroke: #fff1c9;
+  stroke-width: 2.5;
+}
+.clock-ring-label {
+  pointer-events: none;
+}
+.clock-tooltip {
+  position: fixed;
+  z-index: 200;
+  width: min(330px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.15rem 1.25rem;
+  color: #e9e3d5;
+  background: #101f30;
+  border: 1px solid #bfa064;
+  border-radius: 9px;
+  box-shadow: 0 12px 36px #0009;
+  font:
+    0.83rem/1.6 Arial,
+    sans-serif;
+  pointer-events: auto;
+}
+.clock-tooltip p {
+  margin: 0 0 0.7rem;
+}
+.clock-tooltip .clock-tooltip-title {
+  font:
+    400 1.55rem/1.2 Georgia,
+    serif;
+  color: #f2ead8;
+}
+.clock-tooltip .clock-tooltip-value {
+  color: #e3c777;
+  font-weight: 600;
+}
+.clock-tooltip footer {
+  border-top: 1px solid #3c4c5b;
+  padding-top: 0.7rem;
+  font-size: 0.74rem;
+  color: #c1cbd4;
+}
+.clock-tooltip footer :is(time, span) {
+  display: block;
+}
+.clock-tooltip-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  color: #b7bcbf;
+}
+.clock-detail > p + p {
+  margin-top: 0.65rem;
+}

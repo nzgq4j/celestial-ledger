@@ -11781,3 +11781,56 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
     transition: none;
   }
 }
+
+/* Celestial Clock home invitation: ornamental rings, not sky positions. */
+.clock-preview {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: min(1152px, calc(100% - 2.5rem));
+  margin: 1rem auto 3rem;
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--line);
+}
+.clock-preview-art {
+  width: 130px;
+  flex-shrink: 0;
+}
+.clock-preview-art svg {
+  width: 100%;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+}
+.clock-preview-art circle:nth-child(2n) {
+  stroke-dasharray: 2 5;
+  opacity: 0.6;
+}
+.clock-preview h2 {
+  font:
+    400 2rem/1.2 Georgia,
+    serif;
+  margin-bottom: 0.6rem;
+}
+.clock-preview p {
+  max-width: 52ch;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.clock-preview > a {
+  flex-shrink: 0;
+}
+@media (max-width: 850px) {
+  .clock-preview {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .clock-preview-art {
+    width: 80px;
+  }
+  .clock-preview > div:nth-child(2) {
+    flex: 1;
+    min-width: 190px;
+  }
+}

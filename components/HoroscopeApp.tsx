@@ -7,6 +7,7 @@ import { NatalChartWheel } from "./NatalChartWheel";
 import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
 import { LandingPathways } from "@/components/LandingPathways";
+import { ClockPreview } from "@/components/clock/ClockPreview";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
 import { ZodiacConstellationStrip } from "@/components/ZodiacConstellationStrip";
 
@@ -301,6 +302,7 @@ export default function HoroscopeApp({
         </div>
       </header>
       <LandingPathways />
+      <ClockPreview />
       <div
         id="chart"
         className="chart-workspace max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
