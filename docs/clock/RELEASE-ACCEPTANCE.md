@@ -11,3 +11,7 @@ Approved by the project owner on 2026-09-15 in the deployment task, following di
 - Recovery: restore the previous Vercel production deployment if the clock release fails its live checks.
 
 Deployment status and live verification are reported separately in the deployment task.
+
+## Time explorer update — 2026-09-15
+
+The owner subsequently requested deployment of the tested time-explorer modal to the same Vercel site. This clock-only interface update uses the existing acceptance and its unchanged 2026-09-22 expiry. No dependencies or security settings changed. Validation: 339 tests and the production build passed; formatting, lint, typecheck, license inventory, ephemeris and desktop/mobile modal checks completed. The production audit continues to report the same accepted findings.

@@ -644,3 +644,95 @@
 .clock-detail > p + p {
   margin-top: 0.65rem;
 }
+
+.clock-time-dialog {
+  position: fixed;
+  inset: auto 0 24px;
+  width: min(960px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  background: #0b111a;
+  color: var(--ivory);
+  box-shadow: 0 24px 80px #0009;
+}
+.clock-time-dialog::backdrop {
+  background: rgb(3 8 16 / 32%);
+}
+.clock-time-dialog .clock-explorer {
+  position: relative;
+  margin: 0;
+  padding: 24px;
+  border: 0;
+  gap: 16px 24px;
+}
+.clock-time-dialog .clock-explorer h2 {
+  font-size: 1.5rem;
+  padding-right: 32px;
+}
+.clock-time-dialog .clock-time-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+}
+.clock-time-dialog .clock-playback {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--ivory);
+}
+.clock-playback button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--control-border);
+  background: var(--surface);
+  color: var(--gold);
+}
+.clock-playback time {
+  margin-left: auto;
+  color: var(--gold);
+}
+.clock-time-dialog input[type="range"] {
+  min-height: 44px;
+}
+.clock-time-dialog .clock-explorer > p {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .clock-time-dialog {
+    bottom: 12px;
+    max-height: calc(100dvh - 24px);
+  }
+  .clock-time-dialog .clock-explorer {
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
+  .clock-playback time {
+    margin-left: 0;
+  }
+  .clock-dial-tools {
+    flex-wrap: wrap;
+  }
+}
+.clock-instrument-heading button {
+  border: 1px solid var(--control-border);
+  border-radius: 24px;
+  padding: 8px 16px;
+  min-height: 44px;
+  color: var(--gold);
+  background: var(--surface);
+}
+.clock-instrument-heading {
+  flex-wrap: wrap;
+  gap: 8px;
+}

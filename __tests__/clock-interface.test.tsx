@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import {
   cleanup,
   fireEvent,
@@ -12,11 +12,44 @@ import { calculateClock } from "@/lib/clock/calculation";
 import { CelestialClock } from "@/components/clock/CelestialClock";
 
 const initial = calculateClock("2026-09-15T12:00:00.000Z");
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+    this.dispatchEvent(new Event("close"));
+  };
+});
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 describe("clock accessible interactions", () => {
+  it("opens the explorer on demand and returns focus when closed", () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(initial)));
+    render(<CelestialClock initial={initial} />);
+    expect(screen.queryByRole("dialog")).toBeNull();
+    const trigger = screen.getByRole("button", { name: "Explore time" });
+    fireEvent.click(trigger);
+    expect(
+      screen.getByRole("dialog", { name: "Move through time" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("slider")).toBeTruthy();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Play through the year" }),
+    );
+    expect(screen.getByRole("button", { name: "Pause playback" })).toBeTruthy();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Close time explorer" }),
+    );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    fireEvent.click(trigger);
+    expect(
+      screen.getByRole("button", { name: "Play through the year" }),
+    ).toBeTruthy();
+  });
   it("requests the chosen leap-day instant and replaces the visible calculation", async () => {
     const mock = vi.fn().mockImplementation(async (url: string) => {
       const at = new URL(url, "https://example.com").searchParams.get("at")!;
@@ -24,6 +57,7 @@ describe("clock accessible interactions", () => {
     });
     vi.stubGlobal("fetch", mock);
     render(<CelestialClock initial={initial} />);
+    fireEvent.click(screen.getByRole("button", { name: "Explore time" }));
     fireEvent.input(screen.getByLabelText("Date and time (UTC)"), {
       target: { value: "2024-02-29T12:00" },
     });
@@ -42,6 +76,7 @@ describe("clock accessible interactions", () => {
   it("exposes named date controls, planetary buttons and calculation details", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(initial)));
     render(<CelestialClock initial={initial} />);
+    fireEvent.click(screen.getByRole("button", { name: "Explore time" }));
     expect(screen.getByLabelText("Date and time (UTC)")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Back to now" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Mercury.*Direct/ }));
@@ -52,6 +87,7 @@ describe("clock accessible interactions", () => {
   it("keeps a failed date change explicitly marked and retryable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     render(<CelestialClock initial={initial} />);
+    fireEvent.click(screen.getByRole("button", { name: "Explore time" }));
     fireEvent.change(screen.getByLabelText("Date and time (UTC)"), {
       target: { value: "2024-02-29T12:00" },
     });

@@ -41,7 +41,25 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
   const [weatherError, setWeatherError] = useState("");
   const [zoom, setZoom] = useState(1);
   const [retry, setRetry] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const explorerDialog = useRef<HTMLDialogElement>(null);
+  const explorerButton = useRef<HTMLButtonElement>(null);
   const first = useRef(true);
+
+  useEffect(() => {
+    if (!playing || loading || error || target !== snapshot.utc) return;
+    const timer = window.setTimeout(() => {
+      const next = new Date(snapshot.utc);
+      next.setUTCDate(next.getUTCDate() + 1);
+      if (next.getUTCFullYear() !== snapshot.year) {
+        setPlaying(false);
+        return;
+      }
+      setTarget(next.toISOString());
+      setDraft(next.toISOString().slice(0, 16));
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [playing, loading, error, target, snapshot.utc, snapshot.year]);
 
   useEffect(() => {
     const update = () => {
@@ -131,6 +149,7 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
       : new Date(snapshot.utc);
   const viewing = snapshot.utc;
   const travel = (utc: string) => {
+    setPlaying(false);
     setLive(false);
     setTarget(utcMinute(new Date(utc)));
     setDraft(utc.slice(0, 16));
@@ -208,6 +227,15 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
           <div className="clock-instrument-heading">
             <span>{live ? "Live clock" : "Exploring time"}</span>
             <span>Earth-centred view</span>
+            <button
+              ref={explorerButton}
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="clock-time-dialog"
+              onClick={() => explorerDialog.current?.showModal()}
+            >
+              Explore time
+            </button>
           </div>
           <div
             className="clock-dial-window"
@@ -376,92 +404,146 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
         </aside>
       </div>
 
-      <section
-        className="clock-explorer"
+      <dialog
+        ref={explorerDialog}
+        id="clock-time-dialog"
+        className="clock-time-dialog"
         aria-labelledby="clock-explorer-title"
+        onClose={() => {
+          setPlaying(false);
+          explorerButton.current?.focus({ preventScroll: true });
+        }}
+        onClick={(e) => {
+          if (e.target !== e.currentTarget) return;
+          const box = e.currentTarget.getBoundingClientRect();
+          if (
+            e.clientX < box.left ||
+            e.clientX > box.right ||
+            e.clientY < box.top ||
+            e.clientY > box.bottom
+          )
+            e.currentTarget.close();
+        }}
       >
-        <div>
-          <h2 id="clock-explorer-title">Move through time</h2>
-          <p>
-            Explore a moment between 2000 and 2050. All dates and times use UTC.
-          </p>
-        </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const date = new Date(draft + ":00.000Z");
-            if (
-              Number.isFinite(+date) &&
-              date.getUTCFullYear() >= 2000 &&
-              date.getUTCFullYear() <= 2050
-            )
-              travel(date.toISOString());
-          }}
-        >
-          <label htmlFor="clock-date">Date and time (UTC)</label>
-          <div className="clock-date-actions">
-            <input
-              id="clock-date"
-              type="datetime-local"
-              required
-              min="2000-01-01T00:00"
-              max="2050-12-31T23:59"
-              value={draft}
-              onInput={(e) => setDraft(e.currentTarget.value)}
-              onChange={(e) => setDraft(e.target.value)}
-            />
-            <button type="submit">Explore</button>
-            <button
-              type="button"
-              onClick={() => {
-                setLive(true);
-                setTarget(utcMinute(new Date()));
-              }}
-            >
-              Back to now
-            </button>
-          </div>
-        </form>
-        <div className="clock-year-slider">
-          <label htmlFor="clock-year">Explore {snapshot.year}</label>
-          <input
-            id="clock-year"
-            type="range"
-            min="0"
-            max={daysInYear - 1}
-            step="1"
-            value={Math.min(
-              daysInYear - 1,
-              Math.floor(yearFraction(target, snapshot.year) * daysInYear),
-            )}
-            aria-valuetext={new Date(target).toLocaleDateString("en-GB", {
-              timeZone: "UTC",
-            })}
-            onChange={(e) => {
-              const date = new Date(
-                Date.UTC(snapshot.year, 0, 1 + Number(e.target.value), 12),
-              );
-              travel(date.toISOString());
-            }}
-          />
-          <div>
-            <span>January</span>
-            <span>December</span>
-          </div>
-        </div>
-        <p role="status">
-          {loading
-            ? "Calculating selected moment…"
-            : error ||
-              `Sky positions calculated for ${formatDate(viewing)}. ${live ? "Positions refresh each minute." : "Date explorer paused at this moment."}`}
-        </p>
-
-        {error && (
-          <button type="button" onClick={() => setRetry((n) => n + 1)}>
-            Try again
+        <section className="clock-explorer">
+          <button
+            type="button"
+            className="clock-time-close"
+            aria-label="Close time explorer"
+            onClick={() => explorerDialog.current?.close()}
+          >
+            ×
           </button>
-        )}
-      </section>
+          <div>
+            <h2 id="clock-explorer-title">Move through time</h2>
+            <p>
+              Explore a moment between 2000 and 2050. All dates and times use
+              UTC.
+            </p>
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const date = new Date(draft + ":00.000Z");
+              if (
+                Number.isFinite(+date) &&
+                date.getUTCFullYear() >= 2000 &&
+                date.getUTCFullYear() <= 2050
+              )
+                travel(date.toISOString());
+            }}
+          >
+            <label htmlFor="clock-date">Date and time (UTC)</label>
+            <div className="clock-date-actions">
+              <input
+                id="clock-date"
+                type="datetime-local"
+                required
+                min="2000-01-01T00:00"
+                max="2050-12-31T23:59"
+                value={draft}
+                onInput={(e) => setDraft(e.currentTarget.value)}
+                onChange={(e) => setDraft(e.target.value)}
+              />
+              <button type="submit">Explore</button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPlaying(false);
+                  setLive(true);
+                  setTarget(utcMinute(new Date()));
+                }}
+              >
+                Back to now
+              </button>
+            </div>
+          </form>
+          <div className="clock-year-slider">
+            <div className="clock-playback">
+              <button
+                type="button"
+                aria-label={
+                  playing ? "Pause playback" : "Play through the year"
+                }
+                aria-pressed={playing}
+                disabled={loading || Boolean(error)}
+                onClick={() => {
+                  setLive(false);
+                  setTarget(snapshot.utc);
+                  setPlaying((value) => !value);
+                }}
+              >
+                {playing ? "Ⅱ" : "▶"}
+              </button>
+              <span>
+                {live
+                  ? "Live mode"
+                  : playing
+                    ? "Playing · one day per step"
+                    : "Exploring time"}
+              </span>
+              <time dateTime={viewing}>{formatDate(viewing)}</time>
+            </div>
+            <label htmlFor="clock-year">Explore {snapshot.year}</label>
+            <input
+              id="clock-year"
+              type="range"
+              min="0"
+              max={daysInYear - 1}
+              step="1"
+              value={Math.min(
+                daysInYear - 1,
+                Math.floor(yearFraction(target, snapshot.year) * daysInYear),
+              )}
+              aria-valuetext={new Date(target).toLocaleDateString("en-GB", {
+                timeZone: "UTC",
+              })}
+              onChange={(e) => {
+                const date = new Date(
+                  Date.UTC(snapshot.year, 0, 1 + Number(e.target.value), 12),
+                );
+                travel(date.toISOString());
+              }}
+            />
+            <div>
+              <span>January</span>
+              <span>December</span>
+            </div>
+          </div>
+          <p role="status">
+            {loading
+              ? "Calculating selected moment…"
+              : error ||
+                `Sky positions calculated for ${formatDate(viewing)}. ${live ? "Positions refresh each minute." : playing ? "Playing one day per step." : "Date explorer paused at this moment."}`}
+          </p>
+
+          {error && (
+            <button type="button" onClick={() => setRetry((n) => n + 1)}>
+              Try again
+            </button>
+          )}
+        </section>
+      </dialog>
 
       <section className="clock-register" aria-labelledby="clock-planets-title">
         <header>

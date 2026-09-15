@@ -67,3 +67,9 @@ Run the repository-required format, typecheck, lint, full test suite, build, dep
 ## Release and recovery
 
 No new secrets, scheduler, database objects or paid feature flags are needed. NOAA is off until selected. If an upstream schema changes, its adapter fails closed and the astronomical clock remains usable. Remove the navigation/home invitation and `/clock` route to withdraw the feature; no data migration rollback is necessary. The initial clock UI is English, consistent with an explicitly English public feature; localization is a future extension.
+
+## Time explorer modal
+
+The Explore time button above the dial opens a native modal dialog styled as a floating bottom panel. It retains date entry, the year slider and return to live time, with optional playback advancing one server-calculated day at a time. Playback stops at the end of the selected year or when the panel closes. Escape, close button and backdrop dismiss the panel; focus returns to its trigger. Background controls are inert while open. No calculation algorithms or feeds change.
+
+Modal validation: 339 tests pass, including open/close, focus return and playback reset. Browser checks confirmed server-backed playback and Escape dismissal; desktop and mobile layouts reviewed. Dependency audit findings remain unchanged.
