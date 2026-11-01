@@ -153,7 +153,7 @@
 }
 .home-form__fields {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
   gap: 14px;
   min-width: 0;
 }
@@ -168,10 +168,22 @@
 }
 .home-form__field input[type="date"],
 .home-form__field input[type="time"] {
+  display: block;
   inline-size: 100%;
   min-inline-size: 0;
   max-inline-size: 100%;
+  /* iOS Safari gives native date/time controls an intrinsic minimum width
+     that overflows narrow grids and collapses their text when empty. */
+  -webkit-appearance: none;
+  appearance: none;
+  line-height: 46px;
+  text-align: left;
   color-scheme: dark;
+}
+.home-form__field input[type="date"]::-webkit-date-and-time-value,
+.home-form__field input[type="time"]::-webkit-date-and-time-value {
+  min-height: 1.4em;
+  text-align: left;
 }
 .home-form__field input:disabled {
   opacity: 0.5;
@@ -205,6 +217,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 .atlas-field .home-form__search input {
   padding-left: 38px;
@@ -221,7 +234,13 @@
 }
 .home-form__search-button {
   position: absolute;
+  top: 6px;
   right: 6px;
+  bottom: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  line-height: 1;
   min-height: 36px;
   padding: 0 14px;
   border-radius: 8px;

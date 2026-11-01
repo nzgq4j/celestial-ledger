@@ -18,6 +18,7 @@ import {
 } from "@/components/NatalChartWheel";
 import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 import { ATLAS_PLAN_KEY, ATLAS_PRICES } from "@/lib/membership/plans";
+import { resolveLocalDateTime } from "@/lib/time";
 import "@/app/styles/atlas-public.css";
 
 type ChartTab = "planets" | "houses" | "aspects";
@@ -363,6 +364,23 @@ export default function HoroscopeApp({
       }).format(new Date(`${chart.input.date}T12:00:00Z`))
     : "";
 
+  // Only ask "earlier or later?" on the night the clocks went back, when the
+  // entered local time really occurred twice in the birthplace's time zone.
+  const repeatedLocalTime = (() => {
+    if (unknown || !date || !time || !place) return false;
+    const [year, month, day] = date.split("-").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
+    if (![year, month, day, hour, minute].every(Number.isFinite)) return false;
+    try {
+      return (
+        resolveLocalDateTime({ year, month, day, hour, minute }, place.timeZone)
+          .length > 1
+      );
+    } catch {
+      return false;
+    }
+  })();
+
   return (
     <main className="home">
       <section className="home-hero" aria-labelledby="home-title">
@@ -515,7 +533,7 @@ export default function HoroscopeApp({
                 </fieldset>
               )}
 
-              {!unknown && (
+              {repeatedLocalTime && (
                 <fieldset className="home-form__ambiguity">
                   <legend>{copy.formRepeatedClock}</legend>
                   <div className="home-form__ambiguity-options">
