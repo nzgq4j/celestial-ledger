@@ -2,10 +2,16 @@ import "server-only";
 
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
+import {
+  membershipPlanFor,
+  type MembershipPlanId,
+} from "@/lib/membership/plans";
 
 export type HeaderIdentity = {
   displayName: string;
   email: string;
+  plan: MembershipPlanId;
 };
 
 export function resolveHeaderDisplayName(
@@ -29,9 +35,11 @@ export async function getHeaderIdentity(): Promise<HeaderIdentity | null> {
       .select("display_name")
       .eq("id", userId)
       .maybeSingle();
+    const planKey = await effectivePlanKeyForUser(userId).catch(() => "free");
     return {
       displayName: resolveHeaderDisplayName(profile?.display_name, email),
       email,
+      plan: membershipPlanFor(planKey),
     };
   } catch {
     return null;

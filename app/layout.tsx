@@ -1,9 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import {
+  Cormorant_Garamond,
+  Hanken_Grotesk,
+  JetBrains_Mono,
+} from "next/font/google";
+import { AppTabBar, SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { AppShell } from "@/components/AppShell";
+import { getAppPlatform } from "@/lib/app-shell/server";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import "./globals.css";
 import "./workspace.css";
+import "./atlas.css";
 import { getAdminSettings } from "@/lib/admin/settings";
 import { GoogleIntegrations } from "@/components/GoogleIntegrations";
 import { getServerTranslationPack } from "@/lib/i18n/server";
@@ -15,6 +23,32 @@ import {
 } from "@/lib/seo";
 import { getHeaderIdentity } from "@/lib/auth/header-identity";
 import { tarotReadingFlags } from "@/lib/commerce/flags";
+
+export const viewport: Viewport = {
+  themeColor: "#07111f",
+  colorScheme: "dark",
+  viewportFit: "cover",
+};
+
+const displayFont = Cormorant_Garamond({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
+const sansFont = Hanken_Grotesk({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const monoFont = JetBrains_Mono({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAdminSettings();
@@ -72,11 +106,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [settings, pack, identity] = await Promise.all([
+  const [settings, pack, identity, platform] = await Promise.all([
     getAdminSettings(),
     getServerTranslationPack(),
     getHeaderIdentity(),
+    getAppPlatform(),
   ]);
+  const tarotEnabled = tarotReadingFlags().enabled;
   const organizationJson = settings.geo.enabled
     ? {
         "@context": "https://schema.org",
@@ -109,6 +145,9 @@ export default async function RootLayout({
       lang={pack.tag}
       dir={pack.direction}
       data-theme="dark"
+      data-app={platform ?? undefined}
+      data-signed-in={identity ? "true" : undefined}
+      className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -128,12 +167,18 @@ export default async function RootLayout({
         />
         <LocaleProvider initialLocale={pack.tag} initialPack={pack}>
           <div className="meridian" aria-hidden="true" />
+          <AppShell />
           <SiteHeader
             identity={identity}
             tarotEnabled={tarotReadingFlags().enabled}
           />
           {children}
           <SiteFooter />
+          <AppTabBar
+            identity={identity}
+            platform={platform}
+            tarotEnabled={tarotEnabled}
+          />
         </LocaleProvider>
       </body>
     </html>

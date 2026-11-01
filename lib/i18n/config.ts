@@ -34,6 +34,16 @@ export type TranslationPack = {
       signOut: string;
       identityMenu: string;
       signedInAs: string;
+      today: string;
+      myChart: string;
+      chartTab: string;
+      libraryTab: string;
+      accountTab: string;
+      getMyChart: string;
+      atlasMember: string;
+      freeMember: string;
+      contact: string;
+      appTabsLabel: string;
     };
     preferences: {
       language: string;

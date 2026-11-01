@@ -60,8 +60,7 @@
   max-width: 13ch;
   margin: 0.55rem 0 1rem;
   font:
-    400 clamp(2.8rem, 6vw, 5.7rem)/0.94 Georgia,
-    serif;
+    400 clamp(2.8rem, 6vw, 5.7rem)/0.94 var(--atlas-display);
 }
 .admin-hero > div:first-child > p:last-child {
   max-width: 48rem;
@@ -80,8 +79,7 @@
 .admin-identity code {
   color: var(--gold);
   font:
-    0.68rem ui-monospace,
-    monospace;
+    0.68rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -149,8 +147,7 @@
   margin: 1rem 0 0.25rem;
   color: #738197;
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -196,8 +193,7 @@
 .admin-section__heading h2 {
   margin: 0.35rem 0 0.65rem;
   font:
-    400 clamp(2rem, 4vw, 3.4rem) Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.4rem) var(--atlas-display);
 }
 .admin-section__heading > p:last-child {
   color: var(--muted);
@@ -226,8 +222,7 @@
 .admin-metrics strong {
   color: var(--gold);
   font:
-    400 2.8rem Georgia,
-    serif;
+    400 2.8rem var(--atlas-display);
 }
 .admin-user-table {
   border-top: 1px solid var(--line);
@@ -441,8 +436,7 @@
   margin: 0;
   color: var(--paper);
   font:
-    400 1.45rem Georgia,
-    serif;
+    400 1.45rem var(--atlas-display);
 }
 .admin-form label {
   display: grid;
@@ -472,8 +466,7 @@
   margin: 0;
   color: var(--gold);
   font:
-    0.72rem ui-monospace,
-    monospace;
+    0.72rem var(--atlas-mono);
 }
 .admin-blog-form {
   max-width: 54rem;
@@ -542,8 +535,7 @@
 .journal-entry h1 {
   margin: 0.55rem 0 1.1rem;
   font:
-    400 clamp(3rem, 7vw, 6rem)/0.96 Georgia,
-    serif;
+    400 clamp(3rem, 7vw, 6rem)/0.96 var(--atlas-display);
 }
 .journal-hero > p:last-child,
 .journal-entry header > p {
@@ -581,8 +573,7 @@
 .journal-grid h2 {
   margin: 0;
   font:
-    400 2rem Georgia,
-    serif;
+    400 2rem var(--atlas-display);
 }
 .journal-grid article > p:not(.section-kicker),
 .journal-grid small {
@@ -610,8 +601,7 @@
 .journal-entry__body p {
   color: #d6cfbf;
   font:
-    1.08rem/1.9 Georgia,
-    serif;
+    1.08rem/1.9 var(--atlas-display);
 }
 @media (max-width: 900px) {
   .admin-workspace {
@@ -673,7 +663,7 @@ body {
   background: var(--navy);
   color: var(--ivory);
   font-family:
-    "Avenir Next", Avenir, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    var(--atlas-sans);
   background-image:
     radial-gradient(circle at 78% 4%, var(--body-glow), transparent 29rem),
     linear-gradient(180deg, var(--navy), var(--body-end) 58%);
@@ -734,7 +724,7 @@ a {
 }
 .brand strong {
   display: block;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-weight: 500;
   letter-spacing: 0.03em;
 }
@@ -898,7 +888,7 @@ a {
   padding: 0.8rem 0.9rem;
   border-bottom: 1px solid var(--line);
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 0.98rem;
 }
 .mobile-nav__panel a:last-child {
@@ -945,8 +935,7 @@ a {
 .sample-report h1 {
   margin: 0.6rem 0 1rem;
   font:
-    400 clamp(2.8rem, 6vw, 5.6rem)/0.98 Georgia,
-    serif;
+    400 clamp(2.8rem, 6vw, 5.6rem)/0.98 var(--atlas-display);
   letter-spacing: -0.04em;
 }
 .sample-library__hero > p:last-child,
@@ -979,8 +968,7 @@ a {
   padding-top: 0.12rem;
   color: var(--gold);
   font:
-    0.7rem ui-monospace,
-    monospace;
+    0.7rem var(--atlas-mono);
 }
 .sample-editions__content {
   display: flex;
@@ -997,8 +985,7 @@ a {
 .sample-editions h2 {
   margin: 0.7rem 0 1rem;
   font:
-    400 clamp(1.65rem, 3vw, 2.3rem) Georgia,
-    serif;
+    400 clamp(1.65rem, 3vw, 2.3rem) var(--atlas-display);
   text-wrap: balance;
 }
 .sample-editions .sample-editions__description {
@@ -1013,8 +1000,7 @@ a {
   margin: 1.6rem 0 0.65rem;
   color: var(--gold);
   font:
-    600 0.67rem/1.3 ui-monospace,
-    monospace;
+    600 0.67rem/1.3 var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1098,8 +1084,7 @@ a {
 .sample-report dt {
   color: var(--gold);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -1133,8 +1118,7 @@ a {
   margin: 0.5rem 0 1.4rem;
   color: var(--paper);
   font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1.04 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.4rem) / 1.04 var(--atlas-display);
 }
 .sample-report-bluf__overview {
   max-width: 51rem;
@@ -1160,16 +1144,14 @@ a {
 .sample-report-bluf__priorities span {
   color: var(--gold);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   letter-spacing: 0.12em;
 }
 .sample-report-bluf__priorities h3 {
   margin: 1.1rem 0 0.7rem;
   color: var(--paper);
   font:
-    400 1.2rem Georgia,
-    serif;
+    400 1.2rem var(--atlas-display);
 }
 .sample-report-bluf__priorities p,
 .sample-report-bluf__closing p:last-child {
@@ -1267,8 +1249,7 @@ a {
   margin: 0;
   color: var(--gold) !important;
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1276,8 +1257,7 @@ a {
   margin: 0.7rem 0;
   color: var(--paper);
   font:
-    400 1.25rem Georgia,
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 .reading-day-arc__evidence {
   margin-top: 1rem;
@@ -1285,8 +1265,7 @@ a {
   border-top: 1px dotted var(--line);
   color: var(--muted) !important;
   font:
-    0.58rem/1.5 ui-monospace,
-    monospace !important;
+    0.58rem/1.5 var(--atlas-mono) !important;
   overflow-wrap: anywhere;
 }
 .reading-day-arc__note {
@@ -1331,22 +1310,19 @@ a {
 .sample-signature-visual__role {
   fill: var(--gold);
   font:
-    2.4px ui-monospace,
-    monospace;
+    2.4px var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .sample-signature-visual__point {
   fill: var(--paper);
   font:
-    3.2px Georgia,
-    serif;
+    3.2px var(--atlas-display);
 }
 .sample-signature-visual__position {
   fill: var(--text-soft);
   font:
-    2.3px ui-monospace,
-    monospace;
+    2.3px var(--atlas-mono);
 }
 .sample-renewal-compass__dial {
   position: relative;
@@ -1377,8 +1353,7 @@ a {
   position: absolute;
   color: var(--paper);
   font:
-    400 clamp(0.75rem, 2vw, 1rem) Georgia,
-    serif;
+    400 clamp(0.75rem, 2vw, 1rem) var(--atlas-display);
 }
 .sample-renewal-compass__label--north {
   top: 7%;
@@ -1416,8 +1391,7 @@ a {
 .sample-renewal-compass__centre strong {
   color: var(--paper);
   font:
-    400 1.25rem Georgia,
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 .sample-renewal-compass__centre small {
   color: var(--gold);
@@ -1436,8 +1410,7 @@ a {
 .sample-week-current__axis {
   fill: rgba(229, 213, 181, 0.52);
   font:
-    0.55rem ui-monospace,
-    monospace;
+    0.55rem var(--atlas-mono);
   text-anchor: end;
 }
 .sample-week-current__area {
@@ -1462,16 +1435,14 @@ a {
 .sample-week-current__day {
   fill: var(--paper);
   font:
-    400 0.95rem Georgia,
-    serif;
+    400 0.95rem var(--atlas-display);
   text-anchor: middle;
 }
 .sample-week-current__theme,
 .sample-week-current__value {
   fill: var(--gold);
   font:
-    0.55rem ui-monospace,
-    monospace;
+    0.55rem var(--atlas-mono);
   letter-spacing: 0.06em;
   text-anchor: middle;
   text-transform: uppercase;
@@ -1513,15 +1484,13 @@ a {
 .sample-report article h2 {
   margin: 0 0 0.7rem;
   font:
-    400 1.65rem Georgia,
-    serif;
+    400 1.65rem var(--atlas-display);
   color: var(--paper);
 }
 .sample-report article section > span {
   color: var(--gold);
   font:
-    0.6rem ui-monospace,
-    monospace;
+    0.6rem var(--atlas-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1539,8 +1508,7 @@ a {
   margin: 0 0 1rem;
   color: var(--gold);
   font:
-    500 1.15rem Georgia,
-    serif;
+    500 1.15rem var(--atlas-display);
 }
 .sample-report__applications p:last-child {
   margin-bottom: 0;
@@ -1562,15 +1530,14 @@ a {
 .sample-report__chapter blockquote strong {
   color: var(--gold);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 .sample-report__chapter blockquote p {
   margin: 0.45rem 1.5rem 0 0;
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 1.02rem;
   line-height: 1.55;
 }
@@ -1598,8 +1565,7 @@ a {
 }
 .sample-chart-data h2 {
   font:
-    400 2rem Georgia,
-    serif;
+    400 2rem var(--atlas-display);
 }
 .sample-chart-data__tables {
   display: grid;
@@ -1617,8 +1583,7 @@ a {
   border: 1px solid var(--line);
   color: var(--gold);
   font:
-    500 1rem Georgia,
-    serif;
+    500 1rem var(--atlas-display);
   text-align: left;
 }
 .sample-chart-data th,
@@ -1630,8 +1595,7 @@ a {
 .sample-chart-data thead th {
   color: var(--muted);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -1666,9 +1630,7 @@ a {
   margin: 0.55rem 0 1rem;
   color: var(--paper);
   font:
-    400 clamp(3.3rem, 8vw, 7rem) / 0.9 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(3.3rem, 8vw, 7rem) / 0.9 var(--atlas-display);
   letter-spacing: -0.05em;
 }
 .sample-natal-chart__hero > div > p:last-child {
@@ -1695,8 +1657,7 @@ a {
 .sample-natal-chart__calculation dt {
   color: var(--gold);
   font:
-    0.6rem ui-monospace,
-    monospace;
+    0.6rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1704,7 +1665,7 @@ a {
 .sample-natal-chart__calculation dd {
   margin: 0.55rem 0 0;
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   line-height: 1.5;
 }
 .sample-natal-chart__anchors > header,
@@ -1718,9 +1679,7 @@ a {
   margin: 0.5rem 0 0;
   color: var(--paper);
   font:
-    400 clamp(2rem, 4vw, 3.35rem) / 1.04 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(2rem, 4vw, 3.35rem) / 1.04 var(--atlas-display);
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
@@ -1747,16 +1706,13 @@ a {
   min-height: 4.8rem;
   color: var(--gold);
   font:
-    400 clamp(2.7rem, 5vw, 4.5rem) / 1 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(2.7rem, 5vw, 4.5rem) / 1 var(--atlas-display);
 }
 .sample-natal-chart__anchors article > p {
   margin: 1rem 0 0.45rem;
   color: var(--muted);
   font:
-    0.6rem ui-monospace,
-    monospace;
+    0.6rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1764,9 +1720,7 @@ a {
   margin: 0;
   color: var(--paper);
   font:
-    400 1.15rem/1.35 Georgia,
-    "Times New Roman",
-    serif;
+    400 1.15rem/1.35 var(--atlas-display);
 }
 .sample-natal-chart__anchors small {
   display: block;
@@ -1816,7 +1770,7 @@ a {
 }
 .sample-natal-chart__calculation dd {
   color: var(--text-soft);
-  font-family: ui-monospace, monospace;
+  font-family: var(--atlas-mono);
   font-size: 0.73rem;
   overflow-wrap: anywhere;
 }
@@ -1887,8 +1841,7 @@ a {
 }
 .weekly-offer__grid h2 {
   font:
-    400 1.8rem Georgia,
-    serif;
+    400 1.8rem var(--atlas-display);
 }
 .weekly-offer__grid li {
   margin: 0.8rem 0;
@@ -2028,7 +1981,7 @@ a {
 .atlas-hero h1,
 .collection-hero h1,
 .library-heading h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-weight: 400;
   letter-spacing: -0.035em;
   line-height: 0.98;
@@ -2112,8 +2065,7 @@ a {
 .route-map__coordinates text {
   fill: var(--map-chalk);
   font:
-    9px ui-monospace,
-    monospace;
+    9px var(--atlas-mono);
   letter-spacing: 0.14em;
   text-anchor: middle;
 }
@@ -2129,8 +2081,7 @@ a {
   gap: 1rem;
   color: #9fb5bb;
   font:
-    0.61rem ui-monospace,
-    monospace;
+    0.61rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2159,7 +2110,7 @@ a {
   letter-spacing: 0.08em;
 }
 .atlas-hero__method span {
-  font-family: ui-monospace, monospace;
+  font-family: var(--atlas-mono);
   color: var(--gold);
   border-left: 1px solid var(--gold);
   padding-left: 0.55rem;
@@ -2197,8 +2148,7 @@ a {
 }
 .report-edition__index {
   font:
-    0.72rem ui-monospace,
-    monospace;
+    0.72rem var(--atlas-mono);
   color: var(--gold);
   padding-top: 0.45rem;
 }
@@ -2212,8 +2162,7 @@ a {
 }
 .report-edition h2 {
   font:
-    400 clamp(2rem, 4vw, 3.6rem)/1.05 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.6rem)/1.05 var(--atlas-display);
   margin-top: 0.8rem;
 }
 .report-edition p {
@@ -2233,15 +2182,14 @@ a {
   margin-top: 0.65rem;
   color: var(--muted);
   font:
-    0.72rem/1.55 ui-monospace,
-    monospace;
+    0.72rem/1.55 var(--atlas-mono);
   letter-spacing: 0.03em;
 }
 .report-edition small {
   display: block;
   color: #7f8997;
   margin-top: 1.25rem;
-  font-family: ui-monospace, monospace;
+  font-family: var(--atlas-mono);
 }
 .report-edition__reveals {
   display: grid;
@@ -2294,8 +2242,7 @@ a {
 }
 .privacy-note h2 {
   font:
-    400 2.3rem/1.1 Georgia,
-    serif;
+    400 2.3rem/1.1 var(--atlas-display);
   margin-top: 0.75rem;
 }
 .privacy-note > p:not(.eyebrow) {
@@ -2350,8 +2297,7 @@ a {
   max-width: 12ch;
   margin: 0.55rem 0 1rem;
   font:
-    400 clamp(2.3rem, 5vw, 4.4rem)/0.98 Georgia,
-    serif;
+    400 clamp(2.3rem, 5vw, 4.4rem)/0.98 var(--atlas-display);
 }
 .chart-introduction > div > p:last-child,
 .chart-method-notes article > p:last-child,
@@ -2374,7 +2320,7 @@ a {
 }
 .chart-introduction dt {
   color: var(--gold);
-  font-family: Georgia, serif;
+  font-family: var(--atlas-display);
 }
 .chart-introduction dd {
   color: var(--muted);
@@ -2422,8 +2368,7 @@ a {
 .chart-account-cta h2 {
   margin: 0.35rem 0 0.55rem;
   font:
-    400 clamp(1.7rem, 4vw, 2.5rem) Georgia,
-    serif;
+    400 clamp(1.7rem, 4vw, 2.5rem) var(--atlas-display);
 }
 .chart-account-cta--closing {
   position: relative;
@@ -2476,8 +2421,7 @@ a {
   max-width: 17ch;
   margin: 0.55rem 0 0.8rem;
   font:
-    400 clamp(2rem, 4vw, 3.5rem)/0.98 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.5rem)/0.98 var(--atlas-display);
 }
 .chart-reveal-continuation__intro > p:last-of-type,
 .chart-reveal-continuation__offer > p {
@@ -2491,8 +2435,7 @@ a {
   background: rgba(255, 255, 255, 0.035);
   color: var(--paper);
   font:
-    400 1.05rem/1.6 Georgia,
-    serif;
+    400 1.05rem/1.6 var(--atlas-display);
 }
 .chart-reveal-continuation blockquote span,
 .chart-reveal-continuation__plan {
@@ -2500,8 +2443,7 @@ a {
   margin-bottom: 0.45rem;
   color: var(--gold);
   font:
-    600 0.7rem/1.2 ui-monospace,
-    monospace;
+    600 0.7rem/1.2 var(--atlas-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -2570,8 +2512,7 @@ a {
 .chart-method-notes h2 {
   margin: 0.45rem 0 0.7rem;
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .legal-page {
   max-width: 50rem;
@@ -2579,15 +2520,13 @@ a {
 .legal-page h1 {
   margin: 0.6rem 0 1.5rem;
   font:
-    400 clamp(2.8rem, 7vw, 5rem) Georgia,
-    serif;
+    400 clamp(2.8rem, 7vw, 5rem) var(--atlas-display);
 }
 .legal-page h2 {
   margin: 2rem 0 0.5rem;
   color: var(--gold);
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .account-dashboard {
   max-width: 72rem;
@@ -2619,8 +2558,7 @@ a {
   max-width: 13ch;
   margin: 0.55rem 0 0;
   font:
-    400 clamp(2.25rem, 5vw, 4rem)/1 Georgia,
-    serif;
+    400 clamp(2.25rem, 5vw, 4rem)/1 var(--atlas-display);
 }
 .account-hero__welcome > p:last-child,
 .dashboard-empty {
@@ -2687,8 +2625,7 @@ a {
 .atlas-next-step h2 {
   margin: 0.35rem 0 0.45rem;
   font:
-    400 clamp(1.5rem, 3vw, 2.15rem)/1.1 Georgia,
-    serif;
+    400 clamp(1.5rem, 3vw, 2.15rem)/1.1 var(--atlas-display);
 }
 .atlas-next-step > div > p:last-child {
   max-width: 44rem;
@@ -2714,8 +2651,7 @@ a {
   display: block;
   color: var(--paper);
   font:
-    400 1.3rem Georgia,
-    serif;
+    400 1.3rem var(--atlas-display);
 }
 .account-notice {
   padding: 0.8rem 1rem;
@@ -2764,8 +2700,7 @@ a {
 .account-settings h2 {
   margin-top: 0.3rem;
   font:
-    400 1.65rem Georgia,
-    serif;
+    400 1.65rem var(--atlas-display);
 }
 .dashboard-panel__meta,
 .text-link {
@@ -2832,8 +2767,7 @@ a {
 .ready-report > div:first-child strong {
   color: var(--paper);
   font:
-    400 1.2rem Georgia,
-    serif;
+    400 1.2rem var(--atlas-display);
 }
 .ready-report > div:first-child p {
   flex: 0 1 auto;
@@ -2868,8 +2802,7 @@ a {
 .compact-products h3 {
   color: var(--paper);
   font:
-    400 1.3rem Georgia,
-    serif;
+    400 1.3rem var(--atlas-display);
 }
 .compact-products__action {
   display: flex;
@@ -2880,8 +2813,7 @@ a {
 .compact-products__action strong {
   color: var(--gold);
   font:
-    400 1.15rem Georgia,
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 .compact-products__action--complimentary {
   display: grid;
@@ -2930,8 +2862,7 @@ a {
   margin: 0.25rem 0;
   color: var(--paper);
   font:
-    400 1.15rem Georgia,
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 .birth-profile-card__body > p:not(.section-kicker),
 .birth-profile-card__body small,
@@ -3082,8 +3013,7 @@ a {
   margin: 0.3rem 0 0;
   color: var(--paper);
   font:
-    400 clamp(1.6rem, 3vw, 2.2rem) Georgia,
-    serif;
+    400 clamp(1.6rem, 3vw, 2.2rem) var(--atlas-display);
 }
 .natal-reading-full__heading > span,
 .birth-profile-card__reading-status {
@@ -3239,7 +3169,7 @@ body:has(.admin-shell) > .meridian {
   color: var(--admin-copy);
   box-shadow: 0 2rem 7rem rgba(0, 0, 0, 0.38);
   font-family:
-    "Avenir Next", Avenir, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    var(--atlas-sans);
 }
 
 .admin-workspace {
@@ -3286,7 +3216,7 @@ body:has(.admin-shell) > .meridian {
 }
 
 .admin-sidebar__brand strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -3360,10 +3290,7 @@ body:has(.admin-shell) > .meridian {
   margin: 0.22rem 0 0;
   color: var(--admin-copy);
   font:
-    650 clamp(1.8rem, 3vw, 2.45rem) / 1.05 "Avenir Next",
-    Avenir,
-    "Segoe UI",
-    sans-serif;
+    650 clamp(1.8rem, 3vw, 2.45rem) / 1.05 var(--atlas-sans);
   letter-spacing: -0.035em;
 }
 
@@ -4424,8 +4351,7 @@ body:has(.account-dashboard) > .meridian {
   display: block;
   margin-top: 0.18rem;
   font:
-    400 1.25rem Georgia,
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 .account-command-bar__signals {
   display: flex;
@@ -4711,8 +4637,7 @@ body:has(.account-dashboard) > .meridian {
   max-width: 13ch;
   margin: 0.65rem 0 1.25rem;
   font:
-    400 clamp(3rem, 7vw, 5.8rem)/0.96 Georgia,
-    serif;
+    400 clamp(3rem, 7vw, 5.8rem)/0.96 var(--atlas-display);
 }
 .method-page__hero > p:last-child {
   max-width: 46rem;
@@ -4738,8 +4663,7 @@ body:has(.account-dashboard) > .meridian {
   margin-bottom: 4rem;
   color: var(--gold);
   font:
-    400 2.4rem Georgia,
-    serif;
+    400 2.4rem var(--atlas-display);
 }
 .method-page__principles h2,
 .method-page__reading h2,
@@ -4747,8 +4671,7 @@ body:has(.account-dashboard) > .meridian {
   margin: 0.4rem 0 0.85rem;
   color: var(--paper);
   font:
-    400 1.65rem/1.1 Georgia,
-    serif;
+    400 1.65rem/1.1 var(--atlas-display);
 }
 .method-page__principles article > p:last-child,
 .method-page__reading li p,
@@ -4778,13 +4701,12 @@ body:has(.account-dashboard) > .meridian {
   left: 0;
   color: var(--gold);
   font:
-    400 1.4rem Georgia,
-    serif;
+    400 1.4rem var(--atlas-display);
   content: "0" counter(method-step);
 }
 .method-page__reading li strong {
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 1.15rem;
 }
 .method-page__reading li p {
@@ -4818,8 +4740,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .library-section > h2 {
   font:
-    400 2rem Georgia,
-    serif;
+    400 2rem var(--atlas-display);
   margin-top: 0.55rem;
 }
 .library-product {
@@ -4852,8 +4773,7 @@ body:has(.account-dashboard) > .meridian {
   padding-inline: 0.5rem;
   color: var(--gold);
   font:
-    400 1.15rem Georgia,
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 
 .recovery-compass > p {
@@ -4972,8 +4892,7 @@ body:has(.account-dashboard) > .meridian {
 .report-library-row__identity strong {
   color: var(--paper);
   font:
-    400 1.12rem Georgia,
-    serif;
+    400 1.12rem var(--atlas-display);
 }
 .report-library-row__state {
   display: grid;
@@ -4982,8 +4901,7 @@ body:has(.account-dashboard) > .meridian {
 .report-library-row__state > span {
   color: var(--gold);
   font:
-    0.7rem ui-monospace,
-    monospace;
+    0.7rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -5095,8 +5013,7 @@ body:has(.account-dashboard) > .meridian {
   margin: 0.35rem 0 0.8rem;
   color: var(--ivory);
   font:
-    400 clamp(1.7rem, 5vw, 2.35rem) Georgia,
-    serif;
+    400 clamp(1.7rem, 5vw, 2.35rem) var(--atlas-display);
 }
 .report-delete-modal > p:not(.eyebrow) {
   color: var(--muted);
@@ -5135,8 +5052,7 @@ body:has(.account-dashboard) > .meridian {
 .report-viewer-heading h1,
 .private-report > h1 {
   font:
-    400 clamp(3rem, 7vw, 6rem)/0.98 Georgia,
-    serif;
+    400 clamp(3rem, 7vw, 6rem)/0.98 var(--atlas-display);
   margin: 0.8rem 0 1.5rem;
 }
 .report-viewer-heading > p:not(.eyebrow),
@@ -5167,8 +5083,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .generation-progress h1 {
   font:
-    400 clamp(2.4rem, 6vw, 5rem)/1 Georgia,
-    serif;
+    400 clamp(2.4rem, 6vw, 5rem)/1 var(--atlas-display);
   margin: 0.7rem 0 2rem;
 }
 .generation-progress__track {
@@ -5278,8 +5193,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .report-narrative h2 {
   font:
-    400 clamp(2rem, 4vw, 3rem)/1.05 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3rem)/1.05 var(--atlas-display);
   color: var(--paper);
 }
 .report-narrative p,
@@ -5308,7 +5222,7 @@ body:has(.account-dashboard) > .meridian {
 .report-section-callout p {
   margin: 0;
   color: var(--paper);
-  font-family: Georgia, serif;
+  font-family: var(--atlas-display);
   font-size: 1.12rem;
 }
 .reflection-prompts {
@@ -5340,8 +5254,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .evidence-map h2 {
   font:
-    400 1.6rem Georgia,
-    serif;
+    400 1.6rem var(--atlas-display);
   margin: 0.5rem 0 1.25rem;
 }
 .evidence-node {
@@ -5354,8 +5267,7 @@ body:has(.account-dashboard) > .meridian {
 .evidence-node code {
   color: var(--muted);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   text-transform: uppercase;
 }
 .evidence-node--aspect {
@@ -5505,8 +5417,7 @@ input:focus-visible {
   margin: 0 0 0.85rem;
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-align: center;
@@ -5525,15 +5436,13 @@ input:focus-visible {
   min-height: 1.45rem;
   border-bottom: 1px dotted color-mix(in srgb, var(--line) 65%, transparent);
   color: var(--text-soft);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 0.76rem;
 }
 .zodiac-legend__glyph {
   color: var(--gold);
   font:
-    1rem Georgia,
-    "Times New Roman",
-    serif;
+    1rem var(--atlas-display);
   text-align: center;
 }
 .chart-time-notice {
@@ -5551,7 +5460,7 @@ input:focus-visible {
 }
 .chart-time-notice strong {
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-weight: 500;
 }
 .meaning-note {
@@ -5568,8 +5477,7 @@ input:focus-visible {
   margin: 0;
   color: var(--gold);
   font:
-    0.63rem ui-monospace,
-    monospace;
+    0.63rem var(--atlas-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -5598,19 +5506,17 @@ input:focus-visible {
 .ephemeris-register__heading h3 {
   margin: 0.3rem 0 0;
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
   color: var(--paper);
 }
 .ephemeris-register__heading > span {
   color: var(--muted);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
 }
 .ephemeris-register td:first-child {
   color: var(--paper);
-  font-family: Georgia, serif;
+  font-family: var(--atlas-display);
 }
 .ephemeris-register__status {
   display: grid;
@@ -5628,8 +5534,7 @@ input:focus-visible {
 .ephemeris-register__status dt {
   color: var(--muted);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -5679,15 +5584,13 @@ input:focus-visible {
 .horoscope-hero h1 {
   margin: 0.6rem 0 0;
   font:
-    400 clamp(3.2rem, 7vw, 6.5rem)/0.92 Georgia,
-    serif;
+    400 clamp(3.2rem, 7vw, 6.5rem)/0.92 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 .horoscope-detail h1 {
   margin: 0.4rem 0 0;
   font:
-    400 clamp(2.35rem, 5vw, 4.25rem)/0.98 Georgia,
-    serif;
+    400 clamp(2.35rem, 5vw, 4.25rem)/0.98 var(--atlas-display);
   letter-spacing: -0.035em;
 }
 .horoscope-hero > p {
@@ -5705,8 +5608,7 @@ input:focus-visible {
   border-right: 1px solid var(--line);
   color: var(--muted);
   font:
-    0.68rem ui-monospace,
-    monospace;
+    0.68rem var(--atlas-mono);
 }
 .daily-sky-strip strong {
   display: block;
@@ -5743,21 +5645,18 @@ input:focus-visible {
 .horoscope-card__sign > span {
   color: var(--gold);
   font:
-    2.2rem Georgia,
-    serif;
+    2.2rem var(--atlas-display);
 }
 .horoscope-card__sign p {
   margin: 0;
   color: var(--paper);
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .horoscope-card__sign small {
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -5852,8 +5751,7 @@ input:focus-visible {
   margin: 0.75rem 0 0.35rem;
   color: var(--gold);
   font:
-    0.6rem ui-monospace,
-    monospace;
+    0.6rem var(--atlas-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -5862,8 +5760,7 @@ input:focus-visible {
   min-height: 2.6em;
   color: var(--paper);
   font:
-    400 1rem/1.3 Georgia,
-    serif;
+    400 1rem/1.3 var(--atlas-display);
 }
 .horoscope-day-arc li div > span {
   display: block;
@@ -5919,8 +5816,7 @@ input:focus-visible {
 .horoscope-card dt {
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -5989,16 +5885,13 @@ input:focus-visible {
 .horoscope-detail__glyph {
   color: var(--gold);
   font:
-    clamp(3rem, 7vw, 5rem)/1 Georgia,
-    serif;
+    clamp(3rem, 7vw, 5rem)/1 var(--atlas-display);
 }
 .horoscope-detail__subtitle {
   margin: 0.15rem 0 1.15rem;
   color: var(--paper);
   font:
-    400 clamp(1.35rem, 2.5vw, 2rem) / 1.1 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(1.35rem, 2.5vw, 2rem) / 1.1 var(--atlas-display);
   letter-spacing: -0.02em;
 }
 .horoscope-detail__theme {
@@ -6006,8 +5899,7 @@ input:focus-visible {
   margin: 0;
   color: var(--gold);
   font:
-    0.7rem ui-monospace,
-    monospace;
+    0.7rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -6079,8 +5971,7 @@ input:focus-visible {
   margin: 0 0 0.7rem;
   color: var(--paper);
   font:
-    400 clamp(1.2rem, 2vw, 1.55rem) Georgia,
-    serif;
+    400 clamp(1.2rem, 2vw, 1.55rem) var(--atlas-display);
 }
 .horoscope-reading p {
   color: var(--text-soft);
@@ -6089,16 +5980,14 @@ input:focus-visible {
 }
 .horoscope-reading__lead p {
   font:
-    400 clamp(1.05rem, 1.7vw, 1.25rem)/1.55 Georgia,
-    serif;
+    400 clamp(1.05rem, 1.7vw, 1.25rem)/1.55 var(--atlas-display);
   color: var(--paper);
 }
 .horoscope-reading__lead .section-kicker {
   margin-bottom: 0.7rem;
   color: var(--gold);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -6142,8 +6031,7 @@ input:focus-visible {
   margin-top: 1rem;
   color: var(--muted);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
 }
 .big-three-section {
   display: grid;
@@ -6608,8 +6496,7 @@ th {
   margin: 0 !important;
   color: var(--gold) !important;
   font:
-    0.64rem ui-monospace,
-    monospace;
+    0.64rem var(--atlas-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -6645,8 +6532,7 @@ th {
   margin: 0 0 1rem;
   color: var(--paper);
   font:
-    400 clamp(1.2rem, 2.5vw, 1.65rem)/1.15 Georgia,
-    serif;
+    400 clamp(1.2rem, 2.5vw, 1.65rem)/1.15 var(--atlas-display);
 }
 .interpretation-section p {
   max-width: 68ch;
@@ -6743,9 +6629,7 @@ th {
   margin-top: 2rem;
   color: #ded5c4;
   font:
-    400 clamp(1rem, 1.5vw, 1.14rem)/1.7 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(1rem, 1.5vw, 1.14rem)/1.7 var(--atlas-display);
 }
 .atlas-hero__actions {
   display: flex;
@@ -6840,8 +6724,7 @@ th {
   margin: 0.55rem 0 0;
   color: var(--paper);
   font:
-    400 clamp(2.4rem, 5vw, 4.5rem) / 0.98 Georgia,
-    serif;
+    400 clamp(2.4rem, 5vw, 4.5rem) / 0.98 var(--atlas-display);
 }
 .landing-pathways > header > p,
 .landing-pathways__routes article > p:not(.landing-pathways__label),
@@ -6894,8 +6777,7 @@ th {
   z-index: 1;
   color: var(--gold);
   font:
-    1.35rem Georgia,
-    serif;
+    1.35rem var(--atlas-display);
 }
 .landing-pathways__symbol i {
   position: absolute;
@@ -6908,8 +6790,7 @@ th {
   margin: 0;
   color: var(--gold);
   font:
-    0.6rem/1.45 ui-monospace,
-    monospace;
+    0.6rem/1.45 var(--atlas-mono);
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
@@ -6917,8 +6798,7 @@ th {
   margin: 0.75rem 0 0;
   color: var(--paper);
   font:
-    400 clamp(1.45rem, 2.6vw, 2rem) / 1.08 Georgia,
-    serif;
+    400 clamp(1.45rem, 2.6vw, 2rem) / 1.08 var(--atlas-display);
 }
 .landing-pathways__routes .button-quiet {
   justify-content: space-between;
@@ -6968,8 +6848,7 @@ th {
   margin: 0.75rem 0 1.4rem;
   color: var(--paper);
   font:
-    400 clamp(3rem, 5vw, 5rem) / 0.94 Georgia,
-    serif;
+    400 clamp(3rem, 5vw, 5rem) / 0.94 var(--atlas-display);
   letter-spacing: -0.045em;
   white-space: nowrap;
 }
@@ -7015,8 +6894,7 @@ th {
   background: var(--navy);
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transform: translateY(-50%);
@@ -7098,8 +6976,7 @@ th {
 .membership-tier__orbit span {
   color: var(--gold);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
 }
 .membership-tier--personal .membership-tier__orbit {
   box-shadow: 0 0 0 0.55rem rgba(201, 167, 93, 0.08);
@@ -7113,8 +6990,7 @@ th {
   margin: 0.35rem 0 0.55rem;
   color: var(--paper);
   font:
-    400 2.25rem Georgia,
-    serif;
+    400 2.25rem var(--atlas-display);
 }
 .membership-tier__identity > p:last-child,
 .membership-comparison header > p:last-child,
@@ -7129,16 +7005,14 @@ th {
 .membership-tier__price > span {
   color: var(--gold);
   font:
-    0.56rem ui-monospace,
-    monospace;
+    0.56rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .membership-tier__price strong {
   color: var(--paper);
   font:
-    400 2.1rem Georgia,
-    serif;
+    400 2.1rem var(--atlas-display);
 }
 .membership-tier__price small {
   color: var(--muted);
@@ -7147,8 +7021,7 @@ th {
   margin: 0 0 0.55rem;
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -7188,8 +7061,7 @@ th {
   margin: 0.5rem 0 1rem;
   color: var(--paper);
   font:
-    400 clamp(2.3rem, 5vw, 4.2rem) / 1 Georgia,
-    serif;
+    400 clamp(2.3rem, 5vw, 4.2rem) / 1 var(--atlas-display);
 }
 .membership-comparison__scroll {
   max-width: 100%;
@@ -7231,16 +7103,14 @@ th {
   color: var(--gold);
   background: var(--surface-deep);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 .membership-comparison tbody th {
   color: var(--paper);
   font:
-    400 0.95rem Georgia,
-    serif;
+    400 0.95rem var(--atlas-display);
 }
 .membership-comparison td {
   color: var(--text-soft);
@@ -7275,15 +7145,13 @@ th {
 .membership-path li > span {
   color: var(--gold);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
 }
 .membership-path h3 {
   margin: 0;
   color: var(--paper);
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .membership-path p {
   margin-bottom: 0;
@@ -7426,9 +7294,7 @@ th {
   margin: 0.35rem 0 0.65rem;
   color: var(--ivory);
   font:
-    400 clamp(2rem, 4vw, 4rem)/0.98 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(2rem, 4vw, 4rem)/0.98 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 
@@ -7708,8 +7574,7 @@ th {
   margin: 0;
   color: var(--gold);
   font:
-    0.58rem ui-monospace,
-    monospace;
+    0.58rem var(--atlas-mono);
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -7724,8 +7589,7 @@ th {
   margin-top: 0.22rem;
   color: var(--paper);
   font:
-    400 1rem Georgia,
-    serif;
+    400 1rem var(--atlas-display);
 }
 .account-sidebar__identity small {
   margin-top: 0.15rem;
@@ -7821,8 +7685,7 @@ th {
   background: var(--surface-deep);
   color: var(--muted);
   font:
-    0.5rem ui-monospace,
-    monospace;
+    0.5rem var(--atlas-mono);
 }
 .account-sidebar__nav a:hover,
 .account-sidebar__nav a:focus-visible,
@@ -7848,8 +7711,7 @@ th {
   margin: 0.35rem 0 0.65rem;
   color: var(--paper);
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .account-sidebar__plan a {
   color: var(--gold);
@@ -7991,7 +7853,7 @@ body:has(.account-dashboard) .account-sidebar__identity {
 }
 
 body:has(.account-dashboard) .account-sidebar__identity strong {
-  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-family: var(--atlas-sans);
   font-size: 0.92rem;
   font-weight: 680;
 }
@@ -8083,8 +7945,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-history h3 {
   color: var(--gold);
   font:
-    0.7rem ui-monospace,
-    monospace;
+    0.7rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -8154,8 +8015,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-day-guide > h2 {
   margin: 0.45rem 0 0;
   font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 
 .weekly-reading-visuals__heading > p {
@@ -8212,7 +8072,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-rhythm-plot__day,
 .weekly-rhythm-plot__value {
   fill: var(--paper);
-  font-family: ui-monospace, monospace;
+  font-family: var(--atlas-mono);
   font-size: 11px;
   text-anchor: middle;
 }
@@ -8239,8 +8099,7 @@ body:has(.account-dashboard) .account-workspace {
   margin: 0 0 1rem;
   color: var(--paper);
   font:
-    400 1.25rem Georgia,
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 
 .weekly-timeline ol {
@@ -8332,8 +8191,7 @@ body:has(.account-dashboard) .account-workspace {
   z-index: 1;
   color: var(--gold);
   font:
-    0.7rem ui-monospace,
-    monospace;
+    0.7rem var(--atlas-mono);
   letter-spacing: 0.08em;
 }
 
@@ -8353,8 +8211,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-day-guide__content > time {
   color: var(--gold);
   font:
-    0.68rem ui-monospace,
-    monospace;
+    0.68rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8363,8 +8220,7 @@ body:has(.account-dashboard) .account-workspace {
   margin: 0.5rem 0 0.9rem;
   color: var(--paper);
   font:
-    400 clamp(1.55rem, 3vw, 2.2rem) / 1.05 Georgia,
-    serif;
+    400 clamp(1.55rem, 3vw, 2.2rem) / 1.05 var(--atlas-display);
 }
 
 .weekly-day-guide__interpretation {
@@ -8524,8 +8380,7 @@ body:has(.account-dashboard) .account-workspace {
   max-width: 18ch;
   margin: 0.6rem 0 1rem;
   font:
-    400 clamp(2.4rem, 6vw, 5.25rem) / 0.98 Georgia,
-    serif;
+    400 clamp(2.4rem, 6vw, 5.25rem) / 0.98 var(--atlas-display);
 }
 .daily-reading-view__header > div > p:last-child {
   color: var(--gold);
@@ -8543,8 +8398,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-technical dt {
   color: var(--gold);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8606,8 +8460,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-visuals__heading h2 {
   margin: 0.45rem 0 0;
   font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 .daily-reading-visuals__heading > p,
 .daily-sky-map figcaption,
@@ -8717,15 +8570,13 @@ body:has(.account-dashboard) .account-workspace {
   position: absolute;
   color: var(--paper);
   font:
-    400 1.15rem Georgia,
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 .daily-lunar-gauge h3,
 .daily-transit-field h3 {
   margin: 0.3rem 0;
   font:
-    400 1.35rem Georgia,
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 .daily-lunar-gauge code,
 .daily-transit-field code {
@@ -8747,8 +8598,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-transit-field__title > span {
   color: var(--gold);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8799,8 +8649,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-questions h2 {
   margin: 0.55rem 0 1.4rem;
   font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 .daily-reading-bluf > p,
 .daily-reading-bluf aside p,
@@ -8816,8 +8665,7 @@ body:has(.account-dashboard) .account-workspace {
   margin: 2rem 0 0.5rem;
   color: var(--gold);
   font:
-    400 1.25rem Georgia,
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 .daily-reading-priorities {
   display: grid;
@@ -8836,8 +8684,7 @@ body:has(.account-dashboard) .account-workspace {
   margin: 0 0 0.6rem;
   color: var(--paper);
   font:
-    400 1.15rem Georgia,
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 .daily-theme-list {
   display: grid;
@@ -8856,14 +8703,12 @@ body:has(.account-dashboard) .account-workspace {
 .daily-theme-list h3 {
   margin: 0 0 0.3rem;
   font:
-    400 1.2rem Georgia,
-    serif;
+    400 1.2rem var(--atlas-display);
 }
 .daily-theme-list span {
   color: var(--gold);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8900,8 +8745,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-sections h2 {
   margin: 0 0 1rem;
   font:
-    400 clamp(1.65rem, 3vw, 2.3rem) / 1.1 Georgia,
-    serif;
+    400 clamp(1.65rem, 3vw, 2.3rem) / 1.1 var(--atlas-display);
 }
 .daily-reading-applications {
   margin: 1.5rem 0;
@@ -8953,8 +8797,7 @@ body:has(.account-dashboard) .account-workspace {
 .sample-daily-reading__cta h2 {
   margin: 0.5rem 0;
   font:
-    400 clamp(1.8rem, 4vw, 3rem) / 1 Georgia,
-    serif;
+    400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
 }
 
 @media (max-width: 760px) {
@@ -9521,8 +9364,7 @@ body:has(.account-dashboard) .account-workspace {
     linear-gradient(155deg, rgba(20, 42, 66, 0.96), rgba(5, 11, 19, 0.98));
   color: var(--gold);
   font:
-    400 clamp(1.8rem, 4vw, 3rem) / 1 Georgia,
-    serif;
+    400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
   content: "Your sky, held privately.";
 }
 
@@ -9696,7 +9538,7 @@ body:has(.account-dashboard) .account-workspace {
   padding: 0.8rem 1.35rem;
   border-bottom: 1px solid var(--line);
   color: var(--paper);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--atlas-display);
   font-size: 0.98rem;
 }
 
@@ -9758,9 +9600,7 @@ body:has(.account-dashboard) .account-workspace {
   margin-top: 0.3rem;
   color: var(--atlas-copy);
   font:
-    400 clamp(1.9rem, 4vw, 3rem) / 1 Georgia,
-    "Times New Roman",
-    serif;
+    400 clamp(1.9rem, 4vw, 3rem) / 1 var(--atlas-display);
 }
 
 .account-plan-card {
@@ -9778,9 +9618,7 @@ body:has(.account-dashboard) .account-workspace {
   margin-top: 0.25rem;
   color: white;
   font:
-    400 1.55rem Georgia,
-    "Times New Roman",
-    serif;
+    400 1.55rem var(--atlas-display);
 }
 
 .account-plan-card p:last-child {
@@ -9898,8 +9736,7 @@ body:has(.account-dashboard)
   margin: 0.25rem 0;
   color: var(--atlas-copy);
   font:
-    400 1.35rem/1.2 Georgia,
-    serif;
+    400 1.35rem/1.2 var(--atlas-display);
 }
 
 .account-tarot-result > div:last-child > small {
@@ -9974,8 +9811,7 @@ body:has(.account-dashboard)
   margin-bottom: 0.65rem;
   color: var(--atlas-green);
   font:
-    0.65rem ui-monospace,
-    monospace;
+    0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -9983,9 +9819,7 @@ body:has(.account-dashboard)
 .account-report-products h3 {
   color: var(--atlas-copy);
   font:
-    400 1.35rem Georgia,
-    "Times New Roman",
-    serif;
+    400 1.35rem var(--atlas-display);
 }
 
 .account-report-products p,
@@ -10018,9 +9852,7 @@ body:has(.account-dashboard)
 .account-report-history > h3 {
   color: var(--atlas-copy);
   font:
-    400 1.15rem Georgia,
-    "Times New Roman",
-    serif;
+    400 1.15rem var(--atlas-display);
 }
 
 .dashboard-panel--charts .birth-profile-list {
@@ -10203,8 +10035,7 @@ body:has(.account-dashboard) .account-command-bar {
 .account-command-bar__membership span {
   color: var(--atlas-cyan);
   font:
-    0.6rem ui-monospace,
-    monospace;
+    0.6rem var(--atlas-mono);
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
@@ -10214,10 +10045,7 @@ body:has(.account-dashboard) .account-command-bar {
   overflow: hidden;
   color: var(--atlas-copy);
   font:
-    650 1.05rem/1.2 "Avenir Next",
-    Avenir,
-    "Segoe UI",
-    sans-serif;
+    650 1.05rem/1.2 var(--atlas-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -10253,8 +10081,7 @@ body:has(.account-dashboard) .account-command-bar {
 .account-command-bar__manage > span {
   color: var(--atlas-green);
   font:
-    0.62rem ui-monospace,
-    monospace;
+    0.62rem var(--atlas-mono);
   text-transform: capitalize;
 }
 
@@ -10339,9 +10166,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin-top: 0.25rem;
   color: var(--atlas-copy);
   font:
-    400 1.25rem Georgia,
-    "Times New Roman",
-    serif;
+    400 1.25rem var(--atlas-display);
 }
 
 .account-reading-card__status {
@@ -10467,9 +10292,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   padding: 0;
   color: var(--atlas-copy);
   font:
-    400 1rem Georgia,
-    "Times New Roman",
-    serif;
+    400 1rem var(--atlas-display);
 }
 
 .report-theme-selector > p {
@@ -10713,8 +10536,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin: 0.7rem 0 1rem;
   color: var(--ivory);
   font:
-    400 clamp(2.7rem, 7vw, 5.8rem) / 0.95 Georgia,
-    serif;
+    400 clamp(2.7rem, 7vw, 5.8rem) / 0.95 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 
@@ -10773,8 +10595,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-progress a span {
   color: var(--gold);
   font:
-    400 0.68rem/1 Georgia,
-    serif;
+    400 0.68rem/1 var(--atlas-display);
 }
 
 .tarot-progress a.is-current {
@@ -10809,8 +10630,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin: 0.45rem 0 0.65rem;
   color: var(--ivory);
   font:
-    400 clamp(2rem, 4vw, 3.7rem) / 1 Georgia,
-    serif;
+    400 clamp(2rem, 4vw, 3.7rem) / 1 var(--atlas-display);
   letter-spacing: -0.035em;
 }
 
@@ -10912,8 +10732,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin: 0;
   color: var(--ivory);
   font:
-    400 1.2rem/1.2 Georgia,
-    serif;
+    400 1.2rem/1.2 var(--atlas-display);
 }
 
 .tarot-deck__copy small,
@@ -11375,8 +11194,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   z-index: 3;
   color: var(--tarot-face-gold);
   font:
-    600 0.68rem/1 ui-monospace,
-    monospace;
+    600 0.68rem/1 var(--atlas-mono);
   letter-spacing: 0.08em;
 }
 
@@ -11578,8 +11396,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
     color-mix(in srgb, var(--tarot-face-gold) 32%, transparent);
   color: var(--ivory);
   font:
-    400 1.15rem/1.25 Georgia,
-    serif;
+    400 1.15rem/1.25 var(--atlas-display);
   text-align: center;
 }
 
@@ -11599,8 +11416,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-result-card__copy p:first-child {
   color: var(--gold);
   font:
-    400 1.1rem/1.3 Georgia,
-    serif;
+    400 1.1rem/1.3 var(--atlas-display);
 }
 
 .tarot-result-card__copy small {
@@ -11646,8 +11462,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-narrative__sections header > span {
   color: var(--gold);
   font:
-    0.62rem/1.4 ui-monospace,
-    monospace;
+    0.62rem/1.4 var(--atlas-mono);
   letter-spacing: 0.12em;
 }
 
@@ -11655,8 +11470,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin: 0;
   color: var(--gold);
   font:
-    400 1.05rem/1.25 Georgia,
-    serif;
+    400 1.05rem/1.25 var(--atlas-display);
 }
 
 .tarot-narrative__sections header p {
@@ -11671,8 +11485,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   margin: 0;
   color: var(--ivory);
   font:
-    400 clamp(1.05rem, 2vw, 1.3rem) / 1.8 Georgia,
-    serif;
+    400 clamp(1.05rem, 2vw, 1.3rem) / 1.8 var(--atlas-display);
 }
 
 .tarot-disclaimer {
@@ -11808,8 +11621,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 }
 .clock-preview h2 {
   font:
-    400 2rem/1.2 Georgia,
-    serif;
+    400 2rem/1.2 var(--atlas-display);
   margin-bottom: 0.6rem;
 }
 .clock-preview p {

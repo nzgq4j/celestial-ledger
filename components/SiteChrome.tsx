@@ -2,12 +2,60 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { workspaceCopy } from "@/lib/account/workspace-copy";
-import { useRef } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
 import { SitePreferences } from "@/components/SitePreferences";
 import { useLocale } from "@/components/LocaleProvider";
 import { signOut } from "@/app/auth/actions";
 import type { HeaderIdentity } from "@/lib/auth/header-identity";
+import type { AppPlatform } from "@/lib/app-shell/detect";
+
+type NavItem = { key: string; href: string; label: string };
+
+/** Which primary destination the current URL belongs to. */
+function activeDestination(pathname: string, view: string | null) {
+  if (pathname.startsWith("/account")) {
+    if (view === "charts") return "chart";
+    if (view === "library") return "library";
+    if (view === "settings" || view === "membership") return "account";
+    return "today";
+  }
+  if (pathname.startsWith("/horoscopes")) return "horoscopes";
+  if (pathname.startsWith("/tarot")) return "tarot";
+  if (pathname.startsWith("/reports") || pathname.startsWith("/samples"))
+    return "reports";
+  if (pathname.startsWith("/membership")) return "membership";
+  if (pathname.startsWith("/clock")) return "clock";
+  return "home";
+}
+
+function useActiveDestination() {
+  const pathname = usePathname() ?? "/";
+  const searchParams = useSearchParams();
+  return activeDestination(pathname, searchParams?.get("view") ?? null);
+}
+
+function closeDetails(details: HTMLDetailsElement | null) {
+  if (details) details.open = false;
+}
+
+function PrimaryNav({ items }: { items: NavItem[] }) {
+  const active = useActiveDestination();
+  return (
+    <>
+      {items.map((item) => (
+        <Link
+          key={item.key}
+          href={item.href}
+          className="atlas-nav__link"
+          aria-current={active === item.key ? "page" : undefined}
+        >
+          {item.label}
+        </Link>
+      ))}
+    </>
+  );
+}
 
 export function SiteHeader({
   identity,
@@ -16,208 +64,142 @@ export function SiteHeader({
   identity: HeaderIdentity | null;
   tarotEnabled: boolean;
 }) {
-  const { pack, locale } = useLocale();
-  const workspace = workspaceCopy[locale];
-  const mobileMenu = useRef<HTMLDetailsElement>(null);
-  const membershipMenu = useRef<HTMLDetailsElement>(null);
+  const { pack } = useLocale();
+  const nav = pack.messages.navigation;
   const identityMenu = useRef<HTMLDetailsElement>(null);
+  const mobileMenu = useRef<HTMLDetailsElement>(null);
+  const pathname = usePathname();
 
-  function closeMobileMenu() {
-    if (mobileMenu.current) mobileMenu.current.open = false;
-  }
+  useEffect(() => {
+    closeDetails(identityMenu.current);
+    closeDetails(mobileMenu.current);
+  }, [pathname]);
 
-  function closeMembershipMenu() {
-    if (membershipMenu.current) membershipMenu.current.open = false;
-  }
-
-  function closeIdentityMenu() {
-    if (identityMenu.current) identityMenu.current.open = false;
-  }
+  const items: NavItem[] = (
+    identity
+      ? [
+          { key: "today", href: "/account", label: nav.today },
+          { key: "chart", href: "/account?view=charts", label: nav.myChart },
+          { key: "horoscopes", href: "/horoscopes", label: nav.horoscopes },
+          { key: "tarot", href: "/tarot", label: nav.tarot },
+          { key: "reports", href: "/reports", label: nav.reports },
+        ]
+      : [
+          { key: "horoscopes", href: "/horoscopes", label: nav.horoscopes },
+          { key: "tarot", href: "/tarot", label: nav.tarot },
+          { key: "reports", href: "/reports", label: nav.reports },
+          { key: "membership", href: "/membership", label: nav.membership },
+        ]
+  ).filter((item) => tarotEnabled || item.key !== "tarot");
 
   return (
-    <header className="site-header">
-      <div className="site-header__inner">
-        <Link
-          href="/"
-          className="brand"
-          aria-label={pack.messages.navigation.homeLabel}
-        >
+    <header className="atlas-header" data-app-hidden>
+      <div className="atlas-header__inner">
+        <Link href="/" className="atlas-brand" aria-label={nav.homeLabel}>
           <Image
-            className="brand__mark"
+            className="atlas-brand__mark"
             src="/celestialatlas-logo.png"
             alt=""
-            width="46"
-            height="46"
+            width="36"
+            height="36"
+            priority
           />
-          <span>
-            <strong>Celestial Atlas</strong>
-            <small>{pack.messages.navigation.tagline}</small>
-          </span>
+          <span>Celestial Atlas</span>
         </Link>
-        <nav
-          className="site-nav"
-          aria-label={pack.messages.navigation.primaryLabel}
-        >
-          <div className="site-nav__desktop">
-            <Link href="/#chart">{pack.messages.navigation.birthChart}</Link>
-            <Link href="/horoscopes">
-              {pack.messages.navigation.horoscopes}
-            </Link>
-            {tarotEnabled && (
-              <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
-            )}
-            <Link href="/reports">{workspace.explore}</Link>
-            <details
-              className="site-nav-group"
-              ref={membershipMenu}
-              onPointerLeave={closeMembershipMenu}
-              onBlur={(event) => {
-                const nextFocus = event.relatedTarget;
-                if (
-                  !(nextFocus instanceof Node) ||
-                  !event.currentTarget.contains(nextFocus)
-                ) {
-                  closeMembershipMenu();
-                }
-              }}
-            >
-              <summary>
-                {pack.messages.navigation.membership}
-                <span aria-hidden="true" />
-              </summary>
-              <div
-                className="site-nav-group__menu"
-                onClick={closeMembershipMenu}
+        <nav className="atlas-nav" aria-label={nav.primaryLabel}>
+          <Suspense
+            fallback={items.map((item) => (
+              <Link key={item.key} href={item.href} className="atlas-nav__link">
+                {item.label}
+              </Link>
+            ))}
+          >
+            <PrimaryNav items={items} />
+          </Suspense>
+        </nav>
+        <div className="atlas-header__actions">
+          {identity ? (
+            <>
+              <Link
+                href="/membership"
+                className="atlas-plan-badge"
+                data-plan={identity.plan}
               >
-                <Link href="/membership">
-                  <strong>{pack.messages.navigation.membership}</strong>
-                  <small>Plans and benefits</small>
-                </Link>
-                <Link href="/weekly-readings">
-                  <strong>{pack.messages.navigation.weekly}</strong>
-                  <small>Your seven-day sky</small>
-                </Link>
-                <Link href="/samples">
-                  <strong>{pack.messages.navigation.samples}</strong>
-                  <small>Explore complete editions</small>
-                </Link>
-              </div>
-            </details>
-            <Link href="/journal">{pack.messages.navigation.journal}</Link>
-            <Link href="/clock">Celestial Clock</Link>
-          </div>
-          <details className="mobile-nav" ref={mobileMenu}>
-            <summary>
-              <span className="mobile-nav__icon" aria-hidden="true" />
-              {pack.messages.navigation.menu}
-            </summary>
-            <div className="mobile-nav__panel" onClick={closeMobileMenu}>
-              <Link href="/#chart">{pack.messages.navigation.birthChart}</Link>
-              <Link href="/horoscopes">
-                {pack.messages.navigation.dailyHoroscopes}
+                {identity.plan === "atlas" ? nav.atlasMember : nav.freeMember}
               </Link>
-              {tarotEnabled && (
-                <Link href="/tarot">{pack.messages.navigation.tarot}</Link>
-              )}
-              <Link href="/reports">
-                {pack.messages.navigation.privateReports}
-              </Link>
-              <div className="mobile-nav__group">
-                <span>{pack.messages.navigation.membership}</span>
-                <Link href="/membership">
-                  {pack.messages.navigation.membershipPlans}
-                </Link>
-                <Link href="/weekly-readings">
-                  {pack.messages.navigation.weeklyReadings}
-                </Link>
-                <Link href="/samples">
-                  {pack.messages.navigation.sampleReports}
-                </Link>
-              </div>
-              <Link href="/journal">{pack.messages.navigation.journal}</Link>
-              <Link href="/clock">Celestial Clock</Link>
-              {identity ? (
-                <div className="mobile-nav__group mobile-nav__identity">
-                  <span>
-                    {pack.messages.navigation.signedInAs} {identity.displayName}
-                  </span>
-                  <Link href="/account">
-                    {pack.messages.navigation.dashboard}
-                  </Link>
-                  <Link href="/account?view=library">
-                    <strong>{workspace.library}</strong>
-                  </Link>
-                  <Link href="/account?view=settings">
-                    {pack.messages.navigation.accountSettings}
-                  </Link>
-                  <Link href="/account?view=membership">
-                    {pack.messages.navigation.billing}
-                  </Link>
+              <details
+                className="atlas-menu"
+                ref={identityMenu}
+                onBlur={(event) => {
+                  const nextFocus = event.relatedTarget;
+                  if (
+                    !(nextFocus instanceof Node) ||
+                    !event.currentTarget.contains(nextFocus)
+                  )
+                    closeDetails(identityMenu.current);
+                }}
+              >
+                <summary className="atlas-avatar" aria-label={nav.identityMenu}>
+                  {identity.displayName.slice(0, 1).toUpperCase()}
+                </summary>
+                <div
+                  className="atlas-menu__panel"
+                  onClick={() => closeDetails(identityMenu.current)}
+                >
+                  <p className="atlas-menu__identity">
+                    <span>{nav.signedInAs}</span>
+                    <strong>{identity.displayName}</strong>
+                    <small>{identity.email}</small>
+                  </p>
+                  <div className="atlas-menu__group atlas-menu__group--compact">
+                    <Link href="/horoscopes">{nav.horoscopes}</Link>
+                    <Link href="/reports">{nav.reports}</Link>
+                  </div>
+                  <div className="atlas-menu__group">
+                    <Link href="/account?view=library">{nav.library}</Link>
+                    <Link href="/account?view=settings">
+                      {nav.accountSettings}
+                    </Link>
+                    <Link href="/account?view=membership">{nav.billing}</Link>
+                  </div>
                   <form action={signOut}>
-                    <button type="submit">
-                      {pack.messages.navigation.signOut}
-                    </button>
+                    <button type="submit">{nav.signOut}</button>
                   </form>
                 </div>
-              ) : (
-                <Link href="/auth/login">
-                  {pack.messages.navigation.signIn}
-                </Link>
-              )}
-            </div>
-          </details>
-          {identity ? (
-            <details
-              className="site-nav-group site-nav-identity"
-              ref={identityMenu}
-              onPointerLeave={closeIdentityMenu}
-              onBlur={(event) => {
-                const nextFocus = event.relatedTarget;
-                if (
-                  !(nextFocus instanceof Node) ||
-                  !event.currentTarget.contains(nextFocus)
-                ) {
-                  closeIdentityMenu();
-                }
-              }}
-            >
-              <summary aria-label={pack.messages.navigation.identityMenu}>
-                <i className="site-nav-identity__avatar" aria-hidden="true">
-                  {identity.displayName.slice(0, 1).toUpperCase()}
-                </i>
-                <strong>{identity.displayName}</strong>
-                <span aria-hidden="true" />
-              </summary>
-              <div className="site-nav-group__menu" onClick={closeIdentityMenu}>
-                <Link href="/account">
-                  <strong>{pack.messages.navigation.dashboard}</strong>
-                  <small>{pack.messages.navigation.library}</small>
-                </Link>
-                <Link href="/account?view=library">
-                  <strong>{workspace.library}</strong>
-                </Link>
-                <Link href="/account?view=settings">
-                  <strong>{pack.messages.navigation.accountSettings}</strong>
-                  <small>{identity.email}</small>
-                </Link>
-                <Link href="/account?view=membership">
-                  <strong>{pack.messages.navigation.billing}</strong>
-                  <small>{pack.messages.navigation.membership}</small>
-                </Link>
-                <form action={signOut}>
-                  <button type="submit">
-                    <strong>{pack.messages.navigation.signOut}</strong>
-                  </button>
-                </form>
-              </div>
-            </details>
+              </details>
+            </>
           ) : (
-            <Link href="/auth/login" className="site-nav__account">
-              {pack.messages.navigation.signIn}
-            </Link>
+            <>
+              <Link href="/auth/login" className="atlas-header__signin">
+                {nav.signIn}
+              </Link>
+              <Link href="/#chart" className="atlas-button atlas-button--sm">
+                {nav.getMyChart}
+              </Link>
+              <details
+                className="atlas-menu atlas-menu--mobile"
+                ref={mobileMenu}
+              >
+                <summary className="atlas-menu__toggle" aria-label={nav.menu}>
+                  <span aria-hidden="true" />
+                </summary>
+                <div
+                  className="atlas-menu__panel"
+                  onClick={() => closeDetails(mobileMenu.current)}
+                >
+                  <div className="atlas-menu__group">
+                    {items.map((item) => (
+                      <Link key={item.key} href={item.href}>
+                        {item.label}
+                      </Link>
+                    ))}
+                    <Link href="/auth/login">{nav.signIn}</Link>
+                  </div>
+                </div>
+              </details>
+            </>
           )}
-          <SitePreferences />
-        </nav>
+        </div>
       </div>
     </header>
   );
@@ -226,86 +208,109 @@ export function SiteHeader({
 export function SiteFooter() {
   const { pack } = useLocale();
   const copy = pack.messages.footer;
-  const navigation = pack.messages.navigation;
-  const titleLines = copy.title.split(/(?<=\.)\s+/);
+  const nav = pack.messages.navigation;
   return (
-    <footer className="site-footer">
-      <div className="site-footer__inner">
-        <div className="site-footer__lead">
-          <Image src="/celestialatlas-logo.png" alt="" width="58" height="58" />
-          <div>
-            <h2>
-              {titleLines.map((line) => {
-                const parts = line.split(/(\bchart\b)/i);
-                return (
-                  <span key={line}>
-                    {parts.map((part, index) =>
-                      /^chart$/i.test(part) ? (
-                        <strong
-                          className="site-footer__title-accent"
-                          key={`${part}-${index}`}
-                        >
-                          {part}
-                        </strong>
-                      ) : (
-                        part
-                      ),
-                    )}
-                  </span>
-                );
-              })}
-            </h2>
-            <p>{copy.kicker}</p>
-            <p>{copy.description}</p>
-          </div>
-          <Link href="/#chart" className="site-footer__chart-link">
-            {copy.chartAction}
-            <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-
-        <div className="site-footer__directory">
-          <nav aria-labelledby="footer-explore">
-            <h3 id="footer-explore">{copy.explore}</h3>
-            <Link href="/horoscopes">{navigation.dailyHoroscopes}</Link>
-            <Link href="/weekly-readings">{navigation.weeklyReadings}</Link>
-            <Link href="/journal">{navigation.journal}</Link>
-            <Link href="/samples">{navigation.sampleReports}</Link>
-          </nav>
-          <nav aria-labelledby="footer-atlas">
-            <h3 id="footer-atlas">{copy.yourAtlas}</h3>
-            <Link href="/account?view=library">{navigation.library}</Link>
-            <Link href="/#chart">{navigation.birthChart}</Link>
-            <Link href="/reports">{copy.collection}</Link>
-            <Link href="/membership">{navigation.membershipPlans}</Link>
-            <Link href="/auth/login">{copy.signIn}</Link>
-          </nav>
-          <nav aria-labelledby="footer-trust">
-            <h3 id="footer-trust">{copy.trust}</h3>
-            <Link href="/method">{copy.method}</Link>
-            <Link href="/privacy">{copy.privacy}</Link>
-            <Link href="/terms">{copy.terms}</Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
-          <div className="site-footer__language">
-            <h3>{copy.language}</h3>
-            <p>{copy.languageCopy}</p>
-            <SitePreferences />
-          </div>
-        </div>
-
-        <div className="site-footer__seal" aria-hidden="true">
-          <i />
-          <Image src="/celestialatlas-logo.png" alt="" width="92" height="92" />
-          <i />
-        </div>
-
-        <div className="site-footer__colophon">
-          <span>© {new Date().getFullYear()} Celestial Atlas</span>
-          <span>{copy.rights}</span>
-          <span>33.20430, -87.52750</span>
-        </div>
-      </div>
+    <footer className="atlas-footer" data-app-hidden>
+      <span className="atlas-footer__brand">
+        <Image src="/celestialatlas-logo.png" alt="" width="26" height="26" />©{" "}
+        {new Date().getFullYear()} Celestial Atlas
+      </span>
+      <nav className="atlas-footer__links" aria-label={copy.trust}>
+        <Link href="/journal">{nav.journal}</Link>
+        <Link href="/method">{copy.method}</Link>
+        <Link href="/privacy">{copy.privacy}</Link>
+        <Link href="/terms">{copy.terms}</Link>
+        <Link href="/contact">{nav.contact}</Link>
+        <SitePreferences />
+      </nav>
     </footer>
+  );
+}
+
+type Tab = { key: string; href: string; icon: string; label: string };
+
+function TabBarLinks({ tabs }: { tabs: Tab[] }) {
+  const active = useActiveDestination();
+  return (
+    <>
+      {tabs.map((tab) => (
+        <Link
+          key={tab.key}
+          href={tab.href}
+          className="atlas-tabbar__tab"
+          aria-current={active === tab.key ? "page" : undefined}
+        >
+          <span aria-hidden="true">{tab.icon}</span>
+          <span>{tab.label}</span>
+        </Link>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Bottom tab bar. On the web it replaces the top menu on narrow screens for
+ * signed-in members. In the Android app it is always shown (the web header
+ * and footer are hidden) and the last tab is Account instead of Library.
+ */
+export function AppTabBar({
+  identity,
+  platform,
+  tarotEnabled,
+}: {
+  identity: HeaderIdentity | null;
+  platform: AppPlatform;
+  tarotEnabled: boolean;
+}) {
+  const { pack } = useLocale();
+  const nav = pack.messages.navigation;
+  if (!identity && !platform) return null;
+  const tabs: Tab[] = [
+    {
+      key: "today",
+      href: identity ? "/account" : "/",
+      icon: "☉︎",
+      label: nav.today,
+    },
+    {
+      key: "chart",
+      href: identity ? "/account?view=charts" : "/#chart",
+      icon: "◎",
+      label: nav.chartTab,
+    },
+    ...(tarotEnabled
+      ? [{ key: "tarot", href: "/tarot", icon: "✦", label: nav.tarot }]
+      : []),
+    platform
+      ? {
+          key: "account",
+          href: identity ? "/account?view=settings" : "/auth/login",
+          icon: "◯",
+          label: nav.accountTab,
+        }
+      : {
+          key: "library",
+          href: "/account?view=library",
+          icon: "☰",
+          label: nav.libraryTab,
+        },
+  ];
+  return (
+    <nav
+      className="atlas-tabbar"
+      aria-label={nav.appTabsLabel}
+      style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
+    >
+      <Suspense
+        fallback={tabs.map((tab) => (
+          <Link key={tab.key} href={tab.href} className="atlas-tabbar__tab">
+            <span aria-hidden="true">{tab.icon}</span>
+            <span>{tab.label}</span>
+          </Link>
+        ))}
+      >
+        <TabBarLinks tabs={tabs} />
+      </Suspense>
+    </nav>
   );
 }
