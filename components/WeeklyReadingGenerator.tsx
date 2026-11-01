@@ -51,7 +51,7 @@ export function WeeklyReadingGenerator({
     return (
       <div className="daily-reading-empty">
         <p>{copy.weeklyReadingNeedsChart}</p>
-        <Link href="/#chart" className="button-secondary">
+        <Link href="/#chart" className="atlas-button-ghost">
           {copy.createNatalChart}
         </Link>
       </div>
@@ -66,7 +66,7 @@ export function WeeklyReadingGenerator({
           </select>
         </label>
         <button
-          className="button-secondary"
+          className="atlas-button-ghost"
           type="button"
           onClick={() => void generate()}
           disabled={busy}
@@ -75,7 +75,7 @@ export function WeeklyReadingGenerator({
         </button>
       </div>
       {error && (
-        <p className="form-error" role="alert">
+        <p className="member-error" role="alert">
           {error}
         </p>
       )}

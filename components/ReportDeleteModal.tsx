@@ -46,7 +46,7 @@ export function ReportDeleteModal({
         aria-labelledby="report-delete-title"
         aria-describedby="report-delete-description"
       >
-        <p className="eyebrow">{copy.deleteReportKicker}</p>
+        <p className="atlas-kicker">{copy.deleteReportKicker}</p>
         <h2 id="report-delete-title">{copy.deleteReportTitle}</h2>
         <p id="report-delete-description">{copy.deleteReportDescription}</p>
         <label className="report-delete-check">
@@ -61,7 +61,7 @@ export function ReportDeleteModal({
           <button
             ref={cancelRef}
             type="button"
-            className="button-quiet"
+            className="atlas-button-ghost"
             onClick={onCancel}
             disabled={busy}
           >
@@ -69,7 +69,7 @@ export function ReportDeleteModal({
           </button>
           <button
             type="button"
-            className="button-danger"
+            className="atlas-button member-button-danger"
             onClick={onConfirm}
             disabled={!confirmed || busy}
           >

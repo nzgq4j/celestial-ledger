@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ATLAS_PLAN_NAME } from "@/lib/membership/plans";
 import Image from "next/image";
 import { AdminThemeToggle } from "@/components/AdminThemeToggle";
 import {
@@ -811,12 +812,7 @@ export default async function AdminPage({
                     {tarotCopy.adminMinimumPlan}
                     <select name="minimum_plan" defaultValue="premium">
                       <option value="free">{tarotCopy.adminPlanFree}</option>
-                      <option value="personal">
-                        {tarotCopy.adminPlanPersonal}
-                      </option>
-                      <option value="premium">
-                        {tarotCopy.adminPlanPremium}
-                      </option>
+                      <option value="premium">{ATLAS_PLAN_NAME}</option>
                     </select>
                   </label>
                   <label>
@@ -1061,11 +1057,8 @@ export default async function AdminPage({
                                 <option value="free">
                                   {tarotCopy.adminPlanFree}
                                 </option>
-                                <option value="personal">
-                                  {tarotCopy.adminPlanPersonal}
-                                </option>
                                 <option value="premium">
-                                  {tarotCopy.adminPlanPremium}
+                                  {ATLAS_PLAN_NAME}
                                 </option>
                               </select>
                             </label>

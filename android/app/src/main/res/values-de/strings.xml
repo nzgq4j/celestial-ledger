@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="morning_channel_name">Morgendeutung</string>
+    <string name="morning_channel_description">Ein sanfter Hinweis, sobald deine Deutung für heute bereitsteht.</string>
+</resources>

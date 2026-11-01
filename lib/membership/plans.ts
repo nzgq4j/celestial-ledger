@@ -71,3 +71,44 @@ export function membershipPlanFor(
 export function isAtlasMember(planKey: string | null | undefined) {
   return membershipPlanFor(planKey) === "atlas";
 }
+
+/** The only reader-facing name of the paid level, in every locale. */
+export const ATLAS_PLAN_NAME = "Atlas";
+
+export const BILLING_INTERVALS = [
+  "month",
+  "year",
+] as const satisfies readonly BillingInterval[];
+
+export function isBillingInterval(value: unknown): value is BillingInterval {
+  return value === "month" || value === "year";
+}
+
+/** Whole-percent saving of paying yearly instead of twelve monthly payments. */
+export const ATLAS_YEARLY_SAVING_PERCENT = Math.round(
+  (1 - ATLAS_PRICES.year.unitAmount / (ATLAS_PRICES.month.unitAmount * 12)) *
+    100,
+);
+
+/** Where Google Play subscribers manage or cancel Atlas. */
+export const GOOGLE_PLAY_SUBSCRIPTIONS_URL =
+  "https://play.google.com/store/account/subscriptions";
+
+export type SubscriptionProvider = "stripe" | "google_play";
+
+/** Tarot access, derived from the catalogue so UI and server agree. */
+export type TarotSpreadId = (typeof PLAN_ALLOWANCES.atlas.tarotSpreads)[number];
+
+export function tarotSpreadIncluded(
+  planKey: string | null | undefined,
+  spread: TarotSpreadId,
+) {
+  return (
+    PLAN_ALLOWANCES[membershipPlanFor(planKey)]
+      .tarotSpreads as readonly string[]
+  ).includes(spread);
+}
+
+export function tarotJournalIncluded(planKey: string | null | undefined) {
+  return PLAN_ALLOWANCES[membershipPlanFor(planKey)].tarotJournal;
+}

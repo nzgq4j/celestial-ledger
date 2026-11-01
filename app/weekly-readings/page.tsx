@@ -1,5 +1,9 @@
 import Link from "next/link";
+import "@/app/styles/atlas-member.css";
 import { createPageMetadata } from "@/lib/seo";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { memberCopy, fillCopy } from "@/lib/account/member-copy";
+import { ATLAS_PRICES, ATLAS_TRIAL_DAYS } from "@/lib/membership/plans";
 
 export const metadata = createPageMetadata({
   title: "Weekly Astrology Readings",
@@ -9,43 +13,61 @@ export const metadata = createPageMetadata({
   keywords: ["weekly astrology", "weekly horoscope", "weekly transits"],
 });
 
-export default function WeeklyReadingsPage() {
+export default async function WeeklyReadingsPage() {
+  const pack = await getServerTranslationPack();
+  const m = memberCopy[pack.tag];
+  const items = [
+    m.weeklyItem1,
+    m.weeklyItem2,
+    m.weeklyItem3,
+    m.weeklyItem4,
+    m.weeklyItem5,
+  ];
   return (
-    <main className="page-shell weekly-offer">
-      <header>
-        <p className="eyebrow">The celestial rhythm</p>
-        <h1>Your natal chart, alive in the week ahead.</h1>
-        <p>
-          Each weekly edition follows the moving planets as they meet your birth
-          chart, turning the coming seven days into a personal map of timing,
-          attention and possibility.
-        </p>
+    <main className="atlas-shell member-page weekly-offer-page">
+      <header className="member-head member-head--stacked">
+        <div>
+          <p className="atlas-kicker">{m.weeklyOfferKicker}</p>
+          <h1 className="atlas-page-title">{m.weeklyOfferTitle}</h1>
+          <p className="member-lede">{m.weeklyOfferIntro}</p>
+        </div>
       </header>
-      <div className="weekly-offer__grid">
-        <section>
-          <h2>Every week in your atlas</h2>
-          <ul>
-            <li>Your most important natal transits</li>
-            <li>Seven-day timing windows</li>
-            <li>Work, relationship and inner-life currents</li>
-            <li>A weekly focus and reflection question</li>
-            <li>Evidence linked to your natal chart</li>
-            <li>All saved privately in My Celestial Atlas</li>
+      <div className="billing-grid">
+        <section className="atlas-card" aria-labelledby="weekly-offer-includes">
+          <h2 id="weekly-offer-includes" className="member-subtitle">
+            {m.weeklyOfferIncludes}
+          </h2>
+          <ul className="member-ticks">
+            {items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
-          <Link href="/samples/weekly-reading" className="button-quiet">
-            Read a sample edition
-          </Link>
+          <div className="member-actions">
+            <Link href="/samples/weekly-reading" className="atlas-button-ghost">
+              {m.readSampleEdition}
+            </Link>
+          </div>
         </section>
-        <aside>
-          <p className="section-kicker">Subscription opening soon</p>
-          <h2>Weekly Celestial Atlas</h2>
-          <p>Monthly and annual membership options are being prepared.</p>
-          <Link href="/membership" className="button-primary">
-            Compare memberships
-          </Link>
-          <small>
-            Members will be the first invited when subscriptions open.
-          </small>
+        <aside
+          className="atlas-card atlas-card--feature"
+          aria-labelledby="weekly-offer-atlas"
+        >
+          <p className="atlas-kicker">Atlas</p>
+          <h2 id="weekly-offer-atlas" className="billing-plan__name">
+            {m.weeklyOfferAtlasTitle}
+          </h2>
+          <p className="billing-plan__summary">
+            {fillCopy(m.weeklyOfferAtlasCopy, {
+              monthly: ATLAS_PRICES.month.display,
+              yearly: ATLAS_PRICES.year.display,
+              days: ATLAS_TRIAL_DAYS,
+            })}
+          </p>
+          <div className="member-actions">
+            <Link href="/membership" className="atlas-button">
+              {fillCopy(m.startTrial, { days: ATLAS_TRIAL_DAYS })}
+            </Link>
+          </div>
         </aside>
       </div>
     </main>

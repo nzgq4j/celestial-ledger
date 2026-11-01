@@ -20,29 +20,32 @@ export function AccountSettings({
   reportLocale: LocaleTag;
 }) {
   return (
-    <section className="account-settings" id="account-settings">
-      <div className="account-settings__heading">
-        <div>
-          <p className="section-kicker">{copy.managementKicker}</p>
-          <h2>{copy.detailsSecurity}</h2>
-        </div>
+    <section
+      className="member-settings"
+      id="account-settings"
+      aria-labelledby="account-settings-title"
+    >
+      <div className="member-settings__heading">
+        <h2 id="account-settings-title" className="member-subtitle">
+          {copy.detailsSecurity}
+        </h2>
         <form action={signOut}>
-          <button className="button-quiet" type="submit">
+          <button className="atlas-button-ghost atlas-button--sm" type="submit">
             {copy.logOut}
           </button>
         </form>
       </div>
 
-      <div className="account-settings__grid">
+      <div className="member-settings__grid">
         <form
           action={updateReportLocale}
-          className="account-form account-form--language"
+          className="atlas-card atlas-card--sm settings-form"
         >
-          <div>
+          <div className="settings-form__intro">
             <h3>{copy.reportLanguage}</h3>
             <p>{copy.reportLanguageCopy}</p>
           </div>
-          <label>
+          <label className="atlas-field">
             <span>{copy.defaultReportLanguage}</span>
             <select name="report_locale" defaultValue={reportLocale}>
               {localeTags.map((tag) => (
@@ -53,16 +56,19 @@ export function AccountSettings({
             </select>
           </label>
           <small>{copy.reportLanguageNote}</small>
-          <button className="button-secondary" type="submit">
+          <button className="atlas-button-ghost" type="submit">
             {copy.saveReportLanguage}
           </button>
         </form>
-        <form action={updateDisplayName} className="account-form">
-          <div>
+        <form
+          action={updateDisplayName}
+          className="atlas-card atlas-card--sm settings-form"
+        >
+          <div className="settings-form__intro">
             <h3>{copy.profile}</h3>
             <p>{copy.profileCopy}</p>
           </div>
-          <label>
+          <label className="atlas-field">
             <span>{copy.displayName}</span>
             <input
               name="display_name"
@@ -73,22 +79,25 @@ export function AccountSettings({
               required
             />
           </label>
-          <label>
+          <label className="atlas-field">
             <span>{copy.emailAddress}</span>
             <input value={email} disabled aria-describedby="email-note" />
           </label>
           <small id="email-note">{copy.emailNote}</small>
-          <button className="button-secondary" type="submit">
+          <button className="atlas-button-ghost" type="submit">
             {copy.saveName}
           </button>
         </form>
 
-        <form action={changeAccountPassword} className="account-form">
-          <div>
+        <form
+          action={changeAccountPassword}
+          className="atlas-card atlas-card--sm settings-form"
+        >
+          <div className="settings-form__intro">
             <h3>{copy.changePassword}</h3>
             <p>{copy.changePasswordCopy}</p>
           </div>
-          <label>
+          <label className="atlas-field">
             <span>{copy.currentPassword}</span>
             <input
               name="current_password"
@@ -97,7 +106,7 @@ export function AccountSettings({
               required
             />
           </label>
-          <label>
+          <label className="atlas-field">
             <span>{copy.newPassword}</span>
             <input
               name="password"
@@ -107,7 +116,7 @@ export function AccountSettings({
               required
             />
           </label>
-          <label>
+          <label className="atlas-field">
             <span>{copy.confirmPassword}</span>
             <input
               name="password_confirmation"
@@ -117,21 +126,21 @@ export function AccountSettings({
               required
             />
           </label>
-          <button className="button-secondary" type="submit">
+          <button className="atlas-button-ghost" type="submit">
             {copy.changePassword}
           </button>
         </form>
       </div>
 
-      <details className="danger-zone">
+      <details className="settings-danger">
         <summary>{copy.deleteAccount}</summary>
-        <div className="danger-zone__body">
+        <div className="settings-danger__body">
           <p>{copy.deleteAccountCopy}</p>
           <form
             action={deleteAccount}
-            className="account-form account-form--danger"
+            className="settings-form settings-form--danger"
           >
-            <label>
+            <label className="atlas-field">
               <span>{copy.currentPassword}</span>
               <input
                 name="current_password"
@@ -140,7 +149,7 @@ export function AccountSettings({
                 required
               />
             </label>
-            <label>
+            <label className="atlas-field">
               <span>{copy.typeDelete}</span>
               <input
                 name="confirmation"
@@ -149,7 +158,7 @@ export function AccountSettings({
                 required
               />
             </label>
-            <button className="button-danger" type="submit">
+            <button className="atlas-button member-button-danger" type="submit">
               {copy.permanentlyDelete}
             </button>
           </form>

@@ -11,7 +11,9 @@ describe("daily reading actions", () => {
       "app/api/daily-readings/[id]/pdf/route.ts",
       "utf8",
     );
-    expect(actions).toContain("Download PDF");
+    expect(actions).toContain("/api/daily-readings/${readingId}/pdf");
+    expect(actions).toContain("download");
+    expect(actions).toContain("copy.printReport");
     expect(actions).not.toContain("window.print");
     expect(route).toContain('"Content-Type": "application/pdf"');
     expect(route).toContain('"Content-Disposition"');

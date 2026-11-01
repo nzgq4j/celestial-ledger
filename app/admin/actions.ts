@@ -347,7 +347,8 @@ const tarotDeckSchema = z.object({
   name: z.string().trim().min(2).max(80),
   tagline: z.string().trim().min(10).max(240),
   accentToken: z.enum(["gold", "copper", "map-cyan", "map-red", "map-chalk"]),
-  minimumPlan: z.enum(["free", "personal", "premium"]),
+  // Two levels: Free and Atlas (`premium`). `personal` is retired.
+  minimumPlan: z.enum(["free", "premium"]),
   sortOrder: z.coerce.number().int().min(0).max(1000),
   active: z.boolean(),
   translations: z.object({

@@ -17,5 +17,6 @@ export default defineConfig([
     ".next/**",
     "coverage/**",
     "next-env.d.ts",
+    "android/**",
   ]),
 ]);

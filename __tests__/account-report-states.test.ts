@@ -40,7 +40,7 @@ describe("account report states", () => {
           created_at: "2026-08-08T08:00:00Z",
         },
       ],
-      planKey: "personal",
+      planKey: "free",
     });
     expect(states).toHaveLength(2);
     expect(states.map((state) => state.product.report_type)).toEqual([
@@ -71,28 +71,56 @@ describe("account report states", () => {
           created_at: "2026-08-01T08:00:00Z",
         },
       ],
-      planKey: "personal",
+      planKey: "free",
     });
     expect(state.kind).toBe("purchased_unused");
   });
 
-  it("distinguishes Premium inclusion from a report that must be purchased", () => {
+  it("offers an unused included Atlas report before a purchase", () => {
     expect(
       deriveAccountReportStates({
         products,
         readyEntitlements: [],
         reports: [],
         planKey: "premium",
-      }).map((state) => state.kind),
-    ).toEqual(["premium_included", "premium_included"]);
-    expect(
-      deriveAccountReportStates({
-        products,
-        readyEntitlements: [],
-        reports: [],
-        planKey: "personal",
-      }).map((state) => state.kind),
-    ).toEqual(["not_purchased", "not_purchased"]);
+        includedReportCredits: 1,
+      }),
+    ).toEqual([
+      { kind: "included_credit", product: products[0], creditsRemaining: 1 },
+      { kind: "included_credit", product: products[1], creditsRemaining: 1 },
+    ]);
+  });
+
+  it("prices reports at 20% off for Atlas once the included report is used", () => {
+    const atlas = deriveAccountReportStates({
+      products,
+      readyEntitlements: [],
+      reports: [],
+      planKey: "premium",
+      includedReportCredits: 0,
+    });
+    expect(atlas.map((state) => state.kind)).toEqual([
+      "not_purchased",
+      "not_purchased",
+    ]);
+    expect(atlas[0]).toMatchObject({ discountPercent: 20 });
+    const free = deriveAccountReportStates({
+      products,
+      readyEntitlements: [],
+      reports: [],
+      planKey: "free",
+    });
+    expect(free[0]).toMatchObject({
+      kind: "not_purchased",
+      discountPercent: 0,
+    });
+    const retired = deriveAccountReportStates({
+      products,
+      readyEntitlements: [],
+      reports: [],
+      planKey: "personal",
+    });
+    expect(retired[0]).toMatchObject({ discountPercent: 0 });
   });
 
   it("deduplicates repeated catalogue rows by report type", () => {
@@ -124,7 +152,7 @@ describe("account report states", () => {
         },
       ],
       reports: [],
-      planKey: "personal",
+      planKey: "free",
     });
 
     const primary = primaryAccountReportAction(states);
@@ -140,12 +168,13 @@ describe("account report states", () => {
       readyEntitlements: [],
       reports: [],
       planKey: "premium",
+      includedReportCredits: 1,
     });
     const purchasable = deriveAccountReportStates({
       products,
       readyEntitlements: [],
       reports: [],
-      planKey: "personal",
+      planKey: "free",
     });
 
     expect(primaryAccountReportAction(included)).toBe("career_purpose");

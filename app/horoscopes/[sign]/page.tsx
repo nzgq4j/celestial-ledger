@@ -7,6 +7,11 @@ import { isLocaleTag } from "@/lib/i18n/config";
 import { getServerTranslationPack } from "@/lib/i18n/server";
 import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
+import {
+  HoroscopeSignPicker,
+  HoroscopeUpsell,
+  localizedHoroscopePath,
+} from "@/components/horoscopes/horoscope-layout";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { StructuredData } from "@/components/StructuredData";
 import {
@@ -84,7 +89,7 @@ export default async function HoroscopeDetailPage({
     evening: copy.evening,
   };
   return (
-    <main className="page-shell horoscope-detail">
+    <main className="atlas-shell sign-page">
       <HoroscopeMidnightRefresh />
       <StructuredData
         data={{
@@ -101,97 +106,102 @@ export default async function HoroscopeDetailPage({
           publisher: { "@type": "Organization", name: SITE_NAME },
         }}
       />
-      <nav className="horoscope-breadcrumb" aria-label="Breadcrumb">
-        <Link
-          href={
-            pack.tag === "en-GB"
-              ? "/horoscopes"
-              : `/horoscopes?lang=${pack.tag}`
-          }
-        >
+      <nav className="sign-breadcrumb" aria-label="Breadcrumb">
+        <Link href={localizedHoroscopePath("/horoscopes", pack.tag)}>
           {copy.allHoroscopes}
         </Link>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{reading.sign}</span>
       </nav>
-      <header>
-        <span className="horoscope-detail__glyph" aria-hidden="true">
-          {reading.glyph}
-        </span>
-        <div>
-          <p className="eyebrow">
-            {reading.displayDate} · {copy.sunSignReading}
-          </p>
-          <h1>{reading.sign}</h1>
-          <p className="horoscope-detail__subtitle">{copy.dailyHoroscope}</p>
-          <p className="horoscope-detail__theme">{reading.theme}</p>
-        </div>
+      <header className="sign-page__header">
+        <p className="atlas-kicker">
+          {copy.pageKicker} · {reading.displayDate}
+        </p>
+        <h1 className="atlas-page-title">
+          <span className="sign-page__glyph" aria-hidden="true">
+            {reading.glyph}
+          </span>
+          {reading.sign} <em>{copy.dailyHoroscope}</em>
+        </h1>
+        <p className="sign-page__intro">{reading.theme}</p>
       </header>
-      <SocialShareLinks
-        url={shareUrl}
-        sign={reading.sign}
-        title={title}
-        description={reading.bottomLine}
-        landscapeImageUrl={imageUrl}
-        portraitImageUrl={pinterestImageUrl}
-        heading={copy.shareReading}
-        copyLabel={copy.copyLink}
-        copiedLabel={copy.linkCopied}
+      <HoroscopeSignPicker
+        horoscopes={sky.horoscopes}
+        locale={pack.tag}
+        label={copy.signPicker}
+        selectedSlug={reading.slug}
       />
-      <section className="horoscope-reading">
-        <article className="horoscope-reading__lead">
-          <p className="section-kicker">{copy.bottomLine}</p>
-          <p>{reading.bottomLine}</p>
-        </article>
-        <HoroscopeDayArc
-          parts={reading.dayParts}
-          labels={periodLabels}
-          heading={copy.dailyArc}
-          introduction={copy.dailyArcIntroduction}
-        />
-        <div className="horoscope-reading__chapters">
-          <article>
-            <h2>{copy.relationships}</h2>
-            <p>{reading.relationships}</p>
-          </article>
-          <article>
-            <h2>{copy.business}</h2>
-            <p>{reading.business}</p>
-          </article>
-          <article>
-            <h2>{copy.money}</h2>
-            <p>{reading.money}</p>
-          </article>
+      <article className="sign-reading">
+        <section className="atlas-card atlas-card--feature sign-reading__lead">
+          <p className="atlas-kicker">
+            {copy.bottomLineLabel.replace("{sign}", reading.sign)}
+          </p>
+          <h2
+            className={`sign-reading__headline${reading.bottomLine.length > 120 ? " sign-reading__headline--long" : ""}`}
+          >
+            {reading.bottomLine}
+          </h2>
+          <HoroscopeDayArc
+            parts={reading.dayParts}
+            labels={periodLabels}
+            heading={copy.dailyArc}
+            introduction={copy.dailyArcIntroduction}
+          />
+        </section>
+        <div className="sign-reading__areas">
+          {[
+            [copy.areaRelationships, reading.relationships],
+            [copy.areaWork, reading.business],
+            [copy.areaMoney, reading.money],
+            [copy.areaWellbeing, reading.wellbeing],
+          ].map(([label, text]) => (
+            <section className="sign-area" key={label}>
+              <h2>{label}</h2>
+              <p>{text}</p>
+            </section>
+          ))}
+          <HoroscopeUpsell copy={copy} />
         </div>
-        <article className="horoscope-guidance">
-          <div>
-            <h2>{copy.opportunity}</h2>
-            <p>{reading.opportunity}</p>
-          </div>
-          <div>
-            <h2>{copy.watchFor}</h2>
-            <p>{reading.caution}</p>
-          </div>
-          <div>
-            <h2>{copy.wellbeing}</h2>
-            <p>{reading.wellbeing}</p>
-          </div>
+      </article>
+      <section className="sign-guidance" aria-label={copy.whyReading}>
+        <article className="sign-area">
+          <h2>{copy.opportunity}</h2>
+          <p>{reading.opportunity}</p>
         </article>
-        <article className="horoscope-question">
-          <p className="section-kicker">{copy.questionForDay}</p>
-          <h2>{reading.question}</h2>
+        <article className="sign-area">
+          <h2>{copy.watchFor}</h2>
+          <p>{reading.caution}</p>
+        </article>
+        <article className="sign-area sign-area--question">
+          <h2>{copy.questionForDay}</h2>
+          <p>{reading.question}</p>
         </article>
       </section>
-      <aside className="horoscope-evidence">
-        <p className="eyebrow">{copy.whyReading}</p>
-        <h2>{copy.celestialEvidence}</h2>
-        <ul>
-          {reading.evidence.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <p>{copy.calculationNote}</p>
-      </aside>
+      <div className="sign-footer">
+        <aside className="sign-evidence">
+          <p className="atlas-kicker">{copy.whyReading}</p>
+          <h2>{copy.celestialEvidence}</h2>
+          <ul>
+            {reading.evidence.map((item) => (
+              <li key={item} className="atlas-evidence">
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p>{copy.calculationNote}</p>
+        </aside>
+        <SocialShareLinks
+          url={shareUrl}
+          sign={reading.sign}
+          title={title}
+          description={reading.bottomLine}
+          landscapeImageUrl={imageUrl}
+          portraitImageUrl={pinterestImageUrl}
+          heading={copy.shareReading}
+          copyLabel={copy.copyLink}
+          copiedLabel={copy.linkCopied}
+        />
+      </div>
     </main>
   );
 }

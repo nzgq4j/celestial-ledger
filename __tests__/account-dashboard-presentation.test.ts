@@ -2,36 +2,38 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const page = readFileSync("app/account/page.tsx", "utf8");
-const css = readFileSync("app/globals.css", "utf8");
+const memberData = readFileSync("lib/account/member-data.ts", "utf8");
+const offers = readFileSync("components/account/ReportOffers.tsx", "utf8");
+const css = readFileSync("app/styles/atlas-member.css", "utf8");
+const atlas = readFileSync("app/atlas.css", "utf8");
 
-describe("My Atlas dashboard presentation", () => {
-  it("combines daily and weekly guidance under one section heading", () => {
+describe("Member screens presentation", () => {
+  it("keeps daily, weekly and tarot creation as collapsed drawers in the create view", () => {
     expect(page).toContain('id="readings"');
-    expect(page).toContain('className="account-reading-cards"');
     expect(page.match(/id="daily-reading"/g)).toHaveLength(1);
     expect(page.match(/id="weekly-reading"/g)).toHaveLength(1);
+    expect(page).toContain('className="create-card"');
+    expect(page).not.toContain("<details open");
   });
 
-  it("derives and renders report product states in exactly one place", () => {
-    expect(page).toContain("deriveAccountReportStates");
-    expect(page.match(/reportStates\.map/g)).toHaveLength(1);
+  it("derives report states once and renders them through one component", () => {
+    expect(memberData).toContain("deriveAccountReportStates");
+    expect(memberData.match(/deriveAccountReportStates\(/g)).toHaveLength(1);
+    expect(offers.match(/reportTypes\.map/g)).toHaveLength(1);
     expect(page).not.toContain("readyEntitlements.map");
     expect(page).not.toContain("readyEntitlements.find");
-    expect(page).not.toContain('id="purchased-reports"');
   });
 
-  it("uses luminous account-only tokens without changing public pages", () => {
-    expect(css).toContain("body:has(.account-dashboard)");
-    expect(css).toContain("--atlas-cyan: #20d7e6");
-    expect(css).toContain("--atlas-violet: #a25cff");
-    expect(css).toContain("--atlas-coral: #ff597e");
+  it("builds on the shared Atlas tokens instead of new colours", () => {
+    expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+    expect(css).toContain("var(--atlas-card)");
+    expect(css).toContain("var(--atlas-gold)");
+    expect(atlas).toContain("--atlas-cyan: #4fb7c5");
   });
 
-  it("retains responsive and keyboard-accessible treatments", () => {
-    expect(css).toContain("@media (max-width: 640px)");
+  it("retains visible keyboard focus and reduced-motion treatments", () => {
     expect(css).toContain(":focus-visible");
-    expect(css).toContain("outline: 2px solid var(--atlas-cyan)");
-    expect(css).toContain(".account-reading-cards");
-    expect(css).toContain("grid-template-columns: 1fr");
+    expect(css).toContain("outline: 2px solid var(--atlas-gold)");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });
 });

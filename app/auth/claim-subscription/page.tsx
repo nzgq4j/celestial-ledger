@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SubscriptionClaimStatus } from "@/components/SubscriptionClaimStatus";
+import "@/app/styles/atlas-public.css";
 
 export const metadata: Metadata = {
   title: "Confirming membership — Celestial Atlas",
@@ -16,14 +17,14 @@ export default async function ClaimSubscriptionPage({
   return (
     <main className="auth-page">
       <section className="auth-panel subscription-claim-panel">
-        <p className="section-kicker">Your atlas is opening</p>
+        <p className="atlas-kicker">Your atlas is opening</p>
         <h1>Bringing your chart into focus</h1>
         {sessionId ? (
           <SubscriptionClaimStatus sessionId={sessionId} />
         ) : (
           <>
             <p>The checkout return could not be verified.</p>
-            <Link href="/membership" className="button-primary">
+            <Link href="/membership" className="atlas-button">
               Return to membership
             </Link>
           </>

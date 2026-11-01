@@ -104,7 +104,7 @@ export function AccountTarotDailyDraw({
           )}
           <button
             type="button"
-            className="button-primary"
+            className="atlas-button"
             disabled={pending || !deckId}
             onClick={draw}
           >
@@ -123,7 +123,7 @@ export function AccountTarotDailyDraw({
             className="account-tarot-result__plate"
           />
           <div>
-            <p className="section-kicker">{card.position}</p>
+            <p className="atlas-kicker">{card.position}</p>
             <h4>{card.name}</h4>
             <small>
               {card.orientation === "upright"
@@ -146,13 +146,13 @@ export function AccountTarotDailyDraw({
             <div className="account-tarot-result__actions">
               <button
                 type="button"
-                className="button-quiet"
+                className="atlas-button-ghost"
                 onClick={() => setResult(null)}
               >
                 {copy.newReading}
               </button>
               <Link
-                className="button-secondary"
+                className="atlas-button-ghost"
                 href={`/tarot?deck=${encodeURIComponent(deckId)}`}
               >
                 {copy.chooseSpread}

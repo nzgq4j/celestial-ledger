@@ -24,8 +24,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     availableChoices: "Available spreads",
     otherSpreads: "Explore other spreads",
     myLibrary: "My library",
-    pageEyebrow: "A symbolic reading table",
-    pageTitle: "Choose the cards. Make space to reflect.",
+    pageEyebrow: "Tarot",
+    pageTitle: "Hold a question. Draw.",
     pageIntroduction:
       "Move through a deck and spread at your own pace, then use the cards as prompts for considered reflection.",
     disclaimer:
@@ -61,8 +61,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     position: "Position",
     meaning: "Reflection",
     locked: "Locked",
-    requiresPersonal: "Personal membership",
-    requiresPremium: "Premium membership",
+    requiresPersonal: "Atlas membership",
+    requiresPremium: "Atlas membership",
     upgrade: "Explore membership",
     unavailable: "Tarot reading is not currently available.",
     error: "The cards could not be drawn. Nothing was charged or saved.",
@@ -169,6 +169,20 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminSaveFailedNotice: "The tarot deck could not be saved.",
     adminImagesRequiredNotice:
       "Upload both a cover and card back before activating a deck.",
+    spreadsLabel: "Spreads",
+    decksLabel: "Deck",
+    lockedAtlas: "Atlas",
+    lockedSpreadLabel: "{name}: included with Atlas",
+    cardBrand: "Celestial Atlas",
+    tapToTurn: "Tap to turn",
+    turnCard: "Turn the card for {name}",
+    drawHint: "Hold your question lightly, then tap the card to turn it.",
+    atlasIncluded: "All five spreads are included with Atlas.",
+    majorArcana: "Major Arcana",
+    minorArcana: "Minor Arcana",
+    openJournal: "Open in my journal",
+    signInToSave: "Sign in to save readings",
+    reset: "Reset",
   },
   "es-ES": {
     traditionalView: "Vista tradicional",
@@ -190,8 +204,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     availableChoices: "Tiradas disponibles",
     otherSpreads: "Explorar otras tiradas",
     myLibrary: "Mi biblioteca",
-    pageEyebrow: "Una mesa de lectura simbólica",
-    pageTitle: "Elige las cartas. Haz espacio para reflexionar.",
+    pageEyebrow: "Tarot",
+    pageTitle: "Sostén una pregunta. Saca una carta.",
     pageIntroduction:
       "Avanza por una baraja y una tirada a tu ritmo, y usa las cartas como estímulos para una reflexión serena.",
     disclaimer:
@@ -227,8 +241,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     position: "Posición",
     meaning: "Reflexión",
     locked: "Bloqueado",
-    requiresPersonal: "Membresía Personal",
-    requiresPremium: "Membresía Premium",
+    requiresPersonal: "Membresía Atlas",
+    requiresPremium: "Membresía Atlas",
     upgrade: "Ver membresías",
     unavailable: "La lectura de tarot no está disponible en este momento.",
     error:
@@ -336,6 +350,20 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminSaveFailedNotice: "No se pudo guardar la baraja de tarot.",
     adminImagesRequiredNotice:
       "Carga una portada y un reverso antes de activar una baraja.",
+    spreadsLabel: "Tiradas",
+    decksLabel: "Baraja",
+    lockedAtlas: "Atlas",
+    lockedSpreadLabel: "{name}: incluida con Atlas",
+    cardBrand: "Celestial Atlas",
+    tapToTurn: "Toca para girar",
+    turnCard: "Girar la carta para {name}",
+    drawHint: "Sostén tu pregunta con suavidad y toca la carta para girarla.",
+    atlasIncluded: "Las cinco tiradas están incluidas con Atlas.",
+    majorArcana: "Arcanos mayores",
+    minorArcana: "Arcanos menores",
+    openJournal: "Abrir en mi diario",
+    signInToSave: "Inicia sesión para guardar tus lecturas",
+    reset: "Reiniciar",
   },
   "fr-FR": {
     traditionalView: "Vue traditionnelle",
@@ -357,8 +385,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     availableChoices: "Tirages disponibles",
     otherSpreads: "Explorer les autres tirages",
     myLibrary: "Ma bibliothèque",
-    pageEyebrow: "Une table de lecture symbolique",
-    pageTitle: "Choisissez les cartes. Prenez le temps de réfléchir.",
+    pageEyebrow: "Tarot",
+    pageTitle: "Gardez une question en tête. Tirez.",
     pageIntroduction:
       "Parcourez un jeu et un tirage à votre rythme, puis utilisez les cartes comme supports d’une réflexion posée.",
     disclaimer:
@@ -394,8 +422,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     position: "Position",
     meaning: "Réflexion",
     locked: "Verrouillé",
-    requiresPersonal: "Abonnement Personnel",
-    requiresPremium: "Abonnement Premium",
+    requiresPersonal: "Abonnement Atlas",
+    requiresPremium: "Abonnement Atlas",
     upgrade: "Voir les abonnements",
     unavailable: "La lecture de tarot n’est pas disponible actuellement.",
     error:
@@ -505,6 +533,21 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminSaveFailedNotice: "Le jeu de tarot n’a pas pu être enregistré.",
     adminImagesRequiredNotice:
       "Envoyez une couverture et un dos de carte avant d’activer un jeu.",
+    spreadsLabel: "Tirages",
+    decksLabel: "Jeu",
+    lockedAtlas: "Atlas",
+    lockedSpreadLabel: "{name} : inclus avec Atlas",
+    cardBrand: "Celestial Atlas",
+    tapToTurn: "Touchez pour retourner",
+    turnCard: "Retourner la carte pour {name}",
+    drawHint:
+      "Gardez votre question en tête, puis touchez la carte pour la retourner.",
+    atlasIncluded: "Les cinq tirages sont inclus avec Atlas.",
+    majorArcana: "Arcanes majeurs",
+    minorArcana: "Arcanes mineurs",
+    openJournal: "Ouvrir dans mon journal",
+    signInToSave: "Connectez-vous pour enregistrer vos lectures",
+    reset: "Recommencer",
   },
   "de-DE": {
     traditionalView: "Traditionelle Ansicht",
@@ -527,8 +570,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     availableChoices: "Verfügbare Legungen",
     otherSpreads: "Weitere Legungen ansehen",
     myLibrary: "Meine Bibliothek",
-    pageEyebrow: "Ein Tisch für symbolische Deutung",
-    pageTitle: "Wähle die Karten. Schaffe Raum zum Nachdenken.",
+    pageEyebrow: "Tarot",
+    pageTitle: "Halte eine Frage. Zieh eine Karte.",
     pageIntroduction:
       "Gehe in deinem Tempo durch Deck und Legung und nutze die Karten als Anregung für eine bedachte Reflexion.",
     disclaimer:
@@ -564,8 +607,8 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     position: "Position",
     meaning: "Reflexion",
     locked: "Gesperrt",
-    requiresPersonal: "Personal-Mitgliedschaft",
-    requiresPremium: "Premium-Mitgliedschaft",
+    requiresPersonal: "Atlas-Mitgliedschaft",
+    requiresPremium: "Atlas-Mitgliedschaft",
     upgrade: "Mitgliedschaften ansehen",
     unavailable: "Die Tarot-Deutung ist derzeit nicht verfügbar.",
     error:
@@ -676,6 +719,21 @@ export const TAROT_UI_MESSAGES: Record<TarotLocale, TarotUiMessages> = {
     adminSaveFailedNotice: "Das Tarot-Deck konnte nicht gespeichert werden.",
     adminImagesRequiredNotice:
       "Lade ein Cover und eine Kartenrückseite hoch, bevor du ein Deck aktivierst.",
+    spreadsLabel: "Legungen",
+    decksLabel: "Deck",
+    lockedAtlas: "Atlas",
+    lockedSpreadLabel: "{name}: in Atlas enthalten",
+    cardBrand: "Celestial Atlas",
+    tapToTurn: "Zum Umdrehen tippen",
+    turnCard: "Karte für {name} umdrehen",
+    drawHint:
+      "Halte deine Frage locker und tippe auf die Karte, um sie umzudrehen.",
+    atlasIncluded: "Alle fünf Legungen sind in Atlas enthalten.",
+    majorArcana: "Große Arkana",
+    minorArcana: "Kleine Arkana",
+    openJournal: "In meinem Journal öffnen",
+    signInToSave: "Melde dich an, um Deutungen zu speichern",
+    reset: "Zurücksetzen",
   },
 };
 

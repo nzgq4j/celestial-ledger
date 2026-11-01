@@ -189,8 +189,14 @@ export function AccountReportList({
     copy.progressCheckingEvidence,
   ];
 
+  const shortDate = (date: string) =>
+    new Date(date).toLocaleDateString(locale, {
+      day: "2-digit",
+      month: "short",
+    });
+
   return (
-    <div className="report-library-list">
+    <div className="library-list__group">
       {reports.map((report, index) => {
         const retryScheduled = hasScheduledAutomaticReportRetry(
           report.status,
@@ -209,29 +215,31 @@ export function AccountReportList({
             : labels[report.status];
         return (
           <article
-            className="report-library-row"
+            className="library-row library-row--report"
             id={`report-${report.id}`}
             key={report.id}
             tabIndex={focusReportId === report.id ? -1 : undefined}
           >
-            <div className="report-library-row__identity">
-              <strong>{title}</strong>
-              <small>
-                {report.expires_at
-                  ? `${copy.availableUntil} ${new Date(report.expires_at).toLocaleDateString(locale)}`
-                  : new Date(report.created_at).toLocaleDateString(locale)}
-              </small>
-              <small lang={report.locale}>
-                {localeRegistry[report.locale].nativeName}
-              </small>
-            </div>
-            <div className="report-library-row__state">
-              <span data-status={report.status} aria-hidden={active}>
-                {statusLabel}
-              </span>
+            <div className="library-row__identity">
+              <h3 className="library-row__title">{title}</h3>
+              <p className="library-row__meta">
+                <span
+                  className="library-row__status"
+                  data-status={report.status}
+                  aria-hidden={active}
+                >
+                  {statusLabel}
+                </span>
+                {" · "}
+                <span lang={report.locale}>
+                  {localeRegistry[report.locale].nativeName}
+                </span>
+                {report.expires_at &&
+                  ` · ${copy.availableUntil} ${new Date(report.expires_at).toLocaleDateString(locale)}`}
+              </p>
               {active && (
                 <div
-                  className={`report-row-progress report-row-progress--${retryScheduled ? "queued" : report.status}`}
+                  className={`library-row__progress library-row__progress--${retryScheduled ? "queued" : report.status}`}
                   role="progressbar"
                   aria-label={copy.reportProgress}
                   aria-valuetext={
@@ -242,10 +250,17 @@ export function AccountReportList({
                 </div>
               )}
             </div>
-            <div className="report-library-row__actions">
+            <time className="library-row__date" dateTime={report.created_at}>
+              {shortDate(report.created_at)}
+            </time>
+            <div
+              className="library-row__actions"
+              role="group"
+              aria-label={copy.reportActions}
+            >
               {report.status === "completed" && (
                 <Link
-                  className="report-action report-action--primary"
+                  className="library-row__open"
                   href={`/reports/${report.id}`}
                 >
                   {copy.openReport}
@@ -253,7 +268,7 @@ export function AccountReportList({
               )}
               {report.status === "completed" && (
                 <a
-                  className="report-action report-action--quiet"
+                  className="library-row__action"
                   href={`/api/reports/${report.id}/pdf`}
                   download
                 >
@@ -262,7 +277,7 @@ export function AccountReportList({
               )}
               {report.status === "failed" && !retryScheduled && (
                 <button
-                  className="report-action report-action--primary"
+                  className="library-row__open"
                   type="button"
                   onClick={() => void retry(report.id)}
                   disabled={busyId === report.id}
@@ -271,7 +286,7 @@ export function AccountReportList({
                 </button>
               )}
               <button
-                className="report-action report-action--danger report-delete-action"
+                className="library-row__action library-row__action--danger"
                 type="button"
                 onClick={() => setDeleteTarget(report.id)}
                 disabled={busyId === report.id}

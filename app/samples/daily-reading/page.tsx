@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "@/app/styles/atlas-member.css";
 import { sampleChart, sampleIdentity } from "@/lib/samples";
 import { buildDailyReadingAnalysis } from "@/lib/daily-readings/calculation";
 import { buildDailyReadingContent } from "@/lib/daily-readings/content";
@@ -27,7 +28,7 @@ export default async function SampleDailyReadingPage() {
     "eb437f1b-5e12-43be-a123-060ec2bf3ce1",
   );
   return (
-    <main className="page-shell sample-daily-reading">
+    <main className="atlas-shell member-doc sample-daily-reading">
       <DailyReadingView
         content={content}
         analysis={analysis}
@@ -35,14 +36,14 @@ export default async function SampleDailyReadingPage() {
         profileLabel={sampleIdentity.name}
         sample
       />
-      <aside className="sample-daily-reading__cta">
+      <aside className="sample-daily-reading__cta member-cta">
         <p className="section-kicker">Your sky, your day</p>
         <h2>Registered users receive the personal edition.</h2>
         <p>
           Save your natal chart, then open a daily brief built from the transits
           meeting your own planetary positions.
         </p>
-        <Link href="/auth/login" className="button-primary">
+        <Link href="/auth/login" className="atlas-button">
           Sign in or create an account
         </Link>
       </aside>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  capabilityPeriodWindow,
   decideCapability,
   effectivePlan,
   type CapabilityGrant,
@@ -153,5 +154,85 @@ describe("deterministic account entitlement decisions", () => {
         at,
       }),
     ).toMatchObject({ allowed: true, allowance: 25, source: "plan_and_grant" });
+  });
+});
+
+describe("two-tier catalogue and capability periods", () => {
+  it("never makes the retired Personal plan effective", () => {
+    const twoTier: Plan[] = [
+      { key: "free", rank: 0, active: true },
+      { key: "personal", rank: 10, active: false },
+      { key: "premium", rank: 20, active: true },
+    ];
+    expect(effectivePlan(twoTier, [subscription()], at)).toBe("free");
+    expect(
+      effectivePlan(twoTier, [subscription({ planKey: "premium" })], at),
+    ).toBe("premium");
+  });
+
+  it("supports a yearly allowance period", () => {
+    expect(
+      decideCapability({
+        plans,
+        planCapabilities: [
+          {
+            planKey: "premium",
+            capability: "report.standard_credit",
+            allowance: 1,
+            period: "year",
+          },
+        ],
+        subscriptions: [subscription({ planKey: "premium" })],
+        grants: [],
+        capability: "report.standard_credit",
+        at,
+      }),
+    ).toMatchObject({ allowed: true, allowance: 1, period: "year" });
+  });
+
+  it("anchors the membership year on the subscription anniversary", () => {
+    const anchor = new Date("2025-03-15T10:00:00Z");
+    expect(
+      capabilityPeriodWindow("year", new Date("2026-03-15T09:59:59Z"), {
+        anchor,
+      }),
+    ).toEqual({
+      start: new Date("2025-03-15T10:00:00Z"),
+      end: new Date("2026-03-15T10:00:00Z"),
+    });
+    expect(
+      capabilityPeriodWindow("year", new Date("2026-03-15T10:00:00Z"), {
+        anchor,
+      }),
+    ).toEqual({
+      start: new Date("2026-03-15T10:00:00Z"),
+      end: new Date("2027-03-15T10:00:00Z"),
+    });
+    expect(capabilityPeriodWindow("year", at)).toEqual({
+      start: new Date("2026-01-01T00:00:00Z"),
+      end: new Date("2027-01-01T00:00:00Z"),
+    });
+  });
+
+  it("matches the database week, billing-month and quarter windows", () => {
+    expect(capabilityPeriodWindow("week", at)).toEqual({
+      start: new Date("2026-08-03T00:00:00Z"),
+      end: new Date("2026-08-10T00:00:00Z"),
+    });
+    const billing = {
+      start: new Date("2026-07-20T00:00:00Z"),
+      end: new Date("2026-08-20T00:00:00Z"),
+    };
+    expect(
+      capabilityPeriodWindow("billing_month", at, { billingPeriod: billing }),
+    ).toEqual(billing);
+    expect(capabilityPeriodWindow("billing_month", at)).toEqual({
+      start: new Date("2026-08-01T00:00:00Z"),
+      end: new Date("2026-09-01T00:00:00Z"),
+    });
+    expect(capabilityPeriodWindow("quarter", at)).toEqual({
+      start: new Date("2026-07-01T00:00:00Z"),
+      end: new Date("2026-10-01T00:00:00Z"),
+    });
   });
 });

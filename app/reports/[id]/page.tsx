@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "@/app/styles/atlas-member.css";
 import { notFound, redirect } from "next/navigation";
 import { after } from "next/server";
 import { runNextReportJob } from "@/app/api/internal/report-worker/route";
@@ -63,16 +64,18 @@ export default async function ReportPage({
     });
   if (report.status !== "completed")
     return (
-      <main className="page-shell private-report">
+      <main className="atlas-shell member-doc">
         <ReportGenerationProgress
           reportId={report.id}
           initialStatus={report.status as "queued" | "generating" | "failed"}
           initialAttempts={report.attempts}
           initialNextAttemptAt={report.next_attempt_at}
         />
-        <Link className="button-quiet" href="/account?view=library">
-          {copy.returnToLibrary}
-        </Link>
+        <div className="member-actions">
+          <Link className="atlas-button-ghost" href="/account?view=library">
+            {copy.returnToLibrary}
+          </Link>
+        </div>
       </main>
     );
   const isRecovery = report.report_type === "recovery_reflection";
@@ -83,13 +86,21 @@ export default async function ReportPage({
     CareerEvidenceBundle | undefined;
   if (!output.success || !evidence)
     return (
-      <main className="page-shell">
+      <main className="atlas-shell member-doc">
         <h1>{copy.reportUnavailable}</h1>
+        <div className="member-actions">
+          <Link className="atlas-button-ghost" href="/account?view=library">
+            {copy.returnToLibrary}
+          </Link>
+        </div>
       </main>
     );
   const evidenceById = new Map(evidence.items.map((item) => [item.id, item]));
   return (
-    <main className="page-shell private-report" lang={reportLocale}>
+    <main
+      className="atlas-shell member-doc member-doc--wide"
+      lang={reportLocale}
+    >
       <ReportViewerActions reportId={report.id} />
       <header className="report-viewer-heading">
         <p className="eyebrow">

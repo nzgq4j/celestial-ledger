@@ -22,6 +22,12 @@ const entitlements = fs.readFileSync(
   "supabase/migrations/20260806212538_account_capability_entitlements.sql",
   "utf8",
 );
+const twoTier = fs.readFileSync(
+  "supabase/migrations/20261101090000_two_tier_atlas_membership.sql",
+  "utf8",
+);
+const subscriptionParams = fs.readFileSync("lib/stripe/checkout.ts", "utf8");
+const stripeCatalog = fs.readFileSync("lib/stripe/catalog.ts", "utf8");
 
 describe("existing one-time Stripe purchase contract", () => {
   it("creates authenticated, same-origin checkout from server catalog prices", () => {
@@ -116,11 +122,16 @@ describe("existing one-time Stripe purchase contract", () => {
     expect(entitlements.match(/false, 1\)/g)).toHaveLength(6);
   });
 
-  it("issues one Premium credit every third paid period with 12-month expiry", () => {
+  it("issues one included Atlas report per membership year with 12-month expiry", () => {
     expect(webhook).toContain('event.type === "invoice.paid"');
     expect(webhook).toContain('"record_paid_subscription_invoice"');
-    expect(entitlements).toContain("v_paid_periods % 3 = 0");
-    expect(entitlements).toContain("p_paid_at + interval '12 months'");
+    expect(twoTier).toContain(
+      "public.grant_annual_report_credit(p_user_id, p_stripe_invoice_id, p_paid_at)",
+    );
+    expect(twoTier).toContain("p_granted_at + interval '12 months'");
+    expect(twoTier).toContain(
+      "('premium', 'report.standard_credit', 1, 'year'",
+    );
   });
 
   it("removes fully refunded subscription invoices from the credit counter", () => {
@@ -132,9 +143,14 @@ describe("existing one-time Stripe purchase contract", () => {
   });
 
   it("uses fixed membership prices and permits Stripe promotion codes", () => {
-    expect(subscriptionCheckout).toContain('mode: "subscription"');
-    expect(subscriptionCheckout).toContain("price: plan.stripe_price_id");
-    expect(subscriptionCheckout).toContain("allow_promotion_codes: true");
+    expect(subscriptionCheckout).toContain(
+      "subscriptionCheckoutSessionParams(",
+    );
+    expect(subscriptionParams).toContain('mode: "subscription"');
+    expect(subscriptionParams).toContain(
+      "line_items: [{ price: input.price.stripePriceId, quantity: 1 }]",
+    );
+    expect(subscriptionParams).toContain("allow_promotion_codes: true");
     expect(checkout).toContain("allow_promotion_codes: true");
   });
 
@@ -154,32 +170,43 @@ describe("existing one-time Stripe purchase contract", () => {
     );
   });
 
-  it("includes standard reports with Premium without opening Checkout", () => {
-    expect(account).toContain("deriveAccountReportStates");
-    expect(accountReportStates).toContain('input.planKey === "premium"');
-    expect(accountReportStates).toContain('kind: "premium_included"');
-    expect(account).toContain('state.kind === "premium_included"');
-    expect(checkout).toContain(
-      "This report is included with Premium membership.",
+  it("gives Atlas one included report a year, then 20% off, with no blanket inclusion", () => {
+    expect(accountReportStates).toContain('kind: "included_credit"');
+    expect(accountReportStates).toContain("reportDiscountPercent");
+    expect(accountReportStates).not.toContain("premium_included");
+    expect(checkout).not.toContain("included with Premium");
+    expect(checkout).toContain('.eq("plan_key", planKey)');
+    expect(reportQueue).not.toContain('planKey !== "premium"');
+    expect(reportQueue).toContain('.eq("role", "site_admin")');
+    expect(twoTier).toContain(
+      "update public.report_prices rp set active = true",
     );
-    expect(reportQueue).toContain("effectivePlanKeyForUser(userId)");
-    expect(reportQueue).toContain('planKey !== "premium"');
+    expect(twoTier).toContain("rp.unit_amount = round(f.unit_amount * 0.8)");
   });
 
   it("separates purchased but unused reports from the generated library", () => {
+    // The account page renders report offers; the member data loader picks
+    // out unused purchases and the offer card turns them into a generator.
+    const memberData = fs.readFileSync("lib/account/member-data.ts", "utf8");
+    const offers = fs.readFileSync(
+      "components/account/ReportOffers.tsx",
+      "utf8",
+    );
     expect(account).toContain('id="reports"');
-    expect(account).toContain("linkedEntitlementIds");
-    expect(account).toContain('item.status === "unused"');
-    expect(account).toContain('item.status === "queued"');
-    expect(account).toContain("<GenerateReportButton");
+    expect(account).toContain("<ReportOffers");
+    expect(memberData).toContain("linkedEntitlementIds");
+    expect(memberData).toContain('item.status === "unused"');
+    expect(memberData).toContain('item.status === "queued"');
+    expect(offers).toContain("<GenerateReportButton");
     expect(accountReportStates).toContain('kind: "purchased_unused"');
-    expect(account).toContain('state.kind === "purchased_unused"');
-    expect(account).toContain("entitlementId={state.entitlement.id}");
+    expect(offers).toContain('"entitlement" in state');
+    expect(offers).toContain("entitlementId={entitlement?.id}");
   });
 
-  it("resolves portal plan switches from the active catalogue price", () => {
-    expect(webhook).toContain('.from("commerce_plans")');
-    expect(webhook).toContain('.eq("stripe_price_id", priceId)');
-    expect(webhook).toContain("cataloguePlan?.plan_key");
+  it("resolves portal plan switches from the catalogue price", () => {
+    expect(webhook).toContain("planKeyForStripePrice(admin, priceId)");
+    expect(stripeCatalog).toContain('.from("commerce_plan_prices")');
+    expect(stripeCatalog).toContain('.from("commerce_plans")');
+    expect(stripeCatalog).toContain('.eq("stripe_price_id", priceId)');
   });
 });

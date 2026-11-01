@@ -3,9 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ReportDeleteModal } from "@/components/ReportDeleteModal";
+import { useLocale } from "@/components/LocaleProvider";
+import { memberCopy } from "@/lib/account/member-copy";
 
 export function DailyReadingActions({ readingId }: { readingId: string }) {
   const router = useRouter();
+  const { locale, pack } = useLocale();
+  const copy = pack.messages.account;
+  const member = memberCopy[locale];
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -24,20 +29,27 @@ export function DailyReadingActions({ readingId }: { readingId: string }) {
 
   return (
     <>
-      <div className="report-viewer-actions daily-reading-actions">
+      <div
+        className="member-doc-actions"
+        role="group"
+        aria-label={copy.reportActions}
+      >
+        <a className="member-doc-actions__back" href="/account">
+          ← {member.backToToday}
+        </a>
         <a
-          className="button-secondary"
+          className="atlas-button atlas-button--sm"
           href={`/api/daily-readings/${readingId}/pdf`}
           download
         >
-          Download PDF
+          {copy.printReport}
         </a>
         <button
-          className="button-danger"
+          className="atlas-button-ghost atlas-button--sm member-button-danger-ghost"
           type="button"
           onClick={() => setDeleteOpen(true)}
         >
-          Delete
+          {copy.deleteReport}
         </button>
       </div>
       <ReportDeleteModal

@@ -17,6 +17,8 @@ type TarotDeckRow = Database["public"]["Tables"]["tarot_decks"]["Row"];
 type TarotDeckCardFaceRow =
   Database["public"]["Tables"]["tarot_deck_card_faces"]["Row"];
 
+// `personal` is retired; the two-tier migration moved its decks to Atlas.
+// It still parses so an unmigrated row stays locked rather than crashing.
 const PLAN_KEYS = new Set<PlanKey>(["free", "personal", "premium"]);
 const ACCENT_TOKENS = new Set<TarotDeckAccent>([
   "gold",

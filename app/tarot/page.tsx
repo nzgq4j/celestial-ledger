@@ -48,12 +48,10 @@ export default async function TarotPage({ searchParams }: TarotPageProps) {
   const readings = localizeTarotReadings(TAROT_READINGS, pack.tag);
 
   return (
-    <main className="page-shell tarot-page">
-      <header className="tarot-hero">
-        <p className="eyebrow">{pack.messages.tarot.pageEyebrow}</p>
-        <h1>{pack.messages.tarot.pageTitle}</h1>
-        <p>{pack.messages.tarot.pageIntroduction}</p>
-        <aside>{pack.messages.tarot.disclaimer}</aside>
+    <main className="atlas-shell tarot-page-atlas">
+      <header>
+        <p className="atlas-kicker">{pack.messages.tarot.pageEyebrow}</p>
+        <h1 className="atlas-page-title">{pack.messages.tarot.pageTitle}</h1>
       </header>
       <TarotReadingExperience
         decks={[...decks]}

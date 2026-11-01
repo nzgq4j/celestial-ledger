@@ -39,14 +39,14 @@ export function DeleteTarotReading({
         <>
           <p>{confirmLabel}</p>
           <button
-            className="button-secondary"
+            className="atlas-button-ghost"
             disabled={pending}
             onClick={remove}
           >
             {label}
           </button>
           <button
-            className="button-quiet"
+            className="atlas-button-ghost"
             disabled={pending}
             onClick={() => setConfirm(false)}
           >
@@ -54,7 +54,7 @@ export function DeleteTarotReading({
           </button>
         </>
       ) : (
-        <button className="button-quiet" onClick={() => setConfirm(true)}>
+        <button className="atlas-button-ghost" onClick={() => setConfirm(true)}>
           {label}
         </button>
       )}

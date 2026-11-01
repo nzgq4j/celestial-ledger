@@ -82,7 +82,7 @@ export function ReportGenerationProgress({
           ✦
         </span>
         <div>
-          <p className="eyebrow">{copy.privateReport}</p>
+          <p className="atlas-kicker">{copy.privateReport}</p>
           <h1>
             {terminalFailure ? copy.reportDraftFailed : copy.reportTakingShape}
           </h1>
@@ -118,7 +118,7 @@ export function ReportGenerationProgress({
         <div className="generation-progress__recovery">
           <p>{copy.reportEvidenceFailed}</p>
           <button
-            className="button-primary"
+            className="atlas-button"
             type="button"
             onClick={retry}
             disabled={retrying}

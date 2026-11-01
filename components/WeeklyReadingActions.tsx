@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
+import { memberCopy } from "@/lib/account/member-copy";
 
 export function WeeklyReadingActions({ readingId }: { readingId: string }) {
   const router = useRouter();
@@ -20,26 +21,23 @@ export function WeeklyReadingActions({ readingId }: { readingId: string }) {
     else setBusy(false);
   }
   return (
-    <div className="report-viewer-actions">
-      <Link className="button-secondary" href="/account?view=library">
-        {
-          {
-            "en-GB": "Back to account",
-            "de-DE": "Zurück zum Konto",
-            "es-ES": "Volver a la cuenta",
-            "fr-FR": "Retour au compte",
-          }[locale]
-        }
+    <div
+      className="member-doc-actions"
+      role="group"
+      aria-label={copy.reportActions}
+    >
+      <Link className="member-doc-actions__back" href="/account?view=library">
+        ← {memberCopy[locale].backToLibrary}
       </Link>
       <a
-        className="button-primary"
+        className="atlas-button atlas-button--sm"
         href={`/api/weekly-readings/${readingId}/pdf`}
         download
       >
         {copy.weeklyReadingDownload}
       </a>
       <button
-        className="button-secondary"
+        className="atlas-button-ghost atlas-button--sm member-button-danger-ghost"
         type="button"
         disabled={busy}
         onClick={() => void remove()}

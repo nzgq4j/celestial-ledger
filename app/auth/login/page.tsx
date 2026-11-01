@@ -3,6 +3,7 @@ import { AuthForm } from "@/components/AuthForm";
 import { GoogleAuthForm } from "@/components/GoogleAuthForm";
 import Link from "next/link";
 import { privatePageMetadata } from "@/lib/seo";
+import "@/app/styles/atlas-public.css";
 
 export const metadata = privatePageMetadata("Sign in — Celestial Atlas");
 
@@ -14,48 +15,38 @@ export default async function LoginPage({
   const { error } = await searchParams;
   const demoMode = isDemoMode();
   return (
-    <main className="auth-page mx-auto min-h-screen max-w-xl px-5 py-16">
-      <section className="panel p-6 md:p-8">
-        <p className="gold text-xs uppercase tracking-[.22em]">
-          Celestial Atlas
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold">Sign in</h1>
-        <p className="mt-3 text-[#b9b2a3]">
+    <main className="auth-page">
+      <section className="panel atlas-auth">
+        <p className="atlas-kicker">Celestial Atlas</p>
+        <h1 className="atlas-auth__title">Sign in</h1>
+        <p className="atlas-auth__copy">
           Sign in with a verified email and password to manage saved birth
           profiles and reports.
         </p>
         {demoMode ? (
-          <p className="mt-4 rounded-lg border border-[#536177] bg-[#081524] p-3">
+          <p className="atlas-auth__notice">
             Preview demo mode is active. Authentication and production data
             access are disabled.
           </p>
         ) : error ? (
-          <p
-            role="alert"
-            className="mt-4 rounded-lg border border-[#8b5b53] bg-[#2b1718] p-3"
-          >
+          <p role="alert" className="atlas-public-alert">
             Authentication could not be completed. Check your details and try
             again.
           </p>
         ) : null}
         <GoogleAuthForm mode="login" disabled={demoMode} />
-        <div className="my-6 flex items-center gap-3" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#2c394c]" />
-          <span className="text-xs uppercase tracking-[.18em] text-[#8f98a6]">
-            or use email
-          </span>
-          <span className="h-px flex-1 bg-[#2c394c]" />
+        <div className="atlas-auth__divider" aria-hidden="true">
+          <span />
+          <span>or use email</span>
+          <span />
         </div>
         <AuthForm mode="login" disabled={demoMode} />
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
-          <Link
-            className="auth-secondary-link gold underline"
-            href="/auth/forgot-password"
-          >
+          <Link className="atlas-link" href="/auth/forgot-password">
             Forgot your password?
           </Link>
           <Link
-            className="auth-secondary-link rounded-lg border border-[#536177] px-4 py-2 font-semibold text-[#f1e5cd]"
+            className="atlas-button-ghost atlas-button--sm"
             href="/auth/create-account"
           >
             Create an account

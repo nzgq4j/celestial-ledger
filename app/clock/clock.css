@@ -11,15 +11,13 @@
   margin-bottom: 2.4rem;
 }
 .clock-page-heading h1 {
-  font:
-    400 clamp(2.8rem, 5vw, 5rem)/1.05 var(--atlas-display);
+  font: 400 clamp(2.8rem, 5vw, 5rem)/1.05 var(--atlas-display);
   color: var(--ivory);
   margin: 0 0 0.6rem;
 }
 .clock-page-heading > div p {
   color: var(--gold);
-  font:
-    1.3rem/1.5 var(--atlas-display);
+  font: 1.3rem/1.5 var(--atlas-display);
 }
 .clock-page-heading > p {
   max-width: 24rem;
@@ -157,8 +155,7 @@
   line-height: 1.7;
 }
 .clock-now h2 {
-  font:
-    400 2.4rem/1.1 var(--atlas-display);
+  font: 400 2.4rem/1.1 var(--atlas-display);
   margin: 0.8rem 0;
 }
 .clock-illumination {
@@ -201,8 +198,7 @@
 .clock-detail h3,
 .clock-upcoming h3,
 .clock-weather h3 {
-  font:
-    400 1.4rem/1.3 var(--atlas-display);
+  font: 400 1.4rem/1.3 var(--atlas-display);
   margin-bottom: 0.6rem;
 }
 .clock-detail p,
@@ -267,8 +263,7 @@
 .clock-register h2,
 .clock-weather h2,
 .clock-method h2 {
-  font:
-    400 1.9rem/1.2 var(--atlas-display);
+  font: 400 1.9rem/1.2 var(--atlas-display);
   margin: 0 0 0.6rem;
 }
 .clock-explorer p,
@@ -362,8 +357,7 @@
   background: var(--surface);
 }
 .clock-planets strong {
-  font:
-    400 1.2rem var(--atlas-display);
+  font: 400 1.2rem var(--atlas-display);
 }
 .clock-planets span {
   font-size: 0.86rem;
@@ -611,8 +605,7 @@
   margin: 0 0 0.7rem;
 }
 .clock-tooltip .clock-tooltip-title {
-  font:
-    400 1.55rem/1.2 var(--atlas-display);
+  font: 400 1.55rem/1.2 var(--atlas-display);
   color: #f2ead8;
 }
 .clock-tooltip .clock-tooltip-value {
@@ -728,4 +721,358 @@
 .clock-instrument-heading {
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* ==========================================================================
+ * Celestial Atlas redesign ("The sky right now.")
+ * Layout and colour overrides built on the atlas tokens. Later rules win over
+ * the original instrument styling above.
+ * ========================================================================== */
+
+.clock-page {
+  width: 100%;
+  max-width: var(--atlas-shell);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) var(--atlas-gutter) 0;
+}
+.clock-page-heading h1.atlas-page-title {
+  margin: 10px 0 0;
+  font: 500 clamp(2.6rem, 5.5vw, 4.4rem) / 0.95 var(--atlas-display);
+  color: var(--atlas-ivory);
+}
+.clock-page-heading {
+  display: block;
+  margin-bottom: 28px;
+}
+.clock-page-heading > p:not(.atlas-kicker) {
+  max-width: 40rem;
+  margin: 16px 0 0;
+  color: var(--atlas-soft);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.celestial-clock {
+  color: var(--atlas-ivory);
+}
+.celestial-clock h2,
+.celestial-clock h3 {
+  color: var(--atlas-ivory);
+}
+.clock-workspace {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.clock-instrument {
+  overflow: hidden;
+  border-radius: var(--atlas-radius-lg);
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-bg-deep);
+  box-shadow: none;
+  color: var(--atlas-paper);
+}
+.clock-instrument-heading {
+  align-items: center;
+  padding: 18px 20px 0;
+  color: var(--atlas-muted);
+  font: 500 11px var(--atlas-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.clock-instrument-heading > span:first-child {
+  color: var(--atlas-gold);
+}
+.clock-instrument-heading button {
+  margin-left: auto;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--atlas-control);
+  background: transparent;
+  color: var(--atlas-paper);
+  font: 500 13px var(--atlas-sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.clock-instrument-heading button:hover {
+  border-color: var(--atlas-gold);
+  color: var(--atlas-gold);
+}
+.clock-dial-window {
+  padding: clamp(8px, 2vw, 20px);
+}
+.clock-dial-tools {
+  padding: 0 20px;
+  color: var(--atlas-muted);
+  font-size: 12px;
+}
+.clock-dial-tools button {
+  border-color: var(--atlas-control);
+  color: var(--atlas-paper);
+}
+.clock-dial-tools > div button:first-child {
+  border-radius: 999px 0 0 999px;
+}
+.clock-dial-tools > div button:last-child {
+  border-radius: 0 999px 999px 0;
+}
+.clock-scales,
+.clock-ring-guide {
+  color: var(--atlas-muted);
+}
+.clock-scales {
+  padding: 14px 20px 6px;
+}
+.clock-ring-guide {
+  padding: 0 20px 18px;
+}
+.clock-ring-guide summary {
+  color: var(--atlas-gold);
+}
+.clock-inspector {
+  display: grid;
+  gap: 12px;
+  padding-top: 0;
+}
+.clock-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.clock-stat {
+  min-width: 0;
+  padding: 18px;
+  border-radius: var(--atlas-radius);
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-card);
+}
+.clock-stats .clock-stat__label {
+  margin: 0;
+  color: var(--atlas-muted);
+  font: 500 11px/1.4 var(--atlas-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.clock-stats .clock-stat__value {
+  margin: 8px 0 0;
+  font-family: var(--atlas-display);
+  font-size: 26px;
+  line-height: 1.05;
+  color: var(--atlas-ivory);
+  overflow-wrap: anywhere;
+}
+.clock-stats .clock-stat__note {
+  margin: 4px 0 0;
+  color: var(--atlas-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.clock-stat__note a {
+  color: var(--atlas-gold);
+}
+.clock-stat .clock-illumination {
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 99px;
+  background: var(--atlas-track);
+  overflow: hidden;
+}
+.clock-stat .clock-illumination span {
+  border-radius: 99px;
+  background: var(--atlas-gold);
+}
+.clock-stat.clock-season {
+  display: block;
+  margin: 0;
+}
+.clock-stat.clock-season select {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 10px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--atlas-control);
+  background: var(--atlas-field);
+  color: var(--atlas-ivory);
+  font-size: 12px;
+}
+.clock-detail,
+.clock-upcoming {
+  padding: 20px;
+  border-radius: var(--atlas-radius);
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-card);
+}
+.clock-detail {
+  border-color: var(--atlas-gold-line);
+  background:
+    linear-gradient(160deg, rgba(201, 167, 93, 0.09), transparent 45%),
+    var(--atlas-card);
+}
+.clock-detail h3,
+.clock-upcoming h3,
+.clock-weather h3 {
+  margin: 0 0 8px;
+  font-family: var(--atlas-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+.clock-detail p {
+  color: var(--atlas-soft);
+}
+.clock-detail time {
+  color: var(--atlas-gold);
+  font-family: var(--atlas-mono);
+  font-size: 12px;
+}
+.clock-detail > button {
+  border-radius: 999px;
+}
+.clock-upcoming button {
+  border-bottom: 1px solid var(--atlas-line-soft);
+  color: var(--atlas-paper);
+}
+.clock-upcoming li:last-child button {
+  border-bottom: 0;
+}
+.clock-upcoming button:hover span {
+  color: var(--atlas-gold);
+}
+.clock-upcoming time {
+  color: var(--atlas-muted);
+  font-family: var(--atlas-mono);
+}
+.clock-register,
+.clock-weather,
+.clock-year-events,
+.clock-method {
+  margin-top: 18px;
+  padding: clamp(20px, 3vw, 28px);
+  border-radius: var(--atlas-radius-lg);
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-card);
+}
+.clock-register h2,
+.clock-weather h2,
+.clock-method h2 {
+  margin: 0;
+  font-family: var(--atlas-display);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  color: var(--atlas-ivory);
+}
+.clock-register p,
+.clock-weather p,
+.clock-method p {
+  color: var(--atlas-soft);
+}
+.clock-planets button {
+  border-radius: var(--atlas-radius-sm);
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-card-deep);
+  color: var(--atlas-paper);
+}
+.clock-planets button:hover {
+  border-color: var(--atlas-gold-line);
+}
+.clock-planets button[aria-pressed="true"] {
+  border-color: var(--atlas-gold);
+  background: var(--atlas-tab-active);
+}
+.clock-planets strong {
+  font-family: var(--atlas-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--atlas-ivory);
+}
+.clock-planets span {
+  color: var(--atlas-soft);
+  font-family: var(--atlas-mono);
+  font-size: 12px;
+}
+.clock-planets small {
+  color: var(--atlas-muted);
+}
+.clock-weather article {
+  border-radius: var(--atlas-radius-sm);
+  border-color: var(--atlas-line);
+  background: var(--atlas-card-deep);
+}
+.clock-weather a,
+.clock-method a {
+  color: var(--atlas-gold);
+}
+.clock-weather-toggle input {
+  accent-color: var(--atlas-gold);
+}
+.clock-year-events summary,
+.clock-method summary {
+  color: var(--atlas-gold);
+}
+.clock-year-events button {
+  border-radius: 10px;
+  border-color: var(--atlas-line);
+  background: var(--atlas-card-deep);
+  color: var(--atlas-paper);
+}
+.clock-date-actions button,
+.clock-method button,
+.clock-explorer > button,
+.clock-weather p button {
+  border-radius: 999px;
+  border: 1px solid var(--atlas-control);
+  background: transparent;
+  color: var(--atlas-paper);
+}
+.clock-date-actions button[type="submit"] {
+  border-color: var(--atlas-gold);
+  background: var(--atlas-gold);
+  color: var(--atlas-bg-deep);
+  font-weight: 600;
+}
+.clock-time-dialog {
+  border-radius: var(--atlas-radius-lg);
+  border: 1px solid var(--atlas-gold-line);
+  background: var(--atlas-card);
+  color: var(--atlas-ivory);
+}
+.clock-time-dialog .clock-explorer h2 {
+  font-family: var(--atlas-display);
+  font-weight: 500;
+}
+.celestial-clock
+  :is(button, input, select, summary, a, [tabindex]):focus-visible {
+  outline-color: var(--atlas-gold);
+}
+
+@media (max-width: 1050px) {
+  .clock-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 759px) {
+  .clock-page {
+    width: 100%;
+    padding: clamp(2rem, 5vw, 3.5rem) var(--atlas-gutter) 0;
+  }
+  .clock-instrument-heading {
+    padding: 14px 14px 0;
+  }
+  .clock-dial-tools {
+    padding: 0 14px;
+  }
+  .clock-stats {
+    gap: 10px;
+  }
+  .clock-stat {
+    padding: 14px;
+  }
+  .clock-stats .clock-stat__value {
+    font-size: 22px;
+  }
+}
+@media (max-width: 359px) {
+  .clock-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

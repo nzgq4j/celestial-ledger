@@ -15,7 +15,7 @@ export function GoogleAuthForm({
       <button
         type="submit"
         disabled={disabled}
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-[#536177] bg-[#f7f4ec] px-5 py-3 font-semibold text-[#172033] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 rounded-full border border-[#536177] bg-[#f7f4ec] px-5 py-3 font-semibold text-[#172033] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
           <path

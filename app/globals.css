@@ -59,8 +59,7 @@
 .admin-editor-page h1 {
   max-width: 13ch;
   margin: 0.55rem 0 1rem;
-  font:
-    400 clamp(2.8rem, 6vw, 5.7rem)/0.94 var(--atlas-display);
+  font: 400 clamp(2.8rem, 6vw, 5.7rem)/0.94 var(--atlas-display);
 }
 .admin-hero > div:first-child > p:last-child {
   max-width: 48rem;
@@ -78,8 +77,7 @@
 .admin-identity span,
 .admin-identity code {
   color: var(--gold);
-  font:
-    0.68rem var(--atlas-mono);
+  font: 0.68rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -146,8 +144,7 @@
 .admin-rail > span {
   margin: 1rem 0 0.25rem;
   color: #738197;
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -192,8 +189,7 @@
 }
 .admin-section__heading h2 {
   margin: 0.35rem 0 0.65rem;
-  font:
-    400 clamp(2rem, 4vw, 3.4rem) var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.4rem) var(--atlas-display);
 }
 .admin-section__heading > p:last-child {
   color: var(--muted);
@@ -221,8 +217,7 @@
 }
 .admin-metrics strong {
   color: var(--gold);
-  font:
-    400 2.8rem var(--atlas-display);
+  font: 400 2.8rem var(--atlas-display);
 }
 .admin-user-table {
   border-top: 1px solid var(--line);
@@ -435,8 +430,7 @@
 .admin-post-list h3 {
   margin: 0;
   color: var(--paper);
-  font:
-    400 1.45rem var(--atlas-display);
+  font: 400 1.45rem var(--atlas-display);
 }
 .admin-form label {
   display: grid;
@@ -465,8 +459,7 @@
 .integration-state {
   margin: 0;
   color: var(--gold);
-  font:
-    0.72rem var(--atlas-mono);
+  font: 0.72rem var(--atlas-mono);
 }
 .admin-blog-form {
   max-width: 54rem;
@@ -534,8 +527,7 @@
 .journal-hero h1,
 .journal-entry h1 {
   margin: 0.55rem 0 1.1rem;
-  font:
-    400 clamp(3rem, 7vw, 6rem)/0.96 var(--atlas-display);
+  font: 400 clamp(3rem, 7vw, 6rem)/0.96 var(--atlas-display);
 }
 .journal-hero > p:last-child,
 .journal-entry header > p {
@@ -572,8 +564,7 @@
 }
 .journal-grid h2 {
   margin: 0;
-  font:
-    400 2rem var(--atlas-display);
+  font: 400 2rem var(--atlas-display);
 }
 .journal-grid article > p:not(.section-kicker),
 .journal-grid small {
@@ -600,8 +591,7 @@
 }
 .journal-entry__body p {
   color: #d6cfbf;
-  font:
-    1.08rem/1.9 var(--atlas-display);
+  font: 1.08rem/1.9 var(--atlas-display);
 }
 @media (max-width: 900px) {
   .admin-workspace {
@@ -662,8 +652,7 @@ body {
   margin: 0;
   background: var(--navy);
   color: var(--ivory);
-  font-family:
-    var(--atlas-sans);
+  font-family: var(--atlas-sans);
   background-image:
     radial-gradient(circle at 78% 4%, var(--body-glow), transparent 29rem),
     linear-gradient(180deg, var(--navy), var(--body-end) 58%);
@@ -934,8 +923,7 @@ a {
 .weekly-offer h1,
 .sample-report h1 {
   margin: 0.6rem 0 1rem;
-  font:
-    400 clamp(2.8rem, 6vw, 5.6rem)/0.98 var(--atlas-display);
+  font: 400 clamp(2.8rem, 6vw, 5.6rem)/0.98 var(--atlas-display);
   letter-spacing: -0.04em;
 }
 .sample-library__hero > p:last-child,
@@ -967,8 +955,7 @@ a {
 .sample-editions__folio {
   padding-top: 0.12rem;
   color: var(--gold);
-  font:
-    0.7rem var(--atlas-mono);
+  font: 0.7rem var(--atlas-mono);
 }
 .sample-editions__content {
   display: flex;
@@ -984,8 +971,7 @@ a {
 }
 .sample-editions h2 {
   margin: 0.7rem 0 1rem;
-  font:
-    400 clamp(1.65rem, 3vw, 2.3rem) var(--atlas-display);
+  font: 400 clamp(1.65rem, 3vw, 2.3rem) var(--atlas-display);
   text-wrap: balance;
 }
 .sample-editions .sample-editions__description {
@@ -999,8 +985,7 @@ a {
 .sample-editions h3 {
   margin: 1.6rem 0 0.65rem;
   color: var(--gold);
-  font:
-    600 0.67rem/1.3 var(--atlas-mono);
+  font: 600 0.67rem/1.3 var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1083,8 +1068,7 @@ a {
 }
 .sample-report dt {
   color: var(--gold);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -1117,8 +1101,7 @@ a {
 .sample-report-visual h2 {
   margin: 0.5rem 0 1.4rem;
   color: var(--paper);
-  font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1.04 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.4rem) / 1.04 var(--atlas-display);
 }
 .sample-report-bluf__overview {
   max-width: 51rem;
@@ -1143,15 +1126,13 @@ a {
 }
 .sample-report-bluf__priorities span {
   color: var(--gold);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   letter-spacing: 0.12em;
 }
 .sample-report-bluf__priorities h3 {
   margin: 1.1rem 0 0.7rem;
   color: var(--paper);
-  font:
-    400 1.2rem var(--atlas-display);
+  font: 400 1.2rem var(--atlas-display);
 }
 .sample-report-bluf__priorities p,
 .sample-report-bluf__closing p:last-child {
@@ -1248,24 +1229,21 @@ a {
 .reading-day-arc__period {
   margin: 0;
   color: var(--gold) !important;
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 .reading-day-arc li h3 {
   margin: 0.7rem 0;
   color: var(--paper);
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 .reading-day-arc__evidence {
   margin-top: 1rem;
   padding-top: 0.8rem;
   border-top: 1px dotted var(--line);
   color: var(--muted) !important;
-  font:
-    0.58rem/1.5 var(--atlas-mono) !important;
+  font: 0.58rem/1.5 var(--atlas-mono) !important;
   overflow-wrap: anywhere;
 }
 .reading-day-arc__note {
@@ -1309,20 +1287,17 @@ a {
 }
 .sample-signature-visual__role {
   fill: var(--gold);
-  font:
-    2.4px var(--atlas-mono);
+  font: 2.4px var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .sample-signature-visual__point {
   fill: var(--paper);
-  font:
-    3.2px var(--atlas-display);
+  font: 3.2px var(--atlas-display);
 }
 .sample-signature-visual__position {
   fill: var(--text-soft);
-  font:
-    2.3px var(--atlas-mono);
+  font: 2.3px var(--atlas-mono);
 }
 .sample-renewal-compass__dial {
   position: relative;
@@ -1352,8 +1327,7 @@ a {
 .sample-renewal-compass__label {
   position: absolute;
   color: var(--paper);
-  font:
-    400 clamp(0.75rem, 2vw, 1rem) var(--atlas-display);
+  font: 400 clamp(0.75rem, 2vw, 1rem) var(--atlas-display);
 }
 .sample-renewal-compass__label--north {
   top: 7%;
@@ -1390,8 +1364,7 @@ a {
 }
 .sample-renewal-compass__centre strong {
   color: var(--paper);
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 .sample-renewal-compass__centre small {
   color: var(--gold);
@@ -1409,8 +1382,7 @@ a {
 }
 .sample-week-current__axis {
   fill: rgba(229, 213, 181, 0.52);
-  font:
-    0.55rem var(--atlas-mono);
+  font: 0.55rem var(--atlas-mono);
   text-anchor: end;
 }
 .sample-week-current__area {
@@ -1434,15 +1406,13 @@ a {
 }
 .sample-week-current__day {
   fill: var(--paper);
-  font:
-    400 0.95rem var(--atlas-display);
+  font: 400 0.95rem var(--atlas-display);
   text-anchor: middle;
 }
 .sample-week-current__theme,
 .sample-week-current__value {
   fill: var(--gold);
-  font:
-    0.55rem var(--atlas-mono);
+  font: 0.55rem var(--atlas-mono);
   letter-spacing: 0.06em;
   text-anchor: middle;
   text-transform: uppercase;
@@ -1483,14 +1453,12 @@ a {
 }
 .sample-report article h2 {
   margin: 0 0 0.7rem;
-  font:
-    400 1.65rem var(--atlas-display);
+  font: 400 1.65rem var(--atlas-display);
   color: var(--paper);
 }
 .sample-report article section > span {
   color: var(--gold);
-  font:
-    0.6rem var(--atlas-mono);
+  font: 0.6rem var(--atlas-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1507,8 +1475,7 @@ a {
 .sample-report__applications h3 {
   margin: 0 0 1rem;
   color: var(--gold);
-  font:
-    500 1.15rem var(--atlas-display);
+  font: 500 1.15rem var(--atlas-display);
 }
 .sample-report__applications p:last-child {
   margin-bottom: 0;
@@ -1529,8 +1496,7 @@ a {
 }
 .sample-report__chapter blockquote strong {
   color: var(--gold);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1564,8 +1530,7 @@ a {
   scroll-margin-top: 6rem;
 }
 .sample-chart-data h2 {
-  font:
-    400 2rem var(--atlas-display);
+  font: 400 2rem var(--atlas-display);
 }
 .sample-chart-data__tables {
   display: grid;
@@ -1582,8 +1547,7 @@ a {
   padding: 0.7rem;
   border: 1px solid var(--line);
   color: var(--gold);
-  font:
-    500 1rem var(--atlas-display);
+  font: 500 1rem var(--atlas-display);
   text-align: left;
 }
 .sample-chart-data th,
@@ -1594,8 +1558,7 @@ a {
 }
 .sample-chart-data thead th {
   color: var(--muted);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -1629,8 +1592,7 @@ a {
   max-width: 10ch;
   margin: 0.55rem 0 1rem;
   color: var(--paper);
-  font:
-    400 clamp(3.3rem, 8vw, 7rem) / 0.9 var(--atlas-display);
+  font: 400 clamp(3.3rem, 8vw, 7rem) / 0.9 var(--atlas-display);
   letter-spacing: -0.05em;
 }
 .sample-natal-chart__hero > div > p:last-child {
@@ -1656,8 +1618,7 @@ a {
 .sample-natal-chart__hero dt,
 .sample-natal-chart__calculation dt {
   color: var(--gold);
-  font:
-    0.6rem var(--atlas-mono);
+  font: 0.6rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -1678,8 +1639,7 @@ a {
 .sample-natal-chart__cta h2 {
   margin: 0.5rem 0 0;
   color: var(--paper);
-  font:
-    400 clamp(2rem, 4vw, 3.35rem) / 1.04 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.35rem) / 1.04 var(--atlas-display);
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
@@ -1705,22 +1665,19 @@ a {
   display: block;
   min-height: 4.8rem;
   color: var(--gold);
-  font:
-    400 clamp(2.7rem, 5vw, 4.5rem) / 1 var(--atlas-display);
+  font: 400 clamp(2.7rem, 5vw, 4.5rem) / 1 var(--atlas-display);
 }
 .sample-natal-chart__anchors article > p {
   margin: 1rem 0 0.45rem;
   color: var(--muted);
-  font:
-    0.6rem var(--atlas-mono);
+  font: 0.6rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 .sample-natal-chart__anchors h3 {
   margin: 0;
   color: var(--paper);
-  font:
-    400 1.15rem/1.35 var(--atlas-display);
+  font: 400 1.15rem/1.35 var(--atlas-display);
 }
 .sample-natal-chart__anchors small {
   display: block;
@@ -1840,8 +1797,7 @@ a {
   background: var(--surface);
 }
 .weekly-offer__grid h2 {
-  font:
-    400 1.8rem var(--atlas-display);
+  font: 400 1.8rem var(--atlas-display);
 }
 .weekly-offer__grid li {
   margin: 0.8rem 0;
@@ -2064,8 +2020,7 @@ a {
 .route-map__waypoints text,
 .route-map__coordinates text {
   fill: var(--map-chalk);
-  font:
-    9px var(--atlas-mono);
+  font: 9px var(--atlas-mono);
   letter-spacing: 0.14em;
   text-anchor: middle;
 }
@@ -2080,8 +2035,7 @@ a {
   justify-content: space-between;
   gap: 1rem;
   color: #9fb5bb;
-  font:
-    0.61rem var(--atlas-mono);
+  font: 0.61rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2147,8 +2101,7 @@ a {
   border-bottom: 1px solid var(--line);
 }
 .report-edition__index {
-  font:
-    0.72rem var(--atlas-mono);
+  font: 0.72rem var(--atlas-mono);
   color: var(--gold);
   padding-top: 0.45rem;
 }
@@ -2161,8 +2114,7 @@ a {
   letter-spacing: 0.16em;
 }
 .report-edition h2 {
-  font:
-    400 clamp(2rem, 4vw, 3.6rem)/1.05 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.6rem)/1.05 var(--atlas-display);
   margin-top: 0.8rem;
 }
 .report-edition p {
@@ -2181,8 +2133,7 @@ a {
   display: block;
   margin-top: 0.65rem;
   color: var(--muted);
-  font:
-    0.72rem/1.55 var(--atlas-mono);
+  font: 0.72rem/1.55 var(--atlas-mono);
   letter-spacing: 0.03em;
 }
 .report-edition small {
@@ -2241,8 +2192,7 @@ a {
   border-left: 1px solid var(--gold);
 }
 .privacy-note h2 {
-  font:
-    400 2.3rem/1.1 var(--atlas-display);
+  font: 400 2.3rem/1.1 var(--atlas-display);
   margin-top: 0.75rem;
 }
 .privacy-note > p:not(.eyebrow) {
@@ -2296,8 +2246,7 @@ a {
 .chart-introduction h2 {
   max-width: 12ch;
   margin: 0.55rem 0 1rem;
-  font:
-    400 clamp(2.3rem, 5vw, 4.4rem)/0.98 var(--atlas-display);
+  font: 400 clamp(2.3rem, 5vw, 4.4rem)/0.98 var(--atlas-display);
 }
 .chart-introduction > div > p:last-child,
 .chart-method-notes article > p:last-child,
@@ -2367,8 +2316,7 @@ a {
 }
 .chart-account-cta h2 {
   margin: 0.35rem 0 0.55rem;
-  font:
-    400 clamp(1.7rem, 4vw, 2.5rem) var(--atlas-display);
+  font: 400 clamp(1.7rem, 4vw, 2.5rem) var(--atlas-display);
 }
 .chart-account-cta--closing {
   position: relative;
@@ -2420,8 +2368,7 @@ a {
 .chart-reveal-continuation h2 {
   max-width: 17ch;
   margin: 0.55rem 0 0.8rem;
-  font:
-    400 clamp(2rem, 4vw, 3.5rem)/0.98 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.5rem)/0.98 var(--atlas-display);
 }
 .chart-reveal-continuation__intro > p:last-of-type,
 .chart-reveal-continuation__offer > p {
@@ -2434,16 +2381,14 @@ a {
   border-left: 2px solid var(--gold);
   background: rgba(255, 255, 255, 0.035);
   color: var(--paper);
-  font:
-    400 1.05rem/1.6 var(--atlas-display);
+  font: 400 1.05rem/1.6 var(--atlas-display);
 }
 .chart-reveal-continuation blockquote span,
 .chart-reveal-continuation__plan {
   display: block;
   margin-bottom: 0.45rem;
   color: var(--gold);
-  font:
-    600 0.7rem/1.2 var(--atlas-mono);
+  font: 600 0.7rem/1.2 var(--atlas-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -2511,22 +2456,19 @@ a {
 }
 .chart-method-notes h2 {
   margin: 0.45rem 0 0.7rem;
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .legal-page {
   max-width: 50rem;
 }
 .legal-page h1 {
   margin: 0.6rem 0 1.5rem;
-  font:
-    400 clamp(2.8rem, 7vw, 5rem) var(--atlas-display);
+  font: 400 clamp(2.8rem, 7vw, 5rem) var(--atlas-display);
 }
 .legal-page h2 {
   margin: 2rem 0 0.5rem;
   color: var(--gold);
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .account-dashboard {
   max-width: 72rem;
@@ -2557,8 +2499,7 @@ a {
 .account-hero h1 {
   max-width: 13ch;
   margin: 0.55rem 0 0;
-  font:
-    400 clamp(2.25rem, 5vw, 4rem)/1 var(--atlas-display);
+  font: 400 clamp(2.25rem, 5vw, 4rem)/1 var(--atlas-display);
 }
 .account-hero__welcome > p:last-child,
 .dashboard-empty {
@@ -2624,8 +2565,7 @@ a {
 }
 .atlas-next-step h2 {
   margin: 0.35rem 0 0.45rem;
-  font:
-    400 clamp(1.5rem, 3vw, 2.15rem)/1.1 var(--atlas-display);
+  font: 400 clamp(1.5rem, 3vw, 2.15rem)/1.1 var(--atlas-display);
 }
 .atlas-next-step > div > p:last-child {
   max-width: 44rem;
@@ -2650,8 +2590,7 @@ a {
 .account-stats strong {
   display: block;
   color: var(--paper);
-  font:
-    400 1.3rem var(--atlas-display);
+  font: 400 1.3rem var(--atlas-display);
 }
 .account-notice {
   padding: 0.8rem 1rem;
@@ -2699,8 +2638,7 @@ a {
 .dashboard-panel h2,
 .account-settings h2 {
   margin-top: 0.3rem;
-  font:
-    400 1.65rem var(--atlas-display);
+  font: 400 1.65rem var(--atlas-display);
 }
 .dashboard-panel__meta,
 .text-link {
@@ -2766,8 +2704,7 @@ a {
 }
 .ready-report > div:first-child strong {
   color: var(--paper);
-  font:
-    400 1.2rem var(--atlas-display);
+  font: 400 1.2rem var(--atlas-display);
 }
 .ready-report > div:first-child p {
   flex: 0 1 auto;
@@ -2801,8 +2738,7 @@ a {
 }
 .compact-products h3 {
   color: var(--paper);
-  font:
-    400 1.3rem var(--atlas-display);
+  font: 400 1.3rem var(--atlas-display);
 }
 .compact-products__action {
   display: flex;
@@ -2812,8 +2748,7 @@ a {
 }
 .compact-products__action strong {
   color: var(--gold);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 .compact-products__action--complimentary {
   display: grid;
@@ -2861,8 +2796,7 @@ a {
 .birth-profile-card__body h3 {
   margin: 0.25rem 0;
   color: var(--paper);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 .birth-profile-card__body > p:not(.section-kicker),
 .birth-profile-card__body small,
@@ -3012,8 +2946,7 @@ a {
 .natal-reading-full__heading h2 {
   margin: 0.3rem 0 0;
   color: var(--paper);
-  font:
-    400 clamp(1.6rem, 3vw, 2.2rem) var(--atlas-display);
+  font: 400 clamp(1.6rem, 3vw, 2.2rem) var(--atlas-display);
 }
 .natal-reading-full__heading > span,
 .birth-profile-card__reading-status {
@@ -3168,8 +3101,7 @@ body:has(.admin-shell) > .meridian {
   background: var(--admin-canvas);
   color: var(--admin-copy);
   box-shadow: 0 2rem 7rem rgba(0, 0, 0, 0.38);
-  font-family:
-    var(--atlas-sans);
+  font-family: var(--atlas-sans);
 }
 
 .admin-workspace {
@@ -3289,8 +3221,7 @@ body:has(.admin-shell) > .meridian {
   max-width: none;
   margin: 0.22rem 0 0;
   color: var(--admin-copy);
-  font:
-    650 clamp(1.8rem, 3vw, 2.45rem) / 1.05 var(--atlas-sans);
+  font: 650 clamp(1.8rem, 3vw, 2.45rem) / 1.05 var(--atlas-sans);
   letter-spacing: -0.035em;
 }
 
@@ -4350,8 +4281,7 @@ body:has(.account-dashboard) > .meridian {
 .account-command-bar > div:first-child > strong {
   display: block;
   margin-top: 0.18rem;
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 .account-command-bar__signals {
   display: flex;
@@ -4636,8 +4566,7 @@ body:has(.account-dashboard) > .meridian {
 .method-page__hero h1 {
   max-width: 13ch;
   margin: 0.65rem 0 1.25rem;
-  font:
-    400 clamp(3rem, 7vw, 5.8rem)/0.96 var(--atlas-display);
+  font: 400 clamp(3rem, 7vw, 5.8rem)/0.96 var(--atlas-display);
 }
 .method-page__hero > p:last-child {
   max-width: 46rem;
@@ -4662,16 +4591,14 @@ body:has(.account-dashboard) > .meridian {
   display: block;
   margin-bottom: 4rem;
   color: var(--gold);
-  font:
-    400 2.4rem var(--atlas-display);
+  font: 400 2.4rem var(--atlas-display);
 }
 .method-page__principles h2,
 .method-page__reading h2,
 .method-page__unknown-time h2 {
   margin: 0.4rem 0 0.85rem;
   color: var(--paper);
-  font:
-    400 1.65rem/1.1 var(--atlas-display);
+  font: 400 1.65rem/1.1 var(--atlas-display);
 }
 .method-page__principles article > p:last-child,
 .method-page__reading li p,
@@ -4700,8 +4627,7 @@ body:has(.account-dashboard) > .meridian {
   position: absolute;
   left: 0;
   color: var(--gold);
-  font:
-    400 1.4rem var(--atlas-display);
+  font: 400 1.4rem var(--atlas-display);
   content: "0" counter(method-step);
 }
 .method-page__reading li strong {
@@ -4739,8 +4665,7 @@ body:has(.account-dashboard) > .meridian {
   border-bottom: 1px solid var(--line);
 }
 .library-section > h2 {
-  font:
-    400 2rem var(--atlas-display);
+  font: 400 2rem var(--atlas-display);
   margin-top: 0.55rem;
 }
 .library-product {
@@ -4772,8 +4697,7 @@ body:has(.account-dashboard) > .meridian {
 .recovery-compass legend {
   padding-inline: 0.5rem;
   color: var(--gold);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 
 .recovery-compass > p {
@@ -4891,8 +4815,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .report-library-row__identity strong {
   color: var(--paper);
-  font:
-    400 1.12rem var(--atlas-display);
+  font: 400 1.12rem var(--atlas-display);
 }
 .report-library-row__state {
   display: grid;
@@ -4900,8 +4823,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .report-library-row__state > span {
   color: var(--gold);
-  font:
-    0.7rem var(--atlas-mono);
+  font: 0.7rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -5012,8 +4934,7 @@ body:has(.account-dashboard) > .meridian {
 .report-delete-modal h2 {
   margin: 0.35rem 0 0.8rem;
   color: var(--ivory);
-  font:
-    400 clamp(1.7rem, 5vw, 2.35rem) var(--atlas-display);
+  font: 400 clamp(1.7rem, 5vw, 2.35rem) var(--atlas-display);
 }
 .report-delete-modal > p:not(.eyebrow) {
   color: var(--muted);
@@ -5051,8 +4972,7 @@ body:has(.account-dashboard) > .meridian {
 }
 .report-viewer-heading h1,
 .private-report > h1 {
-  font:
-    400 clamp(3rem, 7vw, 6rem)/0.98 var(--atlas-display);
+  font: 400 clamp(3rem, 7vw, 6rem)/0.98 var(--atlas-display);
   margin: 0.8rem 0 1.5rem;
 }
 .report-viewer-heading > p:not(.eyebrow),
@@ -5082,8 +5002,7 @@ body:has(.account-dashboard) > .meridian {
   margin-top: 0.35rem;
 }
 .generation-progress h1 {
-  font:
-    400 clamp(2.4rem, 6vw, 5rem)/1 var(--atlas-display);
+  font: 400 clamp(2.4rem, 6vw, 5rem)/1 var(--atlas-display);
   margin: 0.7rem 0 2rem;
 }
 .generation-progress__track {
@@ -5192,8 +5111,7 @@ body:has(.account-dashboard) > .meridian {
   border-bottom: 1px solid var(--line);
 }
 .report-narrative h2 {
-  font:
-    400 clamp(2rem, 4vw, 3rem)/1.05 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3rem)/1.05 var(--atlas-display);
   color: var(--paper);
 }
 .report-narrative p,
@@ -5253,8 +5171,7 @@ body:has(.account-dashboard) > .meridian {
   top: 6rem;
 }
 .evidence-map h2 {
-  font:
-    400 1.6rem var(--atlas-display);
+  font: 400 1.6rem var(--atlas-display);
   margin: 0.5rem 0 1.25rem;
 }
 .evidence-node {
@@ -5266,8 +5183,7 @@ body:has(.account-dashboard) > .meridian {
 .evidence-node span,
 .evidence-node code {
   color: var(--muted);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   text-transform: uppercase;
 }
 .evidence-node--aspect {
@@ -5416,8 +5332,7 @@ input:focus-visible {
 .zodiac-legend__title {
   margin: 0 0 0.85rem;
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-align: center;
@@ -5441,8 +5356,7 @@ input:focus-visible {
 }
 .zodiac-legend__glyph {
   color: var(--gold);
-  font:
-    1rem var(--atlas-display);
+  font: 1rem var(--atlas-display);
   text-align: center;
 }
 .chart-time-notice {
@@ -5476,8 +5390,7 @@ input:focus-visible {
 .meaning-note h3 {
   margin: 0;
   color: var(--gold);
-  font:
-    0.63rem var(--atlas-mono);
+  font: 0.63rem var(--atlas-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -5505,14 +5418,12 @@ input:focus-visible {
 }
 .ephemeris-register__heading h3 {
   margin: 0.3rem 0 0;
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
   color: var(--paper);
 }
 .ephemeris-register__heading > span {
   color: var(--muted);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
 }
 .ephemeris-register td:first-child {
   color: var(--paper);
@@ -5533,8 +5444,7 @@ input:focus-visible {
 }
 .ephemeris-register__status dt {
   color: var(--muted);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -5583,14 +5493,12 @@ input:focus-visible {
 }
 .horoscope-hero h1 {
   margin: 0.6rem 0 0;
-  font:
-    400 clamp(3.2rem, 7vw, 6.5rem)/0.92 var(--atlas-display);
+  font: 400 clamp(3.2rem, 7vw, 6.5rem)/0.92 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 .horoscope-detail h1 {
   margin: 0.4rem 0 0;
-  font:
-    400 clamp(2.35rem, 5vw, 4.25rem)/0.98 var(--atlas-display);
+  font: 400 clamp(2.35rem, 5vw, 4.25rem)/0.98 var(--atlas-display);
   letter-spacing: -0.035em;
 }
 .horoscope-hero > p {
@@ -5607,8 +5515,7 @@ input:focus-visible {
   padding: 0.8rem 1rem;
   border-right: 1px solid var(--line);
   color: var(--muted);
-  font:
-    0.68rem var(--atlas-mono);
+  font: 0.68rem var(--atlas-mono);
 }
 .daily-sky-strip strong {
   display: block;
@@ -5644,19 +5551,16 @@ input:focus-visible {
 }
 .horoscope-card__sign > span {
   color: var(--gold);
-  font:
-    2.2rem var(--atlas-display);
+  font: 2.2rem var(--atlas-display);
 }
 .horoscope-card__sign p {
   margin: 0;
   color: var(--paper);
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .horoscope-card__sign small {
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -5750,8 +5654,7 @@ input:focus-visible {
 .horoscope-day-arc li p {
   margin: 0.75rem 0 0.35rem;
   color: var(--gold);
-  font:
-    0.6rem var(--atlas-mono);
+  font: 0.6rem var(--atlas-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -5759,8 +5662,7 @@ input:focus-visible {
   display: block;
   min-height: 2.6em;
   color: var(--paper);
-  font:
-    400 1rem/1.3 var(--atlas-display);
+  font: 400 1rem/1.3 var(--atlas-display);
 }
 .horoscope-day-arc li div > span {
   display: block;
@@ -5815,8 +5717,7 @@ input:focus-visible {
 }
 .horoscope-card dt {
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -5884,22 +5785,19 @@ input:focus-visible {
 }
 .horoscope-detail__glyph {
   color: var(--gold);
-  font:
-    clamp(3rem, 7vw, 5rem)/1 var(--atlas-display);
+  font: clamp(3rem, 7vw, 5rem)/1 var(--atlas-display);
 }
 .horoscope-detail__subtitle {
   margin: 0.15rem 0 1.15rem;
   color: var(--paper);
-  font:
-    400 clamp(1.35rem, 2.5vw, 2rem) / 1.1 var(--atlas-display);
+  font: 400 clamp(1.35rem, 2.5vw, 2rem) / 1.1 var(--atlas-display);
   letter-spacing: -0.02em;
 }
 .horoscope-detail__theme {
   max-width: 44rem;
   margin: 0;
   color: var(--gold);
-  font:
-    0.7rem var(--atlas-mono);
+  font: 0.7rem var(--atlas-mono);
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -5970,8 +5868,7 @@ input:focus-visible {
 .horoscope-evidence h2 {
   margin: 0 0 0.7rem;
   color: var(--paper);
-  font:
-    400 clamp(1.2rem, 2vw, 1.55rem) var(--atlas-display);
+  font: 400 clamp(1.2rem, 2vw, 1.55rem) var(--atlas-display);
 }
 .horoscope-reading p {
   color: var(--text-soft);
@@ -5979,15 +5876,13 @@ input:focus-visible {
   line-height: 1.65;
 }
 .horoscope-reading__lead p {
-  font:
-    400 clamp(1.05rem, 1.7vw, 1.25rem)/1.55 var(--atlas-display);
+  font: 400 clamp(1.05rem, 1.7vw, 1.25rem)/1.55 var(--atlas-display);
   color: var(--paper);
 }
 .horoscope-reading__lead .section-kicker {
   margin-bottom: 0.7rem;
   color: var(--gold);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
@@ -6030,8 +5925,7 @@ input:focus-visible {
 .horoscope-evidence > p:last-child {
   margin-top: 1rem;
   color: var(--muted);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
 }
 .big-three-section {
   display: grid;
@@ -6495,8 +6389,7 @@ th {
 .interpretation-section__index {
   margin: 0 !important;
   color: var(--gold) !important;
-  font:
-    0.64rem var(--atlas-mono);
+  font: 0.64rem var(--atlas-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -6531,8 +6424,7 @@ th {
   max-width: 24ch;
   margin: 0 0 1rem;
   color: var(--paper);
-  font:
-    400 clamp(1.2rem, 2.5vw, 1.65rem)/1.15 var(--atlas-display);
+  font: 400 clamp(1.2rem, 2.5vw, 1.65rem)/1.15 var(--atlas-display);
 }
 .interpretation-section p {
   max-width: 68ch;
@@ -6628,8 +6520,7 @@ th {
   max-width: 34rem;
   margin-top: 2rem;
   color: #ded5c4;
-  font:
-    400 clamp(1rem, 1.5vw, 1.14rem)/1.7 var(--atlas-display);
+  font: 400 clamp(1rem, 1.5vw, 1.14rem)/1.7 var(--atlas-display);
 }
 .atlas-hero__actions {
   display: flex;
@@ -6723,8 +6614,7 @@ th {
   max-width: 14ch;
   margin: 0.55rem 0 0;
   color: var(--paper);
-  font:
-    400 clamp(2.4rem, 5vw, 4.5rem) / 0.98 var(--atlas-display);
+  font: 400 clamp(2.4rem, 5vw, 4.5rem) / 0.98 var(--atlas-display);
 }
 .landing-pathways > header > p,
 .landing-pathways__routes article > p:not(.landing-pathways__label),
@@ -6776,8 +6666,7 @@ th {
   position: relative;
   z-index: 1;
   color: var(--gold);
-  font:
-    1.35rem var(--atlas-display);
+  font: 1.35rem var(--atlas-display);
 }
 .landing-pathways__symbol i {
   position: absolute;
@@ -6789,16 +6678,14 @@ th {
 .landing-pathways__label {
   margin: 0;
   color: var(--gold);
-  font:
-    0.6rem/1.45 var(--atlas-mono);
+  font: 0.6rem/1.45 var(--atlas-mono);
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 .landing-pathways__routes h3 {
   margin: 0.75rem 0 0;
   color: var(--paper);
-  font:
-    400 clamp(1.45rem, 2.6vw, 2rem) / 1.08 var(--atlas-display);
+  font: 400 clamp(1.45rem, 2.6vw, 2rem) / 1.08 var(--atlas-display);
 }
 .landing-pathways__routes .button-quiet {
   justify-content: space-between;
@@ -6847,8 +6734,7 @@ th {
   max-width: none;
   margin: 0.75rem 0 1.4rem;
   color: var(--paper);
-  font:
-    400 clamp(3rem, 5vw, 5rem) / 0.94 var(--atlas-display);
+  font: 400 clamp(3rem, 5vw, 5rem) / 0.94 var(--atlas-display);
   letter-spacing: -0.045em;
   white-space: nowrap;
 }
@@ -6893,8 +6779,7 @@ th {
   padding: 0.15rem 0.6rem;
   background: var(--navy);
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transform: translateY(-50%);
@@ -6975,8 +6860,7 @@ th {
 }
 .membership-tier__orbit span {
   color: var(--gold);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
 }
 .membership-tier--personal .membership-tier__orbit {
   box-shadow: 0 0 0 0.55rem rgba(201, 167, 93, 0.08);
@@ -6989,8 +6873,7 @@ th {
 .membership-tier__identity h2 {
   margin: 0.35rem 0 0.55rem;
   color: var(--paper);
-  font:
-    400 2.25rem var(--atlas-display);
+  font: 400 2.25rem var(--atlas-display);
 }
 .membership-tier__identity > p:last-child,
 .membership-comparison header > p:last-child,
@@ -7004,15 +6887,13 @@ th {
 }
 .membership-tier__price > span {
   color: var(--gold);
-  font:
-    0.56rem var(--atlas-mono);
+  font: 0.56rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .membership-tier__price strong {
   color: var(--paper);
-  font:
-    400 2.1rem var(--atlas-display);
+  font: 400 2.1rem var(--atlas-display);
 }
 .membership-tier__price small {
   color: var(--muted);
@@ -7020,8 +6901,7 @@ th {
 .membership-tier__features > p {
   margin: 0 0 0.55rem;
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -7060,8 +6940,7 @@ th {
 .membership-path h2 {
   margin: 0.5rem 0 1rem;
   color: var(--paper);
-  font:
-    400 clamp(2.3rem, 5vw, 4.2rem) / 1 var(--atlas-display);
+  font: 400 clamp(2.3rem, 5vw, 4.2rem) / 1 var(--atlas-display);
 }
 .membership-comparison__scroll {
   max-width: 100%;
@@ -7102,15 +6981,13 @@ th {
 .membership-comparison thead th {
   color: var(--gold);
   background: var(--surface-deep);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 .membership-comparison tbody th {
   color: var(--paper);
-  font:
-    400 0.95rem var(--atlas-display);
+  font: 400 0.95rem var(--atlas-display);
 }
 .membership-comparison td {
   color: var(--text-soft);
@@ -7144,14 +7021,12 @@ th {
 }
 .membership-path li > span {
   color: var(--gold);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
 }
 .membership-path h3 {
   margin: 0;
   color: var(--paper);
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .membership-path p {
   margin-bottom: 0;
@@ -7293,8 +7168,7 @@ th {
   max-width: none;
   margin: 0.35rem 0 0.65rem;
   color: var(--ivory);
-  font:
-    400 clamp(2rem, 4vw, 4rem)/0.98 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 4rem)/0.98 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 
@@ -7573,8 +7447,7 @@ th {
 .account-sidebar__nav > p {
   margin: 0;
   color: var(--gold);
-  font:
-    0.58rem var(--atlas-mono);
+  font: 0.58rem var(--atlas-mono);
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -7588,8 +7461,7 @@ th {
 .account-sidebar__identity strong {
   margin-top: 0.22rem;
   color: var(--paper);
-  font:
-    400 1rem var(--atlas-display);
+  font: 400 1rem var(--atlas-display);
 }
 .account-sidebar__identity small {
   margin-top: 0.15rem;
@@ -7684,8 +7556,7 @@ th {
   border-radius: 50%;
   background: var(--surface-deep);
   color: var(--muted);
-  font:
-    0.5rem var(--atlas-mono);
+  font: 0.5rem var(--atlas-mono);
 }
 .account-sidebar__nav a:hover,
 .account-sidebar__nav a:focus-visible,
@@ -7710,8 +7581,7 @@ th {
   display: block;
   margin: 0.35rem 0 0.65rem;
   color: var(--paper);
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .account-sidebar__plan a {
   color: var(--gold);
@@ -7944,8 +7814,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-generator label span,
 .daily-reading-history h3 {
   color: var(--gold);
-  font:
-    0.7rem var(--atlas-mono);
+  font: 0.7rem var(--atlas-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -8014,8 +7883,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-reading-visuals__heading h2,
 .weekly-day-guide > h2 {
   margin: 0.45rem 0 0;
-  font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 
 .weekly-reading-visuals__heading > p {
@@ -8098,8 +7966,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-timeline h3 {
   margin: 0 0 1rem;
   color: var(--paper);
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 
 .weekly-timeline ol {
@@ -8190,8 +8057,7 @@ body:has(.account-dashboard) .account-workspace {
   position: relative;
   z-index: 1;
   color: var(--gold);
-  font:
-    0.7rem var(--atlas-mono);
+  font: 0.7rem var(--atlas-mono);
   letter-spacing: 0.08em;
 }
 
@@ -8210,8 +8076,7 @@ body:has(.account-dashboard) .account-workspace {
 
 .weekly-day-guide__content > time {
   color: var(--gold);
-  font:
-    0.68rem var(--atlas-mono);
+  font: 0.68rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8219,8 +8084,7 @@ body:has(.account-dashboard) .account-workspace {
 .weekly-day-guide__content h3 {
   margin: 0.5rem 0 0.9rem;
   color: var(--paper);
-  font:
-    400 clamp(1.55rem, 3vw, 2.2rem) / 1.05 var(--atlas-display);
+  font: 400 clamp(1.55rem, 3vw, 2.2rem) / 1.05 var(--atlas-display);
 }
 
 .weekly-day-guide__interpretation {
@@ -8379,8 +8243,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-view__header h1 {
   max-width: 18ch;
   margin: 0.6rem 0 1rem;
-  font:
-    400 clamp(2.4rem, 6vw, 5.25rem) / 0.98 var(--atlas-display);
+  font: 400 clamp(2.4rem, 6vw, 5.25rem) / 0.98 var(--atlas-display);
 }
 .daily-reading-view__header > div > p:last-child {
   color: var(--gold);
@@ -8397,8 +8260,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-view dt,
 .daily-reading-technical dt {
   color: var(--gold);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8459,8 +8321,7 @@ body:has(.account-dashboard) .account-workspace {
 }
 .daily-reading-visuals__heading h2 {
   margin: 0.45rem 0 0;
-  font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 .daily-reading-visuals__heading > p,
 .daily-sky-map figcaption,
@@ -8569,14 +8430,12 @@ body:has(.account-dashboard) .account-workspace {
 .daily-lunar-gauge__orb strong {
   position: absolute;
   color: var(--paper);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 .daily-lunar-gauge h3,
 .daily-transit-field h3 {
   margin: 0.3rem 0;
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 .daily-lunar-gauge code,
 .daily-transit-field code {
@@ -8597,8 +8456,7 @@ body:has(.account-dashboard) .account-workspace {
 }
 .daily-transit-field__title > span {
   color: var(--gold);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8648,8 +8506,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-themes h2,
 .daily-reading-questions h2 {
   margin: 0.55rem 0 1.4rem;
-  font:
-    400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.4rem) / 1 var(--atlas-display);
 }
 .daily-reading-bluf > p,
 .daily-reading-bluf aside p,
@@ -8664,8 +8521,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-bluf > h3 {
   margin: 2rem 0 0.5rem;
   color: var(--gold);
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 .daily-reading-priorities {
   display: grid;
@@ -8683,8 +8539,7 @@ body:has(.account-dashboard) .account-workspace {
 .daily-reading-bluf aside h3 {
   margin: 0 0 0.6rem;
   color: var(--paper);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 .daily-theme-list {
   display: grid;
@@ -8702,13 +8557,11 @@ body:has(.account-dashboard) .account-workspace {
 }
 .daily-theme-list h3 {
   margin: 0 0 0.3rem;
-  font:
-    400 1.2rem var(--atlas-display);
+  font: 400 1.2rem var(--atlas-display);
 }
 .daily-theme-list span {
   color: var(--gold);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -8744,8 +8597,7 @@ body:has(.account-dashboard) .account-workspace {
 }
 .daily-reading-sections h2 {
   margin: 0 0 1rem;
-  font:
-    400 clamp(1.65rem, 3vw, 2.3rem) / 1.1 var(--atlas-display);
+  font: 400 clamp(1.65rem, 3vw, 2.3rem) / 1.1 var(--atlas-display);
 }
 .daily-reading-applications {
   margin: 1.5rem 0;
@@ -8796,8 +8648,7 @@ body:has(.account-dashboard) .account-workspace {
 }
 .sample-daily-reading__cta h2 {
   margin: 0.5rem 0;
-  font:
-    400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
+  font: 400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
 }
 
 @media (max-width: 760px) {
@@ -9363,8 +9214,7 @@ body:has(.account-dashboard) .account-workspace {
     ),
     linear-gradient(155deg, rgba(20, 42, 66, 0.96), rgba(5, 11, 19, 0.98));
   color: var(--gold);
-  font:
-    400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
+  font: 400 clamp(1.8rem, 4vw, 3rem) / 1 var(--atlas-display);
   content: "Your sky, held privately.";
 }
 
@@ -9599,8 +9449,7 @@ body:has(.account-dashboard) .account-workspace {
 .account-overview-strip__identity h1 {
   margin-top: 0.3rem;
   color: var(--atlas-copy);
-  font:
-    400 clamp(1.9rem, 4vw, 3rem) / 1 var(--atlas-display);
+  font: 400 clamp(1.9rem, 4vw, 3rem) / 1 var(--atlas-display);
 }
 
 .account-plan-card {
@@ -9617,8 +9466,7 @@ body:has(.account-dashboard) .account-workspace {
 .account-plan-card h2 {
   margin-top: 0.25rem;
   color: white;
-  font:
-    400 1.55rem var(--atlas-display);
+  font: 400 1.55rem var(--atlas-display);
 }
 
 .account-plan-card p:last-child {
@@ -9735,8 +9583,7 @@ body:has(.account-dashboard)
 .account-tarot-result > div:last-child h4 {
   margin: 0.25rem 0;
   color: var(--atlas-copy);
-  font:
-    400 1.35rem/1.2 var(--atlas-display);
+  font: 400 1.35rem/1.2 var(--atlas-display);
 }
 
 .account-tarot-result > div:last-child > small {
@@ -9810,16 +9657,14 @@ body:has(.account-dashboard)
   display: inline-flex;
   margin-bottom: 0.65rem;
   color: var(--atlas-green);
-  font:
-    0.65rem var(--atlas-mono);
+  font: 0.65rem var(--atlas-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .account-report-products h3 {
   color: var(--atlas-copy);
-  font:
-    400 1.35rem var(--atlas-display);
+  font: 400 1.35rem var(--atlas-display);
 }
 
 .account-report-products p,
@@ -9851,8 +9696,7 @@ body:has(.account-dashboard)
 
 .account-report-history > h3 {
   color: var(--atlas-copy);
-  font:
-    400 1.15rem var(--atlas-display);
+  font: 400 1.15rem var(--atlas-display);
 }
 
 .dashboard-panel--charts .birth-profile-list {
@@ -10034,8 +9878,7 @@ body:has(.account-dashboard) .account-command-bar {
 .account-command-bar__identity p,
 .account-command-bar__membership span {
   color: var(--atlas-cyan);
-  font:
-    0.6rem var(--atlas-mono);
+  font: 0.6rem var(--atlas-mono);
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
@@ -10044,8 +9887,7 @@ body:has(.account-dashboard) .account-command-bar {
   margin-top: 0.1rem;
   overflow: hidden;
   color: var(--atlas-copy);
-  font:
-    650 1.05rem/1.2 var(--atlas-sans);
+  font: 650 1.05rem/1.2 var(--atlas-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -10080,8 +9922,7 @@ body:has(.account-dashboard) .account-command-bar {
 
 .account-command-bar__manage > span {
   color: var(--atlas-green);
-  font:
-    0.62rem var(--atlas-mono);
+  font: 0.62rem var(--atlas-mono);
   text-transform: capitalize;
 }
 
@@ -10165,8 +10006,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .account-reading-card__summary h3 {
   margin-top: 0.25rem;
   color: var(--atlas-copy);
-  font:
-    400 1.25rem var(--atlas-display);
+  font: 400 1.25rem var(--atlas-display);
 }
 
 .account-reading-card__status {
@@ -10291,8 +10131,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .report-theme-selector legend {
   padding: 0;
   color: var(--atlas-copy);
-  font:
-    400 1rem var(--atlas-display);
+  font: 400 1rem var(--atlas-display);
 }
 
 .report-theme-selector > p {
@@ -10535,8 +10374,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   max-width: 15ch;
   margin: 0.7rem 0 1rem;
   color: var(--ivory);
-  font:
-    400 clamp(2.7rem, 7vw, 5.8rem) / 0.95 var(--atlas-display);
+  font: 400 clamp(2.7rem, 7vw, 5.8rem) / 0.95 var(--atlas-display);
   letter-spacing: -0.045em;
 }
 
@@ -10594,8 +10432,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 
 .tarot-progress a span {
   color: var(--gold);
-  font:
-    400 0.68rem/1 var(--atlas-display);
+  font: 400 0.68rem/1 var(--atlas-display);
 }
 
 .tarot-progress a.is-current {
@@ -10629,8 +10466,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-stage__heading h2 {
   margin: 0.45rem 0 0.65rem;
   color: var(--ivory);
-  font:
-    400 clamp(2rem, 4vw, 3.7rem) / 1 var(--atlas-display);
+  font: 400 clamp(2rem, 4vw, 3.7rem) / 1 var(--atlas-display);
   letter-spacing: -0.035em;
 }
 
@@ -10731,8 +10567,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-spread p {
   margin: 0;
   color: var(--ivory);
-  font:
-    400 1.2rem/1.2 var(--atlas-display);
+  font: 400 1.2rem/1.2 var(--atlas-display);
 }
 
 .tarot-deck__copy small,
@@ -11193,8 +11028,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   position: absolute;
   z-index: 3;
   color: var(--tarot-face-gold);
-  font:
-    600 0.68rem/1 var(--atlas-mono);
+  font: 600 0.68rem/1 var(--atlas-mono);
   letter-spacing: 0.08em;
 }
 
@@ -11395,8 +11229,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   border-top: 1px solid
     color-mix(in srgb, var(--tarot-face-gold) 32%, transparent);
   color: var(--ivory);
-  font:
-    400 1.15rem/1.25 var(--atlas-display);
+  font: 400 1.15rem/1.25 var(--atlas-display);
   text-align: center;
 }
 
@@ -11415,8 +11248,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 
 .tarot-result-card__copy p:first-child {
   color: var(--gold);
-  font:
-    400 1.1rem/1.3 var(--atlas-display);
+  font: 400 1.1rem/1.3 var(--atlas-display);
 }
 
 .tarot-result-card__copy small {
@@ -11461,16 +11293,14 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 
 .tarot-narrative__sections header > span {
   color: var(--gold);
-  font:
-    0.62rem/1.4 var(--atlas-mono);
+  font: 0.62rem/1.4 var(--atlas-mono);
   letter-spacing: 0.12em;
 }
 
 .tarot-narrative__sections h3 {
   margin: 0;
   color: var(--gold);
-  font:
-    400 1.05rem/1.25 var(--atlas-display);
+  font: 400 1.05rem/1.25 var(--atlas-display);
 }
 
 .tarot-narrative__sections header p {
@@ -11484,8 +11314,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
 .tarot-narrative__sections section > p {
   margin: 0;
   color: var(--ivory);
-  font:
-    400 clamp(1.05rem, 2vw, 1.3rem) / 1.8 var(--atlas-display);
+  font: 400 clamp(1.05rem, 2vw, 1.3rem) / 1.8 var(--atlas-display);
 }
 
 .tarot-disclaimer {
@@ -11620,8 +11449,7 @@ body:has(.account-dashboard) .account-workspace > .account-settings {
   opacity: 0.6;
 }
 .clock-preview h2 {
-  font:
-    400 2rem/1.2 var(--atlas-display);
+  font: 400 2rem/1.2 var(--atlas-display);
   margin-bottom: 0.6rem;
 }
 .clock-preview p {

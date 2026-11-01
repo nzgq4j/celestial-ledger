@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
@@ -23,9 +24,16 @@ export function ReportViewerActions({ reportId }: { reportId: string }) {
 
   return (
     <>
-      <div className="report-viewer-actions" aria-label={copy.reportActions}>
+      <div
+        className="member-doc-actions"
+        role="group"
+        aria-label={copy.reportActions}
+      >
+        <Link className="member-doc-actions__back" href="/account?view=library">
+          ← {copy.returnToLibrary}
+        </Link>
         <a
-          className="button-primary"
+          className="atlas-button atlas-button--sm"
           href={`/api/reports/${reportId}/pdf`}
           download
         >
@@ -33,7 +41,7 @@ export function ReportViewerActions({ reportId }: { reportId: string }) {
         </a>
         <button
           type="button"
-          className="button-danger"
+          className="atlas-button-ghost atlas-button--sm member-button-danger-ghost"
           onClick={() => setDeleteOpen(true)}
           disabled={deleting}
         >

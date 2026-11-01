@@ -2,6 +2,86 @@ export const localeTags = ["en-GB", "es-ES", "fr-FR", "de-DE"] as const;
 
 export type LocaleTag = (typeof localeTags)[number];
 
+/** Reader-facing copy for the landing page and the free chart calculator. */
+export type HomeMessageKey =
+  | "heroKicker"
+  | "titleFirst"
+  | "titleSecond"
+  | "introduction"
+  | "featuresLabel"
+  | "featureBigThree"
+  | "featureHouses"
+  | "featureInterpretation"
+  | "todayLink"
+  | "formTitle"
+  | "formStep"
+  | "formBirthTime"
+  | "formUnknownTime"
+  | "formBirthplace"
+  | "formSelectedPlace"
+  | "formCalculate"
+  | "formPrivacy"
+  | "formAccountPrivacy"
+  | "formMarketingConsent"
+  | "formRepeatedClock"
+  | "formEarlier"
+  | "formLater"
+  | "resultStep"
+  | "resultTitle"
+  | "timeUnknown"
+  | "sun"
+  | "moon"
+  | "rising"
+  | "houseNumber"
+  | "risingUnavailable"
+  | "moonMayChange"
+  | "tabsLabel"
+  | "tabPlanets"
+  | "tabHouses"
+  | "tabAspects"
+  | "retrograde"
+  | "housesUnavailable"
+  | "aspectsEmpty"
+  | "interpretationKicker"
+  | "interpretationTitle"
+  | "interpretationLoading"
+  | "interpretationProgress"
+  | "interpretationWaiting"
+  | "interpretationEmpty"
+  | "openSavedChart"
+  | "methodTitle"
+  | "methodCopy"
+  | "precisionCopy"
+  | "revealKicker"
+  | "revealTitle"
+  | "revealCopy"
+  | "revealPlan"
+  | "revealContinue"
+  | "ritualsKicker"
+  | "ritualsTitle"
+  | "ritualsPreview"
+  | "ritualReadingWhen"
+  | "ritualReadingTitle"
+  | "ritualReadingCopy"
+  | "ritualReadingPlan"
+  | "ritualTarotWhen"
+  | "ritualTarotTitle"
+  | "ritualTarotCopy"
+  | "ritualTarotPlan"
+  | "ritualWeeklyWhen"
+  | "ritualWeeklyTitle"
+  | "ritualWeeklyCopy"
+  | "ritualWeeklyPlan"
+  | "plansTitleFirst"
+  | "plansTitleSecond"
+  | "plansCopy"
+  | "planFree"
+  | "planFreeLine"
+  | "planAtlas"
+  | "planAtlasLine"
+  | "perMonth"
+  | "plansCompare";
+
 export type TranslationPack = {
   tag: LocaleTag;
   name: string;
@@ -51,31 +131,8 @@ export type TranslationPack = {
     account: Record<string, string>;
     horoscopes: Record<string, string>;
     tarot: Record<string, string>;
-    home: {
-      eyebrow: string;
-      titleFirst: string;
-      titleSecond: string;
-      introduction: string;
-      exploreChart: string;
-      readSample: string;
-      privacy: string;
-      principlesLabel: string;
-      personalisedTitle: string;
-      personalisedCopy: string;
-      depthTitle: string;
-      depthCopy: string;
-      methodTitle: string;
-      methodCopy: string;
-      calculatorKicker: string;
-      calculatorTitle: string;
-      calculatorCopy: string;
-      planets: string;
-      planetsCopy: string;
-      signs: string;
-      signsCopy: string;
-      houses: string;
-      housesCopy: string;
-    };
+    home: Record<HomeMessageKey, string>;
+    clock: Record<string, string>;
     chartForm: {
       accountKicker: string;
       accountTitle: string;
@@ -100,13 +157,7 @@ export type TranslationPack = {
       clear: string;
     };
     chartReveal: {
-      kicker: string;
-      title: string;
-      copy: string;
       hookLabel: string;
-      personalLabel: string;
-      personalCopy: string;
-      continuePersonal: string;
       openingCheckout: string;
       freeAccount: string;
       signIn: string;

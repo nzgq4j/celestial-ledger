@@ -88,7 +88,7 @@ export function DailyReadingGenerator({
     return (
       <div className="daily-reading-empty">
         <p>{copy.dailyReadingNeedsChart}</p>
-        <Link href="/#chart" className="button-secondary">
+        <Link href="/#chart" className="atlas-button-ghost">
           {copy.createNatalChart}
         </Link>
       </div>
@@ -98,7 +98,7 @@ export function DailyReadingGenerator({
     <div className="daily-reading-generator">
       <p role="status">{dailyAllowanceLabel(allowances[profileId], locale)}</p>
       <div className="daily-reading-generator__controls">
-        <label>
+        <label className="atlas-field">
           <span>{copy.useProfile}</span>
           <select
             value={profileId}
@@ -111,7 +111,7 @@ export function DailyReadingGenerator({
             ))}
           </select>
         </label>
-        <label>
+        <label className="atlas-field">
           <span>{copy.dailyReadingDate}</span>
           <input
             type="date"
@@ -121,7 +121,7 @@ export function DailyReadingGenerator({
           />
         </label>
         <button
-          className="button-secondary"
+          className="atlas-button-ghost"
           type="button"
           onClick={() => void generate()}
           disabled={
@@ -138,14 +138,14 @@ export function DailyReadingGenerator({
         <p>
           <Link
             href={`/daily-readings/${existingForDate.id}`}
-            className="text-link"
+            className="text-link atlas-link"
           >
             {copy.openDailyReading}
           </Link>
         </p>
       )}
       {error && (
-        <p className="form-error" role="alert">
+        <p className="member-error" role="alert">
           {error}
         </p>
       )}

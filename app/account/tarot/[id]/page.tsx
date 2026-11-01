@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import "@/app/styles/atlas-member.css";
 import Link from "next/link";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -50,7 +51,11 @@ export default async function SavedTarotPage({
   const copy = pack.messages.tarot;
   return (
     <main className="page-shell private-library tarot-page">
-      <Link href="/account?view=library">{copy.myLibrary}</Link>
+      <div className="member-doc-actions">
+        <Link className="member-doc-actions__back" href="/account?view=library">
+          ← {copy.myLibrary}
+        </Link>
+      </div>
       <TarotReadingExperience
         decks={[]}
         readings={[]}

@@ -9,6 +9,7 @@ import {
 } from "@/lib/commerce/checkout-claims";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeClient, stripeWebhookSecret } from "@/lib/stripe";
+import { planKeyForStripePrice } from "@/lib/stripe/catalog";
 import {
   stripeId,
   subscriptionPeriod,
@@ -148,15 +149,10 @@ async function reconcileSubscription(event: Stripe.Event) {
   let userId = subscription.metadata.user_id;
   const priceId = subscription.items.data[0]?.price.id;
   const admin = createAdminClient();
-  const { data: cataloguePlan } = priceId
-    ? await admin
-        .from("commerce_plans")
-        .select("plan_key")
-        .eq("stripe_price_id", priceId)
-        .eq("active", true)
-        .maybeSingle()
-    : { data: null };
-  const planKey = cataloguePlan?.plan_key ?? subscriptionPlanKey(subscription);
+  // Monthly and yearly Atlas prices map back through commerce_plan_prices;
+  // the legacy commerce_plans price and then metadata are fallbacks.
+  const cataloguePlanKey = await planKeyForStripePrice(admin, priceId);
+  const planKey = cataloguePlanKey ?? subscriptionPlanKey(subscription);
   const customerId = stripeId(subscription.customer);
   if (!planKey || !customerId) return "subscription_mismatch";
 
@@ -267,6 +263,9 @@ async function reconcileSubscription(event: Stripe.Event) {
   }
   if (event.type === "invoice.paid") {
     const invoice = event.data.object as Stripe.Invoice;
+    // A $0 invoice (the free-trial period, or a 100% promotion) is not a paid
+    // period and never issues the included annual report.
+    if (!invoice.amount_paid) return `${data}:unpaid_period`;
     const payments = await stripeClient().invoicePayments.list({
       invoice: invoice.id,
       status: "paid",

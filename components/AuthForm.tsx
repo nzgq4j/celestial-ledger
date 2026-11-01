@@ -21,12 +21,9 @@ export function AuthForm({
       action={mode === "login" ? signIn : signUp}
       className="mt-6 space-y-4"
     >
-      <div>
-        <label className="label" htmlFor="email">
-          Email
-        </label>
+      <div className="atlas-field">
+        <label htmlFor="email">Email</label>
         <input
-          className="input"
           id="email"
           name="email"
           type="email"
@@ -36,12 +33,9 @@ export function AuthForm({
           required
         />
       </div>
-      <div>
-        <label className="label" htmlFor="password">
-          Password
-        </label>
+      <div className="atlas-field">
+        <label htmlFor="password">Password</label>
         <input
-          className="input"
           id="password"
           name="password"
           type="password"
@@ -50,19 +44,14 @@ export function AuthForm({
           required
         />
         {mode === "create" && (
-          <p className="mt-2 text-xs text-[#8f98a6]">
-            Use at least 12 characters.
-          </p>
+          <p className="atlas-auth__hint">Use at least 12 characters.</p>
         )}
       </div>
-      <button
-        disabled={disabled}
-        className="w-full rounded-lg bg-[#c9a75d] px-5 py-3 font-semibold text-[#07111f] disabled:cursor-not-allowed disabled:opacity-50"
-      >
+      <button disabled={disabled} className="atlas-button atlas-auth__submit">
         {mode === "login" ? "Sign in with email" : "Create account with email"}
       </button>
       {mode === "create" && (
-        <p className="text-xs text-[#8f98a6]">
+        <p className="atlas-auth__hint">
           Creating an account does not change your email-marketing preference.
         </p>
       )}

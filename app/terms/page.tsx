@@ -1,4 +1,5 @@
 import { createPageMetadata } from "@/lib/seo";
+import "@/app/styles/atlas-public.css";
 
 export const metadata = createPageMetadata({
   title: "Terms of Use",
@@ -10,9 +11,9 @@ export const metadata = createPageMetadata({
 
 export default function TermsPage() {
   return (
-    <main className="legal-page page-shell">
-      <p className="eyebrow">Celestial Atlas</p>
-      <h1>Terms of use</h1>
+    <main className="atlas-shell public-page public-prose">
+      <p className="atlas-kicker">Celestial Atlas</p>
+      <h1 className="atlas-page-title">Terms of use</h1>
       <p>Last updated: 3 August 2026</p>
       <h2>Reflective use</h2>
       <p>

@@ -5,7 +5,9 @@ import { NatalChartWheel } from "@/components/NatalChartWheel";
 import { createClient } from "@/lib/supabase/server";
 import type { NatalChart } from "@/lib/types";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
-import { NatalChartActions } from "@/components/NatalChartActions";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { memberCopy, fillCopy } from "@/lib/account/member-copy";
+import "@/app/styles/atlas-member.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -37,48 +39,63 @@ export default async function BirthProfilePage({
   if (!profile?.chart) notFound();
 
   const chart = profile.chart as unknown as NatalChart;
+  const pack = await getServerTranslationPack();
+  const m = memberCopy[pack.tag];
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString(pack.tag, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
   return (
-    <main className="page-shell private-report">
+    <main className="atlas-shell member-doc">
+      <div className="member-doc-actions">
+        <Link
+          className="member-doc-actions__back"
+          href={`/account?view=charts&chart=${profile.id}`}
+        >
+          ← {m.backToChart}
+        </Link>
+        <a
+          className="atlas-button atlas-button--sm"
+          href={`/api/birth-profiles/${profile.id}/pdf`}
+          download
+        >
+          {m.downloadPdf}
+        </a>
+      </div>
       <header className="report-viewer-heading">
-        <p className="eyebrow">Private natal chart</p>
+        <p className="atlas-kicker">{pack.messages.account.natalChart}</p>
         <h1>{profile.label}</h1>
-        <p>{profile.display_name}</p>
-        <small>
-          Stored privately until{" "}
-          {new Date(profile.expires_at).toLocaleDateString("en-GB")}.
-        </small>
-        <NatalChartActions
-          downloadHref={`/api/birth-profiles/${profile.id}/pdf`}
-        />
+        <p className="atlas-meta">
+          {profile.display_name} · {pack.messages.account.heldUntil}{" "}
+          {formatDate(profile.expires_at)}
+        </p>
       </header>
-      <NatalChartWheel chart={chart} />
-      {profile.natal_reading && (
-        <section className="panel p-5 mt-6 natal-reading-full">
-          <div className="natal-reading-full__heading">
-            <div>
-              <p className="eyebrow">Saved natal reading</p>
-              <h2>Full natal interpretation</h2>
-            </div>
-            <span>Complete reading</span>
-          </div>
-          <div className="prose mt-4">
-            <NatalInterpretation text={profile.natal_reading} />
-          </div>
+      <figure className="chart-wheel-card" aria-label={m.wheelLabel}>
+        <NatalChartWheel chart={chart} />
+      </figure>
+      {profile.natal_reading ? (
+        <section
+          className="natal-reading-full"
+          aria-labelledby="natal-reading-title"
+        >
+          <p className="atlas-kicker">{m.interpretationKicker}</p>
+          <h2 id="natal-reading-title" className="member-sr">
+            {m.interpretationFallbackTitle}
+          </h2>
+          <NatalInterpretation text={profile.natal_reading} />
           {profile.natal_reading_generated_at && (
-            <small>
-              Generated{" "}
-              {new Date(profile.natal_reading_generated_at).toLocaleDateString(
-                "en-GB",
-              )}
-            </small>
+            <p className="member-note">
+              {fillCopy(m.savedOn, {
+                date: formatDate(profile.natal_reading_generated_at),
+              })}
+            </p>
           )}
         </section>
+      ) : (
+        <p className="member-note">{m.noInterpretation}</p>
       )}
-      <div className="mt-6">
-        <Link className="button-quiet" href="/account">
-          Return to My Celestial Atlas
-        </Link>
-      </div>
     </main>
   );
 }

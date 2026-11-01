@@ -1,4 +1,5 @@
 import { createPageMetadata } from "@/lib/seo";
+import "@/app/styles/atlas-public.css";
 
 export const metadata = createPageMetadata({
   title: "Privacy Policy",
@@ -10,9 +11,9 @@ export const metadata = createPageMetadata({
 
 export default function PrivacyPage() {
   return (
-    <main className="legal-page page-shell">
-      <p className="eyebrow">Celestial Atlas</p>
-      <h1>Privacy policy</h1>
+    <main className="atlas-shell public-page public-prose">
+      <p className="atlas-kicker">Celestial Atlas</p>
+      <h1 className="atlas-page-title">Privacy policy</h1>
       <p>
         When you contact us, we store your name, email address, contact reason,
         and message privately so authorised administrators can respond. A

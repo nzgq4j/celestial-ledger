@@ -23,7 +23,6 @@ import { isDemoMode } from "@/lib/supabase/config";
 import { runNextReportJob } from "@/app/api/internal/report-worker/route";
 import { localeTags } from "@/lib/i18n/config";
 import { commerceFlags } from "@/lib/commerce/flags";
-import { effectivePlanKeyForUser } from "@/lib/entitlements/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -74,10 +73,23 @@ export async function POST(request: Request) {
     }
     if (!reportType) return json({ error: "Choose a report type." }, 422);
     if (!input.entitlementId && commerceFlags().checkout) {
-      const planKey = await effectivePlanKeyForUser(userId);
-      if (planKey !== "premium")
+      // Reports are no longer all included with Atlas: members redeem their
+      // included report (one per membership year) or buy at 20% off, both of
+      // which create an entitlement. Only site administrators may still queue
+      // a complimentary report without one.
+      const { data: administrator } = await admin
+        .from("admin_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "site_admin")
+        .maybeSingle();
+      if (!administrator)
         return json(
-          { error: "This report requires Premium membership or purchase." },
+          {
+            error:
+              "This report needs your included Atlas report or a purchase.",
+            actionUrl: "/account#reports",
+          },
           403,
         );
     }

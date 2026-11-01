@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { isLocaleTag } from "@/lib/i18n/config";
 
 function accountNotice(value: string): never {
-  redirect(`/account?notice=${encodeURIComponent(value)}#account-settings`);
+  redirect(
+    `/account?view=settings&notice=${encodeURIComponent(value)}#account-settings`,
+  );
 }
 
 async function authenticatedUser() {

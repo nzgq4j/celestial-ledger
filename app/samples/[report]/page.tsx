@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/app/styles/atlas-member.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sampleChart, sampleIdentity } from "@/lib/samples";
@@ -656,20 +657,22 @@ export default async function SampleReportPage({
   if (reportKey === "weekly-reading") {
     const sample = await buildSampleWeeklyReading();
     return (
-      <main className="page-shell sample-weekly-reading">
-        <Link href="/samples" className="horoscope-back">
-          ← All sample editions
-        </Link>
+      <main className="atlas-shell member-doc sample-weekly-reading">
+        <div className="member-doc-actions">
+          <Link href="/samples" className="member-doc-actions__back">
+            ← All sample editions
+          </Link>
+        </div>
         <WeeklyReadingView
           content={sample.content}
           analysis={sample.analysis}
           profileLabel={sample.profileLabel}
           isSample
         />
-        <aside className="sample-weekly-reading__cta">
+        <aside className="sample-weekly-reading__cta member-cta">
           <p className="eyebrow">Now, let your own chart speak</p>
           <h2>Follow the next seven days through your own natal sky.</h2>
-          <Link href="/#chart" className="button-primary">
+          <Link href="/#chart" className="atlas-button">
             Create my free natal chart
           </Link>
         </aside>
@@ -761,10 +764,12 @@ export default async function SampleReportPage({
     }
   });
   return (
-    <main className="page-shell sample-report">
-      <Link href="/samples" className="horoscope-back">
-        ← All sample editions
-      </Link>
+    <main className="atlas-shell member-doc member-doc--wide sample-report">
+      <div className="member-doc-actions">
+        <Link href="/samples" className="member-doc-actions__back">
+          ← All sample editions
+        </Link>
+      </div>
       <header>
         <p className="eyebrow">{edition.eyebrow}</p>
         <h1>{edition.title}</h1>
@@ -906,10 +911,10 @@ export default async function SampleReportPage({
           </tbody>
         </table>
       </section>
-      <aside>
+      <aside className="member-cta">
         <p className="eyebrow">Now, let your own chart speak</p>
         <h2>Begin with the sky at your own first breath.</h2>
-        <Link href="/#chart" className="button-primary">
+        <Link href="/#chart" className="atlas-button">
           Create my free natal chart
         </Link>
       </aside>

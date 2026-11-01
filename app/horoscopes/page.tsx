@@ -7,6 +7,11 @@ import { localizeAstroTerm } from "@/lib/reports/evidence-label";
 import { HoroscopeMidnightRefresh } from "@/components/horoscopes/horoscope-midnight-refresh";
 import { HoroscopeDayArc } from "@/components/horoscopes/horoscope-day-arc";
 import {
+  HoroscopeSignPicker,
+  HoroscopeUpsell,
+  localizedHoroscopePath,
+} from "@/components/horoscopes/horoscope-layout";
+import {
   createPageMetadata,
   localizedAlternates,
   localizedPublicUrl,
@@ -57,48 +62,46 @@ export default async function DailyHoroscopesPage({
     evening: copy.evening,
   };
   return (
-    <main className="page-shell daily-horoscopes">
+    <main className="atlas-shell sign-page">
       <HoroscopeMidnightRefresh />
-      <nav className="horoscope-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/">Celestial Atlas</Link>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">{copy.title}</span>
-      </nav>
-      <header className="horoscope-hero">
-        <div>
-          <p className="eyebrow">
-            {copy.almanac} · {sky.displayDate}
-          </p>
-          <h1>{copy.title}</h1>
-        </div>
-        <p>{sky.summary ?? copy.introduction}</p>
+      <header className="sign-page__header">
+        <p className="atlas-kicker">
+          {copy.pageKicker} · {sky.displayDate}
+        </p>
+        <h1 className="atlas-page-title">{copy.pageTitle}</h1>
+        <p className="sign-page__intro">{sky.summary ?? copy.introduction}</p>
+        <ul className="sign-sky" aria-label={copy.todaysSky}>
+          {sky.placements.slice(0, 5).map((item) => (
+            <li key={item.name} className="atlas-chip">
+              <strong>{localizeAstroTerm(item.name, pack.tag)}</strong>
+              {item.degree}° {localizeAstroTerm(item.sign, pack.tag)}
+            </li>
+          ))}
+        </ul>
       </header>
-      <section className="daily-sky-strip" aria-label={copy.todaysSky}>
-        {sky.placements.slice(0, 5).map((item) => (
-          <span key={item.name}>
-            <strong>{localizeAstroTerm(item.name, pack.tag)}</strong>
-            {item.degree}° {localizeAstroTerm(item.sign, pack.tag)}
-          </span>
-        ))}
-      </section>
-      <section className="horoscope-grid" aria-label={copy.twelveHoroscopes}>
+      <HoroscopeSignPicker
+        horoscopes={sky.horoscopes}
+        locale={pack.tag}
+        label={copy.signPicker}
+      />
+      <section className="sign-grid" aria-label={copy.twelveHoroscopes}>
         {sky.horoscopes.map((item) => (
-          <article className="horoscope-card" key={item.sign}>
-            <div className="horoscope-card__sign">
+          <article className="sign-card" key={item.sign}>
+            <header className="sign-card__sign">
               <span aria-hidden="true">{item.glyph}</span>
               <div>
-                <p>{item.sign}</p>
-                <small>{item.theme}</small>
+                <h2>{item.sign}</h2>
+                <p>{item.theme}</p>
               </div>
-            </div>
-            <p className="horoscope-card__overview">{item.overview}</p>
+            </header>
+            <p className="sign-card__overview">{item.overview}</p>
             <HoroscopeDayArc
               parts={item.dayParts}
               labels={periodLabels}
               heading={copy.dailyArc}
               compact
             />
-            <dl>
+            <dl className="sign-card__notes">
               <div>
                 <dt>{copy.opportunity}</dt>
                 <dd>{item.opportunity}</dd>
@@ -109,18 +112,18 @@ export default async function DailyHoroscopesPage({
               </div>
             </dl>
             <Link
-              className="button-primary horoscope-card__action"
-              href={
-                pack.tag === "en-GB"
-                  ? `/horoscopes/${item.slug}`
-                  : `/horoscopes/${item.slug}?lang=${pack.tag}`
-              }
+              className="atlas-link sign-card__action"
+              href={localizedHoroscopePath(
+                `/horoscopes/${item.slug}`,
+                pack.tag,
+              )}
             >
               {copy.readFull} {item.sign} <span aria-hidden="true">→</span>
             </Link>
           </article>
         ))}
       </section>
+      <HoroscopeUpsell copy={copy} />
     </main>
   );
 }

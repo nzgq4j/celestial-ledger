@@ -82,7 +82,7 @@ export function GenerateReportButton({
     >
       <summary
         className={
-          emphasis === "primary" ? "button-primary" : "button-secondary"
+          emphasis === "primary" ? "atlas-button" : "atlas-button-ghost"
         }
       >
         {copy.personaliseReport}
@@ -216,7 +216,7 @@ export function GenerateReportButton({
         )}
         <button
           type="button"
-          className="report-generator__submit button-secondary"
+          className="report-generator__submit atlas-button"
           disabled={
             busy ||
             !profiles.length ||

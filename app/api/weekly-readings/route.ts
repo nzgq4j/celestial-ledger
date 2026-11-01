@@ -128,10 +128,7 @@ export async function POST(request: Request) {
       WEEKLY_READING_CAPABILITY,
     );
     if (!decision.allowed && !existingWeek)
-      return json(
-        { error: "Weekly reading is included with Personal and Premium." },
-        403,
-      );
+      return json({ error: "Weekly reading is included with Atlas." }, 403);
     const cacheKey = weeklyReadingCacheKey({
       userId,
       birthProfileId: primaryProfile.id,

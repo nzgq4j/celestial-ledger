@@ -14,6 +14,51 @@ export type Database = {
   };
   public: {
     Tables: {
+      device_push_tokens: {
+        Row: {
+          id: string;
+          user_id: string;
+          token: string;
+          platform: "android";
+          locale: "en-GB" | "es-ES" | "fr-FR" | "de-DE";
+          timezone: string;
+          morning_alert_enabled: boolean;
+          morning_alert_local_time: string;
+          last_notified_on: string | null;
+          created_at: string;
+          updated_at: string;
+          last_seen_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          token: string;
+          platform?: "android";
+          locale?: "en-GB" | "es-ES" | "fr-FR" | "de-DE";
+          timezone?: string;
+          morning_alert_enabled?: boolean;
+          morning_alert_local_time?: string;
+          last_notified_on?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          last_seen_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          token?: string;
+          platform?: "android";
+          locale?: "en-GB" | "es-ES" | "fr-FR" | "de-DE";
+          timezone?: string;
+          morning_alert_enabled?: boolean;
+          morning_alert_local_time?: string;
+          last_notified_on?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          last_seen_at?: string;
+        };
+        Relationships: [];
+      };
       capability_usage: {
         Row: {
           id: number;
@@ -517,6 +562,54 @@ export type Database = {
           },
         ];
       };
+      commerce_plan_prices: {
+        Row: {
+          active: boolean;
+          billing_interval: string;
+          catalog_version: number;
+          created_at: string;
+          currency: string;
+          google_play_base_plan_id: string | null;
+          google_play_product_id: string | null;
+          id: string;
+          plan_key: string;
+          stripe_price_id: string | null;
+          trial_days: number;
+          unit_amount: number;
+          updated_at: string;
+        };
+        Insert: {
+          active?: boolean;
+          billing_interval: string;
+          catalog_version?: number;
+          created_at?: string;
+          currency: string;
+          google_play_base_plan_id?: string | null;
+          google_play_product_id?: string | null;
+          id?: string;
+          plan_key: string;
+          stripe_price_id?: string | null;
+          trial_days?: number;
+          unit_amount: number;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          billing_interval?: string;
+          catalog_version?: number;
+          created_at?: string;
+          currency?: string;
+          google_play_base_plan_id?: string | null;
+          google_play_product_id?: string | null;
+          id?: string;
+          plan_key?: string;
+          stripe_price_id?: string | null;
+          trial_days?: number;
+          unit_amount?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       commerce_plans: {
         Row: {
           active: boolean;
@@ -660,47 +753,59 @@ export type Database = {
       };
       account_subscriptions: {
         Row: {
-          billing_customer_id: string;
+          billing_customer_id: string | null;
           cancel_at_period_end: boolean;
           created_at: string;
           current_period_end: string | null;
           current_period_start: string | null;
+          google_play_order_id: string | null;
+          google_play_product_id: string | null;
+          google_play_purchase_token: string | null;
           grace_ends_at: string | null;
           id: string;
           last_stripe_event_created: number;
           plan_key: string;
+          provider: "stripe" | "google_play";
           status: string;
-          stripe_subscription_id: string;
+          stripe_subscription_id: string | null;
           updated_at: string;
           user_id: string | null;
         };
         Insert: {
-          billing_customer_id: string;
+          billing_customer_id?: string | null;
           cancel_at_period_end?: boolean;
           created_at?: string;
           current_period_end?: string | null;
           current_period_start?: string | null;
+          google_play_order_id?: string | null;
+          google_play_product_id?: string | null;
+          google_play_purchase_token?: string | null;
           grace_ends_at?: string | null;
           id?: string;
           last_stripe_event_created?: number;
           plan_key: string;
+          provider?: "stripe" | "google_play";
           status: string;
-          stripe_subscription_id: string;
+          stripe_subscription_id?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
         Update: {
-          billing_customer_id?: string;
+          billing_customer_id?: string | null;
           cancel_at_period_end?: boolean;
           created_at?: string;
           current_period_end?: string | null;
           current_period_start?: string | null;
+          google_play_order_id?: string | null;
+          google_play_product_id?: string | null;
+          google_play_purchase_token?: string | null;
           grace_ends_at?: string | null;
           id?: string;
           last_stripe_event_created?: number;
           plan_key?: string;
+          provider?: "stripe" | "google_play";
           status?: string;
-          stripe_subscription_id?: string;
+          stripe_subscription_id?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -1010,6 +1115,7 @@ export type Database = {
           natal_reading_model_version: string;
           natal_reading_prompt_version: string;
           request_fingerprint_hash: string;
+          requested_billing_interval: string | null;
           requested_plan_key: string;
           stripe_checkout_session_id: string | null;
           stripe_customer_id: string | null;
@@ -1029,6 +1135,7 @@ export type Database = {
           natal_reading_model_version: string;
           natal_reading_prompt_version: string;
           request_fingerprint_hash: string;
+          requested_billing_interval?: string | null;
           requested_plan_key: string;
           stripe_checkout_session_id?: string | null;
           stripe_customer_id?: string | null;
@@ -1048,6 +1155,7 @@ export type Database = {
           natal_reading_model_version?: string;
           natal_reading_prompt_version?: string;
           request_fingerprint_hash?: string;
+          requested_billing_interval?: string | null;
           requested_plan_key?: string;
           stripe_checkout_session_id?: string | null;
           stripe_customer_id?: string | null;
@@ -1546,6 +1654,14 @@ export type Database = {
           p_status: string;
           p_stripe_customer_id: string;
           p_stripe_subscription_id: string;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
+      grant_annual_report_credit: {
+        Args: {
+          p_granted_at: string;
+          p_source_reference: string;
           p_user_id: string;
         };
         Returns: string;

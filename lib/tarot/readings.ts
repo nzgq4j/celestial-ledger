@@ -1,4 +1,5 @@
 import type { PlanKey } from "@/lib/entitlements/domain";
+import type { TarotSpreadId } from "@/lib/membership/plans";
 import type {
   TarotReading,
   TarotReadingBlueprint,
@@ -85,13 +86,27 @@ export const TAROT_READING_BLUEPRINTS = [
 
 export type TarotReadingPlanMatrix = Record<TarotReadingId, PlanKey>;
 
+/**
+ * Free: the one-card daily draw. Atlas (`premium`): all five spreads.
+ * Kept in step with PLAN_ALLOWANCES in lib/membership/plans.ts and the
+ * `tarot.spreads` capability seeded by the two-tier migration.
+ */
 export const TAROT_READING_PLAN_MATRIX = {
   daily: "free",
-  ppf: "personal",
-  love5: "personal",
+  ppf: "premium",
+  love5: "premium",
   celtic: "premium",
   grand: "premium",
 } as const satisfies TarotReadingPlanMatrix;
+
+/** Maps spread IDs to the catalogue's spread names in plans.ts. */
+export const TAROT_READING_CATALOGUE_SPREAD = {
+  daily: "daily",
+  ppf: "past_present_future",
+  love5: "love",
+  celtic: "celtic_cross",
+  grand: "grand",
+} as const satisfies Record<TarotReadingId, TarotSpreadId>;
 
 /**
  * Adds commercial access policy to the static spread definitions.

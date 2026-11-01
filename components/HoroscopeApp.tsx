@@ -1,31 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { formatDegree } from "@/lib/zodiac";
-import type { NatalChart, ResolvedPlace } from "@/lib/types";
-import { NatalChartWheel } from "./NatalChartWheel";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import type { NatalChart, Placement, ResolvedPlace } from "@/lib/types";
 import { useLocale } from "@/components/LocaleProvider";
-import { LandingPathways } from "@/components/LandingPathways";
-import { ClockPreview } from "@/components/clock/ClockPreview";
+import {
+  LandingPathways,
+  LandingPlanStrip,
+} from "@/components/LandingPathways";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
-import { ZodiacConstellationStrip } from "@/components/ZodiacConstellationStrip";
+import {
+  aspectGlyphs,
+  NatalChartWheel,
+  planetGlyphs,
+  signGlyph,
+  TEXT_GLYPH,
+} from "@/components/NatalChartWheel";
+import { localizeAstroTerm } from "@/lib/reports/evidence-label";
+import { ATLAS_PLAN_KEY, ATLAS_PRICES } from "@/lib/membership/plans";
+import "@/app/styles/atlas-public.css";
 
-function MeaningNote({ children }: { children: React.ReactNode }) {
-  return (
-    <aside className="meaning-note">
-      <h3>What does this mean for me?</h3>
-      <p>{children}</p>
-    </aside>
-  );
-}
+type ChartTab = "planets" | "houses" | "aspects";
+const chartTabs: ChartTab[] = ["planets", "houses", "aspects"];
+
+const signedNumber = (value: number) => value.toFixed(4).replace(/^-/, "−");
 
 export default function HoroscopeApp({
   account,
 }: {
   account?: { displayName: string };
 }) {
-  const { pack } = useLocale();
+  const { pack, locale } = useLocale();
+  const copy = pack.messages.home;
+  const form = pack.messages.chartForm;
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(true);
@@ -46,12 +53,15 @@ export default function HoroscopeApp({
   const [searching, setSearching] = useState(false);
   const [ambiguity, setAmbiguity] = useState<"earlier" | "later" | undefined>();
   const [saveStatus, setSaveStatus] = useState("");
+  const [savedProfileId, setSavedProfileId] = useState("");
   const [interpretationProvenance, setInterpretationProvenance] = useState<{
     modelVersion: string;
     promptVersion: string;
   }>();
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [tab, setTab] = useState<ChartTab>("planets");
+  const resultHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     if (!interpretationLoading) {
@@ -74,6 +84,12 @@ export default function HoroscopeApp({
     return () => window.clearInterval(timer);
   }, [interpretationLoading]);
 
+  useEffect(() => {
+    if (!chart) return;
+    resultHeading.current?.focus({ preventScroll: true });
+    resultHeading.current?.scrollIntoView({ block: "start" });
+  }, [chart]);
+
   async function searchPlaces() {
     setError("");
     setSearching(true);
@@ -92,6 +108,12 @@ export default function HoroscopeApp({
     }
   }
 
+  function choosePlace(next: ResolvedPlace) {
+    setPlace(next);
+    setQuery(next.displayName);
+    setPlaces([]);
+  }
+
   async function calculate() {
     setError("");
     setInterpretation("");
@@ -102,7 +124,7 @@ export default function HoroscopeApp({
     if (!date) return setError("Birth date is required.");
     if (!unknown && !time)
       return setError(
-        "Birth time is required unless ‘Birth time unknown’ is selected.",
+        "Birth time is required unless you tick ‘I don’t know my birth time’.",
       );
     if (!place)
       return setError("Select a resolved birthplace from the search results.");
@@ -158,6 +180,7 @@ export default function HoroscopeApp({
       if (!chartResponse.ok) throw new Error(chartPayload.error);
       const result = chartPayload.chart as NatalChart;
       setChart(result);
+      setTab("planets");
       setInterpretationLoading(true);
       try {
         const r = await fetch("/api/interpret", {
@@ -183,8 +206,10 @@ export default function HoroscopeApp({
           typeof j.provenance?.promptVersion === "string"
         )
           setInterpretationProvenance(j.provenance);
-        if (account && j.birthProfile?.id)
-          setSaveStatus(pack.messages.chartForm.accountSaved);
+        if (account && j.birthProfile?.id) {
+          setSaveStatus(form.accountSaved);
+          setSavedProfileId(String(j.birthProfile.id));
+        }
       } catch (e) {
         setInterpretationError(
           e instanceof Error
@@ -219,12 +244,13 @@ export default function HoroscopeApp({
     setError("");
     setAmbiguity(undefined);
     setSaveStatus("");
+    setSavedProfileId("");
     setInterpretationProvenance(undefined);
     setCheckoutBusy(false);
     setCheckoutError("");
   }
 
-  async function continueWithPersonal() {
+  async function continueWithAtlas() {
     if (!chart || !interpretation || !interpretationProvenance) return;
     const checkoutEmail = email.trim();
     if (!checkoutEmail) {
@@ -243,7 +269,7 @@ export default function HoroscopeApp({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            planKey: "personal",
+            planKey: ATLAS_PLAN_KEY,
             displayName: firstName.trim() || undefined,
             email: checkoutEmail,
             birthInput: chart.input,
@@ -274,627 +300,655 @@ export default function HoroscopeApp({
     }
   }
 
+  const term = (value: string) => localizeAstroTerm(value, locale);
+  const sentence = (value: string) =>
+    value.charAt(0).toLocaleUpperCase(locale) + value.slice(1);
+  const degreeLabel = (p: { degree: number; minute: number }) =>
+    `${p.degree}°${String(p.minute).padStart(2, "0")}′`;
+  const houseLabel = (house?: number) =>
+    house ? copy.houseNumber.replace("{house}", String(house)) : "";
+
+  function moveTab(event: React.KeyboardEvent<HTMLButtonElement>) {
+    const index = chartTabs.indexOf(tab);
+    const next =
+      event.key === "ArrowRight"
+        ? chartTabs[(index + 1) % chartTabs.length]
+        : event.key === "ArrowLeft"
+          ? chartTabs[(index + chartTabs.length - 1) % chartTabs.length]
+          : event.key === "Home"
+            ? chartTabs[0]
+            : event.key === "End"
+              ? chartTabs[chartTabs.length - 1]
+              : null;
+    if (!next) return;
+    event.preventDefault();
+    setTab(next);
+    document.getElementById(`chart-tab-${next}`)?.focus();
+  }
+
+  const bigThree: Array<{
+    key: string;
+    glyph: string;
+    label: string;
+    placement?: Placement;
+  }> = chart
+    ? [
+        {
+          key: "sun",
+          glyph: "☉" + TEXT_GLYPH,
+          label: copy.sun,
+          placement: chart.placements.find((p) => p.name === "Sun"),
+        },
+        {
+          key: "moon",
+          glyph: "☽" + TEXT_GLYPH,
+          label: copy.moon,
+          placement: chart.placements.find((p) => p.name === "Moon"),
+        },
+        {
+          key: "rising",
+          glyph: "AC",
+          label: copy.rising,
+          placement: chart.ascendant,
+        },
+      ]
+    : [];
+
+  const birthDateLabel = chart
+    ? new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(`${chart.input.date}T12:00:00Z`))
+    : "";
+
   return (
-    <main className="min-h-screen">
-      <header className="atlas-hero">
-        <div className="atlas-hero__inner">
-          <div className="atlas-hero__content">
-            <p className="eyebrow">{pack.messages.home.eyebrow}</p>
-            <h1>
-              {pack.messages.home.titleFirst}
+    <main className="home">
+      <section className="home-hero" aria-labelledby="home-title">
+        <div className="home-hero__inner">
+          <div className="home-hero__copy">
+            <p className="home-hero__kicker">{copy.heroKicker}</p>
+            <h1 id="home-title" className="home-hero__title">
+              {copy.titleFirst}
               <br />
-              <em>{pack.messages.home.titleSecond}</em>
+              <em>{copy.titleSecond}</em>
             </h1>
-            <p className="atlas-hero__copy">
-              {pack.messages.home.introduction}
-            </p>
-            <div className="atlas-hero__actions">
-              <a className="button-primary atlas-hero__cta" href="#chart">
-                {pack.messages.home.exploreChart}
-              </a>
-              <Link className="atlas-hero__text-link" href="/samples">
-                {pack.messages.home.readSample}{" "}
-                <span aria-hidden="true">&#8599;</span>
+            <p className="home-hero__intro">{copy.introduction}</p>
+            <ul className="home-hero__points" aria-label={copy.featuresLabel}>
+              <li>
+                <span aria-hidden="true">{"☉" + TEXT_GLYPH}</span>
+                {copy.featureBigThree}
+              </li>
+              <li>
+                <span aria-hidden="true">⌂</span>
+                {copy.featureHouses}
+              </li>
+              <li>
+                <span aria-hidden="true">✦</span>
+                {copy.featureInterpretation}
+              </li>
+            </ul>
+            {account && (
+              <Link className="atlas-button home-hero__today" href="/account">
+                {copy.todayLink} <span aria-hidden="true">→</span>
               </Link>
-            </div>
-            <p className="atlas-hero__privacy">{pack.messages.home.privacy}</p>
-          </div>
-        </div>
-      </header>
-      <LandingPathways />
-      <ClockPreview />
-      <div
-        id="chart"
-        className="chart-workspace max-w-6xl mx-auto px-5 py-12 space-y-8 scroll-mt-24"
-      >
-        <section
-          className="chart-introduction"
-          aria-labelledby="free-chart-heading"
-        >
-          <div>
-            <p className="section-kicker">
-              {pack.messages.home.calculatorKicker}
-            </p>
-            <h2 id="free-chart-heading">
-              {pack.messages.home.calculatorTitle}
-            </h2>
-            <p>{pack.messages.home.calculatorCopy}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>{pack.messages.home.planets}</dt>
-              <dd>{pack.messages.home.planetsCopy}</dd>
-            </div>
-            <div>
-              <dt>{pack.messages.home.signs}</dt>
-              <dd>{pack.messages.home.signsCopy}</dd>
-            </div>
-            <div>
-              <dt>{pack.messages.home.houses}</dt>
-              <dd>{pack.messages.home.housesCopy}</dd>
-            </div>
-          </dl>
-        </section>
-        <section
-          className="panel p-5 md:p-7 chart-input-panel"
-          aria-labelledby="birth-heading"
-        >
-          <p className="section-kicker">
-            {account
-              ? pack.messages.chartForm.accountKicker
-              : pack.messages.chartForm.kicker}
-          </p>
-          <h2 id="birth-heading" className="text-xl gold font-semibold">
-            {account
-              ? pack.messages.chartForm.accountTitle
-              : pack.messages.chartForm.title}
-          </h2>
-          {account && (
-            <p className="mt-3 text-[#b9b2a3]">
-              {pack.messages.chartForm.accountCopy.replace(
-                "{name}",
-                account.displayName,
-              )}
-            </p>
-          )}
-          <div className="chart-fields grid md:grid-cols-2 gap-5 mt-5">
-            {!account && (
-              <>
-                <div className="chart-field">
-                  <label className="label" htmlFor="first-name">
-                    {pack.messages.chartForm.name}
-                  </label>
-                  <input
-                    id="first-name"
-                    className="input"
-                    value={firstName}
-                    onChange={(event) => setFirstName(event.target.value)}
-                    autoComplete="given-name"
-                    maxLength={80}
-                    placeholder={pack.messages.chartForm.namePlaceholder}
-                  />
-                </div>
-                <div className="chart-field">
-                  <label className="label" htmlFor="marketing-email">
-                    {pack.messages.chartForm.email}
-                  </label>
-                  <input
-                    id="marketing-email"
-                    className="input"
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    autoComplete="email"
-                    maxLength={254}
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </>
             )}
-            <div className="chart-field">
-              <label className="label" htmlFor="birth-date">
-                {pack.messages.chartForm.birthDate}
-              </label>
-              <input
-                id="birth-date"
-                className="input"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
+          </div>
+
+          <section
+            id="chart"
+            className="home-form"
+            aria-labelledby="birth-heading"
+          >
+            <div className="home-form__heading">
+              <h2 id="birth-heading">{copy.formTitle}</h2>
+              <span className="home-form__step">{copy.formStep}</span>
             </div>
-            <div className="chart-field">
-              <label className="label" htmlFor="birth-time">
-                {pack.messages.chartForm.birthTime}
-              </label>
-              <input
-                id="birth-time"
-                className="input"
-                type="time"
-                disabled={unknown}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-              <label className="flex gap-2 mt-3 text-sm text-[#ddd6c8]">
+            {account && (
+              <p className="home-form__account">
+                {form.accountCopy.replace("{name}", account.displayName)}
+              </p>
+            )}
+            <form
+              noValidate
+              onSubmit={(event) => {
+                event.preventDefault();
+                void calculate();
+              }}
+            >
+              <div className="home-form__fields">
+                <div className="atlas-field home-form__field">
+                  <label htmlFor="birth-date">{form.birthDate}</label>
+                  <input
+                    id="birth-date"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </div>
+                <div className="atlas-field home-form__field">
+                  <label htmlFor="birth-time">{copy.formBirthTime}</label>
+                  <input
+                    id="birth-time"
+                    type="time"
+                    disabled={unknown}
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <label className="home-form__check">
                 <input
                   type="checkbox"
                   checked={unknown}
                   onChange={(e) => setUnknown(e.target.checked)}
-                />{" "}
-                {pack.messages.chartForm.unknownTime}
-              </label>
-            </div>
-            <div className="chart-field md:col-span-2">
-              <label className="label" htmlFor="place">
-                {pack.messages.chartForm.birthplace}
-              </label>
-              <div className="place-search-row">
-                <input
-                  id="place"
-                  className="input"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && searchPlaces()}
-                  placeholder={pack.messages.chartForm.birthplacePlaceholder}
                 />
-                <button
-                  type="button"
-                  onClick={searchPlaces}
-                  disabled={searching}
-                  className="px-5 rounded-lg bg-[#c9a75d] text-[#07111f] font-semibold"
-                >
-                  {searching
-                    ? pack.messages.chartForm.searching
-                    : pack.messages.chartForm.search}
-                </button>
-              </div>
-            </div>
-          </div>
-          {places.length > 0 && (
-            <fieldset className="mt-4">
-              <legend className="label">
-                {pack.messages.chartForm.selectBirthplace}
-              </legend>
-              <div className="grid gap-2">
-                {places.map((p) => (
-                  <label
-                    key={p.id}
-                    className="p-3 border border-[#34455c] rounded-lg flex gap-3 cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="place"
-                      checked={place?.id === p.id}
-                      onChange={() => setPlace(p)}
-                    />
-                    <span>
-                      <strong>
-                        {p.city}
-                        {p.region ? `, ${p.region}` : ""}, {p.country}
-                      </strong>
-                      <br />
-                      <small className="text-[#b9b2a3]">
-                        {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)} ·{" "}
-                        {p.timeZone}
-                      </small>
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          )}
-          {place && (
-            <div className="mt-4 p-4 bg-[#081524] rounded-lg">
-              <strong>Selected place:</strong> {place.city}
-              {place.region ? `, ${place.region}` : ""}, {place.country}
-              <br />
-              <span className="text-sm text-[#b9b2a3]">
-                Latitude {place.latitude.toFixed(5)} · Longitude{" "}
-                {place.longitude.toFixed(5)} · Historical time zone{" "}
-                {place.timeZone}
-              </span>
-            </div>
-          )}
-          {!unknown && (
-            <div className="chart-ambiguity mt-4">
-              <span className="label">
-                Repeated-clock interpretation, only when requested
-              </span>
-              <div className="chart-ambiguity__options">
-                <label className="text-sm">
-                  <input
-                    type="radio"
-                    name="amb"
-                    checked={ambiguity === "earlier"}
-                    onChange={() => setAmbiguity("earlier")}
-                  />
-                  Earlier occurrence
-                </label>
-                <label className="text-sm">
-                  <input
-                    type="radio"
-                    name="amb"
-                    checked={ambiguity === "later"}
-                    onChange={() => setAmbiguity("later")}
-                  />
-                  Later occurrence
-                </label>
-              </div>
-            </div>
-          )}
-          {!account && (
-            <>
-              <label className="marketing-consent">
-                <input
-                  type="checkbox"
-                  checked={marketingConsent}
-                  onChange={(event) =>
-                    setMarketingConsent(event.target.checked)
-                  }
-                />
-                <span>
-                  Email me occasional Celestial Atlas notes and product updates.
-                  I can unsubscribe at any time.
-                </span>
+                {copy.formUnknownTime}
               </label>
-              {subscriptionStatus && (
-                <p className="marketing-status" role="status">
-                  {subscriptionStatus}
-                </p>
-              )}
-            </>
-          )}
-          {error && (
-            <div
-              role="alert"
-              className="mt-4 p-3 rounded-lg border border-[#8b5b53] bg-[#2b1718]"
-            >
-              {error}
-            </div>
-          )}
-          <div className="flex flex-wrap gap-3 mt-6">
-            <button
-              onClick={calculate}
-              disabled={busy}
-              className="px-6 py-3 rounded-lg bg-[#c9a75d] text-[#07111f] font-semibold"
-            >
-              {busy
-                ? pack.messages.chartForm.calculating
-                : pack.messages.chartForm.calculate}
-            </button>
-            <button
-              onClick={clearAll}
-              className="px-6 py-3 rounded-lg border border-[#536177]"
-            >
-              {pack.messages.chartForm.clear}
-            </button>
-          </div>
-        </section>
 
-        {chart && (
-          <div className="natal-chart-result">
-            <section className="big-three-section" aria-label="Big Three">
-              <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  chart.placements.find((p) => p.name === "Sun"),
-                  chart.placements.find((p) => p.name === "Moon"),
-                  chart.ascendant,
-                ].map((p, i) => (
-                  <article key={i} className="panel p-5">
-                    <p className="label">
-                      {i === 0 ? "Sun" : i === 1 ? "Moon" : "Ascendant"}
-                    </p>
-                    {p ? (
-                      <>
-                        <h2 className="text-2xl gold">{p.sign}</h2>
-                        <p>{formatDegree(p.longitude)}</p>
-                        {p.uncertain && (
-                          <p className="text-sm text-[#d7bd7b] mt-2">
-                            The Moon may change signs during this date.
-                          </p>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <h2 className="text-xl text-[#b9b2a3]">Unavailable</h2>
-                        <p className="text-sm">
-                          An exact birth time is required.
-                        </p>
-                      </>
-                    )}
-                  </article>
-                ))}
-              </div>
-              <MeaningNote>
-                Your Sun describes the self you are growing into, your Moon
-                reflects emotional instinct and inner needs, and your
-                Ascendant—when birth time is known—describes how you meet the
-                world and begin new experiences.
-              </MeaningNote>
-            </section>
-            <NatalChartWheel chart={chart} />
-            <section className="panel p-5">
-              <h2 className="text-xl gold">Birth-data summary</h2>
-              <p className="mt-2">
-                {chart.input.date}{" "}
-                {chart.timeKnown ? chart.input.time : "time unknown"} ·{" "}
-                {chart.input.place.displayName}
-              </p>
-              <p className="text-sm text-[#b9b2a3]">
-                Normalized UTC: {chart.utc} · Zone: {chart.input.place.timeZone}
-              </p>
-              <MeaningNote>
-                This is the earthly anchor of your chart. Date, time, and place
-                locate the sky you were born beneath and determine which
-                celestial patterns belong to your natal map.
-              </MeaningNote>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                {saveStatus && (
-                  <p role="status" className="text-sm text-[#d7bd7b]">
-                    {saveStatus}
+              <div className="atlas-field home-form__field home-form__place">
+                <label htmlFor="place">{copy.formBirthplace}</label>
+                <div className="home-form__search">
+                  <span className="home-form__search-icon" aria-hidden="true">
+                    ⌖
+                  </span>
+                  <input
+                    id="place"
+                    value={query}
+                    data-resolved={place ? "true" : undefined}
+                    autoComplete="off"
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      if (place && e.target.value !== place.displayName)
+                        setPlace(undefined);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault();
+                      void searchPlaces();
+                    }}
+                    placeholder={form.birthplacePlaceholder}
+                  />
+                  <button
+                    type="button"
+                    className="home-form__search-button"
+                    onClick={searchPlaces}
+                    disabled={searching || !query.trim()}
+                  >
+                    {searching ? form.searching : form.search}
+                  </button>
+                </div>
+                {place && (
+                  <p className="home-form__resolved" role="status">
+                    <span className="sr-only">{copy.formSelectedPlace}: </span>
+                    <span aria-hidden="true">✓ </span>
+                    {signedNumber(place.latitude)},{" "}
+                    {signedNumber(place.longitude)} · {place.timeZone}
                   </p>
                 )}
               </div>
-            </section>
-            <section className="panel p-5">
-              <h2 className="text-xl gold mb-3">Planetary placements</h2>
-              <MeaningNote>
-                Each planet represents a different drive or faculty. Its sign
-                shows how that energy tends to express itself; its house shows
-                where in life that pattern is most likely to become noticeable.
-              </MeaningNote>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Body</th>
-                      <th>Position</th>
-                      <th>House</th>
-                      <th>Motion</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {chart.placements.map((p) => (
-                      <tr key={p.name}>
-                        <td>{p.name}</td>
-                        <td>{formatDegree(p.longitude)}</td>
-                        <td>{p.house ?? "—"}</td>
-                        <td>{p.retrograde ? "Retrograde" : "Direct"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-            {chart.houses.length > 0 && (
-              <section className="panel p-5">
-                <h2 className="text-xl gold mb-3">House cusps</h2>
-                <MeaningNote>
-                  The houses divide your chart into twelve fields of lived
-                  experience—from identity and relationships to work, home,
-                  creativity, community, and inner life.
-                </MeaningNote>
-                <div className="table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>House</th>
-                        <th>Cusp</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {chart.houses.map((h) => (
-                        <tr key={h.house}>
-                          <td>{h.house}</td>
-                          <td>{formatDegree(h.longitude)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
-            <section className="panel p-5">
-              <h2 className="text-xl gold mb-3">Major aspects</h2>
-              <MeaningNote>
-                Aspects describe how planetary drives cooperate, amplify, or
-                challenge one another. They often reveal recurring strengths,
-                tensions, and ways you integrate different parts of yourself.
-              </MeaningNote>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Bodies</th>
-                      <th>Aspect</th>
-                      <th>Angle</th>
-                      <th>Orb</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {chart.aspects.map((a, i) => (
-                      <tr key={i}>
-                        <td>
-                          {a.body1}–{a.body2}
-                        </td>
-                        <td>{a.type}</td>
-                        <td>{a.angle.toFixed(2)}°</td>
-                        <td>{a.orb.toFixed(2)}°</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-            <section className="grid md:grid-cols-2 gap-4">
-              <article className="panel p-5">
-                <h2 className="text-xl gold">Calculation method</h2>
-                <MeaningNote>
-                  These settings define the astrological tradition used to
-                  construct your chart, ensuring that every placement and
-                  relationship is read within one consistent framework.
-                </MeaningNote>
-                <p className="mt-2 text-sm leading-6">
-                  {chart.calculation.zodiac} zodiac;{" "}
-                  {chart.calculation.houseSystem} houses;{" "}
-                  {chart.calculation.ephemeris}. Default aspect orbs:
-                  conjunction/opposition 8°, trine/square 7°, sextile 5°.
-                </p>
-              </article>
-              <article className="panel p-5">
-                <h2 className="text-xl gold">Chart precision</h2>
-                <MeaningNote>
-                  Precision tells you which details can be read confidently.
-                  When the birth time is unknown, planetary signs remain useful,
-                  while houses, angles, and time-sensitive conclusions are left
-                  open.
-                </MeaningNote>
-                <p className="mt-2 text-sm leading-6">
-                  Coordinates and the IANA historical time zone are resolved
-                  from the selected place. Unknown times omit houses and angles.
-                  Celestial Atlas follows the Western tropical tradition,
-                  combining ancient astrological language with transparent,
-                  reproducible chart calculation.
-                </p>
-              </article>
-            </section>
-            <section className="panel p-5 md:p-7" aria-live="polite">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-xl gold">Interpretation</h2>
-                <ZodiacConstellationStrip />
-              </div>
-              <MeaningNote>
-                This reading brings the separate chart factors together into
-                larger themes, showing how individual placements may combine in
-                your temperament, relationships, motivations, and direction.
-              </MeaningNote>
-              {interpretationLoading ? (
-                <div className="mt-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-[#ddd6c8]">
-                      Generating your interpretation…
+
+              {places.length > 0 && (
+                <fieldset className="home-form__places">
+                  <legend>{form.selectBirthplace}</legend>
+                  {places.map((p) => (
+                    <label key={p.id} className="home-form__place-option">
+                      <input
+                        type="radio"
+                        name="place"
+                        checked={place?.id === p.id}
+                        onChange={() => choosePlace(p)}
+                      />
+                      <span>
+                        <strong>
+                          {p.city}
+                          {p.region ? `, ${p.region}` : ""}, {p.country}
+                        </strong>
+                        <small>
+                          {signedNumber(p.latitude)},{" "}
+                          {signedNumber(p.longitude)} · {p.timeZone}
+                        </small>
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+
+              {!unknown && (
+                <fieldset className="home-form__ambiguity">
+                  <legend>{copy.formRepeatedClock}</legend>
+                  <div className="home-form__ambiguity-options">
+                    <label>
+                      <input
+                        type="radio"
+                        name="amb"
+                        checked={ambiguity === "earlier"}
+                        onChange={() => setAmbiguity("earlier")}
+                      />
+                      {copy.formEarlier}
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="amb"
+                        checked={ambiguity === "later"}
+                        onChange={() => setAmbiguity("later")}
+                      />
+                      {copy.formLater}
+                    </label>
+                  </div>
+                </fieldset>
+              )}
+
+              {!account && (
+                <>
+                  <div className="home-form__fields">
+                    <div className="atlas-field home-form__field">
+                      <label htmlFor="first-name">{form.name}</label>
+                      <input
+                        id="first-name"
+                        value={firstName}
+                        onChange={(event) => setFirstName(event.target.value)}
+                        autoComplete="given-name"
+                        maxLength={80}
+                        placeholder={form.namePlaceholder}
+                      />
+                    </div>
+                    <div className="atlas-field home-form__field">
+                      <label htmlFor="marketing-email">{form.email}</label>
+                      <input
+                        id="marketing-email"
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        autoComplete="email"
+                        maxLength={254}
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                  </div>
+                  <label className="home-form__check home-form__consent">
+                    <input
+                      type="checkbox"
+                      checked={marketingConsent}
+                      onChange={(event) =>
+                        setMarketingConsent(event.target.checked)
+                      }
+                    />
+                    <span>{copy.formMarketingConsent}</span>
+                  </label>
+                  {subscriptionStatus && (
+                    <p className="home-form__status" role="status">
+                      {subscriptionStatus}
                     </p>
-                    <span className="text-sm gold tabular-nums">
-                      {interpretationProgress}%
-                    </span>
+                  )}
+                </>
+              )}
+
+              {error && (
+                <div role="alert" className="atlas-public-alert">
+                  {error}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={busy}
+                className="atlas-button atlas-button--hero home-form__submit"
+              >
+                {busy ? form.calculating : copy.formCalculate}
+              </button>
+              <div className="home-form__footer">
+                <p>{account ? copy.formAccountPrivacy : copy.formPrivacy}</p>
+                <button
+                  type="button"
+                  className="home-form__clear"
+                  onClick={clearAll}
+                >
+                  {form.clear}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      {chart && (
+        <section
+          className="natal-result atlas-shell"
+          aria-labelledby="natal-result-title"
+        >
+          <header className="natal-result__header">
+            <div>
+              <p className="atlas-meta">
+                {copy.resultStep} · {birthDateLabel} ·{" "}
+                {chart.timeKnown ? chart.input.time : copy.timeUnknown} ·{" "}
+                {chart.input.place.displayName}
+                {chart.timeKnown && ` · UTC ${chart.utc.slice(11, 16)}`}
+              </p>
+              <h2
+                id="natal-result-title"
+                className="atlas-page-title natal-result__title"
+                ref={resultHeading}
+                tabIndex={-1}
+              >
+                {copy.resultTitle}
+              </h2>
+            </div>
+            {saveStatus && (
+              <p role="status" className="natal-result__saved">
+                {saveStatus}
+              </p>
+            )}
+          </header>
+
+          <div className="natal-big-three" aria-label={copy.featureBigThree}>
+            {bigThree.map((item) => (
+              <article className="natal-big-three__card" key={item.key}>
+                <span className="natal-big-three__glyph" aria-hidden="true">
+                  {item.glyph}
+                </span>
+                <div>
+                  <h3 className="natal-big-three__label">{item.label}</h3>
+                  {item.placement ? (
+                    <>
+                      <p className="natal-big-three__sign">
+                        {term(item.placement.sign)}
+                      </p>
+                      <p className="natal-big-three__note">
+                        {[
+                          degreeLabel(item.placement),
+                          houseLabel(item.placement.house),
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                      {item.placement.uncertain && (
+                        <p className="natal-big-three__note natal-big-three__note--warn">
+                          {copy.moonMayChange}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p className="natal-big-three__sign natal-big-three__sign--muted">
+                        —
+                      </p>
+                      <p className="natal-big-three__note">
+                        {copy.risingUnavailable}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="natal-result__grid">
+            <div className="natal-result__wheel">
+              <NatalChartWheel chart={chart} details={false} />
+            </div>
+            <div className="natal-tabs">
+              <div
+                className="natal-tabs__list"
+                role="tablist"
+                aria-label={copy.tabsLabel}
+              >
+                {chartTabs.map((key) => (
+                  <button
+                    key={key}
+                    id={`chart-tab-${key}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === key}
+                    aria-controls={
+                      tab === key ? `chart-panel-${key}` : undefined
+                    }
+                    tabIndex={tab === key ? 0 : -1}
+                    onClick={() => setTab(key)}
+                    onKeyDown={moveTab}
+                  >
+                    {key === "planets"
+                      ? copy.tabPlanets
+                      : key === "houses"
+                        ? copy.tabHouses
+                        : copy.tabAspects}
+                  </button>
+                ))}
+              </div>
+              <div
+                id={`chart-panel-${tab}`}
+                role="tabpanel"
+                aria-labelledby={`chart-tab-${tab}`}
+                tabIndex={0}
+                className="natal-tabs__panel"
+              >
+                {tab === "planets" && (
+                  <ul className="natal-rows">
+                    {chart.placements.map((p) => (
+                      <li key={p.name}>
+                        <span className="natal-rows__glyph" aria-hidden="true">
+                          {(planetGlyphs[p.name] ?? "·") + TEXT_GLYPH}
+                        </span>
+                        <span className="natal-rows__name">{term(p.name)}</span>
+                        <span className="natal-rows__position">
+                          {degreeLabel(p)}{" "}
+                          <span aria-hidden="true">{signGlyph(p.sign)}</span>
+                          <span className="sr-only">{term(p.sign)}</span>
+                        </span>
+                        <span className="natal-rows__meta">
+                          {houseLabel(p.house)}
+                          {p.retrograde && (
+                            <>
+                              {" "}
+                              <span aria-hidden="true">℞</span>
+                              <span className="sr-only">{copy.retrograde}</span>
+                            </>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {tab === "houses" &&
+                  (chart.houses.length ? (
+                    <ul className="natal-rows">
+                      {chart.houses.map((h) => (
+                        <li key={h.house}>
+                          <span className="natal-rows__glyph natal-rows__glyph--number">
+                            {h.house}
+                          </span>
+                          <span className="natal-rows__name">
+                            {term(h.sign)}
+                          </span>
+                          <span className="natal-rows__position">
+                            {degreeLabel(h)}{" "}
+                            <span aria-hidden="true">{signGlyph(h.sign)}</span>
+                          </span>
+                          <span className="natal-rows__meta" />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="natal-tabs__empty">
+                      {copy.housesUnavailable}
+                    </p>
+                  ))}
+                {tab === "aspects" &&
+                  (chart.aspects.length ? (
+                    <ul className="natal-rows">
+                      {chart.aspects.map((a, i) => (
+                        <li key={i}>
+                          <span
+                            className="natal-rows__glyph"
+                            aria-hidden="true"
+                          >
+                            {aspectGlyphs[a.type]}
+                          </span>
+                          <span className="natal-rows__name">
+                            {term(a.body1)} – {term(a.body2)}
+                          </span>
+                          <span className="natal-rows__position natal-rows__position--sans">
+                            {sentence(term(a.type))}
+                          </span>
+                          <span className="natal-rows__meta">
+                            {a.orb.toFixed(1)}°
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="natal-tabs__empty">{copy.aspectsEmpty}</p>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          <article
+            className="natal-interpretation"
+            aria-labelledby="natal-interpretation-title"
+            aria-live="polite"
+          >
+            <div className="natal-interpretation__aside">
+              <p className="atlas-kicker">{copy.interpretationKicker}</p>
+              <h2
+                id="natal-interpretation-title"
+                className="natal-interpretation__title"
+              >
+                {copy.interpretationTitle}
+              </h2>
+              {savedProfileId && (
+                <div className="natal-interpretation__actions">
+                  <Link
+                    className="atlas-button"
+                    href={`/account/birth-profiles/${savedProfileId}`}
+                  >
+                    {copy.openSavedChart}
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div className="natal-interpretation__body">
+              {interpretationLoading ? (
+                <div className="natal-interpretation__loading">
+                  <div className="natal-interpretation__loading-row">
+                    <p>{copy.interpretationLoading}</p>
+                    <span>{interpretationProgress}%</span>
                   </div>
                   <div
-                    className="mt-3 h-2 overflow-hidden rounded-full bg-[#142338]"
+                    className="atlas-progress"
                     role="progressbar"
-                    aria-label="Interpretation generation progress"
+                    aria-label={copy.interpretationProgress}
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={interpretationProgress}
                   >
-                    <div
-                      className="h-full rounded-full bg-[#c9a75d] transition-[width] duration-500 ease-out"
-                      style={{ width: `${interpretationProgress}%` }}
-                    />
+                    <span style={{ width: `${interpretationProgress}%` }} />
                   </div>
-                  <p className="text-sm text-[#b9b2a3] mt-2">
-                    The calculated chart remains available while the written
-                    analysis is prepared.
+                  <p className="natal-interpretation__hint">
+                    {copy.interpretationWaiting}
                   </p>
                 </div>
               ) : interpretation ? (
-                <div className="prose mt-4">
+                <div className="natal-prose">
                   <NatalInterpretation text={interpretation} />
                 </div>
               ) : interpretationError ? (
-                <div
-                  role="alert"
-                  className="mt-3 p-3 rounded-lg border border-[#8b5b53] bg-[#2b1718]"
-                >
+                <div role="alert" className="atlas-public-alert">
                   <p>{interpretationError}</p>
                 </div>
               ) : (
-                <p className="mt-3 text-[#b9b2a3]">
-                  Submit valid birth information to generate a written
-                  interpretation.
+                <p className="natal-interpretation__hint">
+                  {copy.interpretationEmpty}
                 </p>
               )}
-            </section>
-            {!account && (
-              <aside className="chart-reveal-continuation">
-                <div className="chart-reveal-continuation__intro">
-                  <p className="section-kicker">
-                    {pack.messages.chartReveal.kicker}
-                  </p>
-                  <h2>{pack.messages.chartReveal.title}</h2>
-                  <p>{pack.messages.chartReveal.copy}</p>
-                  {interpretation && (
-                    <blockquote>
-                      <span>{pack.messages.chartReveal.hookLabel}</span>“
-                      {interpretationHook(interpretation)}”
-                    </blockquote>
+            </div>
+          </article>
+
+          <details className="natal-method">
+            <summary>{copy.methodTitle}</summary>
+            <div className="natal-method__body">
+              <p>
+                {copy.methodCopy
+                  .replace("{zodiac}", chart.calculation.zodiac)
+                  .replace("{houses}", chart.calculation.houseSystem)
+                  .replace("{ephemeris}", chart.calculation.ephemeris)}
+              </p>
+              <p className="natal-method__mono">
+                {Object.entries(chart.calculation.aspectOrbs)
+                  .map(
+                    ([name, orb]) =>
+                      `${aspectGlyphs[name as keyof typeof aspectGlyphs] ?? name} ${orb}°`,
+                  )
+                  .join(" · ")}
+                {" · "}UTC {chart.utc} · {chart.input.place.timeZone}
+              </p>
+              <p>{copy.precisionCopy}</p>
+            </div>
+          </details>
+
+          {!account && (
+            <aside
+              className="natal-reveal"
+              aria-labelledby="natal-reveal-title"
+            >
+              <div>
+                <p className="atlas-kicker">{copy.revealKicker}</p>
+                <h2 id="natal-reveal-title" className="natal-reveal__title">
+                  {copy.revealTitle}
+                </h2>
+                <p>{copy.revealCopy}</p>
+                {interpretation && (
+                  <blockquote>
+                    <span>{pack.messages.chartReveal.hookLabel}</span>“
+                    {interpretationHook(interpretation)}”
+                  </blockquote>
+                )}
+              </div>
+              <div className="natal-reveal__offer">
+                <p className="natal-reveal__plan">
+                  {copy.revealPlan.replace(
+                    "{price}",
+                    ATLAS_PRICES.month.display,
                   )}
+                </p>
+                <button
+                  className="atlas-button"
+                  type="button"
+                  data-web-only
+                  disabled={
+                    checkoutBusy || !interpretation || !interpretationProvenance
+                  }
+                  onClick={continueWithAtlas}
+                >
+                  {checkoutBusy
+                    ? pack.messages.chartReveal.openingCheckout
+                    : copy.revealContinue}
+                </button>
+                {checkoutError && <p role="alert">{checkoutError}</p>}
+                <div className="natal-reveal__links">
+                  <Link href="/auth/create-account" className="atlas-link">
+                    {pack.messages.chartReveal.freeAccount}
+                  </Link>
+                  <Link href="/auth/login" className="atlas-link">
+                    {pack.messages.chartReveal.signIn}
+                  </Link>
+                  <Link href="/membership" className="atlas-link">
+                    {pack.messages.chartReveal.compare}
+                  </Link>
                 </div>
-                <div className="chart-reveal-continuation__offer">
-                  <p className="chart-reveal-continuation__plan">
-                    {pack.messages.chartReveal.personalLabel}
-                  </p>
-                  <p>{pack.messages.chartReveal.personalCopy}</p>
-                  <button
-                    className="button-primary"
-                    type="button"
-                    disabled={
-                      checkoutBusy ||
-                      !interpretation ||
-                      !interpretationProvenance
-                    }
-                    onClick={continueWithPersonal}
-                  >
-                    {checkoutBusy
-                      ? pack.messages.chartReveal.openingCheckout
-                      : pack.messages.chartReveal.continuePersonal}
-                  </button>
-                  {checkoutError && <p role="alert">{checkoutError}</p>}
-                  <div className="chart-reveal-continuation__free-path">
-                    <Link href="/auth/create-account" className="text-link">
-                      {pack.messages.chartReveal.freeAccount}
-                    </Link>
-                    <Link href="/auth/login" className="text-link">
-                      {pack.messages.chartReveal.signIn}
-                    </Link>
-                    <Link href="/membership" className="text-link">
-                      {pack.messages.chartReveal.compare}
-                    </Link>
-                  </div>
-                </div>
-              </aside>
-            )}
-          </div>
-        )}
-        <section className="chart-method-notes">
-          <article>
-            <p className="section-kicker">The moment you arrived</p>
-            <h2>Your first sky belongs to you alone</h2>
-            <p>
-              Date, time, and birthplace reveal the rising sign, houses, and
-              planetary pattern held at your first breath—the celestial
-              signature from which your atlas unfolds.
-            </p>
-          </article>
-          <article>
-            <p className="section-kicker">Ancient language, personal meaning</p>
-            <h2>Every placement joins the greater story</h2>
-            <p>
-              Planets reveal the forces at work, signs reveal how they move, and
-              houses reveal where their influence enters daily life. Together
-              they form a reading no single placement can tell alone.
-            </p>
-          </article>
-          <article>
-            <p className="section-kicker">A living atlas</p>
-            <h2>Return whenever the path changes</h2>
-            <p>
-              Begin with your free natal chart, then explore vocation, renewal,
-              and the changing celestial weather through readings shaped around
-              your own sky.
-            </p>
-          </article>
+              </div>
+            </aside>
+          )}
         </section>
-      </div>
+      )}
+
+      {!account && (
+        <div className="atlas-shell home-marketing">
+          <LandingPathways previewHref="/auth/create-account" />
+          <LandingPlanStrip />
+        </div>
+      )}
     </main>
   );
 }

@@ -24,6 +24,7 @@ import {
 import { resolveRegisteredDailyReadingEntitlement } from "@/lib/daily-readings/entitlement";
 import { z } from "zod";
 import { loadRecentContentContext } from "@/lib/content-similarity/recent-context";
+import { suppressMorningPushForToday } from "@/lib/push/morning";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -152,12 +153,14 @@ export async function POST(request: Request) {
         resetsAt: z.string().optional(),
       })
       .parse(reservation);
-    if (access.status === "cached" && access.readingId)
+    if (access.status === "cached" && access.readingId) {
+      void suppressMorningPushForToday(userId);
       return json({
         readingId: access.readingId,
         status: "completed",
         cacheStatus: "cached",
       });
+    }
     if (access.status === "in_progress")
       return json(
         {
@@ -251,6 +254,7 @@ export async function POST(request: Request) {
     }
     if (insertError)
       return json({ error: "The daily reading could not be saved." }, 500);
+    void suppressMorningPushForToday(userId);
     return json(
       { readingId, status: "completed", cacheStatus: "generated" },
       201,

@@ -12,6 +12,10 @@
     {
       "path": "/api/internal/pending-chart-claims",
       "schedule": "17 * * * *"
+    },
+    {
+      "path": "/api/internal/morning-push",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
+import "@/app/styles/atlas-public.css";
 
 export const metadata = createPageMetadata({
   title: "Our Astrological Method",
@@ -16,10 +17,12 @@ export const metadata = createPageMetadata({
 
 export default function MethodPage() {
   return (
-    <main className="page-shell method-page">
-      <header className="method-page__hero">
-        <p className="eyebrow">Our method</p>
-        <h1>The sky is measured. The chart is read.</h1>
+    <main className="atlas-shell public-page">
+      <header className="public-page__hero">
+        <p className="atlas-kicker">Our method</p>
+        <h1 className="atlas-page-title">
+          The sky is measured. The chart is read.
+        </h1>
         <p>
           Celestial Atlas works within Western tropical astrology, joining the
           visible order of the heavens to the ancient language of planets,
@@ -27,10 +30,10 @@ export default function MethodPage() {
         </p>
       </header>
 
-      <section className="method-page__principles">
-        <article>
-          <span>☉</span>
-          <p className="section-kicker">The zodiac</p>
+      <section className="public-grid">
+        <article className="public-card">
+          <span aria-hidden="true">☉</span>
+          <p className="atlas-kicker">The zodiac</p>
           <h2>Tropical signs</h2>
           <p>
             The zodiac begins at the March equinox and follows the twelve signs
@@ -38,9 +41,9 @@ export default function MethodPage() {
             temperament, and way of moving through life.
           </p>
         </article>
-        <article>
-          <span>↟</span>
-          <p className="section-kicker">The earthly horizon</p>
+        <article className="public-card">
+          <span aria-hidden="true">↟</span>
+          <p className="atlas-kicker">The earthly horizon</p>
           <h2>Ascendant and houses</h2>
           <p>
             When birth time is known, the Ascendant opens the chart and twelve
@@ -49,9 +52,9 @@ export default function MethodPage() {
             calling.
           </p>
         </article>
-        <article>
-          <span>△</span>
-          <p className="section-kicker">The conversation</p>
+        <article className="public-card">
+          <span aria-hidden="true">△</span>
+          <p className="atlas-kicker">The conversation</p>
           <h2>Major aspects</h2>
           <p>
             Conjunctions, oppositions, trines, squares, and sextiles reveal how
@@ -61,10 +64,12 @@ export default function MethodPage() {
         </article>
       </section>
 
-      <section className="method-page__reading">
+      <section className="public-steps">
         <div>
-          <p className="eyebrow">From first breath to personal atlas</p>
-          <h2>Every reading begins with the whole chart.</h2>
+          <p className="atlas-kicker">From first breath to personal atlas</p>
+          <h2 className="atlas-section-title">
+            Every reading begins with the whole chart.
+          </h2>
         </div>
         <ol>
           <li>
@@ -92,8 +97,8 @@ export default function MethodPage() {
         </ol>
       </section>
 
-      <aside className="method-page__unknown-time">
-        <p className="section-kicker">When birth time is unknown</p>
+      <aside className="public-callout">
+        <p className="atlas-kicker">When birth time is unknown</p>
         <h2>The planets still speak, but the horizon remains veiled.</h2>
         <p>
           Celestial Atlas preserves the planetary and aspect pattern while
@@ -102,8 +107,8 @@ export default function MethodPage() {
         </p>
       </aside>
 
-      <aside className="method-page__unknown-time">
-        <p className="section-kicker">A private celestial record</p>
+      <aside className="public-callout">
+        <p className="atlas-kicker">A private celestial record</p>
         <h2>Privacy belongs to the method.</h2>
         <p>
           Celestial Atlas is private by design. Personal charts and readings are
@@ -113,11 +118,11 @@ export default function MethodPage() {
         </p>
       </aside>
 
-      <div className="method-page__actions">
-        <Link href="/#chart" className="button-primary">
+      <div className="public-actions">
+        <Link href="/#chart" className="atlas-button">
           Create my free natal chart
         </Link>
-        <Link href="/reports" className="button-quiet">
+        <Link href="/reports" className="atlas-button-ghost">
           Explore personal readings
         </Link>
       </div>

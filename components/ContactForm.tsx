@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import "@/app/styles/atlas-public.css";
 
 declare global {
   interface Window {
@@ -55,12 +56,12 @@ export function ContactForm() {
     else setStatus("error");
   }
   return (
-    <form className="contact-form" onSubmit={submit}>
-      <label>
+    <form className="public-form" onSubmit={submit}>
+      <label className="atlas-field">
         Name
         <input name="name" required maxLength={100} autoComplete="name" />
       </label>
-      <label>
+      <label className="atlas-field">
         Email
         <input
           name="email"
@@ -70,7 +71,7 @@ export function ContactForm() {
           autoComplete="email"
         />
       </label>
-      <label>
+      <label className="atlas-field">
         Contact reason
         <select name="reason" required defaultValue="general">
           <option value="general">General question</option>
@@ -82,7 +83,7 @@ export function ContactForm() {
           <option value="other">Other</option>
         </select>
       </label>
-      <label className="contact-form__message">
+      <label className="atlas-field public-form__wide">
         Message
         <textarea
           name="message"
@@ -92,15 +93,18 @@ export function ContactForm() {
           rows={9}
         />
       </label>
-      <label className="contact-form__honeypot" aria-hidden="true">
+      <label className="public-form__honeypot" aria-hidden="true">
         Website
         <input name="website" tabIndex={-1} autoComplete="off" />
       </label>
-      <button className="button-primary" disabled={status === "sending"}>
+      <button
+        className="atlas-button public-form__submit"
+        disabled={status === "sending"}
+      >
         {status === "sending" ? "Sending…" : "Send message"}
       </button>
       <p
-        className="contact-form__status"
+        className="public-form__status"
         role="status"
         data-success={status === "sent"}
       >

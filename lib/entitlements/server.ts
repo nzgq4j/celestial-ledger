@@ -40,7 +40,8 @@ export async function capabilityDecisionForUser(
   return decideCapability({
     plans: [
       { key: "free", rank: 0, active: true },
-      { key: "personal", rank: 10, active: true },
+      // Retired: never effective, even for historical rows.
+      { key: "personal", rank: 10, active: false },
       { key: "premium", rank: 20, active: true },
     ],
     planCapabilities: (capabilityRows ?? []).map(

@@ -10,6 +10,10 @@ type HoroscopeDayArcProps = {
   compact?: boolean;
 };
 
+/**
+ * Morning, midday and evening rows. Each row is keyed by its period so the
+ * layout never encodes a reading "intensity".
+ */
 export function HoroscopeDayArc({
   parts,
   labels,
@@ -19,26 +23,20 @@ export function HoroscopeDayArc({
 }: HoroscopeDayArcProps) {
   return (
     <figure
-      className={`horoscope-day-arc${compact ? " horoscope-day-arc--compact" : ""}`}
+      className={`sign-arc${compact ? " sign-arc--compact" : ""}`}
       aria-label={heading}
     >
-      {!compact && (
-        <figcaption>
-          <p className="section-kicker">{heading}</p>
-          {introduction && <p>{introduction}</p>}
-        </figcaption>
+      {introduction && (
+        <figcaption className="sr-only">{introduction}</figcaption>
       )}
       <ol>
         {parts.map((part) => (
           <li key={part.period} data-period={part.period}>
-            <span className="horoscope-day-arc__signal" aria-hidden="true">
-              <span />
-            </span>
-            <div>
-              <p>{labels[part.period]}</p>
+            <span className="sign-arc__when">{labels[part.period]}</span>
+            <span className="sign-arc__text">
               <strong>{part.theme}</strong>
               {!compact && <span>{part.guidance}</span>}
-            </div>
+            </span>
           </li>
         ))}
       </ol>

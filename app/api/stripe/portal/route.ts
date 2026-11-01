@@ -1,5 +1,6 @@
 import { commerceFlags } from "@/lib/commerce/flags";
 import { isSameOrigin, PRIVATE_RESPONSE_HEADERS } from "@/lib/api-security";
+import { GOOGLE_PLAY_SUBSCRIPTIONS_URL } from "@/lib/membership/plans";
 import { stripeClient } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +25,20 @@ export async function POST(request: Request) {
     return json({ error: "Sign in required." }, 401);
   if (typeof email !== "string" || !email.trim())
     return json({ error: "Your account email could not be verified." }, 422);
-  const { data: customer } = await createAdminClient()
+  const admin = createAdminClient();
+  // Google Play subscriptions are managed in Google Play, not in Stripe.
+  const { data: current } = await admin
+    .from("account_subscriptions")
+    .select("provider")
+    .eq("user_id", userId)
+    .in("status", ["incomplete", "trialing", "active", "past_due", "paused"])
+    .maybeSingle();
+  if (current?.provider === "google_play")
+    return json({
+      url: GOOGLE_PLAY_SUBSCRIPTIONS_URL,
+      provider: "google_play",
+    });
+  const { data: customer } = await admin
     .from("billing_customers")
     .select("stripe_customer_id")
     .eq("user_id", userId)

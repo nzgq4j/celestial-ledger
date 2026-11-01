@@ -10,6 +10,8 @@ import {
   type SpaceWeather,
 } from "@/lib/clock/domain";
 import { ClockDial } from "./ClockDial";
+import { localizeAstroTerm } from "@/lib/reports/evidence-label";
+import type { LocaleTag } from "@/lib/i18n/config";
 import {
   explainEvent,
   explainObservation,
@@ -26,7 +28,48 @@ const formatDate = (utc: string) =>
     timeZone: "UTC",
   }) + " UTC";
 
-export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
+/** English fallback for the stat cards; pages pass the reader's locale pack. */
+const defaultClockCopy: Record<string, string> = {
+  statsLabel: "The sky at this moment",
+  moon: "Moon",
+  illuminated: "{percent}% illuminated",
+  sun: "Sun",
+  sunPosition: "{degree}° {sign}",
+  season: "Season",
+  northern: "Northern hemisphere",
+  southern: "Southern hemisphere",
+  hemisphere: "Season hemisphere",
+  winter: "Winter",
+  spring: "Spring",
+  summer: "Summer",
+  autumn: "Autumn",
+  retrograde: "Retrograde",
+  allDirect: "All direct",
+  allDirectNote: "No planet is retrograde",
+  retrogradeCount: "{count} of {total} planets",
+  next: "Next in the sky",
+  noNext: "Nothing further within the supported range",
+  spaceWeather: "Space weather",
+  weatherOff: "Off",
+  weatherOffNote: "Turn on NOAA observations below",
+  weatherPending: "Checking NOAA…",
+  kpNote: "Planetary K-index · observed",
+};
+
+const fill = (template: string, values: Record<string, string | number>) =>
+  template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in values ? String(values[key]) : match,
+  );
+
+export function CelestialClock({
+  initial,
+  copy = defaultClockCopy,
+  locale = "en-GB",
+}: {
+  initial: ClockSnapshot;
+  copy?: Record<string, string>;
+  locale?: LocaleTag;
+}) {
   const [snapshot, setSnapshot] = useState(initial);
   const [live, setLive] = useState(true);
   const [tick, setTick] = useState(new Date(initial.utc));
@@ -208,14 +251,21 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
             id: snapshot.moon.id,
             utc: viewing,
           };
+  const future = snapshot.nextEvents;
   const seasons = snapshot.calendar.events.filter((e) => e.kind === "season");
   const seasonIndex = seasons.filter((e) => e.utc <= viewing).length % 4;
   const season = (
     hemisphere === "north"
-      ? ["Winter", "Spring", "Summer", "Autumn"]
-      : ["Summer", "Autumn", "Winter", "Spring"]
+      ? [copy.winter, copy.spring, copy.summer, copy.autumn]
+      : [copy.summer, copy.autumn, copy.winter, copy.spring]
   )[seasonIndex];
-  const future = snapshot.nextEvents;
+  const sun = snapshot.planets.find((p) => p.name === "Sun");
+  const retrogrades = snapshot.planets.filter((p) => p.retrograde);
+  const nextEvent = future[0];
+  const kpFeed = showWeather
+    ? weather?.feeds.find((feed) => feed.kind === "kp")
+    : undefined;
+  const latestKp = kpFeed?.observations.filter((o) => o.utc <= viewing).at(-1);
   const daysInYear =
     (Date.UTC(snapshot.year + 1, 0, 1) - Date.UTC(snapshot.year, 0, 1)) /
     86_400_000;
@@ -314,40 +364,112 @@ export function CelestialClock({ initial }: { initial: ClockSnapshot }) {
           </details>
         </div>
         <aside className="clock-inspector" aria-label="Clock details">
-          <div className="clock-now">
-            <p>
-              {new Date(viewing).toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                timeZone: "UTC",
-              })}
-            </p>
-            <h2>{snapshot.moon.label}</h2>
-            <p data-evidence-id={snapshot.moon.id}>
-              {(snapshot.moon.illuminated * 100).toFixed(1)}% illuminated
-            </p>
-            <div
-              className="clock-illumination"
-              aria-hidden="true"
-              data-evidence-id={snapshot.moon.id}
-            >
-              <span style={{ width: `${snapshot.moon.illuminated * 100}%` }} />
-            </div>
-          </div>
-          <div className="clock-season" data-evidence-id={snapshot.calendar.id}>
-            <strong>{season}</strong>
-            <label>
-              <span className="sr-only">Season hemisphere</span>
-              <select
-                value={hemisphere}
-                onChange={(e) => setHemisphere(e.target.value)}
+          <div
+            className="clock-stats"
+            aria-label={copy.statsLabel}
+            role="group"
+          >
+            <div className="clock-stat clock-now">
+              <p className="clock-stat__label">{copy.moon}</p>
+              <p className="clock-stat__value">{snapshot.moon.label}</p>
+              <p
+                className="clock-stat__note"
+                data-evidence-id={snapshot.moon.id}
               >
-                <option value="north">Northern hemisphere</option>
-                <option value="south">Southern hemisphere</option>
-              </select>
-            </label>
+                {fill(copy.illuminated, {
+                  percent: (snapshot.moon.illuminated * 100).toFixed(1),
+                })}
+              </p>
+              <div
+                className="clock-illumination"
+                aria-hidden="true"
+                data-evidence-id={snapshot.moon.id}
+              >
+                <span
+                  style={{ width: `${snapshot.moon.illuminated * 100}%` }}
+                />
+              </div>
+            </div>
+            {sun && (
+              <div className="clock-stat" data-evidence-id={sun.id}>
+                <p className="clock-stat__label">{copy.sun}</p>
+                <p className="clock-stat__value">
+                  {localizeAstroTerm(sun.sign, locale)}
+                </p>
+                <p className="clock-stat__note">
+                  {fill(copy.sunPosition, {
+                    degree: sun.degree.toFixed(1),
+                    sign: localizeAstroTerm(sun.sign, locale),
+                  })}
+                </p>
+              </div>
+            )}
+            <div
+              className="clock-stat clock-season"
+              data-evidence-id={snapshot.calendar.id}
+            >
+              <p className="clock-stat__label">{copy.season}</p>
+              <p className="clock-stat__value">{season}</p>
+              <label>
+                <span className="sr-only">{copy.hemisphere}</span>
+                <select
+                  value={hemisphere}
+                  onChange={(e) => setHemisphere(e.target.value)}
+                >
+                  <option value="north">{copy.northern}</option>
+                  <option value="south">{copy.southern}</option>
+                </select>
+              </label>
+            </div>
+            <div className="clock-stat">
+              <p className="clock-stat__label">{copy.retrograde}</p>
+              <p className="clock-stat__value">
+                {retrogrades.length
+                  ? retrogrades
+                      .map((p) => localizeAstroTerm(p.name, locale))
+                      .join(", ")
+                  : copy.allDirect}
+              </p>
+              <p className="clock-stat__note">
+                {retrogrades.length
+                  ? fill(copy.retrogradeCount, {
+                      count: retrogrades.length,
+                      total: snapshot.planets.length,
+                    })
+                  : copy.allDirectNote}
+              </p>
+            </div>
+            <div className="clock-stat">
+              <p className="clock-stat__label">{copy.next}</p>
+              {nextEvent ? (
+                <>
+                  <p className="clock-stat__value">{nextEvent.title}</p>
+                  <p className="clock-stat__note">
+                    {formatDate(nextEvent.utc)}
+                  </p>
+                </>
+              ) : (
+                <p className="clock-stat__note">{copy.noNext}</p>
+              )}
+            </div>
+            <div className="clock-stat">
+              <p className="clock-stat__label">{copy.spaceWeather}</p>
+              {latestKp && kpFeed ? (
+                <>
+                  <p className="clock-stat__value">Kp {latestKp.value}</p>
+                  <p className="clock-stat__note">{copy.kpNote}</p>
+                </>
+              ) : showWeather ? (
+                <p className="clock-stat__note">{copy.weatherPending}</p>
+              ) : (
+                <>
+                  <p className="clock-stat__value">{copy.weatherOff}</p>
+                  <p className="clock-stat__note">
+                    <a href="#clock-weather-title">{copy.weatherOffNote}</a>
+                  </p>
+                </>
+              )}
+            </div>
           </div>
           <section
             className="clock-detail"

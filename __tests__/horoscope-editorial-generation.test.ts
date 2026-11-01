@@ -57,16 +57,19 @@ describe("generated horoscope editorial editions", () => {
     expect(detail).toContain("reading.wellbeing");
   });
 
-  it("uses a clean two-line horoscope title over the landing hero", () => {
-    const styles = fs.readFileSync("app/globals.css", "utf8");
-    expect(detail).toContain("<h1>{reading.sign}</h1>");
-    expect(detail).toContain('className="horoscope-detail__subtitle"');
+  it("uses a clean sign title inside the shared horoscope layout", () => {
+    expect(detail).toContain("{reading.sign} <em>{copy.dailyHoroscope}</em>");
+    expect(detail).toContain('className="atlas-page-title"');
     expect(detail).not.toContain("{reading.sign} —");
     expect(detail).not.toContain("dailyHoroscope} —");
     expect(listing).not.toContain("{copy.title} —");
+    expect(listing).toContain("{copy.pageTitle}");
     expect(rootLayout).toContain("template: `%s | ${settings.seo.title}`");
-    expect(styles).toContain(".horoscope-detail > header {");
-    expect(styles).toContain('url("/hero1.png") center 46% / cover no-repeat');
+    for (const page of [listing, detail]) {
+      expect(page).toContain("<HoroscopeSignPicker");
+      expect(page).toContain("<HoroscopeUpsell");
+    }
+    expect(detail).toContain("selectedSlug={reading.slug}");
   });
 
   it("keeps a validated current-day edition visible during regeneration", () => {

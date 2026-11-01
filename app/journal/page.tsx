@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createPageMetadata } from "@/lib/seo";
 import { journalFeaturedImage } from "@/lib/journal/featured-images";
+import "@/app/styles/atlas-public.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = createPageMetadata({
@@ -23,20 +24,20 @@ export default async function JournalPage() {
     .lte("published_at", new Date().toISOString())
     .order("published_at", { ascending: false });
   return (
-    <main className="page-shell journal-page">
-      <header className="journal-hero">
-        <p className="eyebrow">Celestial Journal</p>
-        <h1>Dispatches from the living sky</h1>
+    <main className="atlas-shell public-page">
+      <header className="public-page__hero">
+        <p className="atlas-kicker">Celestial Journal</p>
+        <h1 className="atlas-page-title">Dispatches from the living sky</h1>
         <p>
           Essays on planetary movements, natal patterns, numerology, ritual, and
           the ancient correspondences that shape a personal atlas.
         </p>
       </header>
-      <section className="journal-grid">
+      <section className="public-journal">
         {(posts ?? []).map((post) => (
-          <article key={post.id}>
+          <article key={post.id} className="public-journal__card">
             <Link
-              className="journal-card__image"
+              className="public-journal__image"
               href={`/journal/${post.slug}`}
               aria-label={`Read ${post.title}`}
             >
@@ -48,7 +49,7 @@ export default async function JournalPage() {
                 sizes="(max-width: 760px) 100vw, 50vw"
               />
             </Link>
-            <p className="section-kicker">
+            <p className="atlas-meta">
               {post.published_at
                 ? new Date(post.published_at).toLocaleDateString("en-GB", {
                     day: "numeric",
@@ -62,11 +63,13 @@ export default async function JournalPage() {
             </h2>
             <p>{post.excerpt}</p>
             <small>By {post.author_name}</small>
-            <Link href={`/journal/${post.slug}`}>Read the entry →</Link>
+            <Link className="atlas-link" href={`/journal/${post.slug}`}>
+              Read the entry <span aria-hidden="true">→</span>
+            </Link>
           </article>
         ))}
         {!posts?.length && (
-          <p className="journal-empty">
+          <p className="public-note">
             The first journal entry is being prepared.
           </p>
         )}

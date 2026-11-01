@@ -20,18 +20,20 @@ const cleanupRoute = readFileSync(
   "utf8",
 );
 const reveal = readFileSync("components/HoroscopeApp.tsx", "utf8");
+const sessionParams = readFileSync("lib/stripe/checkout.ts", "utf8");
 const migration = readFileSync(
   "supabase/migrations/20260808113000_checkout_led_signup.sql",
   "utf8",
 );
 
 describe("checkout-led signup", () => {
-  it("presents one Personal continuation with a dignified free path", () => {
-    expect(reveal).toContain('planKey: "personal"');
+  it("presents one Atlas continuation with a dignified free path", () => {
+    // Requires the chart reveal to request Atlas (`premium`), never `personal`.
+    expect(reveal).toMatch(/planKey: (?:"premium"|ATLAS_PLAN_KEY)/);
     expect(reveal).toContain("interpretationHook(interpretation)");
     expect(reveal).toContain('href="/auth/create-account"');
     expect(reveal).toContain("pack.messages.chartReveal.freeAccount");
-    expect(reveal).not.toContain('planKey: "premium"');
+    expect(reveal).not.toContain('planKey: "personal"');
   });
 
   it("carries the revealed chart and reading into checkout without re-entry", () => {
@@ -47,11 +49,21 @@ describe("checkout-led signup", () => {
     expect(checkoutRoute).toContain(
       "email: z.string().trim().email().max(254)",
     );
-    expect(checkoutRoute).toContain("customer_email: input.email");
+    expect(checkoutRoute).toContain("customerEmail: input.email");
+    expect(sessionParams).toContain("customer_email: input.customerEmail");
   });
 
   it("allows a fully discounted subscription to complete without card entry", () => {
-    expect(checkoutRoute).toContain('payment_method_collection: "if_required"');
+    expect(sessionParams).toContain(
+      'payment_method_collection: trialDays ? "always" : "if_required"',
+    );
+  });
+
+  it("checks out Atlas by interval and records the interval on the pending claim", () => {
+    expect(checkoutRoute).toContain("planKey: z.literal(ATLAS_PLAN_KEY)");
+    expect(checkoutRoute).toContain(
+      "requested_billing_interval: price.interval",
+    );
   });
 
   it("uses opaque single-use claim tokens and stable server comparison", () => {
@@ -109,17 +121,20 @@ describe("checkout-led signup", () => {
     expect(webhookRoute).toContain("duplicate_subscription_ignored");
   });
 
-  it("reconciles an existing Stripe line item to the plan selected at checkout", () => {
+  it("reconciles an existing Stripe line item to the price selected at checkout", () => {
     expect(claimRoute).toContain("requested_plan_key");
     expect(claimRoute).toContain(
-      "checkoutPriceId !== requestedPlan.stripe_price_id",
+      "checkoutPlanKey !== pending.requested_plan_key",
     );
-    expect(claimRoute).toContain(
-      "existingItem.price.id !== requestedPlan.stripe_price_id",
-    );
+    expect(claimRoute).toContain("existingItem.price.id !== checkoutPriceId");
     expect(claimRoute).toContain('proration_behavior: "none"');
+    expect(claimRoute).toContain("celestial_atlas_plan_key: checkoutPlanKey");
+  });
+
+  it("recognises an existing Google Play membership without touching Stripe", () => {
     expect(claimRoute).toContain(
-      "celestial_atlas_plan_key: requestedPlan.plan_key",
+      "stripe_subscription_id.is.null,stripe_subscription_id.neq.",
     );
+    expect(claimRoute).toContain('existingSubscription.provider === "stripe"');
   });
 });

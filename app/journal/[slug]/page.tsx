@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { StructuredData } from "@/components/StructuredData";
 import { journalFeaturedImage } from "@/lib/journal/featured-images";
 import { createPageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
+import "@/app/styles/atlas-public.css";
 
 export const revalidate = 300;
 
@@ -54,7 +55,7 @@ export default async function JournalPostPage({
     .map((item) => item.trim())
     .filter(Boolean);
   return (
-    <main className="page-shell journal-entry">
+    <main className="atlas-shell public-page public-entry">
       <StructuredData
         data={{
           "@context": "https://schema.org",
@@ -71,20 +72,20 @@ export default async function JournalPostPage({
           publisher: { "@type": "Organization", name: SITE_NAME },
         }}
       />
-      <Link className="horoscope-back" href="/journal">
+      <Link className="atlas-link" href="/journal">
         ← Celestial Journal
       </Link>
       <article>
         <header>
           <Image
-            className="journal-entry__featured-image"
+            className="public-entry__image"
             src={journalFeaturedImage(post.slug)}
             alt={`${post.title} featured celestial illustration`}
             width={1200}
             height={630}
             priority
           />
-          <p className="eyebrow">
+          <p className="atlas-meta">
             {post.published_at
               ? new Date(post.published_at).toLocaleDateString("en-GB", {
                   day: "numeric",
@@ -93,11 +94,11 @@ export default async function JournalPostPage({
                 })
               : ""}
           </p>
-          <h1>{post.title}</h1>
+          <h1 className="atlas-page-title">{post.title}</h1>
           <p>{post.excerpt}</p>
           <small>By {post.author_name}</small>
         </header>
-        <div className="journal-entry__body">
+        <div className="public-entry__body">
           {paragraphs.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}

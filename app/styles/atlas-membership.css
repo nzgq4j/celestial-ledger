@@ -1,0 +1,192 @@
+/*
+ * Membership page ("isMembership" in the Celestial Atlas Redesign).
+ * Builds only on the tokens and primitives in app/atlas.css.
+ */
+
+.atlas-membership {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+.atlas-membership > * {
+  min-width: 0;
+}
+
+.atlas-membership__intro {
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.atlas-membership__lede {
+  max-width: 34rem;
+  margin: 16px auto 0;
+  color: var(--atlas-soft);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.atlas-membership__tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+  max-width: 56rem;
+  margin: 40px auto 0;
+}
+
+.atlas-membership__tier {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius-lg);
+  background: var(--atlas-card);
+}
+.atlas-membership__tier--atlas {
+  border-color: var(--atlas-gold);
+  background:
+    linear-gradient(170deg, rgba(201, 167, 93, 0.12), transparent 50%),
+    var(--atlas-card);
+}
+
+.atlas-membership__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.atlas-membership__heading h2 {
+  margin: 0;
+  color: var(--atlas-ivory);
+  font-family: var(--atlas-display);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.atlas-membership__badge {
+  color: var(--atlas-gold);
+  font: 500 10px/1.4 var(--atlas-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.atlas-membership__interval {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.atlas-membership__interval .atlas-chip {
+  cursor: pointer;
+}
+.atlas-membership__saving {
+  font: 500 10px/1.4 var(--atlas-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.atlas-membership__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+}
+.atlas-membership__price span {
+  color: var(--atlas-ivory-bright);
+  font-family: var(--atlas-display);
+  font-size: 48px;
+  line-height: 1;
+}
+.atlas-membership__price small {
+  color: var(--atlas-muted);
+  font-size: 13px;
+}
+.atlas-membership__equivalent {
+  margin: -6px 0 0;
+  color: var(--atlas-muted);
+  font-size: 13px;
+}
+
+.atlas-membership__rhythm {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--atlas-radius-sm);
+  background: rgba(5, 11, 19, 0.6);
+  color: var(--atlas-paper);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.atlas-membership__features {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.atlas-membership__features li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  color: var(--atlas-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.atlas-membership__features li::before {
+  content: "✓";
+  color: var(--atlas-gold);
+}
+
+.atlas-membership__action {
+  display: grid;
+  gap: 8px;
+}
+.atlas-membership__cta,
+.atlas-membership__action .atlas-membership__cta {
+  width: 100%;
+  min-height: 48px;
+  white-space: normal;
+  text-align: center;
+}
+.atlas-membership__current {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0;
+  border: 1px dashed var(--atlas-control);
+  border-radius: 999px;
+  color: var(--atlas-muted);
+  font-size: 14px;
+}
+.atlas-membership__note,
+.atlas-membership__error {
+  margin: 0;
+  color: var(--atlas-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.atlas-membership__error {
+  color: var(--atlas-gold-light);
+}
+
+.atlas-membership__footnote {
+  margin: 24px 0 0;
+  color: var(--atlas-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .atlas-membership__tier {
+    padding: 22px;
+  }
+}

@@ -5,12 +5,15 @@ import { drawTarotCards } from "@/lib/tarot/draw";
 import {
   decideTarotAccess,
   planMeetsTarotMinimum,
+  tarotJournalAvailable,
 } from "@/lib/tarot/entitlement";
+import { tarotSpreadIncluded } from "@/lib/membership/plans";
 import { buildNarrative } from "@/lib/tarot/narrative";
 import { localizeTarotReadings } from "@/lib/tarot/reading-locales";
 import {
   configureTarotReadings,
   TAROT_READING_BLUEPRINTS,
+  TAROT_READING_CATALOGUE_SPREAD,
   TAROT_READING_PLAN_MATRIX,
 } from "@/lib/tarot/readings";
 import { TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
@@ -18,8 +21,8 @@ import { tarotCardIndex } from "@/components/TarotSymbolicCardFace";
 
 const planMatrix = {
   daily: "free",
-  ppf: "personal",
-  love5: "personal",
+  ppf: "premium",
+  love5: "premium",
   celtic: "premium",
   grand: "premium",
 } as const;
@@ -113,18 +116,18 @@ describe("tarot domain", () => {
   });
 
   it("applies spread and deck gates as independent plan axes", () => {
-    expect(TAROT_READING_PLAN_MATRIX).toEqual({
-      daily: "free",
-      ppf: "personal",
-      love5: "personal",
-      celtic: "premium",
-      grand: "premium",
-    });
-    expect(planMeetsTarotMinimum("personal", "free")).toBe(true);
-    expect(planMeetsTarotMinimum("personal", "premium")).toBe(false);
+    // Free: the one-card daily draw. Atlas (`premium`): all five spreads.
+    expect(TAROT_READING_PLAN_MATRIX).toEqual(planMatrix);
+    for (const [id, spread] of Object.entries(TAROT_READING_CATALOGUE_SPREAD))
+      expect(tarotSpreadIncluded("free", spread)).toBe(id === "daily");
+    for (const spread of Object.values(TAROT_READING_CATALOGUE_SPREAD))
+      expect(tarotSpreadIncluded("premium", spread)).toBe(true);
+    expect(planMeetsTarotMinimum("free", "free")).toBe(true);
+    expect(planMeetsTarotMinimum("free", "premium")).toBe(false);
+    expect(planMeetsTarotMinimum("premium", "premium")).toBe(true);
     expect(
       decideTarotAccess({
-        currentPlan: "personal",
+        currentPlan: "free",
         deckMinimumPlan: "premium",
         spreadMinimumPlan: "free",
       }),
@@ -135,7 +138,7 @@ describe("tarot domain", () => {
     });
     expect(
       decideTarotAccess({
-        currentPlan: "personal",
+        currentPlan: "free",
         deckMinimumPlan: "free",
         spreadMinimumPlan: "premium",
       }),
@@ -144,6 +147,22 @@ describe("tarot domain", () => {
       reason: "spread_locked",
       minimumPlan: "premium",
     });
+    expect(
+      decideTarotAccess({
+        currentPlan: "premium",
+        deckMinimumPlan: "premium",
+        spreadMinimumPlan: "premium",
+      }),
+    ).toEqual({ allowed: true });
+  });
+
+  it("never unlocks Atlas tarot for the retired Personal plan", () => {
+    expect(planMeetsTarotMinimum("personal", "premium")).toBe(false);
+    expect(planMeetsTarotMinimum("free", "personal")).toBe(false);
+    expect(planMeetsTarotMinimum("premium", "personal")).toBe(true);
+    expect(tarotJournalAvailable("personal")).toBe(false);
+    expect(tarotJournalAvailable("free")).toBe(false);
+    expect(tarotJournalAvailable("premium")).toBe(true);
   });
 
   it("builds a combined reflection from each position and orientation", () => {

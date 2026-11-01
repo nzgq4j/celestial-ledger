@@ -12,6 +12,7 @@ import {
 } from "@/lib/commerce/checkout-claims";
 import { commerceFlags } from "@/lib/commerce/flags";
 import { stripeClient } from "@/lib/stripe";
+import { planKeyForStripePrice } from "@/lib/stripe/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { supabasePublicConfig } from "@/lib/supabase/config";
 import type { Database } from "@/lib/supabase/database.types";
@@ -76,57 +77,67 @@ export async function POST(request: NextRequest) {
       pending.stripe_checkout_session_id === session.id &&
       new Date(pending.expires_at).getTime() > Date.now()
     ) {
+      // Any other current membership, from Stripe or Google Play. (A plain
+      // `neq` would skip Google Play rows, whose Stripe ID is NULL.)
       const { data: existingSubscription } = await admin
         .from("account_subscriptions")
-        .select("stripe_subscription_id,plan_key")
+        .select("stripe_subscription_id,plan_key,provider")
         .eq("user_id", pending.user_id)
         .in("status", ["active", "trialing", "past_due", "paused"])
-        .neq("stripe_subscription_id", subscription.id)
+        .or(
+          `stripe_subscription_id.is.null,stripe_subscription_id.neq.${subscription.id}`,
+        )
         .maybeSingle();
       if (existingSubscription) {
-        const { data: requestedPlan } = await admin
-          .from("commerce_plans")
-          .select("plan_key,stripe_price_id,active")
-          .eq("plan_key", pending.requested_plan_key)
-          .maybeSingle();
         const checkoutPriceId = subscription.items.data[0]?.price.id;
+        const checkoutPlanKey = await planKeyForStripePrice(
+          admin,
+          checkoutPriceId,
+        );
         if (
-          !requestedPlan?.active ||
-          !requestedPlan.stripe_price_id ||
+          !checkoutPriceId ||
           subscription.items.data.length !== 1 ||
-          checkoutPriceId !== requestedPlan.stripe_price_id
+          checkoutPlanKey !== pending.requested_plan_key
         )
           return json(
             { error: "Subscription plan could not be verified." },
             409,
           );
 
-        const existingStripeSubscription =
-          await stripeClient().subscriptions.retrieve(
-            existingSubscription.stripe_subscription_id,
-          );
-        const existingItem = existingStripeSubscription.items.data[0];
-        if (!existingItem || existingStripeSubscription.items.data.length !== 1)
-          return json(
-            { error: "Subscription plan could not be reconciled." },
-            409,
-          );
-        if (existingItem.price.id !== requestedPlan.stripe_price_id)
-          await stripeClient().subscriptions.update(
-            existingStripeSubscription.id,
-            {
-              items: [
-                { id: existingItem.id, price: requestedPlan.stripe_price_id },
-              ],
-              proration_behavior: "none",
-              metadata: {
-                ...existingStripeSubscription.metadata,
-                application: "celestial_atlas",
-                user_id: pending.user_id,
-                celestial_atlas_plan_key: requestedPlan.plan_key,
+        // A Stripe member keeps one subscription, moved to the price chosen
+        // at checkout. A Google Play member already has Atlas in Play.
+        if (
+          existingSubscription.provider === "stripe" &&
+          existingSubscription.stripe_subscription_id
+        ) {
+          const existingStripeSubscription =
+            await stripeClient().subscriptions.retrieve(
+              existingSubscription.stripe_subscription_id,
+            );
+          const existingItem = existingStripeSubscription.items.data[0];
+          if (
+            !existingItem ||
+            existingStripeSubscription.items.data.length !== 1
+          )
+            return json(
+              { error: "Subscription plan could not be reconciled." },
+              409,
+            );
+          if (existingItem.price.id !== checkoutPriceId)
+            await stripeClient().subscriptions.update(
+              existingStripeSubscription.id,
+              {
+                items: [{ id: existingItem.id, price: checkoutPriceId }],
+                proration_behavior: "none",
+                metadata: {
+                  ...existingStripeSubscription.metadata,
+                  application: "celestial_atlas",
+                  user_id: pending.user_id,
+                  celestial_atlas_plan_key: checkoutPlanKey,
+                },
               },
-            },
-          );
+            );
+        }
 
         const expiresAt = new Date(
           Date.now() + SIGNIN_CLAIM_LIFETIME_SECONDS * 1000,

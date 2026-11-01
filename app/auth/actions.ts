@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isDemoMode } from "@/lib/supabase/config";
+import { getAppPlatform } from "@/lib/app-shell/server";
 
 function credentials(formData: FormData, errorPath: string) {
   const email = formData.get("email");
@@ -25,10 +26,16 @@ function canonicalAppUrl() {
 async function continueWithGoogle(errorPath: string) {
   if (isDemoMode()) redirect(`${errorPath}?error=preview_disabled`);
   const supabase = await createClient();
+  // Google refuses OAuth inside a WebView, so the Android app completes it in
+  // the system browser and returns through the verified App Link callback.
+  const callbackPath =
+    (await getAppPlatform()) === "android"
+      ? "/auth/app-callback"
+      : "/auth/callback";
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${canonicalAppUrl()}/auth/callback`,
+      redirectTo: `${canonicalAppUrl()}${callbackPath}`,
     },
   });
   if (error || !data.url) redirect(`${errorPath}?error=oauth_failed`);

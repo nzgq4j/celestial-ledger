@@ -1,4 +1,5 @@
 import { requestPasswordReset } from "../actions";
+import "@/app/styles/atlas-public.css";
 
 export const metadata = {
   title: "Reset password — Celestial Atlas",
@@ -12,40 +13,29 @@ export default async function ForgotPasswordPage({
 }) {
   const { sent, error } = await searchParams;
   return (
-    <main className="auth-page mx-auto min-h-screen max-w-xl px-5 py-16">
-      <section className="panel p-6 md:p-8">
-        <p className="gold text-xs uppercase tracking-[.22em]">
-          Celestial Atlas
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold">Reset your password</h1>
-        <p className="mt-3 text-[#b9b2a3]">
+    <main className="auth-page">
+      <section className="panel atlas-auth">
+        <p className="atlas-kicker">Celestial Atlas</p>
+        <h1 className="atlas-auth__title">Reset your password</h1>
+        <p className="atlas-auth__copy">
           Enter your account email. If it matches an account, Supabase will send
           a secure recovery link.
         </p>
         {sent && (
-          <p
-            role="status"
-            className="mt-4 rounded-lg border border-[#536177] p-3"
-          >
+          <p role="status" className="atlas-auth__notice">
             If an account exists for that address, a recovery email has been
             sent.
           </p>
         )}
         {error && (
-          <p
-            role="alert"
-            className="mt-4 rounded-lg border border-[#8b5b53] p-3"
-          >
+          <p role="alert" className="atlas-public-alert">
             The reset request could not be submitted.
           </p>
         )}
         <form action={requestPasswordReset} className="mt-6 space-y-4">
-          <div>
-            <label className="label" htmlFor="email">
-              Email
-            </label>
+          <div className="atlas-field">
+            <label htmlFor="email">Email</label>
             <input
-              className="input"
               id="email"
               name="email"
               type="email"
@@ -53,7 +43,7 @@ export default async function ForgotPasswordPage({
               required
             />
           </div>
-          <button className="rounded-lg bg-[#c9a75d] px-5 py-3 font-semibold text-[#07111f]">
+          <button className="atlas-button atlas-auth__submit">
             Send recovery link
           </button>
         </form>

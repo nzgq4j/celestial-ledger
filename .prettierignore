@@ -5,3 +5,6 @@ package-lock.json
 
 /tmp/
 /.codex-*/
+
+android/app/src/main/assets/
+android/**/build/

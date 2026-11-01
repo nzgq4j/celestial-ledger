@@ -9,7 +9,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { TarotReadingExperience } from "@/components/TarotReadingExperience";
-import { TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
+import { formatTarotMessage, TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
 import { TAROT_READINGS } from "@/lib/tarot/readings";
 import type { TarotDeck } from "@/lib/tarot/types";
 vi.mock("next/link", () => ({
@@ -69,18 +69,26 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
-function mount(initialDeckId?: string) {
+function mount(
+  initialDeckId?: string,
+  decks: TarotDeck[] = [deck],
+  currentPlan: "free" | "premium" = "free",
+) {
   return render(
     <TarotReadingExperience
-      decks={[deck]}
+      decks={decks}
       readings={[...TAROT_READINGS]}
-      currentPlan="free"
+      currentPlan={currentPlan}
       locale="en-GB"
       copy={copy}
       initialDeckId={initialDeckId}
     />,
   );
 }
+const turnCard = (name = "Daily Draw") =>
+  screen.getByRole("button", {
+    name: formatTarotMessage(copy.turnCard, { name }),
+  });
 describe("tarot progression", () => {
   it("shows the whole draw face down and keeps revealed cards when switching reflections", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
@@ -98,14 +106,15 @@ describe("tarot progression", () => {
       }),
     });
     vi.stubGlobal("fetch", fetchMock);
-    const { container } = mount("traditional");
-    fireEvent.click(screen.getByRole("button", { name: "Select Daily Draw" }));
-    fireEvent.click(
-      screen.getByRole("button", { name: copy.shuffleAndReveal }),
-    );
+    const { container } = mount("traditional", [deck], "premium");
+    fireEvent.click(screen.getByRole("button", { name: /Celtic Cross/ }));
+    fireEvent.click(turnCard("Celtic Cross"));
     await waitFor(() =>
       expect(screen.getByRole("group", { name: copy.position })).toBeTruthy(),
     );
+    expect(
+      JSON.parse(fetchMock.mock.calls[0][1].body as string).readingId,
+    ).toBe("celtic");
     expect(
       container.querySelectorAll(".tarot-draw-card .tarot-card-back"),
     ).toHaveLength(10);
@@ -143,45 +152,69 @@ describe("tarot progression", () => {
     expect(screen.getByText("Reflection 1")).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
-  it("moves focus to each next heading and reveals exactly one draw", async () => {
+  it("turns the card into the drawn card, focuses its name and draws exactly once", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue({ ok: true, json: async () => payload });
     vi.stubGlobal("fetch", fetchMock);
     mount();
-    fireEvent.keyDown(screen.getByRole("button", { name: /Traditional/ }), {
-      key: "Enter",
-    });
-    expect(document.activeElement?.id).toBe("tarot-spread-heading");
-    expect(screen.queryByText("Celtic Cross")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Select Daily Draw" }));
-    expect(document.activeElement?.id).toBe("tarot-shuffle-heading");
-    fireEvent.click(
-      screen.getByRole("button", { name: copy.shuffleAndReveal }),
-    );
+    expect(
+      screen
+        .getByRole("button", { name: /^Daily Draw\s*1 card$/ })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+    fireEvent.click(turnCard());
     await waitFor(() =>
       expect(document.activeElement?.id).toBe("tarot-reading-heading"),
     );
+    expect(document.activeElement?.textContent).toBe("The Fool");
+    expect(screen.getByText("Consider a fresh perspective.")).toBeTruthy();
+    expect(screen.getByText(/Major Arcana · 0 · Upright/)).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(screen.getByText(copy.guestNotice)).toBeTruthy();
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(3);
+    expect(
+      screen
+        .getByRole("link", { name: copy.signInToSave })
+        .getAttribute("href"),
+    ).toBe("/auth/login");
+    fireEvent.click(screen.getByRole("button", { name: copy.reset }));
+    expect(turnCard()).toBeTruthy();
+  });
+  it("shows locked spreads as Atlas links and unlocks them for Atlas members", () => {
+    const free = mount();
+    const locked = screen.getByRole("link", {
+      name: formatTarotMessage(copy.lockedSpreadLabel, {
+        name: "Celtic Cross",
+      }),
+    });
+    expect(locked.getAttribute("href")).toBe("/membership");
+    expect(locked.textContent).toContain(copy.lockedAtlas);
+    expect(screen.getByText(copy.atlasIncluded)).toBeTruthy();
+    free.unmount();
+    mount(undefined, [deck], "premium");
+    expect(screen.getByRole("button", { name: /Celtic Cross/ })).toBeTruthy();
+    expect(screen.queryByText(copy.atlasIncluded)).toBeNull();
   });
   it("honours an available dashboard deck and ignores an invalid one", () => {
-    const result = mount("traditional");
+    const second: TarotDeck = { ...deck, id: "silver", name: "Silver Age" };
+    const result = mount("silver", [deck, second]);
     expect(
-      screen.getByRole("heading", { name: copy.chooseSpread }),
-    ).toBeTruthy();
+      screen
+        .getByRole("button", { name: "Silver Age" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
     result.unmount();
-    mount("not-a-deck");
-    expect(screen.getByRole("heading", { name: copy.chooseDeck })).toBeTruthy();
+    mount("not-a-deck", [deck, second]);
+    expect(
+      screen
+        .getByRole("button", { name: "Traditional" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
   });
   it("keeps the chosen deck and spread after a failed draw", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     mount("traditional");
-    fireEvent.click(screen.getByRole("button", { name: "Select Daily Draw" }));
-    fireEvent.click(
-      screen.getByRole("button", { name: copy.shuffleAndReveal }),
-    );
+    fireEvent.click(turnCard());
     await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
     expect(screen.getByRole("button", { name: copy.retry })).toBeTruthy();
     expect(screen.getByText("Traditional · Daily Draw")).toBeTruthy();

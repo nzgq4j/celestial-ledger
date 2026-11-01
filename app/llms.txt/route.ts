@@ -57,7 +57,7 @@ Celestial Atlas calculates tropical natal charts and follows the planetary trans
 - [Daily Sun-sign horoscopes](${base}/horoscopes): Aries through Pisces with a bottom line, relationships, business, money, and a morning-to-evening arc.
 - [Weekly astrology readings](${base}/weekly-readings): Planetary patterns unfolding through the week.
 - [Personal astrology reports](${base}/reports): Private, evidence-linked reports for vocation, purpose, renewal, and reflection.
-- [Membership levels](${base}/membership): Free, Personal, and Premium access.
+- [Membership levels](${base}/membership): Free and Atlas access.
 
 ## Supported public horoscope languages
 

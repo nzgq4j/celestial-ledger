@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Celestial Atlas</string>
+    <string name="title_activity_main">Celestial Atlas</string>
+    <string name="package_name">com.celestialatlas.app</string>
+    <string name="custom_url_scheme">com.celestialatlas.app</string>
+    <string name="morning_channel_name">Morning reading</string>
+    <string name="morning_channel_description">A gentle alert when your reading for today is ready.</string>
+</resources>

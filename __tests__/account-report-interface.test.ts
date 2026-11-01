@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const accountPage = readFileSync("app/account/page.tsx", "utf8");
 const generator = readFileSync("components/GenerateReportButton.tsx", "utf8");
+const offers = readFileSync("components/account/ReportOffers.tsx", "utf8");
+const memberData = readFileSync("lib/account/member-data.ts", "utf8");
 const checkout = readFileSync("components/CheckoutButton.tsx", "utf8");
 const reportRoute = readFileSync("app/api/reports/route.ts", "utf8");
 const accountActions = [
@@ -17,21 +19,25 @@ const locales = ["en-GB", "es-ES", "fr-FR", "de-DE"].map((locale) =>
 
 describe("account report interface", () => {
   it("lets the parent choose exactly one primary report action", () => {
-    expect(accountPage).toContain("primaryAccountReportAction(reportStates)");
-    expect(accountPage).toContain("primaryReportType === reportType");
-    expect(accountPage).toContain("emphasis={emphasis}");
+    expect(memberData).toContain(
+      "primaryReportType: primaryAccountReportAction(reportStates)",
+    );
+    expect(offers).toContain("member?.primaryReportType === reportType");
+    expect(offers).toContain("emphasis={emphasis}");
+    expect(accountPage).toContain("<ReportOffers");
     expect(generator).toContain('emphasis?: "primary" | "secondary"');
     expect(checkout).toContain('emphasis?: "primary" | "secondary"');
     expect(generator).toContain('emphasis === "primary"');
   });
 
   it("demotes unrelated account actions while a report action is primary", () => {
-    expect(accountPage).toContain(
-      'primaryReportType ? "button-secondary" : "button-primary"',
+    expect(offers).toContain(
+      'emphasis === "primary" ? "atlas-button" : "atlas-button-ghost"',
     );
     for (const component of accountActions) {
+      expect(component).not.toContain('className="atlas-button"');
       expect(component).not.toContain('className="button-primary"');
-      expect(component).toContain('className="button-secondary"');
+      expect(component).toContain('className="atlas-button-ghost"');
     }
   });
 

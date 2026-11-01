@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import { AppTabBar, SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { AppShell } from "@/components/AppShell";
+import { NativeBridge } from "@/components/native/NativeBridge";
 import { getAppPlatform } from "@/lib/app-shell/server";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import "./globals.css";
@@ -168,6 +169,7 @@ export default async function RootLayout({
         <LocaleProvider initialLocale={pack.tag} initialPack={pack}>
           <div className="meridian" aria-hidden="true" />
           <AppShell />
+          <NativeBridge />
           <SiteHeader
             identity={identity}
             tarotEnabled={tarotReadingFlags().enabled}

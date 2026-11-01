@@ -3,7 +3,7 @@ import { z } from "zod";
 import { isDemoMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { stripeClient } from "@/lib/stripe";
+import { checkoutPaymentMethodConfiguration, stripeClient } from "@/lib/stripe";
 import Stripe from "stripe";
 import {
   isSameOrigin,
@@ -65,15 +65,9 @@ export async function POST(request: Request) {
         409,
       );
     const admin = createAdminClient();
+    // Atlas members redeem their included report (one per membership year)
+    // with `useCredit`, and otherwise buy at the Atlas price (20% off).
     const planKey = await effectivePlanKeyForUser(userId);
-    if (planKey === "premium")
-      return json(
-        {
-          error: "This report is included with Premium membership.",
-          actionUrl: "/account#reports",
-        },
-        409,
-      );
     const { count: birthProfileCount } = await admin
       .from("birth_profiles")
       .select("id", { count: "exact", head: true })
@@ -100,7 +94,10 @@ export async function POST(request: Request) {
         },
       );
       if (creditError || !entitlementId)
-        return json({ error: "No eligible report credit is available." }, 409);
+        return json(
+          { error: "No included Atlas report is available right now." },
+          409,
+        );
       return json({
         entitlementId,
         usedCredit: true,
@@ -212,6 +209,9 @@ export async function POST(request: Request) {
           metadata,
           payment_intent_data: { metadata },
           automatic_tax: { enabled: flags.automaticTax },
+          // Payment method types are never pinned, so Dashboard-enabled methods (Google Pay
+          // included) appear automatically.
+          ...checkoutPaymentMethodConfiguration(),
           success_url: `${appUrl}/account?checkout=return`,
           cancel_url: `${appUrl}/account?checkout=cancelled`,
         },

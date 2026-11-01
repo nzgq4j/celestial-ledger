@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale } from "@/components/LocaleProvider";
+import { memberCopy } from "@/lib/account/member-copy";
 
 type Profile = {
   id: string;
@@ -23,6 +24,7 @@ export function BirthProfileList({
   const [deleting, setDeleting] = useState<string>();
   const { locale, pack } = useLocale();
   const copy = pack.messages.account;
+  const member = memberCopy[locale];
 
   async function remove(id: string) {
     if (!window.confirm(copy.deleteProfileConfirm)) return;
@@ -44,53 +46,56 @@ export function BirthProfileList({
 
   if (!profiles.length)
     return (
-      <div className="birth-profile-empty">
-        <span aria-hidden="true">☉</span>
+      <div className="atlas-card atlas-card--sm profile-empty">
+        <span className="profile-empty__glyph" aria-hidden="true">
+          ☉︎
+        </span>
         <div>
-          <strong>{copy.noChartsTitle}</strong>
+          <h3>{copy.noChartsTitle}</h3>
           <p>{copy.noChartsCopy}</p>
         </div>
-        <Link href="/#chart" className="button-secondary">
+        <Link href="/#chart" className="atlas-button-ghost">
           {copy.createMyChart}
         </Link>
       </div>
     );
   return (
-    <div className="birth-profile-list">
+    <div className="library-list profile-list">
       {error && (
-        <p role="alert" className="rounded-lg border border-[#8b5b53] p-3">
+        <p role="alert" className="member-error">
           {error}
         </p>
       )}
       {profiles.map((profile) => (
-        <article key={profile.id} className="birth-profile-card">
-          <span className="birth-profile-card__glyph" aria-hidden="true">
-            ✦
-          </span>
-          <div className="birth-profile-card__body">
-            <p className="section-kicker">{copy.natalChart}</p>
-            <h3>{profile.label}</h3>
-            <p>
+        <article key={profile.id} className="library-row profile-row">
+          <div className="library-row__identity">
+            <h3 className="library-row__title">{profile.label}</h3>
+            <p className="library-row__meta">
               {profile.birth_date} ·{" "}
               {profile.time_unknown ? copy.timeUnknown : copy.timeRecorded} ·{" "}
               {profile.display_name}
             </p>
-            <small>
+            <p className="library-row__meta">
               {copy.heldUntil}{" "}
               {new Date(profile.expires_at).toLocaleDateString(locale)}
-            </small>
-            <span
-              className={`birth-profile-card__reading-status ${profile.natal_reading_generated_at ? "is-complete" : ""}`}
-            >
-              {profile.natal_reading_generated_at
-                ? "Full interpretation saved"
-                : "Chart saved without interpretation"}
-            </span>
+              {" · "}
+              <span
+                className={
+                  profile.natal_reading_generated_at
+                    ? "profile-row__reading is-complete"
+                    : "profile-row__reading"
+                }
+              >
+                {profile.natal_reading_generated_at
+                  ? member.interpretationSaved
+                  : member.interpretationMissing}
+              </span>
+            </p>
           </div>
-          <div className="birth-profile-card__actions">
+          <div className="library-row__actions">
             <Link
               href={`/account/birth-profiles/${profile.id}`}
-              className="button-secondary"
+              className="library-row__open"
             >
               {copy.openChart}
             </Link>
@@ -98,7 +103,7 @@ export function BirthProfileList({
               type="button"
               onClick={() => remove(profile.id)}
               disabled={deleting === profile.id}
-              className="birth-profile-card__delete"
+              className="library-row__action library-row__action--danger"
             >
               {deleting === profile.id ? copy.deleting : copy.delete}
             </button>

@@ -13,7 +13,11 @@ import type {
 } from "@/lib/tarot/types";
 import { formatTarotMessage } from "@/lib/tarot/ui-locales";
 import { TarotSymbolicCardBack } from "@/components/TarotSymbolicCardBack";
-import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
+import {
+  TarotSymbolicCardFace,
+  tarotCardIndex,
+} from "@/components/TarotSymbolicCardFace";
+import "@/app/styles/atlas-public.css";
 
 type ReadingCard = {
   id: string;
@@ -37,8 +41,10 @@ export type DrawResponse = {
   labels: { upright: string; reversed: string };
 };
 
-function requirementLabel(copy: Record<string, string>, plan: PlanKey) {
-  return plan === "premium" ? copy.requiresPremium : copy.requiresPersonal;
+function cardCountLabel(copy: Record<string, string>, count: number) {
+  return count === 1
+    ? copy.oneCard
+    : formatTarotMessage(copy.cardsCount, { count });
 }
 
 export function TarotReadingExperience({
@@ -59,16 +65,18 @@ export function TarotReadingExperience({
   initialResult?: DrawResponse | null;
 }) {
   const visibleDecks = decks.filter((deck) => deck.active);
-  const initialDeck = visibleDecks.find(
-    (deck) =>
-      deck.id === initialDeckId &&
-      planMeetsTarotMinimum(currentPlan, deck.minimumPlan),
+  const unlockedDecks = visibleDecks.filter((deck) =>
+    planMeetsTarotMinimum(currentPlan, deck.minimumPlan),
   );
-  const [stage, setStage] = useState<1 | 2 | 3 | 4>(
-    initialResult ? 4 : initialDeck ? 2 : 1,
+  const initialDeck =
+    unlockedDecks.find((deck) => deck.id === initialDeckId) ?? unlockedDecks[0];
+  const unlockedReadings = readings.filter((reading) =>
+    planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
   );
   const [deckId, setDeckId] = useState(initialDeck?.id ?? "");
-  const [readingId, setReadingId] = useState("");
+  const [readingId, setReadingId] = useState<string>(
+    unlockedReadings[0]?.id ?? "",
+  );
   const [shuffling, setShuffling] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -76,16 +84,15 @@ export function TarotReadingExperience({
   const [activeCard, setActiveCard] = useState<number | null>(null);
   const [traditionalView, setTraditionalView] = useState(false);
   const [revealedCards, setRevealedCards] = useState<number[]>([]);
-  const [showLocked, setShowLocked] = useState(false);
   const cardDialog = useRef<HTMLDialogElement>(null);
+  const resultHeading = useRef<HTMLHeadingElement>(null);
+  const shuffleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const drawn = useRef(false);
+
   useEffect(() => {
     const dialog = cardDialog.current;
     if (activeCard !== null && dialog && !dialog.open) dialog.showModal();
   }, [activeCard]);
-  const workspace = useRef<HTMLElement>(null);
-  const previousStage = useRef(stage);
-  const shuffleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(
     () => () => {
       if (shuffleTimer.current) clearTimeout(shuffleTimer.current);
@@ -93,73 +100,49 @@ export function TarotReadingExperience({
     [],
   );
   useEffect(() => {
-    if (previousStage.current === stage) return;
-    previousStage.current = stage;
-    const heading =
-      workspace.current?.querySelector<HTMLElement>(".tarot-stage h2");
-    heading?.focus({ preventScroll: true });
-    heading?.scrollIntoView({ block: "start", behavior: "instant" });
-  }, [stage]);
+    if (!result || !drawn.current) return;
+    drawn.current = false;
+    resultHeading.current?.focus({ preventScroll: true });
+    resultHeading.current?.scrollIntoView({
+      block: "nearest",
+      behavior: "instant",
+    });
+  }, [result]);
 
   const selectedDeck = visibleDecks.find((deck) => deck.id === deckId) ?? null;
   const selectedReading =
     readings.find((reading) => reading.id === readingId) ?? null;
-  const stepNames = [
-    copy.deckStep,
-    copy.spreadStep,
-    copy.shuffleStep,
-    copy.readingStep,
-  ];
-
-  function stepHref(step: 1 | 2 | 3 | 4) {
-    if (step === 1) return "#tarot-deck-heading";
-    if (step === 2) return "#tarot-spread-heading";
-    if (step === 3) return "#tarot-shuffle-heading";
-    return "#tarot-reading-heading";
-  }
-
-  function stepIsReachable(step: 1 | 2 | 3 | 4) {
-    if (initialResult) return step === 4;
-    if (shuffling || pending) return step === stage;
-    if (step === 1) return true;
-    if (step === 2) return Boolean(deckId);
-    if (step === 3) return Boolean(deckId && readingId);
-    return Boolean(result);
-  }
-
-  function goToStep(step: 1 | 2 | 3 | 4) {
-    if (!stepIsReachable(step)) return;
-    setError("");
-    setStage(step);
-  }
+  const someLocked = readings.some(
+    (reading) => !planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
+  );
+  const busy = shuffling || pending;
 
   function reset() {
     if (initialResult) {
       window.location.assign("/tarot");
       return;
     }
-    setStage(1);
-    setDeckId("");
-    setReadingId("");
     setShuffling(false);
     setPending(false);
     setError("");
     setResult(null);
+    setActiveCard(null);
+    setRevealedCards([]);
+    setTraditionalView(false);
   }
 
   function chooseDeck(nextDeckId: string) {
+    if (busy) return;
     setDeckId(nextDeckId);
-    setReadingId("");
     setError("");
     setResult(null);
-    setStage(2);
   }
 
   function chooseReading(nextReadingId: string) {
+    if (busy) return;
     setReadingId(nextReadingId);
     setError("");
     setResult(null);
-    setStage(3);
   }
 
   async function reveal() {
@@ -174,10 +157,10 @@ export function TarotReadingExperience({
       });
       const body = (await response.json()) as DrawResponse & { error?: string };
       if (!response.ok) throw new Error(body.error ?? "DRAW_FAILED");
+      drawn.current = true;
       setResult(body);
       setActiveCard(null);
       setRevealedCards([]);
-      setStage(4);
     } catch {
       setError(copy.error);
     } finally {
@@ -186,7 +169,7 @@ export function TarotReadingExperience({
   }
 
   function beginShuffleAndReveal() {
-    if (shuffling || pending || !selectedDeck || !selectedReading) return;
+    if (busy || result || !selectedDeck || !selectedReading) return;
     setShuffling(true);
     setError("");
     shuffleTimer.current = setTimeout(
@@ -200,368 +183,296 @@ export function TarotReadingExperience({
 
   if (!visibleDecks.length && !result) {
     return (
-      <section className="tarot-empty" aria-live="polite">
+      <section className="tarot-table tarot-table--empty" aria-live="polite">
         <span aria-hidden="true">✦</span>
         <p>{copy.unavailable}</p>
       </section>
     );
   }
 
-  return (
-    <section
-      className="tarot-workspace"
-      ref={workspace}
-      data-stage={stage}
-      aria-busy={pending || shuffling}
-    >
-      <nav
-        className="tarot-progress"
-        aria-label={formatTarotMessage(copy.stepProgress, {
-          current: stage,
-          total: 4,
-        })}
-      >
-        {stepNames.map((name, index) => {
-          const step = (index + 1) as 1 | 2 | 3 | 4;
-          const reachable = stepIsReachable(step);
-          return (
-            <a
-              key={name}
-              href={stepHref(step)}
-              className={stage === step ? "is-current" : ""}
-              aria-current={stage === step ? "step" : undefined}
-              aria-disabled={!reachable}
-              tabIndex={reachable ? undefined : -1}
-              onClick={(event) => {
-                event.preventDefault();
-                goToStep(step);
-              }}
-            >
-              <span>{String(step).padStart(2, "0")}</span>
-              {name}
-            </a>
-          );
-        })}
-      </nav>
+  const orientationLabel = (card: ReadingCard) =>
+    card.orientation === "upright"
+      ? (result?.labels.upright ?? copy.upright)
+      : (result?.labels.reversed ?? copy.reversed);
+  const single = result && result.cards.length === 1 ? result.cards[0] : null;
+  const saveNotice =
+    result?.saveStatus === "saved"
+      ? copy.savedNotice
+      : result?.saveStatus === "failed"
+        ? copy.unsavedNotice
+        : copy.guestNotice;
+  const resultActions = result && (
+    <div className="tarot-panel__actions">
+      {result.saveStatus === "saved" &&
+        result.savedReadingId &&
+        !initialResult && (
+          <Link
+            className="atlas-button"
+            href={`/account/tarot/${result.savedReadingId}`}
+          >
+            {copy.openJournal}
+          </Link>
+        )}
+      {result.saveStatus === "guest" && (
+        <Link className="atlas-button" href="/auth/login">
+          {copy.signInToSave}
+        </Link>
+      )}
+      <button className="atlas-button-ghost" type="button" onClick={reset}>
+        {initialResult ? copy.newReading : copy.reset}
+      </button>
+    </div>
+  );
 
-      {stage === 1 && (
-        <div className="tarot-stage" aria-labelledby="tarot-deck-heading">
-          <header className="tarot-stage__heading">
-            <p className="eyebrow">
-              {formatTarotMessage(copy.stepProgress, {
-                current: 1,
-                total: 4,
-              })}
-            </p>
-            <h2 id="tarot-deck-heading" tabIndex={-1}>
-              {copy.chooseDeck}
-            </h2>
-            <p>{copy.chooseDeckCopy}</p>
-          </header>
-          <div className="tarot-deck-grid">
-            {visibleDecks.map((deck) => {
+  return (
+    <section className="tarot-table" aria-busy={busy}>
+      {!initialResult && (
+        <div className="tarot-table__choices">
+          <div
+            className="tarot-table__chips"
+            role="group"
+            aria-label={copy.spreadsLabel}
+          >
+            {readings.map((reading) => {
               const unlocked = planMeetsTarotMinimum(
                 currentPlan,
-                deck.minimumPlan,
+                reading.minimumPlan,
               );
-              const selected = deck.id === deckId;
-              return (
-                <article
-                  className={`tarot-deck tarot-accent--${deck.accentToken} ${
-                    selected ? "is-selected" : ""
-                  }`}
-                  key={deck.id}
-                  role={unlocked ? "button" : undefined}
-                  tabIndex={unlocked ? 0 : undefined}
-                  aria-pressed={unlocked ? selected : undefined}
-                  onClick={() => unlocked && chooseDeck(deck.id)}
-                  onKeyDown={(event) => {
-                    if (!unlocked) return;
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      chooseDeck(deck.id);
-                    }
-                  }}
+              const selected = reading.id === readingId;
+              const meta = (
+                <span className="tarot-chip__meta">
+                  {unlocked
+                    ? cardCountLabel(copy, reading.cardCount)
+                    : copy.lockedAtlas}
+                </span>
+              );
+              return unlocked ? (
+                <button
+                  key={reading.id}
+                  type="button"
+                  className="atlas-chip tarot-chip"
+                  aria-pressed={selected}
+                  disabled={busy}
+                  onClick={() => chooseReading(reading.id)}
                 >
-                  <div
-                    className="tarot-deck__cover"
-                    role="img"
-                    aria-label={formatTarotMessage(copy.deckCoverLabel, {
-                      name: deck.name,
-                    })}
-                    style={
-                      deck.coverImageUrl
-                        ? { backgroundImage: `url("${deck.coverImageUrl}")` }
-                        : undefined
-                    }
-                  >
-                    {!deck.coverImageUrl && <span aria-hidden="true">✦</span>}
-                    {!unlocked && (
-                      <span className="tarot-lock">{copy.locked}</span>
-                    )}
-                  </div>
-                  <div className="tarot-deck__copy">
-                    <p>{deck.name}</p>
-                    <small>{deck.tagline}</small>
-                  </div>
-                  {!unlocked && (
-                    <div className="tarot-deck__upgrade">
-                      <span>{requirementLabel(copy, deck.minimumPlan)}</span>
-                      <Link href="/membership">{copy.upgrade}</Link>
-                    </div>
-                  )}
-                </article>
+                  {reading.name}
+                  {meta}
+                </button>
+              ) : (
+                <Link
+                  key={reading.id}
+                  href="/membership"
+                  className="atlas-chip tarot-chip tarot-chip--locked"
+                  aria-label={formatTarotMessage(copy.lockedSpreadLabel, {
+                    name: reading.name,
+                  })}
+                >
+                  {reading.name}
+                  {meta}
+                </Link>
               );
             })}
           </div>
-        </div>
-      )}
-
-      {stage === 2 && (
-        <div className="tarot-stage" aria-labelledby="tarot-spread-heading">
-          <header className="tarot-stage__heading">
-            <p className="eyebrow">
-              {formatTarotMessage(copy.stepProgress, {
-                current: 2,
-                total: 4,
-              })}
-            </p>
-            <h2 id="tarot-spread-heading" tabIndex={-1}>
-              {copy.chooseSpread}
-            </h2>
-            <p>{copy.chooseSpreadCopy}</p>
-          </header>
-          <div className="tarot-spread-list">
-            {readings
-              .filter(
-                (reading) =>
-                  showLocked ||
-                  planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
-              )
-              .map((reading) => {
+          {visibleDecks.length > 1 && (
+            <div
+              className="tarot-table__chips tarot-table__chips--decks"
+              role="group"
+              aria-label={copy.decksLabel}
+            >
+              <span className="tarot-table__label" aria-hidden="true">
+                {copy.decksLabel}
+              </span>
+              {visibleDecks.map((deck) => {
                 const unlocked = planMeetsTarotMinimum(
                   currentPlan,
-                  reading.minimumPlan,
+                  deck.minimumPlan,
                 );
-                const selected = reading.id === readingId;
-                return (
-                  <article
-                    className={`tarot-spread ${selected ? "is-selected" : ""}`}
-                    key={reading.id}
-                    onClick={() => unlocked && chooseReading(reading.id)}
+                const selected = deck.id === deckId;
+                return unlocked ? (
+                  <button
+                    key={deck.id}
+                    type="button"
+                    className="atlas-chip tarot-chip"
+                    aria-pressed={selected}
+                    disabled={busy}
+                    onClick={() => chooseDeck(deck.id)}
                   >
-                    <div
-                      className="tarot-spread__count"
-                      aria-label={formatTarotMessage(
-                        reading.cardCount === 1
-                          ? copy.oneCard
-                          : copy.cardsCount,
-                        { count: reading.cardCount },
-                      )}
-                    >
-                      {Array.from({
-                        length: Math.min(reading.cardCount, 5),
-                      }).map((_, index) => (
-                        <i
-                          key={index}
-                          aria-hidden="true"
-                          className={
-                            selectedDeck?.cardBackImageUrl
-                              ? "has-selected-back"
-                              : undefined
-                          }
-                          style={
-                            selectedDeck?.cardBackImageUrl
-                              ? {
-                                  backgroundImage: `url("${selectedDeck.cardBackImageUrl}")`,
-                                }
-                              : undefined
-                          }
-                        />
-                      ))}
-                      {reading.cardCount > 5 && (
-                        <span aria-hidden="true">+{reading.cardCount - 5}</span>
-                      )}
-                    </div>
-                    <div>
-                      <p>{reading.name}</p>
-                      <small>{reading.blurb}</small>
-                      <span className="tarot-spread__meta">
-                        {reading.cardCount === 1
-                          ? copy.oneCard
-                          : formatTarotMessage(copy.cardsCount, {
-                              count: reading.cardCount,
-                            })}
-                        {" · "}
-                        {reading.durationLabel}
-                      </span>
-                    </div>
-                    {unlocked ? (
-                      <button
-                        className="tarot-spread__select"
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          chooseReading(reading.id);
-                        }}
-                      >
-                        {selected
-                          ? copy.selected
-                          : formatTarotMessage(copy.selectSpread, {
-                              name: reading.name,
-                            })}
-                      </button>
-                    ) : (
-                      <div className="tarot-spread__upgrade">
-                        <span>
-                          {requirementLabel(copy, reading.minimumPlan)}
-                        </span>
-                        <Link href="/membership">{copy.upgrade}</Link>
-                      </div>
-                    )}
-                  </article>
+                    {deck.name}
+                  </button>
+                ) : (
+                  <Link
+                    key={deck.id}
+                    href="/membership"
+                    className="atlas-chip tarot-chip tarot-chip--locked"
+                    aria-label={formatTarotMessage(copy.lockedSpreadLabel, {
+                      name: deck.name,
+                    })}
+                  >
+                    {deck.name}
+                    <span className="tarot-chip__meta">{copy.lockedAtlas}</span>
+                  </Link>
                 );
               })}
-          </div>
-          <div className="tarot-stage__actions">
-            {readings.some(
-              (reading) =>
-                !planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
-            ) && (
-              <button
-                type="button"
-                className="button-quiet"
-                aria-expanded={showLocked}
-                onClick={() => setShowLocked(!showLocked)}
-              >
-                {showLocked ? copy.availableChoices : copy.otherSpreads}
-              </button>
-            )}
-            <button className="button-quiet" onClick={() => setStage(1)}>
-              {copy.back}
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       )}
 
-      {stage === 3 && selectedDeck && selectedReading && (
-        <div
-          className="tarot-stage tarot-shuffle-stage"
-          aria-labelledby="tarot-shuffle-heading"
-        >
-          <header className="tarot-stage__heading">
-            <p className="eyebrow">
-              {formatTarotMessage(copy.stepProgress, {
-                current: 3,
-                total: 4,
-              })}
-            </p>
-            <h2 id="tarot-shuffle-heading" tabIndex={-1}>
-              {copy.beginShuffle}
-            </h2>
-            <p>{copy.shuffleCopy}</p>
-          </header>
-          <p className="tarot-shuffle__selection">
-            {selectedDeck.name} · {selectedReading.name}
-          </p>
-          {error && (
-            <p className="tarot-error" role="alert">
-              {error}
-            </p>
-          )}
-          <div className="tarot-stage__actions">
+      {(!result || single) && (
+        <div className="tarot-table__stage">
+          {single ? (
+            <div className="tarot-big-card tarot-big-card--face">
+              <TarotSymbolicCardFace
+                arcana={single.arcana}
+                suit={single.suit}
+                number={single.number}
+                name={single.name}
+                imageUrl={single.faceImageUrl}
+                orientation={single.orientation}
+                className="tarot-big-card__face"
+              />
+            </div>
+          ) : (
             <button
-              className="button-primary"
               type="button"
-              disabled={shuffling || pending}
+              className={`tarot-big-card${shuffling ? " is-shuffling" : ""}`}
+              disabled={busy || !selectedDeck || !selectedReading}
+              aria-label={formatTarotMessage(copy.turnCard, {
+                name: selectedReading?.name ?? "",
+              })}
+              aria-describedby="tarot-draw-hint"
               onClick={beginShuffleAndReveal}
             >
-              {pending
-                ? copy.preparing
-                : shuffling
-                  ? copy.shuffling
-                  : error
-                    ? copy.retry
-                    : copy.shuffleAndReveal}
+              <span className="tarot-big-card__frame" aria-hidden="true" />
+              {selectedDeck?.cardBackImageUrl && (
+                <span
+                  className="tarot-big-card__art"
+                  aria-hidden="true"
+                  style={{
+                    backgroundImage: `url("${selectedDeck.cardBackImageUrl}")`,
+                  }}
+                />
+              )}
+              <span className="tarot-big-card__back" aria-hidden="true">
+                <span className="tarot-big-card__glyph">✦</span>
+                <span className="tarot-big-card__brand">{copy.cardBrand}</span>
+                <span className="tarot-big-card__cue">
+                  {pending
+                    ? copy.preparing
+                    : shuffling
+                      ? copy.shuffling
+                      : copy.tapToTurn}
+                </span>
+              </span>
             </button>
-            <button
-              className="button-quiet"
-              type="button"
-              disabled={shuffling || pending}
-              onClick={() => setStage(2)}
-            >
-              {copy.back}
-            </button>
-          </div>
-          <div
-            className={`tarot-shuffle ${shuffling ? "is-shuffling" : ""}`}
-            role="button"
-            tabIndex={0}
-            aria-label={copy.beginShuffle}
-            aria-disabled={shuffling || pending}
-            onClick={beginShuffleAndReveal}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                beginShuffleAndReveal();
-              }
-            }}
-          >
-            {["a", "b", "c"].map((layer) => (
-              <TarotSymbolicCardBack
-                key={layer}
-                imageUrl={selectedDeck.cardBackImageUrl}
-                className={`tarot-shuffle__card tarot-shuffle__card--${layer}`}
-              />
-            ))}
-            <span className="tarot-shuffle__axis" />
+          )}
+
+          <div className="tarot-panel">
+            {single && result ? (
+              <>
+                <p className="atlas-kicker">
+                  {single.arcana === "major"
+                    ? copy.majorArcana
+                    : copy.minorArcana}{" "}
+                  · {tarotCardIndex(single.arcana, single.number)} ·{" "}
+                  {orientationLabel(single)}
+                </p>
+                <h2
+                  id="tarot-reading-heading"
+                  className="tarot-panel__title"
+                  ref={resultHeading}
+                  tabIndex={-1}
+                >
+                  {single.name}
+                </h2>
+                <p className="tarot-panel__position">
+                  {result.reading.name} · {single.position}
+                </p>
+                <p className="tarot-panel__meaning">{single.meaning}</p>
+                <p className="tarot-panel__notice" role="status">
+                  {saveNotice}
+                </p>
+                {resultActions}
+              </>
+            ) : (
+              <>
+                <h2 id="tarot-draw-heading" className="tarot-panel__heading">
+                  {selectedReading?.name ?? copy.chooseSpread}
+                </h2>
+                {selectedReading && (
+                  <p className="tarot-panel__copy">{selectedReading.blurb}</p>
+                )}
+                <p id="tarot-draw-hint" className="tarot-panel__copy">
+                  {copy.drawHint}
+                </p>
+                {selectedDeck && selectedReading && (
+                  <p className="tarot-panel__selection">
+                    {selectedDeck.name} · {selectedReading.name}
+                  </p>
+                )}
+                {error && (
+                  <>
+                    <p className="atlas-public-alert" role="alert">
+                      {error}
+                    </p>
+                    <div className="tarot-panel__actions">
+                      <button
+                        className="atlas-button"
+                        type="button"
+                        disabled={busy}
+                        onClick={beginShuffleAndReveal}
+                      >
+                        {copy.retry}
+                      </button>
+                    </div>
+                  </>
+                )}
+                {someLocked && (
+                  <p className="tarot-panel__note">{copy.atlasIncluded}</p>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}
 
-      {stage === 4 && result && (
-        <div
-          className="tarot-stage tarot-results"
-          aria-labelledby="tarot-reading-heading"
-        >
-          <header className="tarot-stage__heading">
-            <p className="eyebrow">
-              {result.deck.name} · {result.reading.name}
-            </p>
-            <h2 id="tarot-reading-heading" tabIndex={-1}>
-              {copy.yourReading}
-            </h2>
-            <p role="status">
-              {result.saveStatus === "saved"
-                ? copy.savedNotice
-                : result.saveStatus === "failed"
-                  ? copy.unsavedNotice
-                  : copy.guestNotice}
-            </p>
-            <div className="tarot-result-navigation">
-              <Link href="/account?view=library">{copy.myLibrary}</Link>
-              <button className="button-quiet" type="button" onClick={reset}>
-                {copy.newReading}
-              </button>
+      {result && !single && (
+        <div className="tarot-results" aria-labelledby="tarot-reading-heading">
+          <header className="tarot-results__header">
+            <div>
+              <p className="atlas-kicker">
+                {result.deck.name} · {result.reading.name}
+              </p>
+              <h2
+                id="tarot-reading-heading"
+                className="tarot-panel__heading"
+                ref={resultHeading}
+                tabIndex={-1}
+              >
+                {copy.yourReading}
+              </h2>
+              <p className="tarot-panel__notice" role="status">
+                {saveNotice}
+              </p>
             </div>
+            {resultActions}
           </header>
 
-          <p>{copy.revealHint}</p>
-          {result.cards.length > 1 && (
-            <div className="tarot-view-controls">
-              <button
-                type="button"
-                className="button-quiet"
-                aria-pressed={traditionalView}
-                aria-describedby="tarot-traditional-note"
-                onClick={() => setTraditionalView((value) => !value)}
-              >
-                {traditionalView ? copy.gridView : copy.traditionalView}
-              </button>
-              <p id="tarot-traditional-note">{copy.traditionalNote}</p>
-            </div>
-          )}
+          <div className="tarot-view-controls">
+            <p>{copy.revealHint}</p>
+            <button
+              type="button"
+              className="atlas-button-ghost atlas-button--sm"
+              aria-pressed={traditionalView}
+              aria-describedby="tarot-traditional-note"
+              onClick={() => setTraditionalView((value) => !value)}
+            >
+              {traditionalView ? copy.gridView : copy.traditionalView}
+            </button>
+            <p id="tarot-traditional-note" className="sr-only">
+              {copy.traditionalNote}
+            </p>
+          </div>
           <div
             className="tarot-draw-layout"
             data-spread={traditionalView ? result.reading.id : "grid"}
@@ -635,20 +546,18 @@ export function TarotReadingExperience({
                 <>
                   <button
                     type="button"
-                    className="button-quiet tarot-card-dialog__close"
+                    className="atlas-button-ghost atlas-button--sm tarot-card-dialog__close"
                     onClick={() => cardDialog.current?.close()}
                   >
                     {copy.closeCard}
                   </button>
+                  <p className="atlas-kicker">
+                    {result.cards[activeCard].name} ·{" "}
+                    {orientationLabel(result.cards[activeCard])}
+                  </p>
                   <h3 id="tarot-card-dialog-title">
                     {result.cards[activeCard].position}
                   </h3>
-                  <p>
-                    {result.cards[activeCard].name} ·{" "}
-                    {result.cards[activeCard].orientation === "upright"
-                      ? result.labels.upright
-                      : result.labels.reversed}
-                  </p>
                   <p>{result.cards[activeCard].meaning}</p>
                   <TarotSymbolicCardFace
                     arcana={result.cards[activeCard].arcana}
@@ -665,7 +574,6 @@ export function TarotReadingExperience({
           </div>
           <details className="tarot-narrative" open>
             <summary>{copy.readingSummary}</summary>
-            <p className="eyebrow">{copy.readingSummary}</p>
             <div className="tarot-narrative__sections">
               {result.narrative.split(/\n\s*\n/).map((paragraph, index) => {
                 const card = result.cards[index];
@@ -677,10 +585,7 @@ export function TarotReadingExperience({
                         <div>
                           <h3>{card.position}</h3>
                           <p>
-                            {card.name} ·{" "}
-                            {card.orientation === "upright"
-                              ? result.labels.upright
-                              : result.labels.reversed}
+                            {card.name} · {orientationLabel(card)}
                           </p>
                         </div>
                       </header>
@@ -691,14 +596,9 @@ export function TarotReadingExperience({
               })}
             </div>
           </details>
-          <p className="tarot-disclaimer">{copy.disclaimer}</p>
-          <div className="tarot-stage__actions">
-            <button className="button-primary" type="button" onClick={reset}>
-              {copy.newReading}
-            </button>
-          </div>
         </div>
       )}
+      <p className="tarot-table__disclaimer">{copy.disclaimer}</p>
     </section>
   );
 }

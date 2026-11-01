@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import "@/app/styles/atlas-member.css";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -44,7 +45,7 @@ export default async function WeeklyReadingPage({
   ]);
   if (!analysis.success || !content.success) notFound();
   return (
-    <main className="page-shell private-report daily-reading-page">
+    <main className="atlas-shell member-doc">
       <WeeklyReadingActions readingId={data.id} />
       <WeeklyReadingView
         content={content.data}

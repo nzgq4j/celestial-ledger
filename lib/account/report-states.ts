@@ -1,3 +1,5 @@
+import { membershipPlanFor, PLAN_ALLOWANCES } from "@/lib/membership/plans";
+
 export const accountReportTypes = [
   "career_purpose",
   "recovery_reflection",
@@ -33,15 +35,26 @@ export type AccountReportState =
       entitlement: Entitlement;
     }
   | { kind: "generated"; product: Product; report: Report }
-  | { kind: "premium_included"; product: Product }
-  | { kind: "not_purchased"; product: Product };
+  /**
+   * The reader holds an unused included report (Atlas: one per membership
+   * year). Redeem it with CheckoutButton's credit action; it applies to any
+   * report type, so every unbought report shows this state.
+   */
+  | { kind: "included_credit"; product: Product; creditsRemaining: number }
+  /** Buy at the plan's price; Atlas members see `discountPercent` off. */
+  | { kind: "not_purchased"; product: Product; discountPercent: number };
 
 export function deriveAccountReportStates(input: {
   products: Product[];
   readyEntitlements: Entitlement[];
   reports: Report[];
   planKey: string;
+  /** Unexpired `report.standard` credits remaining (account_credits). */
+  includedReportCredits?: number;
 }): AccountReportState[] {
+  const creditsRemaining = Math.max(0, input.includedReportCredits ?? 0);
+  const discountPercent =
+    PLAN_ALLOWANCES[membershipPlanFor(input.planKey)].reportDiscountPercent;
   const products = new Map<AccountReportType, Product>();
   for (const product of input.products)
     if (
@@ -69,9 +82,9 @@ export function deriveAccountReportStates(input: {
       continue;
     }
     states.push(
-      input.planKey === "premium"
-        ? { kind: "premium_included", product }
-        : { kind: "not_purchased", product },
+      creditsRemaining > 0
+        ? { kind: "included_credit", product, creditsRemaining }
+        : { kind: "not_purchased", product, discountPercent },
     );
   }
   return states;
@@ -97,7 +110,7 @@ export function primaryAccountReportAction(
     )[0];
   if (purchased) return purchased.product.report_type as AccountReportType;
 
-  for (const kind of ["premium_included", "not_purchased"] as const) {
+  for (const kind of ["included_credit", "not_purchased"] as const) {
     const state = states.find((candidate) => candidate.kind === kind);
     if (state) return state.product.report_type as AccountReportType;
   }

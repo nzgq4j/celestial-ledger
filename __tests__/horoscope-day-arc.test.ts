@@ -5,24 +5,23 @@ const componentSource = readFileSync(
   "components/horoscopes/horoscope-day-arc.tsx",
   "utf8",
 );
-const stylesheet = readFileSync("app/globals.css", "utf8");
+const stylesheet = readFileSync("app/styles/atlas-public.css", "utf8");
 
 describe("horoscope day arc", () => {
-  it("uses the period for fixed timeline geometry instead of reading intensity", () => {
+  it("keys each row by its period instead of reading intensity", () => {
     expect(componentSource).toContain("data-period={part.period}");
     expect(componentSource).not.toContain("--arc-level");
+    expect(componentSource).not.toContain("part.level");
     expect(stylesheet).not.toContain("var(--arc-level)");
   });
 
-  it("keeps every marker the same size and raises afternoon to the apex", () => {
+  it("lays out morning, midday and evening as labelled rows", () => {
     expect(stylesheet).toMatch(
-      /\.horoscope-day-arc__signal > span\s*{[^}]*width: 0\.72rem;[^}]*height: 0\.72rem;/s,
+      /\.sign-arc li\s*{[^}]*grid-template-columns: 6rem minmax\(0, 1fr\);/s,
     );
-    expect(stylesheet).toMatch(
-      /li\[data-period="afternoon"\] \.horoscope-day-arc__signal\s*{\s*transform: translateY\(-1\.4rem\);/s,
-    );
-    expect(stylesheet).toMatch(
-      /\.horoscope-day-arc--compact[\s\S]*li\[data-period="afternoon"\][\s\S]*transform: translateY\(-0\.95rem\);/,
+    expect(stylesheet).toMatch(/\.sign-arc__when\s*{[^}]*--atlas-gold/s);
+    expect(componentSource).toContain(
+      "{!compact && <span>{part.guidance}</span>}",
     );
   });
 });

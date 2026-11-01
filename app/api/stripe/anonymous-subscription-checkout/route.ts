@@ -15,8 +15,15 @@ import {
   sameCalculatedChart,
   sha256,
 } from "@/lib/commerce/checkout-claims";
+import { ATLAS_PLAN_KEY, BILLING_INTERVALS } from "@/lib/membership/plans";
 import { verifyRecaptcha } from "@/lib/recaptcha";
 import { stripeClient } from "@/lib/stripe";
+import {
+  activeAtlasPrice,
+  ATLAS_UNAVAILABLE_MESSAGE,
+} from "@/lib/stripe/catalog";
+import { subscriptionCheckoutSessionParams } from "@/lib/stripe/checkout";
+import { atlasTrialEligible } from "@/lib/stripe/trial";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -25,7 +32,9 @@ export const dynamic = "force-dynamic";
 
 const requestSchema = z
   .object({
-    planKey: z.enum(["personal", "premium"]),
+    // Atlas only (database key `premium`); the retired `personal` is rejected.
+    planKey: z.literal(ATLAS_PLAN_KEY),
+    interval: z.enum(BILLING_INTERVALS).default("month"),
     displayName: z.string().trim().min(2).max(50).optional(),
     email: z.string().trim().email().max(254),
     birthInput: birthInputSchema,
@@ -92,13 +101,8 @@ export async function POST(request: Request) {
   if (!sameCalculatedChart(input.chart, recalculated))
     return json({ error: "The displayed chart could not be verified." }, 422);
 
-  const { data: plan } = await admin
-    .from("commerce_plans")
-    .select("plan_key,stripe_price_id,active")
-    .eq("plan_key", input.planKey)
-    .single();
-  if (!plan?.active || !plan.stripe_price_id)
-    return json({ error: "This membership is not currently available." }, 409);
+  const price = await activeAtlasPrice(admin, input.interval);
+  if (!price) return json({ error: ATLAS_UNAVAILABLE_MESSAGE }, 409);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
   if (!appUrl)
@@ -113,7 +117,8 @@ export async function POST(request: Request) {
     .from("pending_chart_claims")
     .insert({
       claim_token_hash: tokenHash,
-      requested_plan_key: plan.plan_key,
+      requested_plan_key: price.planKey,
+      requested_billing_interval: price.interval,
       display_name: input.displayName ?? null,
       birth_input: input.birthInput as unknown as Json,
       chart: recalculated as unknown as Json,
@@ -128,23 +133,30 @@ export async function POST(request: Request) {
 
   const metadata = {
     application: "celestial_atlas",
-    celestial_atlas_plan_key: plan.plan_key,
+    celestial_atlas_plan_key: price.planKey,
+    celestial_atlas_billing_interval: price.interval,
     pending_claim_token: token,
   };
   try {
-    const session = await stripeClient().checkout.sessions.create({
-      mode: "subscription",
-      line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-      customer_email: input.email,
-      payment_method_collection: "if_required",
-      allow_promotion_codes: true,
-      metadata,
-      subscription_data: { metadata },
-      automatic_tax: { enabled: flags.automaticTax },
-      expires_at: Math.floor(expiresAt.getTime() / 1000),
-      success_url: `${appUrl}/auth/claim-subscription?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/#chart`,
+    // An email that already belongs to a Stripe customer or account with a
+    // past subscription or trial gets no second trial.
+    const trialEligible = await atlasTrialEligible({
+      admin,
+      stripe: stripeClient(),
+      email: input.email,
     });
+    const session = await stripeClient().checkout.sessions.create(
+      subscriptionCheckoutSessionParams({
+        price,
+        trialEligible,
+        customerEmail: input.email,
+        expiresAt: Math.floor(expiresAt.getTime() / 1000),
+        metadata,
+        automaticTax: flags.automaticTax,
+        successUrl: `${appUrl}/auth/claim-subscription?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${appUrl}/#chart`,
+      }),
+    );
     if (!session.url) throw new Error("stripe_checkout_url_missing");
     const { error: updateError } = await admin
       .from("pending_chart_claims")

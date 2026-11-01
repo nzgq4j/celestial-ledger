@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
+import { membershipCopy } from "@/lib/membership/content";
 
 export function CheckoutButton({
   reportType,
@@ -14,6 +16,8 @@ export function CheckoutButton({
   creditAvailable?: boolean;
   emphasis?: "primary" | "secondary";
 }) {
+  const { locale } = useLocale();
+  const copy = membershipCopy[locale].actions;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [actionUrl, setActionUrl] = useState("");
@@ -41,15 +45,11 @@ export function CheckoutButton({
       if (!response.ok || typeof payload.url !== "string") {
         if (typeof payload.actionUrl === "string")
           setActionUrl(payload.actionUrl);
-        throw new Error(payload.error ?? "Checkout could not be started.");
+        throw new Error(payload.error ?? copy.checkoutFailed);
       }
       window.location.assign(payload.url);
     } catch (caught) {
-      setError(
-        caught instanceof Error
-          ? caught.message
-          : "Checkout could not be started.",
-      );
+      setError(caught instanceof Error ? caught.message : copy.checkoutFailed);
       setBusy(false);
     }
   }
@@ -57,8 +57,10 @@ export function CheckoutButton({
   return (
     <div>
       <div className="checkout-actions">
+        {/* Play payments policy: no web purchases inside the Android app. */}
         <button
           type="button"
+          data-web-only
           onClick={() => checkout(false)}
           disabled={busy}
           className={
@@ -66,8 +68,8 @@ export function CheckoutButton({
           }
         >
           {busy
-            ? "Opening Stripe…"
-            : `Purchase${priceLabel ? ` · ${priceLabel}` : ""}`}
+            ? copy.openingCheckout
+            : `${copy.purchase}${priceLabel ? ` · ${priceLabel}` : ""}`}
         </button>
         {creditAvailable && (
           <button
@@ -76,14 +78,14 @@ export function CheckoutButton({
             disabled={busy}
             className="button-quiet"
           >
-            Use report credit
+            {copy.useIncludedReport}
           </button>
         )}
       </div>
       {error && (
         <div role="alert" className="checkout-guidance">
           <p>{error}</p>
-          {actionUrl && <Link href={actionUrl}>Create my natal chart</Link>}
+          {actionUrl && <Link href={actionUrl}>{copy.createChart}</Link>}
         </div>
       )}
     </div>

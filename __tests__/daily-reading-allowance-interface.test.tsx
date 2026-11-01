@@ -73,19 +73,22 @@ describe("membership allowance interface", () => {
       document.querySelector('a.text-link[href="/daily-readings/saved"]'),
     ).not.toBeNull();
   });
-  it("keeps membership details accessible without opening the full allowance explanation", () => {
+  it("presents the two membership levels without legacy plan names", () => {
     render(
       <LocaleProvider>
-        <MembershipExperience signedIn={false} subscriptionsEnabled={true} />
+        <MembershipExperience
+          signedIn={false}
+          subscriptionsEnabled={true}
+          availableIntervals={["month", "year"]}
+          planId="free"
+          provider={null}
+          trialEligible={true}
+        />
       </LocaleProvider>,
     );
-    expect(
-      screen.getByRole("rowheader", { name: "Tarot spreads" }),
-    ).toBeTruthy();
-    expect(screen.getAllByRole("columnheader")).toHaveLength(4);
-    expect(
-      screen.getByText("How reading allowances work").closest("details")?.open,
-    ).toBe(false);
+    expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(2);
+    expect(screen.getByRole("heading", { name: "Atlas" })).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/Premium|Personal/);
     expect(screen.queryByText(/delivered by email/i)).toBeNull();
     expect(screen.queryByText(/credit packs/i)).toBeNull();
   });

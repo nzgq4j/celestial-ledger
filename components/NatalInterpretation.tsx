@@ -1,3 +1,5 @@
+import "@/app/styles/atlas-public.css";
+
 export function NatalInterpretation({ text }: { text: string }) {
   const normalized = text
     .replace(/\r\n/g, "\n")
@@ -22,29 +24,25 @@ export function NatalInterpretation({ text }: { text: string }) {
     return (
       <section
         key={`${heading}-${index}`}
-        className="interpretation-section"
+        className="natal-prose__section"
         aria-labelledby={headingId}
       >
-        <header className="interpretation-section__header">
-          <p className="interpretation-section__index">
+        <header className="natal-prose__header">
+          <p className="atlas-kicker">
             Chapter {String(index + 1).padStart(2, "0")}
           </p>
-          <span className="interpretation-section__stars" aria-hidden="true">
+          <span className="natal-prose__stars" aria-hidden="true">
             <i />
             <i />
             <i />
           </span>
         </header>
-        <div className="interpretation-section__body">
+        <div className="natal-prose__body">
           <h2 id={headingId}>{heading}</h2>
           {paragraphs.map((paragraph, paragraphIndex) => (
             <p
               key={paragraphIndex}
-              className={
-                paragraphIndex === 0
-                  ? "interpretation-section__lead"
-                  : undefined
-              }
+              className={paragraphIndex === 0 ? "natal-prose__lead" : undefined}
             >
               {paragraph}
             </p>

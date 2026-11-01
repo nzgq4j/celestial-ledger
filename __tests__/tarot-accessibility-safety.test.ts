@@ -21,15 +21,20 @@ const symbolicBack = readFileSync(
   "utf8",
 );
 const styles = readFileSync("app/globals.css", "utf8");
+const atlasStyles = readFileSync("app/styles/atlas-public.css", "utf8");
 
 describe("tarot accessibility and content safety", () => {
-  it("exposes state, progress, errors, and image purpose without relying on colour", () => {
-    expect(experience).toContain('aria-current={stage === step ? "step"');
+  it("exposes state, locks, errors, and the draw cue without relying on colour", () => {
     expect(experience).toContain("aria-pressed={selected}");
+    expect(experience).toContain('role="group"');
+    expect(experience).toContain("aria-label={copy.spreadsLabel}");
     expect(experience).toContain('role="alert"');
-    expect(experience).toContain("copy.deckCoverLabel");
+    expect(experience).toContain('role="status"');
     expect(experience).toContain("formatTarotMessage");
-    expect(experience).toContain("copy.locked");
+    expect(experience).toContain("copy.lockedAtlas");
+    expect(experience).toContain("copy.lockedSpreadLabel");
+    expect(experience).toContain('aria-describedby="tarot-draw-hint"');
+    expect(experience).toContain("planMeetsTarotMinimum");
     expect(accountDraw).toContain('role="alert"');
     expect(uploadForm).toContain('aria-live="polite"');
     expect(uploadForm).toContain('name="cardId"');
@@ -39,20 +44,18 @@ describe("tarot accessibility and content safety", () => {
   });
 
   it("provides keyboard focus treatment and a reduced-motion alternative", () => {
-    expect(styles).toContain(".tarot-progress a:focus-visible");
-    expect(styles).toContain(".tarot-deck:focus-visible");
-    expect(styles).toContain(".tarot-shuffle:focus-visible");
-    expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(styles).toContain(".tarot-shuffle.is-shuffling");
-    expect(experience).toContain('className="tarot-shuffle__axis"');
-    expect(styles).toContain(".tarot-shuffle__axis");
-    expect(styles).toContain(".tarot-card-back.tarot-shuffle__card");
+    expect(atlasStyles).toContain(".tarot-big-card:focus-visible");
+    expect(atlasStyles).toContain(".tarot-panel__title:focus-visible");
+    expect(atlasStyles).toContain(
+      ".tarot-results .tarot-draw-card:focus-visible",
+    );
+    expect(atlasStyles).toContain(".tarot-big-card.is-shuffling");
+    expect(atlasStyles).toMatch(
+      /prefers-reduced-motion: reduce[\s\S]*?\.tarot-big-card[\s\S]*?animation: none/,
+    );
+    expect(experience).toContain('"(prefers-reduced-motion: reduce)"');
     expect(styles).toContain(".admin-artwork-form__button");
     expect(styles).toContain(".admin-card-face-list");
-    expect(styles).not.toContain(".tarot-shuffle > span");
-    expect(styles).toMatch(
-      /prefers-reduced-motion:[\s\S]*?\.tarot-shuffle[\s\S]*?animation: none/,
-    );
   });
 
   it("keeps the native admin card selector legible in both themes", () => {
@@ -69,19 +72,18 @@ describe("tarot accessibility and content safety", () => {
     expect(experience).not.toContain("shuffleComplete");
     expect(experience).not.toContain("copy.selectDeck");
     expect(experience).not.toContain("{copy.reveal}");
-    expect(experience).toContain("function stepHref");
-    expect(experience).toContain("href={stepHref(step)}");
-    expect(experience).toContain("goToStep(step)");
-    expect(experience).toContain("selectedDeck.cardBackImageUrl");
-    expect(experience).toContain("has-selected-back");
     expect(experience).toContain("function beginShuffleAndReveal()");
     expect(experience).toContain("void reveal();");
-    expect(experience).toContain('role="button"');
-    expect(experience).toContain('className="tarot-spread__select"');
-    expect(styles).toContain(".tarot-progress a");
-    expect(styles).toContain('.tarot-progress a[aria-disabled="true"]');
-    expect(styles).toContain(".tarot-spread__count i.has-selected-back");
-    expect(styles).toMatch(/\.tarot-shuffle\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/);
+    expect(experience).toContain('fetch("/api/tarot/draw"');
+    expect(experience).toContain("selectedDeck.cardBackImageUrl");
+    expect(experience).toContain('className="tarot-big-card__frame"');
+    expect(experience).toContain("copy.tapToTurn");
+    expect(atlasStyles).toMatch(
+      /\.tarot-big-card\s*{[\s\S]*?aspect-ratio:\s*2 \/ 3\.3[\s\S]*?var\(--atlas-wine\)/,
+    );
+    expect(atlasStyles).toMatch(
+      /\.tarot-big-card__frame\s*{[\s\S]*?inset:\s*12px/,
+    );
     expect(styles).toMatch(
       /\.tarot-card-back\s*{[\s\S]*?aspect-ratio:\s*5 \/ 8/,
     );

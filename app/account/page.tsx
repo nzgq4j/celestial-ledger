@@ -1,45 +1,38 @@
-import {
-  isoDateInTimeZone,
-  isoWeekStart,
-} from "@/lib/weekly-readings/calculation";
-import { AccountNavigation } from "@/components/AccountNavigation";
-import { AccountLibrary, type SavedReading } from "@/components/AccountLibrary";
-import { workspaceCopy } from "@/lib/account/workspace-copy";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import "@/app/styles/atlas-member.css";
+import { AccountNavigation } from "@/components/AccountNavigation";
+import { AccountLibrary, type SavedReading } from "@/components/AccountLibrary";
 import { AccountSettings } from "@/components/AccountSettings";
-import { BirthProfileList } from "@/components/BirthProfileList";
-import { GenerateReportButton } from "@/components/GenerateReportButton";
 import { DailyReadingGenerator } from "@/components/DailyReadingGenerator";
 import { WeeklyReadingGenerator } from "@/components/WeeklyReadingGenerator";
 import { AccountTarotDailyDraw } from "@/components/AccountTarotDailyDraw";
-import { isDemoMode } from "@/lib/supabase/config";
-import { createClient } from "@/lib/supabase/server";
-import { getServerTranslationPack } from "@/lib/i18n/server";
-import { isLocaleTag } from "@/lib/i18n/config";
-import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  commerceFlags,
-  tarotReadingFlags,
-  weeklyReadingFlags,
-} from "@/lib/commerce/flags";
 import { BillingPortalButton } from "@/components/BillingPortalButton";
-import { CheckoutButton } from "@/components/CheckoutButton";
+import { MorningAlertToggle } from "@/components/native/MorningAlertToggle";
+import { RestorePurchasesButton } from "@/components/native/PlayBillingButton";
+import { TodayView } from "@/components/account/TodayView";
+import { ChartView } from "@/components/account/ChartView";
+import { ReportOffers } from "@/components/account/ReportOffers";
+import { workspaceCopy } from "@/lib/account/workspace-copy";
+import { memberCopy, fillCopy } from "@/lib/account/member-copy";
 import {
-  capabilityDecisionForUser,
-  effectivePlanKeyForUser,
-} from "@/lib/entitlements/server";
+  dailyAllowanceFor,
+  loadMemberBase,
+  loadReportContext,
+  loadSavedReadings,
+} from "@/lib/account/member-data";
+import { getServerTranslationPack } from "@/lib/i18n/server";
+import { tarotReadingFlags, weeklyReadingFlags } from "@/lib/commerce/flags";
+import { capabilityDecisionForUser } from "@/lib/entitlements/server";
 import { WEEKLY_READING_CAPABILITY } from "@/lib/weekly-readings/domain";
-import {
-  deriveAccountReportStates,
-  primaryAccountReportAction,
-} from "@/lib/account/report-states";
 import { listActiveTarotDecksForPlan } from "@/lib/tarot/decks";
+import { dailyAllowanceLabel } from "@/lib/daily-readings/allowance";
 import {
-  dailyAllowanceSchema,
-  dailyAllowanceLabel,
-} from "@/lib/daily-readings/allowance";
-import { membershipCopy } from "@/lib/membership/content";
+  ATLAS_TRIAL_DAYS,
+  PLAN_ALLOWANCES,
+  isAtlasMember,
+  membershipPlanFor,
+} from "@/lib/membership/plans";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -50,6 +43,8 @@ export async function generateMetadata() {
   };
 }
 
+const views = ["library", "create", "charts", "membership", "settings"];
+
 export default async function AccountPage({
   searchParams,
 }: {
@@ -57,117 +52,109 @@ export default async function AccountPage({
     notice?: string;
     focusReport?: string;
     view?: string;
+    chart?: string;
   }>;
 }) {
-  if (isDemoMode()) redirect("/auth/login");
-  const pack = await getServerTranslationPack();
-  const copy = pack.messages.account;
-  const ui = workspaceCopy[pack.tag];
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) redirect("/auth/login");
-
-  const adminClient = createAdminClient();
-  const commerce = commerceFlags();
-  const weeklyFlags = weeklyReadingFlags();
-  const tarotFlags = tarotReadingFlags();
-  const { data: adminRole } = await adminClient
-    .from("admin_roles")
-    .select("role")
-    .eq("user_id", authData.user.id)
-    .maybeSingle();
-
-  const [
-    params,
-    profileResult,
-    birthProfileResult,
-    reportResult,
-    dailyReadingResult,
-    productResult,
-    entitlementResult,
-  ] = await Promise.all([
+  const [pack, params, base] = await Promise.all([
+    getServerTranslationPack(),
     searchParams,
-    supabase
-      .from("profiles")
-      .select("display_name, created_at, report_locale")
-      .single(),
-    supabase
-      .from("birth_profiles")
-      .select(
-        "id, label, birth_date, display_name, time_unknown, time_zone, expires_at, created_at, natal_reading_generated_at",
-      )
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("reports")
-      .select(
-        "id, entitlement_id, report_type, status, locale, attempts, next_attempt_at, expires_at, created_at",
-      )
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("daily_readings")
-      .select("id,birth_profile_id,reading_date,locale,generated_at,expires_at")
-      .order("reading_date", { ascending: false })
-      .gt("expires_at", new Date().toISOString()),
-    supabase
-      .from("products")
-      .select("report_type, name, description, unit_amount, currency")
-      .order("unit_amount", { ascending: false }),
-    supabase
-      .from("entitlements")
-      .select("id, report_type, status, granted_at")
-      .order("granted_at", { ascending: false }),
+    loadMemberBase(),
   ]);
-
+  if (!base) redirect("/auth/login");
+  const copy = pack.messages.account;
+  const m = memberCopy[pack.tag];
   const view = params.focusReport
     ? "library"
-    : ["library", "create", "charts", "membership", "settings"].includes(
-          params.view ?? "",
-        )
+    : views.includes(params.view ?? "")
       ? params.view!
       : "overview";
-  const profile = profileResult.data;
-  const birthProfiles = birthProfileResult.data ?? [];
-  const reports = reportResult.data ?? [];
-  const dailyReadings = dailyReadingResult.data ?? [];
-  const weeklyReadings = weeklyFlags.generationEnabled
-    ? ((
-        await supabase
-          .from("weekly_readings")
-          .select(
-            "id,week_start_date,week_end_date,reading_start_date,reading_end_date,locale,generated_at,status,expires_at",
-          )
-          .order("reading_start_date", { ascending: false })
-          .gt("expires_at", new Date().toISOString())
-      ).data ?? [])
-    : [];
-  const { data: tarotReadings, error: tarotLibraryError } = await supabase
-    .from("tarot_readings")
-    .select("id,title,locale,created_at,expires_at")
-    .gt("expires_at", new Date().toISOString())
-    .order("created_at", { ascending: false });
-  if (tarotLibraryError)
-    throw new Error(
-      "Your saved tarot readings could not be loaded. Please try again.",
-    );
-  const products = productResult.data ?? [];
-  const entitlements = entitlementResult.data ?? [];
-  const reportLocale =
-    profile?.report_locale && isLocaleTag(profile.report_locale)
-      ? profile.report_locale
-      : pack.tag;
-  const linkedEntitlementIds = new Set(
-    reports.map((report) => report.entitlement_id),
+  const reportLocale = base.reportLocale ?? pack.tag;
+  const reportProfiles = base.activeProfiles.map(({ id, label }) => ({
+    id,
+    label,
+  }));
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString(pack.tag, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+  return (
+    <main className="atlas-shell member-page" data-view={view}>
+      <AccountNavigation
+        view={view}
+        copy={{
+          label: m.accountSections,
+          settings: m.tabSettings,
+          membership: m.tabBilling,
+          create: m.tabCreate,
+        }}
+        admin={Boolean(base.adminRole)}
+        adminLabel={copy.adminConsole}
+      />
+
+      {view === "overview" && <TodayView base={base} pack={pack} />}
+
+      {view === "charts" && (
+        <ChartView base={base} pack={pack} selectedId={params.chart} />
+      )}
+
+      {view === "library" && (
+        <LibraryView
+          base={base}
+          pack={pack}
+          reportLocale={reportLocale}
+          reportProfiles={reportProfiles}
+          focusReportId={params.focusReport}
+        />
+      )}
+
+      {view === "create" && (
+        <CreateView
+          base={base}
+          pack={pack}
+          reportLocale={reportLocale}
+          reportProfiles={reportProfiles}
+        />
+      )}
+
+      {view === "membership" && (
+        <MembershipView base={base} pack={pack} formatDate={formatDate} />
+      )}
+
+      {view === "settings" && (
+        <>
+          <header className="member-head member-head--stacked">
+            <div>
+              <p className="atlas-kicker">{m.settingsKicker}</p>
+              <h1 className="atlas-page-title">{m.settingsTitle}</h1>
+            </div>
+          </header>
+          <SettingsNotice notice={params.notice} copy={copy} />
+          <AccountSettings
+            displayName={base.profile?.display_name ?? ""}
+            email={base.user.email ?? ""}
+            copy={copy}
+            reportLocale={reportLocale}
+          />
+          <section className="atlas-card member-app-settings" data-app-only>
+            <MorningAlertToggle />
+            <RestorePurchasesButton className="atlas-button-ghost" />
+          </section>
+        </>
+      )}
+    </main>
   );
-  const readyEntitlements = entitlements.filter(
-    (item) =>
-      (item.status === "unused" ||
-        (item.status === "queued" && !linkedEntitlementIds.has(item.id))) &&
-      ["career_purpose", "recovery_reflection"].includes(item.report_type),
-  );
-  const displayName =
-    profile?.display_name?.trim() ||
-    authData.user.email?.split("@")[0] ||
-    copy.explorer;
+}
+
+function SettingsNotice({
+  notice,
+  copy,
+}: {
+  notice?: string;
+  copy: Record<string, string>;
+}) {
   const notices: Record<string, string> = {
     name_updated: copy.nameUpdated,
     password_updated: copy.passwordUpdated,
@@ -181,159 +168,47 @@ export default async function AccountPage({
     invalid_report_locale: copy.invalidReportLocale,
     report_locale_failed: copy.reportLocaleFailed,
   };
-  const notice = params.notice ? notices[params.notice] : undefined;
-  const subscription = commerce.subscriptions
-    ? (
-        await adminClient
-          .from("account_subscriptions")
-          .select(
-            "plan_key,status,current_period_end,cancel_at_period_end,grace_ends_at",
-          )
-          .eq("user_id", authData.user.id)
-          .order("updated_at", { ascending: false })
-          .limit(1)
-          .maybeSingle()
-      ).data
-    : null;
-  const weeklyDecision = weeklyFlags.generationEnabled
-    ? await capabilityDecisionForUser(
-        authData.user.id,
-        WEEKLY_READING_CAPABILITY,
-      )
-    : null;
-  const weeklyAccessible = weeklyDecision?.allowed === true;
-  const activeProfiles = birthProfiles.filter(
-    (profile) => new Date(profile.expires_at) > new Date(),
+  const message = notice ? notices[notice] : undefined;
+  if (!message) return null;
+  return (
+    <p className="member-notice" role="status">
+      {message}
+    </p>
   );
-  const primaryProfile = [...activeProfiles].sort(
-    (a, b) =>
-      a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
-  )[0];
-  const dailyAllowances = Object.fromEntries(
-    await Promise.all(
-      activeProfiles.map(async (profile) => {
-        const { data, error } = await adminClient.rpc(
-          "daily_reading_allowance",
-          { p_user_id: authData.user.id, p_birth_profile_id: profile.id },
-        );
-        const parsed = error ? undefined : dailyAllowanceSchema.safeParse(data);
-        return [profile.id, parsed?.success ? parsed.data : undefined];
-      }),
-    ),
-  );
-  const chartDecision = await capabilityDecisionForUser(
-    authData.user.id,
-    "birth_profiles.saved",
-  );
-  const weekStart = isoWeekStart(
-    new Date(
-      `${isoDateInTimeZone(new Date(), primaryProfile?.time_zone ?? "UTC")}T12:00:00Z`,
-    ),
-  );
-  const weekPeriodStart = `${weekStart}T00:00:00.000Z`;
-  const weekReset = new Date(Date.parse(weekPeriodStart) + 7 * 86400000);
-  const { data: weeklyUsage, error: weeklyUsageError } = await adminClient
-    .from("capability_usage")
-    .select("quantity")
-    .eq("user_id", authData.user.id)
-    .eq("capability_key", WEEKLY_READING_CAPABILITY)
-    .eq("period_start", weekPeriodStart);
-  const weeklyRemaining =
-    !weeklyUsageError &&
-    weeklyDecision?.allowed &&
-    weeklyDecision.allowance !== null
-      ? Math.max(
-          0,
-          weeklyDecision.allowance -
-            (weeklyUsage ?? []).reduce((sum, row) => sum + row.quantity, 0),
-        )
-      : null;
-  const commercePlanKey = await effectivePlanKeyForUser(authData.user.id);
-  const tarotDecks = tarotFlags.enabled
-    ? await listActiveTarotDecksForPlan(commercePlanKey, pack.tag)
-    : [];
-  const [{ data: reportPrices }, { data: reportCredits }] = commerce.checkout
-    ? await Promise.all([
-        adminClient
-          .from("report_prices")
-          .select("report_type,unit_amount,currency")
-          .eq("plan_key", commercePlanKey)
-          .eq("active", true)
-          .order("catalog_version", { ascending: false }),
-        adminClient
-          .from("account_credits")
-          .select("quantity_remaining,expires_at")
-          .eq("user_id", authData.user.id)
-          .eq("credit_key", "report.standard")
-          .gt("quantity_remaining", 0),
-      ])
-    : [{ data: [] }, { data: [] }];
-  const availableReportCredits = (reportCredits ?? []).reduce(
-    (total, credit) =>
-      !credit.expires_at || new Date(credit.expires_at) > new Date()
-        ? total + credit.quantity_remaining
-        : total,
-    0,
-  );
-  const reportStates = deriveAccountReportStates({
-    products,
-    readyEntitlements,
-    reports,
-    planKey: commercePlanKey,
-  });
-  const primaryReportType = primaryAccountReportAction(reportStates);
-  const reportProfiles = birthProfiles.map((item) => ({
-    id: item.id,
-    label: item.label,
-  }));
-  const planName = subscription
-    ? `${subscription.plan_key[0].toUpperCase()}${subscription.plan_key.slice(1)}`
-    : copy.freePlan;
-  const planTiming = subscription?.current_period_end
-    ? `${subscription.cancel_at_period_end ? copy.accessEnds : copy.nextBillingDate} ${new Date(subscription.current_period_end).toLocaleDateString(pack.tag)}.`
-    : copy.freePlanCopy;
-  const latestReport = reports.find(
-    (report) =>
-      report.status === "completed" &&
-      (!report.expires_at || new Date(report.expires_at) > new Date()),
-  );
-  const nextStep = readyEntitlements.length
-    ? {
-        kicker: copy.waitingKicker,
-        title: copy.waitingTitle,
-        copy: copy.waitingCopy,
-        href: "/account?view=create#reports",
-        action: copy.waitingAction,
-      }
-    : !birthProfiles.length
-      ? {
-          kicker: copy.firstKicker,
-          title: copy.firstTitle,
-          copy: copy.firstCopy,
-          href: "/#chart",
-          action: copy.firstAction,
-        }
-      : latestReport
-        ? {
-            kicker: copy.continueKicker,
-            title:
-              latestReport.report_type === "recovery_reflection"
-                ? copy.recoveryReflection
-                : copy.careerPurpose,
-            copy: copy.continueCopy,
-            href: `/reports/${latestReport.id}`,
-            action: copy.continueAction,
-          }
-        : {
-            kicker: copy.anchoredKicker,
-            title: copy.anchoredTitle,
-            copy: copy.anchoredCopy,
-            href: "/samples",
-            action: copy.anchoredAction,
-          };
+}
 
+type ViewProps = {
+  base: NonNullable<Awaited<ReturnType<typeof loadMemberBase>>>;
+  pack: Awaited<ReturnType<typeof getServerTranslationPack>>;
+};
+
+async function LibraryView({
+  base,
+  pack,
+  reportLocale,
+  reportProfiles,
+  focusReportId,
+}: ViewProps & {
+  reportLocale: (typeof pack)["tag"];
+  reportProfiles: Array<{ id: string; label: string }>;
+  focusReportId?: string;
+}) {
+  const copy = pack.messages.account;
+  const ui = workspaceCopy[pack.tag];
+  const m = memberCopy[pack.tag];
+  const [reportContext, saved] = await Promise.all([
+    loadReportContext(base),
+    loadSavedReadings(base, {
+      weeklyEnabled: weeklyReadingFlags().generationEnabled,
+    }),
+  ]);
+  const dateLabel = (value: string, options: Intl.DateTimeFormatOptions) =>
+    new Date(value).toLocaleDateString(pack.tag, {
+      timeZone: "UTC",
+      ...options,
+    });
   const savedReadings: SavedReading[] = [
-    ...(tarotReadings ?? []).map((item) => ({
+    ...saved.tarotReadings.map((item) => ({
       id: item.id,
       title: item.title,
       kind: "tarot" as const,
@@ -343,9 +218,9 @@ export default async function AccountPage({
       status: copy.statusCompleted,
       href: `/account/tarot/${item.id}`,
     })),
-    ...dailyReadings.map((item) => ({
+    ...saved.dailyReadings.map((item) => ({
       id: item.id,
-      title: ui.daily,
+      title: `${m.kindDaily} · ${dateLabel(`${item.reading_date}T12:00:00Z`, { day: "numeric", month: "long" })}`,
       kind: "daily" as const,
       date: item.generated_at,
       expiresAt: item.expires_at,
@@ -353,9 +228,9 @@ export default async function AccountPage({
       status: copy.statusCompleted,
       href: `/daily-readings/${item.id}`,
     })),
-    ...weeklyReadings.map((item) => ({
+    ...saved.weeklyReadings.map((item) => ({
       id: item.id,
-      title: ui.weekly,
+      title: `${m.kindWeekly} · ${dateLabel(`${item.reading_start_date}T12:00:00Z`, { day: "numeric", month: "short" })} – ${dateLabel(`${item.reading_end_date}T12:00:00Z`, { day: "numeric", month: "short" })}`,
       kind: "weekly" as const,
       date: item.generated_at,
       expiresAt: item.expires_at,
@@ -364,515 +239,361 @@ export default async function AccountPage({
       href: `/weekly-readings/${item.id}`,
     })),
   ].sort((a, b) => b.date.localeCompare(a.date));
-  const recentWork = [
-    ...savedReadings,
-    ...reports
-      .filter(
-        (item) =>
-          item.status === "completed" &&
-          (!item.expires_at || new Date(item.expires_at) > new Date()),
-      )
-      .map((item) => ({
-        title:
-          item.report_type === "recovery_reflection"
-            ? copy.recoveryReflection
-            : copy.careerPurpose,
-        date: item.created_at,
-        href: `/reports/${item.id}`,
-      })),
-  ]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 5);
 
   return (
-    <main className="page-shell private-library account-dashboard">
-      <AccountNavigation
-        view={view}
-        copy={ui}
-        admin={Boolean(adminRole)}
-        adminLabel={copy.adminConsole}
+    <>
+      <header className="member-head member-head--stacked">
+        <div>
+          <p className="atlas-kicker">{m.reportsKicker}</p>
+          <h1 className="atlas-page-title">{m.reportsTitle}</h1>
+        </div>
+      </header>
+      <ReportOffers
+        pack={pack}
+        prices={reportContext.reportPrices}
+        member={{
+          states: reportContext.reportStates,
+          primaryReportType: reportContext.primaryReportType,
+          planKey: base.planKey,
+          profiles: reportProfiles,
+          reportLocale,
+          checkoutEnabled: base.commerce.checkout,
+          availableReportCredits: reportContext.availableReportCredits,
+        }}
       />
+      <AccountLibrary
+        readings={savedReadings}
+        reports={reportContext.reports}
+        copy={ui}
+        member={m}
+        locale={pack.tag}
+        focusReportId={focusReportId}
+      />
+    </>
+  );
+}
 
-      <div className="account-workspace">
-        <section className="account-command-bar" id="overview">
-          <div className="account-command-bar__identity">
-            <span aria-hidden="true">
-              {displayName.slice(0, 1).toUpperCase()}
+async function CreateView({
+  base,
+  pack,
+  reportLocale,
+  reportProfiles,
+}: ViewProps & {
+  reportLocale: (typeof pack)["tag"];
+  reportProfiles: Array<{ id: string; label: string }>;
+}) {
+  const copy = pack.messages.account;
+  const m = memberCopy[pack.tag];
+  const weeklyFlags = weeklyReadingFlags();
+  const tarotFlags = tarotReadingFlags();
+  const { activeProfiles, primaryProfile } = base;
+  const [reportContext, saved, dailyAllowances, weeklyDecision, tarotDecks] =
+    await Promise.all([
+      loadReportContext(base),
+      loadSavedReadings(base, { weeklyEnabled: weeklyFlags.generationEnabled }),
+      Promise.all(
+        activeProfiles.map(
+          async (profile) =>
+            [profile.id, await dailyAllowanceFor(base, profile.id)] as const,
+        ),
+      ).then((entries) => Object.fromEntries(entries)),
+      weeklyFlags.generationEnabled
+        ? capabilityDecisionForUser(base.user.id, WEEKLY_READING_CAPABILITY)
+        : null,
+      tarotFlags.enabled
+        ? listActiveTarotDecksForPlan(base.planKey, pack.tag)
+        : [],
+    ]);
+  const weeklyAccessible = weeklyDecision?.allowed === true;
+
+  return (
+    <>
+      <header className="member-head member-head--stacked">
+        <div>
+          <p className="atlas-kicker">{m.createKicker}</p>
+          <h1 className="atlas-page-title">{m.createTitle}</h1>
+          <p className="member-lede">{m.createIntro}</p>
+        </div>
+      </header>
+      <section
+        className="create-readings"
+        id="readings"
+        aria-label={copy.yourReadingsTitle}
+      >
+        <details className="create-card" id="daily-reading">
+          <summary className="create-card__summary">
+            <span>
+              <span className="atlas-kicker">{copy.dailyReadingKicker}</span>
+              <span className="create-card__title">
+                {copy.dailyReadingTitle}
+              </span>
             </span>
-            <div>
-              <p>{copy.heroKicker}</p>
-              <h1>{displayName}</h1>
-            </div>
-          </div>
-          <div className="account-command-bar__membership" id="billing">
-            <span>{copy.currentMembership}</span>
-            <strong>{planName}</strong>
-            <small>{planTiming}</small>
-            {adminRole?.role === "site_admin" && (
-              <small>{ui.adminAccess}</small>
-            )}
-          </div>
-          <div className="account-command-bar__manage">
-            <span>{subscription?.status ?? copy.activeStatus}</span>
-            {subscription ? (
-              <BillingPortalButton />
-            ) : (
-              <Link className="button-secondary" href="/membership">
-                {copy.viewMembership}
-              </Link>
-            )}
-          </div>
-        </section>
-
-        {view === "overview" && (
-          <>
-            <section
-              className="atlas-next-step"
-              aria-labelledby="next-step-title"
-            >
-              <div>
-                <p className="section-kicker">{nextStep.kicker}</p>
-                <h2 id="next-step-title">{nextStep.title}</h2>
-                <p>{nextStep.copy}</p>
-              </div>
-              <Link
-                href={nextStep.href}
-                className={
-                  primaryReportType ? "button-secondary" : "button-primary"
-                }
-              >
-                {nextStep.action}
-              </Link>
-            </section>
-
-            <div className="account-stats" aria-label={copy.accountSummary}>
-              <Link href="/account?view=charts">
-                {birthProfiles.length} {ui.charts}
-              </Link>
-              <Link href="/account?view=library">
-                {reports.length + savedReadings.length} {ui.saved}
-              </Link>
-              <Link href="/account?view=membership">
-                {availableReportCredits} {ui.credits}
-              </Link>
-            </div>
-          </>
-        )}
-        {(view === "overview" || view === "membership") && (
-          <section
-            className="dashboard-panel account-access"
-            aria-labelledby="access-heading"
-          >
-            <h2 id="access-heading">{ui.access}</h2>
-            <p>{ui.billingExplanation}</p>
-            <dl className="access-list">
-              <div>
-                <dt>{ui.daily}</dt>
-                <dd>
-                  {
-                    membershipCopy[pack.tag].page.tiers[commercePlanKey]
-                      .features[1]
-                  }
-                </dd>
-              </div>
-              <div>
-                <dt>{ui.weekly}</dt>
-                <dd>
-                  {!weeklyFlags.generationEnabled
-                    ? ui.unavailable
-                    : weeklyAccessible
-                      ? adminRole?.role === "site_admin"
-                        ? ui.adminAccess
-                        : weeklyDecision?.allowed &&
-                            weeklyDecision.source !== "plan"
-                          ? ui.grantAccess
-                          : ui.planIncluded
-                      : ui.notIncluded}
-                </dd>
-              </div>
-              <div>
-                <dt>Tarot</dt>
-                <dd>
-                  {tarotFlags.enabled
-                    ? adminRole?.role === "site_admin"
-                      ? ui.adminAccess
-                      : ui.planIncluded
-                    : ui.unavailable}
-                </dd>
-              </div>
-              <div>
-                <dt>{ui.charts}</dt>
-                <dd>
-                  {activeProfiles.length}
-                  {chartDecision.allowed && chartDecision.allowance !== null
-                    ? ` / ${chartDecision.allowance}`
-                    : ""}
-                </dd>
-              </div>
-              {weeklyRemaining !== null && (
-                <div>
-                  <dt>{ui.weeklyRemaining}</dt>
-                  <dd>{weeklyRemaining}</dd>
-                  <small>
-                    {ui.resets}{" "}
-                    {weekReset.toLocaleDateString(pack.tag, {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      timeZone: "UTC",
-                    })}
-                  </small>
-                </div>
+            <span className="create-card__status">
+              {dailyAllowanceLabel(
+                primaryProfile ? dailyAllowances[primaryProfile.id] : undefined,
+                pack.tag,
               )}
-              <div>
-                <dt>{ui.credits}</dt>
-                <dd>{availableReportCredits}</dd>
-              </div>
-              <div>
-                <dt>{ui.purchases}</dt>
-                <dd>{readyEntitlements.length}</dd>
-              </div>
-            </dl>
-            <Link href="/account?view=create" className="button-primary">
-              {ui.create}
-            </Link>
-            <Link href="/membership" className="button-secondary">
-              {ui.membership}
-            </Link>
-          </section>
-        )}
-        {view === "overview" && (
-          <section className="dashboard-panel">
-            <h2>{ui.recent}</h2>
-            {recentWork.map((item) => (
-              <div className="saved-reading-row" key={item.href}>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p>
-                    {new Date(item.date).toLocaleDateString(pack.tag, {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-                <Link href={item.href} className="button-secondary">
-                  {ui.open}
+            </span>
+          </summary>
+          <div className="create-card__body">
+            <p className="member-note">{copy.dailyReadingDescription}</p>
+            <DailyReadingGenerator
+              profiles={activeProfiles.map(({ id, label }) => ({ id, label }))}
+              allowances={dailyAllowances}
+              primaryProfileId={primaryProfile?.id}
+              existingReadings={saved.dailyReadings}
+            />
+          </div>
+        </details>
+
+        <details className="create-card" id="weekly-reading">
+          <summary className="create-card__summary">
+            <span>
+              <span className="atlas-kicker">{copy.weeklyReadingKicker}</span>
+              <span className="create-card__title">
+                {copy.weeklyReadingTitle}
+              </span>
+            </span>
+            <span className="create-card__status">
+              {!weeklyFlags.generationEnabled
+                ? copy.weeklyReadingUnavailableTitle
+                : weeklyAccessible
+                  ? saved.weeklyReadings.length
+                    ? copy.weeklyReadingEntitled
+                    : copy.weeklyReadingReady
+                  : copy.weeklyReadingUpsellTitle}
+            </span>
+          </summary>
+          <div className="create-card__body">
+            {!weeklyFlags.generationEnabled ? (
+              <p className="member-note">{copy.weeklyReadingUnavailableCopy}</p>
+            ) : weeklyAccessible ? (
+              <>
+                <p className="member-note">{copy.weeklyReadingDescription}</p>
+                <WeeklyReadingGenerator
+                  primaryProfile={
+                    primaryProfile
+                      ? { id: primaryProfile.id, label: primaryProfile.label }
+                      : undefined
+                  }
+                  existingReadings={saved.weeklyReadings}
+                />
+              </>
+            ) : (
+              <div className="create-card__upsell">
+                <p className="member-note">{copy.weeklyReadingUpsellCopy}</p>
+                <Link href="/membership" className="atlas-button-ghost">
+                  {fillCopy(m.startTrial, { days: ATLAS_TRIAL_DAYS })}
                 </Link>
               </div>
-            ))}
-            {!recentWork.length && <p>{ui.empty}</p>}
-            <Link href="/account?view=library">{ui.viewAll}</Link>
-            <details className="workspace-guide">
-              <summary>{ui.gettingStarted}</summary>
-              <p>{ui.guide}</p>
-              <Link href="/account?view=charts">{ui.charts}</Link>
-            </details>
-          </section>
-        )}
-        {view === "library" && (
-          <AccountLibrary
-            readings={savedReadings}
-            reports={reports}
-            copy={ui}
-            locale={pack.tag}
-            focusReportId={params.focusReport}
-          />
-        )}
-        {notice && (
-          <p className="account-notice" role="status">
-            {notice}
-          </p>
-        )}
+            )}
+          </div>
+        </details>
 
-        {view === "create" && (
-          <>
-            <section
-              className="dashboard-panel dashboard-panel--readings"
-              id="readings"
-            >
-              <div className="dashboard-panel__heading">
-                <div>
-                  <p className="section-kicker">{copy.yourReadingsKicker}</p>
-                  <h2>{ui.create}</h2>
-                </div>
-              </div>
-              <div className="account-reading-cards">
-                <details
-                  className="account-reading-card account-reading-card--daily"
-                  id="daily-reading"
-                >
-                  <summary className="account-reading-card__summary">
-                    <div>
-                      <p className="section-kicker">
-                        {copy.dailyReadingKicker}
-                      </p>
-                      <h3>{copy.dailyReadingTitle}</h3>
-                    </div>
-                    <span className="account-reading-card__status">
-                      <span className="dashboard-panel__meta">
-                        {dailyAllowanceLabel(
-                          primaryProfile
-                            ? dailyAllowances[primaryProfile.id]
-                            : undefined,
-                          pack.tag,
-                        )}
-                      </span>
-                      <small>{ui.create}</small>
-                    </span>
-                  </summary>
-                  <div className="account-reading-card__body">
-                    <p className="dashboard-panel__introduction">
-                      {copy.dailyReadingDescription}
-                    </p>
-                    <DailyReadingGenerator
-                      profiles={activeProfiles.map(({ id, label }) => ({
-                        id,
-                        label,
-                      }))}
-                      allowances={dailyAllowances}
-                      primaryProfileId={primaryProfile?.id}
-                      existingReadings={dailyReadings}
-                    />
-                  </div>
-                </details>
-
-                <details
-                  className="account-reading-card account-reading-card--weekly"
-                  id="weekly-reading"
-                >
-                  <summary className="account-reading-card__summary">
-                    <div>
-                      <p className="section-kicker">
-                        {copy.weeklyReadingKicker}
-                      </p>
-                      <h3>{copy.weeklyReadingTitle}</h3>
-                    </div>
-                    <span className="account-reading-card__status">
-                      <span className="dashboard-panel__meta">
-                        {!weeklyFlags.generationEnabled
-                          ? copy.weeklyReadingUnavailableTitle
-                          : weeklyAccessible
-                            ? weeklyReadings.length
-                              ? copy.weeklyReadingEntitled
-                              : copy.weeklyReadingReady
-                            : copy.weeklyReadingUpsellTitle}
-                      </span>
-                      <small>{ui.create}</small>
-                    </span>
-                  </summary>
-                  <div className="account-reading-card__body">
-                    {!weeklyFlags.generationEnabled ? (
-                      <div className="dashboard-empty">
-                        <h3>{copy.weeklyReadingUnavailableTitle}</h3>
-                        <p>{copy.weeklyReadingUnavailableCopy}</p>
-                      </div>
-                    ) : weeklyAccessible ? (
-                      <>
-                        <p className="dashboard-panel__introduction">
-                          {copy.weeklyReadingDescription}
-                        </p>
-                        <WeeklyReadingGenerator
-                          primaryProfile={
-                            primaryProfile
-                              ? {
-                                  id: primaryProfile.id,
-                                  label: primaryProfile.label,
-                                }
-                              : undefined
-                          }
-                          existingReadings={weeklyReadings}
-                        />
-                      </>
-                    ) : (
-                      <div className="dashboard-empty dashboard-weekly-upsell">
-                        <h3>{copy.weeklyReadingUpsellTitle}</h3>
-                        <p>{copy.weeklyReadingUpsellCopy}</p>
-                        <Link href="/membership" className="button-secondary">
-                          {copy.weeklyReadingUpsellAction}
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                </details>
-
-                {tarotFlags.enabled && (
-                  <details
-                    className="account-reading-card account-reading-card--tarot"
-                    id="tarot-daily-draw"
-                  >
-                    <summary className="account-reading-card__summary">
-                      <div>
-                        <p className="section-kicker">
-                          {pack.messages.tarot.accountDailyKicker}
-                        </p>
-                        <h3>{pack.messages.tarot.accountDailyTitle}</h3>
-                      </div>
-                      <span className="account-reading-card__status">
-                        <span className="dashboard-panel__meta">
-                          {pack.messages.tarot.includedWithPlan}
-                        </span>
-                        <small>{ui.create}</small>
-                      </span>
-                    </summary>
-                    <div className="account-reading-card__body">
-                      <p className="dashboard-panel__introduction">
-                        {pack.messages.tarot.accountDailyDescription}
-                      </p>
-                      <AccountTarotDailyDraw
-                        decks={[...tarotDecks]}
-                        currentPlan={commercePlanKey}
-                        locale={pack.tag}
-                        copy={pack.messages.tarot}
-                      />
-                    </div>
-                  </details>
-                )}
-              </div>
-            </section>
-
-            <section
-              className="dashboard-panel dashboard-panel--reports"
-              id="reports"
-            >
-              <div className="dashboard-panel__heading">
-                <div>
-                  <p className="section-kicker">{copy.reportsCombinedKicker}</p>
-                  <h2>{copy.reportsCombinedTitle}</h2>
-                </div>
-                <span className="dashboard-panel__meta">
-                  {reports.length} {copy.saved}
+        {tarotFlags.enabled && (
+          <details className="create-card" id="tarot-daily-draw">
+            <summary className="create-card__summary">
+              <span>
+                <span className="atlas-kicker">
+                  {pack.messages.tarot.accountDailyKicker}
                 </span>
-              </div>
-
-              <div className="account-report-products">
-                {reportStates.map((state) => {
-                  const reportType = state.product.report_type;
-                  const emphasis =
-                    primaryReportType === reportType ? "primary" : "secondary";
-                  const price = reportPrices?.find(
-                    (candidate) => candidate.report_type === reportType,
-                  );
-                  const stateLabel =
-                    state.kind === "purchased_unused"
-                      ? copy.reportStatePurchased
-                      : state.kind === "generated"
-                        ? copy.reportStateGenerated
-                        : state.kind === "premium_included"
-                          ? copy.reportStateIncluded
-                          : copy.reportStateAvailable;
-                  return (
-                    <article
-                      className="account-report-product"
-                      key={reportType}
-                    >
-                      <div>
-                        <span>{stateLabel}</span>
-                        <h3>
-                          {reportType === "recovery_reflection"
-                            ? copy.recoveryReflection
-                            : copy.careerPurpose}
-                        </h3>
-                        <p>
-                          {reportType === "recovery_reflection"
-                            ? copy.recoveryDescription
-                            : copy.careerDescription}
-                        </p>
-                        <small>{copy.reportDelivery}</small>
-                      </div>
-                      <div className="account-report-product__action">
-                        {state.kind === "generated" ? (
-                          <Link
-                            className="button-quiet"
-                            href={`/account?view=library&focusReport=${state.report.id}`}
-                          >
-                            {ui.library}
-                          </Link>
-                        ) : !birthProfiles.length ? (
-                          <Link
-                            href="/#chart"
-                            className={
-                              emphasis === "primary"
-                                ? "button-primary"
-                                : "button-secondary"
-                            }
-                          >
-                            {copy.createNatalChart}
-                          </Link>
-                        ) : state.kind === "purchased_unused" ? (
-                          <GenerateReportButton
-                            entitlementId={state.entitlement.id}
-                            reportType={reportType}
-                            profiles={reportProfiles}
-                            defaultLocale={reportLocale}
-                            emphasis={emphasis}
-                          />
-                        ) : state.kind === "premium_included" ? (
-                          <GenerateReportButton
-                            reportType={reportType}
-                            profiles={reportProfiles}
-                            defaultLocale={reportLocale}
-                            emphasis={emphasis}
-                          />
-                        ) : commerce.checkout ? (
-                          price ? (
-                            <CheckoutButton
-                              reportType={reportType}
-                              priceLabel={new Intl.NumberFormat(pack.tag, {
-                                style: "currency",
-                                currency: price.currency.toUpperCase(),
-                              }).format(price.unit_amount / 100)}
-                              creditAvailable={availableReportCredits > 0}
-                              emphasis={emphasis}
-                            />
-                          ) : (
-                            <strong>{copy.currentlyUnavailable}</strong>
-                          )
-                        ) : (
-                          <div>
-                            <strong>{copy.complimentary}</strong>
-                            <GenerateReportButton
-                              reportType={reportType}
-                              profiles={reportProfiles}
-                              defaultLocale={reportLocale}
-                              emphasis={emphasis}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-          </>
-        )}
-        {view === "charts" && (
-          <section
-            className="dashboard-panel dashboard-panel--charts"
-            id="birth-profiles"
-          >
-            <div className="dashboard-panel__heading">
-              <div>
-                <p className="section-kicker">{copy.foundationKicker}</p>
-                <h2>{copy.savedBirthCharts}</h2>
-              </div>
-              <Link href="/#chart" className="text-link">
-                {copy.createAnotherChart}
-              </Link>
+                <span className="create-card__title">
+                  {pack.messages.tarot.accountDailyTitle}
+                </span>
+              </span>
+              <span className="create-card__status">
+                {pack.messages.tarot.includedWithPlan}
+              </span>
+            </summary>
+            <div className="create-card__body">
+              <p className="member-note">
+                {pack.messages.tarot.accountDailyDescription}
+              </p>
+              <AccountTarotDailyDraw
+                decks={[...tarotDecks]}
+                currentPlan={base.planKey}
+                locale={pack.tag}
+                copy={pack.messages.tarot}
+              />
             </div>
-            <BirthProfileList initialProfiles={birthProfiles} />
-          </section>
+          </details>
         )}
-        {view === "settings" && (
-          <AccountSettings
-            displayName={profile?.display_name ?? ""}
-            email={authData.user.email ?? ""}
-            copy={copy}
-            reportLocale={reportLocale}
-          />
-        )}
+      </section>
+
+      <section
+        className="create-reports"
+        id="reports"
+        aria-labelledby="create-reports-title"
+      >
+        <h2 id="create-reports-title" className="member-subtitle">
+          {copy.reportsCombinedTitle}
+        </h2>
+        <p className="member-note">{copy.reportDelivery}</p>
+        <ReportOffers
+          pack={pack}
+          prices={reportContext.reportPrices}
+          member={{
+            states: reportContext.reportStates,
+            primaryReportType: reportContext.primaryReportType,
+            planKey: base.planKey,
+            profiles: reportProfiles,
+            reportLocale,
+            checkoutEnabled: base.commerce.checkout,
+            availableReportCredits: reportContext.availableReportCredits,
+          }}
+        />
+      </section>
+    </>
+  );
+}
+
+async function MembershipView({
+  base,
+  pack,
+  formatDate,
+}: ViewProps & { formatDate: (value: string) => string }) {
+  const copy = pack.messages.account;
+  const ui = workspaceCopy[pack.tag];
+  const m = memberCopy[pack.tag];
+  const weeklyFlags = weeklyReadingFlags();
+  const tarotFlags = tarotReadingFlags();
+  const atlas = isAtlasMember(base.planKey);
+  const subscription = base.subscription;
+  const [chartDecision, weeklyDecision, reportContext] = await Promise.all([
+    capabilityDecisionForUser(base.user.id, "birth_profiles.saved").catch(
+      () => undefined,
+    ),
+    weeklyFlags.generationEnabled
+      ? capabilityDecisionForUser(
+          base.user.id,
+          WEEKLY_READING_CAPABILITY,
+        ).catch(() => undefined)
+      : undefined,
+    loadReportContext(base),
+  ]);
+  const planName =
+    membershipPlanFor(subscription?.plan_key ?? base.planKey) === "atlas"
+      ? m.planAtlas
+      : m.planFree;
+  const timing = !subscription?.current_period_end
+    ? undefined
+    : subscription.status === "past_due"
+      ? m.pastDue
+      : subscription.status === "trialing"
+        ? fillCopy(m.trialEnds, {
+            date: formatDate(subscription.current_period_end),
+          })
+        : subscription.cancel_at_period_end
+          ? fillCopy(m.accessEnds, {
+              date: formatDate(subscription.current_period_end),
+            })
+          : fillCopy(m.renews, {
+              date: formatDate(subscription.current_period_end),
+            });
+  const subscriptionPill =
+    subscription?.status === "trialing"
+      ? { label: m.statusTrial, tone: "gold" }
+      : subscription?.status === "past_due"
+        ? { label: m.statusPastDue, tone: "red" }
+        : subscription?.status === "active"
+          ? { label: copy.activeStatus, tone: "cyan" }
+          : undefined;
+  const access: Array<[string, string]> = [
+    [
+      ui.charts,
+      chartDecision?.allowed && chartDecision.allowance !== null
+        ? fillCopy(m.savedChartsUsage, {
+            used: base.activeProfiles.length,
+            total: chartDecision.allowance,
+          })
+        : String(base.activeProfiles.length),
+    ],
+    [
+      ui.weekly,
+      !weeklyFlags.generationEnabled
+        ? ui.unavailable
+        : weeklyDecision?.allowed
+          ? weeklyDecision.source !== "plan"
+            ? ui.grantAccess
+            : ui.planIncluded
+          : ui.notIncluded,
+    ],
+    [m.kindTarot, tarotFlags.enabled ? ui.planIncluded : ui.unavailable],
+    [ui.credits, String(reportContext.availableReportCredits)],
+    [ui.purchases, String(reportContext.readyEntitlements.length)],
+  ];
+
+  return (
+    <>
+      <header className="member-head member-head--stacked">
+        <div>
+          <p className="atlas-kicker">{m.billingKicker}</p>
+          <h1 className="atlas-page-title">{m.billingTitle}</h1>
+        </div>
+      </header>
+      <div className="billing-grid" id="billing">
+        <article
+          className={`atlas-card billing-plan${atlas ? " atlas-card--feature" : ""}`}
+          aria-labelledby="billing-plan-name"
+        >
+          <div className="billing-plan__top">
+            <h2 id="billing-plan-name" className="billing-plan__name">
+              {planName}
+            </h2>
+            {subscriptionPill && (
+              <span
+                className={`member-pill member-pill--${subscriptionPill.tone}`}
+              >
+                {subscriptionPill.label}
+              </span>
+            )}
+          </div>
+          {timing && <p className="billing-plan__timing">{timing}</p>}
+          <p className="billing-plan__summary">
+            {atlas
+              ? fillCopy(m.atlasSummary, {
+                  charts: PLAN_ALLOWANCES.atlas.savedCharts,
+                  companions: PLAN_ALLOWANCES.atlas.companionReadingsPerMonth,
+                })
+              : m.freeSummary}
+          </p>
+          {base.adminRole === "site_admin" && (
+            <p className="member-note">{ui.adminAccess}</p>
+          )}
+          <div className="member-actions">
+            {subscription ? (
+              <BillingPortalButton provider={subscription.provider} />
+            ) : (
+              <Link className="atlas-button" href="/membership">
+                {atlas
+                  ? m.comparePlans
+                  : fillCopy(m.startTrial, { days: ATLAS_TRIAL_DAYS })}
+              </Link>
+            )}
+            {!atlas && subscription && (
+              <Link className="atlas-button-ghost" href="/membership">
+                {m.seeAtlas}
+              </Link>
+            )}
+          </div>
+        </article>
+        <section
+          className="atlas-card billing-access"
+          aria-labelledby="access-heading"
+        >
+          <h2 id="access-heading" className="member-subtitle">
+            {m.accessTitle}
+          </h2>
+          <dl className="billing-access__list">
+            {access.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </div>
-    </main>
+    </>
   );
 }

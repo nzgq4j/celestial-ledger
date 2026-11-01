@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "@/app/styles/atlas-member.css";
 import { NatalChartWheel } from "@/components/NatalChartWheel";
 import { NatalInterpretation } from "@/components/NatalInterpretation";
 import { createPageMetadata } from "@/lib/seo";
@@ -55,10 +56,12 @@ export default async function SampleNatalChartPage() {
   ];
 
   return (
-    <main className="page-shell sample-natal-chart">
-      <Link href="/samples" className="horoscope-back">
-        ← All sample editions
-      </Link>
+    <main className="atlas-shell member-doc member-doc--wide sample-natal-chart">
+      <div className="member-doc-actions">
+        <Link href="/samples" className="member-doc-actions__back">
+          ← All sample editions
+        </Link>
+      </div>
 
       <header className="sample-natal-chart__hero">
         <div>
@@ -267,7 +270,7 @@ export default async function SampleNatalChartPage() {
         </dl>
       </section>
 
-      <aside className="sample-natal-chart__cta">
+      <aside className="sample-natal-chart__cta member-cta">
         <div>
           <p className="eyebrow">Your chart begins with your sky</p>
           <h2>Create your own natal chart.</h2>
@@ -276,7 +279,7 @@ export default async function SampleNatalChartPage() {
             angles, houses and aspects.
           </p>
         </div>
-        <Link href="/#chart" className="button-primary">
+        <Link href="/#chart" className="atlas-button">
           Create my free natal chart
         </Link>
       </aside>

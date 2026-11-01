@@ -5,13 +5,26 @@ import {
   PRIVATE_RESPONSE_HEADERS,
   readLimitedJson,
 } from "@/lib/api-security";
+import { ATLAS_PLAN_KEY, BILLING_INTERVALS } from "@/lib/membership/plans";
 import { stripeClient } from "@/lib/stripe";
+import {
+  activeAtlasPrice,
+  ATLAS_UNAVAILABLE_MESSAGE,
+} from "@/lib/stripe/catalog";
+import { subscriptionCheckoutSessionParams } from "@/lib/stripe/checkout";
+import { atlasTrialEligible } from "@/lib/stripe/trial";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const schema = z.object({ planKey: z.enum(["personal", "premium"]) }).strict();
+// Atlas is the only sellable plan (database key `premium`); `personal` is retired.
+const schema = z
+  .object({
+    planKey: z.literal(ATLAS_PLAN_KEY),
+    interval: z.enum(BILLING_INTERVALS).default("month"),
+  })
+  .strict();
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
 
@@ -33,23 +46,23 @@ export async function POST(request: Request) {
   const parsed = schema.safeParse(await readLimitedJson(request, 1_024));
   if (!parsed.success) return json({ error: "Invalid membership plan." }, 422);
   const admin = createAdminClient();
-  const { data: plan } = await admin
-    .from("commerce_plans")
-    .select("plan_key,stripe_price_id,active")
-    .eq("plan_key", parsed.data.planKey)
-    .single();
-  if (!plan?.active || !plan.stripe_price_id)
-    return json({ error: "This membership is not currently available." }, 409);
+  const price = await activeAtlasPrice(admin, parsed.data.interval);
+  if (!price) return json({ error: ATLAS_UNAVAILABLE_MESSAGE }, 409);
 
   const { data: current } = await admin
     .from("account_subscriptions")
-    .select("id,status")
+    .select("id,status,provider")
     .eq("user_id", userId)
     .in("status", ["incomplete", "trialing", "active", "past_due", "paused"])
     .maybeSingle();
   if (current)
     return json(
-      { error: "Manage your existing membership from the billing portal." },
+      {
+        error:
+          current.provider === "google_play"
+            ? "Your Atlas membership is managed in Google Play."
+            : "Manage your existing Atlas membership from the billing portal.",
+      },
       409,
     );
 
@@ -86,19 +99,26 @@ export async function POST(request: Request) {
   const metadata = {
     application: "celestial_atlas",
     user_id: userId,
-    celestial_atlas_plan_key: plan.plan_key,
+    celestial_atlas_plan_key: price.planKey,
+    celestial_atlas_billing_interval: price.interval,
   };
-  const session = await stripeClient().checkout.sessions.create({
-    mode: "subscription",
-    customer: customer.stripe_customer_id,
-    line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-    allow_promotion_codes: true,
-    metadata,
-    subscription_data: { metadata },
-    automatic_tax: { enabled: flags.automaticTax },
-    success_url: `${appUrl}/account?checkout=subscription_return`,
-    cancel_url: `${appUrl}/membership?checkout=cancelled`,
+  const trialEligible = await atlasTrialEligible({
+    admin,
+    stripe: stripeClient(),
+    userId,
+    stripeCustomerId: customer.stripe_customer_id,
   });
+  const session = await stripeClient().checkout.sessions.create(
+    subscriptionCheckoutSessionParams({
+      price,
+      trialEligible,
+      customer: customer.stripe_customer_id,
+      metadata,
+      automaticTax: flags.automaticTax,
+      successUrl: `${appUrl}/account?checkout=subscription_return`,
+      cancelUrl: `${appUrl}/membership?checkout=cancelled`,
+    }),
+  );
   if (!session.url)
     return json({ error: "Stripe did not return Checkout." }, 502);
   return json({ url: session.url });
