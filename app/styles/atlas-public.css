@@ -180,6 +180,25 @@
   text-align: left;
   color-scheme: dark;
 }
+.home-form__native {
+  position: relative;
+  min-width: 0;
+}
+.home-form__prompt {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--atlas-muted);
+  font-size: 15px;
+  pointer-events: none;
+}
+/* Desktop browsers draw their own dd/mm/yyyy hint; keep only one. */
+@supports not (-webkit-touch-callout: none) {
+  .home-form__prompt {
+    display: none;
+  }
+}
 .home-form__field input[type="date"]::-webkit-date-and-time-value,
 .home-form__field input[type="time"]::-webkit-date-and-time-value {
   min-height: 1.4em;
@@ -214,35 +233,50 @@
   margin-top: 16px;
 }
 .home-form__search {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: 8px;
   min-width: 0;
+  height: 48px;
+  padding: 0 6px 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--atlas-control);
+  background: var(--atlas-field);
 }
-.atlas-field .home-form__search input {
-  padding-left: 38px;
-  padding-right: 92px;
+.home-form__search:focus-within {
+  border-color: var(--atlas-gold);
+  outline: 2px solid var(--atlas-gold);
+  outline-offset: 1px;
 }
-.atlas-field .home-form__search input[data-resolved="true"] {
+.home-form__search:has(input[data-resolved="true"]) {
   border-color: var(--atlas-gold);
 }
+.atlas-field .home-form__search input {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.atlas-field .home-form__search input:focus-visible {
+  outline: none;
+}
 .home-form__search-icon {
-  position: absolute;
-  left: 14px;
+  flex: none;
   color: var(--atlas-gold);
+  line-height: 1;
   pointer-events: none;
 }
 .home-form__search-button {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  bottom: 6px;
+  flex: none;
+  height: 36px;
+  margin: 0;
+  padding: 0 14px;
   -webkit-appearance: none;
   appearance: none;
-  margin: 0;
   line-height: 1;
-  min-height: 36px;
-  padding: 0 14px;
   border-radius: 8px;
   border: 1px solid var(--atlas-control);
   background: var(--atlas-card);

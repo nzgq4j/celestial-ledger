@@ -427,6 +427,8 @@ const pack = {
       formTitle: "Votre thème natal",
       formStep: "Étape 1 sur 2",
       formBirthTime: "Heure de naissance",
+      formDatePrompt: "Choisir la date",
+      formTimePrompt: "Choisir l’heure",
       formUnknownTime: "Je ne connais pas mon heure de naissance",
       formBirthplace: "Lieu de naissance",
       formSelectedPlace: "Lieu de naissance sélectionné",

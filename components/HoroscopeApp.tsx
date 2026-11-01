@@ -438,22 +438,38 @@ export default function HoroscopeApp({
               <div className="home-form__fields">
                 <div className="atlas-field home-form__field">
                   <label htmlFor="birth-date">{form.birthDate}</label>
-                  <input
-                    id="birth-date"
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
+                  <div className="home-form__native">
+                    <input
+                      id="birth-date"
+                      type="date"
+                      value={date}
+                      data-empty={date ? undefined : "true"}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                    {!date && (
+                      <span className="home-form__prompt" aria-hidden="true">
+                        {copy.formDatePrompt}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="atlas-field home-form__field">
                   <label htmlFor="birth-time">{copy.formBirthTime}</label>
-                  <input
-                    id="birth-time"
-                    type="time"
-                    disabled={unknown}
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                  />
+                  <div className="home-form__native">
+                    <input
+                      id="birth-time"
+                      type="time"
+                      disabled={unknown}
+                      value={time}
+                      data-empty={time ? undefined : "true"}
+                      onChange={(e) => setTime(e.target.value)}
+                    />
+                    {!time && (
+                      <span className="home-form__prompt" aria-hidden="true">
+                        {copy.formTimePrompt}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <label className="home-form__check">

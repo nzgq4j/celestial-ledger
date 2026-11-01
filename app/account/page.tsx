@@ -9,6 +9,7 @@ import { WeeklyReadingGenerator } from "@/components/WeeklyReadingGenerator";
 import { AccountTarotDailyDraw } from "@/components/AccountTarotDailyDraw";
 import { BillingPortalButton } from "@/components/BillingPortalButton";
 import { MorningAlertToggle } from "@/components/native/MorningAlertToggle";
+import { SiteLinksSection } from "@/components/account/SiteLinksSection";
 import { RestorePurchasesButton } from "@/components/native/PlayBillingButton";
 import { TodayView } from "@/components/account/TodayView";
 import { ChartView } from "@/components/account/ChartView";
@@ -142,6 +143,7 @@ export default async function AccountPage({
             <MorningAlertToggle />
             <RestorePurchasesButton className="atlas-button-ghost" />
           </section>
+          <SiteLinksSection />
         </>
       )}
     </main>

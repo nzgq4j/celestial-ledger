@@ -420,6 +420,8 @@ const pack = {
       formTitle: "Dein Geburtshoroskop",
       formStep: "Schritt 1 von 2",
       formBirthTime: "Geburtszeit",
+      formDatePrompt: "Datum wählen",
+      formTimePrompt: "Uhrzeit wählen",
       formUnknownTime: "Ich kenne meine Geburtszeit nicht",
       formBirthplace: "Geburtsort",
       formSelectedPlace: "Ausgewählter Geburtsort",

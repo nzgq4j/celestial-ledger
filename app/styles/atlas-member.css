@@ -2123,3 +2123,50 @@ main.member-doc .sample-editions__cta {
     top: calc(var(--atlas-header-height) + 18px);
   }
 }
+
+/* Footer links and language, relocated into Account settings. */
+.member-site-links {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+.member-site-links__title {
+  margin: 0;
+  font-family: var(--atlas-display);
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--atlas-ivory);
+}
+.member-site-links__list {
+  display: grid;
+  border-top: 1px solid var(--atlas-line);
+}
+.member-site-links__list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid var(--atlas-line-soft);
+  color: var(--atlas-paper);
+  font-size: 15px;
+}
+.member-site-links__list a::after {
+  content: "›";
+  color: var(--atlas-muted);
+}
+.member-site-links__list a:hover {
+  color: var(--atlas-gold);
+}
+.member-site-links__language {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: var(--atlas-soft);
+  font-size: 15px;
+}
+.member-site-links__colophon {
+  margin: 0;
+  color: var(--atlas-muted);
+  font-size: 13px;
+}

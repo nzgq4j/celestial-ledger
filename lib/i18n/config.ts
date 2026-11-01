@@ -16,6 +16,8 @@ export type HomeMessageKey =
   | "formTitle"
   | "formStep"
   | "formBirthTime"
+  | "formDatePrompt"
+  | "formTimePrompt"
   | "formUnknownTime"
   | "formBirthplace"
   | "formSelectedPlace"

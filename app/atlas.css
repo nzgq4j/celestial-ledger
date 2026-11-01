@@ -593,6 +593,10 @@ textarea {
   html[data-signed-in] body {
     padding-bottom: var(--atlas-tabbar-height);
   }
+  /* Members on phones reach these links from Account settings instead. */
+  html[data-signed-in] .atlas-footer {
+    display: none;
+  }
   .atlas-footer__links {
     margin-left: 0;
   }

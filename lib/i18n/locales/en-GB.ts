@@ -419,6 +419,8 @@ const pack = {
       formTitle: "Your birth chart",
       formStep: "Step 1 of 2",
       formBirthTime: "Birth time",
+      formDatePrompt: "Select date",
+      formTimePrompt: "Select time",
       formUnknownTime: "I don’t know my birth time",
       formBirthplace: "Birthplace",
       formSelectedPlace: "Selected birthplace",

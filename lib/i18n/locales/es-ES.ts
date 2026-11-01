@@ -417,6 +417,8 @@ const pack = {
       formTitle: "Tu carta natal",
       formStep: "Paso 1 de 2",
       formBirthTime: "Hora de nacimiento",
+      formDatePrompt: "Elegir fecha",
+      formTimePrompt: "Elegir hora",
       formUnknownTime: "No sé mi hora de nacimiento",
       formBirthplace: "Lugar de nacimiento",
       formSelectedPlace: "Lugar de nacimiento seleccionado",
