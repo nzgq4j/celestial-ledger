@@ -126,6 +126,10 @@ export type TranslationPack = {
       freeMember: string;
       contact: string;
       appTabsLabel: string;
+      starsTab: string;
+      numbersTab: string;
+      journalTab: string;
+      articles: string;
     };
     preferences: {
       language: string;

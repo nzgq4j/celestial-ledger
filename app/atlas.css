@@ -7,16 +7,16 @@
  */
 
 :root {
-  --atlas-bg: #07111f;
-  --atlas-bg-deep: #050b13;
-  --atlas-card: #0d1a2b;
-  --atlas-card-deep: #0a1524;
-  --atlas-field: #081524;
+  --atlas-bg: #0a1128;
+  --atlas-bg-deep: #080e22;
+  --atlas-card: #111c3d;
+  --atlas-card-deep: #0e1834;
+  --atlas-field: #0f1a3a;
   --atlas-track: #142338;
   --atlas-tab-active: #1a2a40;
   --atlas-avatar: #132233;
-  --atlas-line: #2b3a4e;
-  --atlas-line-soft: rgba(43, 58, 78, 0.6);
+  --atlas-line: rgba(201, 167, 93, 0.28);
+  --atlas-line-soft: rgba(201, 167, 93, 0.15);
   --atlas-control: #536177;
   --atlas-ivory: #f2ead8;
   --atlas-ivory-bright: #f7efdf;
@@ -31,6 +31,9 @@
   --atlas-cyan: #4fb7c5;
   --atlas-cyan-soft: #9fd7de;
   --atlas-red: #b95d4b;
+  --atlas-moon-lit: #e3c27e;
+  --atlas-moon-shade: #0d1633;
+  --atlas-card-back: #16234a;
   --atlas-wine: linear-gradient(160deg, #541426, #260811);
   --atlas-gold-gradient: linear-gradient(120deg, #b98b38, #dfbd70 55%, #bd8f3d);
   --atlas-display: var(--font-display), "Cormorant Garamond", Georgia, serif;
@@ -39,9 +42,9 @@
   --atlas-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
   --atlas-shell: 78rem;
   --atlas-gutter: clamp(1rem, 3vw, 2rem);
-  --atlas-radius-lg: 20px;
-  --atlas-radius: 16px;
-  --atlas-radius-sm: 12px;
+  --atlas-radius-lg: 6px;
+  --atlas-radius: 6px;
+  --atlas-radius-sm: 4px;
   --atlas-header-height: 68px;
   --atlas-tabbar-height: 76px;
 }
@@ -130,7 +133,7 @@ textarea {
   border-color: var(--atlas-gold-line);
 }
 .atlas-card--sm {
-  border-radius: 18px;
+  border-radius: var(--atlas-radius);
   padding: 22px;
 }
 .atlas-chip {
@@ -138,7 +141,7 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: var(--atlas-radius-sm);
   background: var(--atlas-card);
   border: 1px solid var(--atlas-line);
   color: var(--atlas-soft);
@@ -155,7 +158,7 @@ textarea {
 }
 .atlas-evidence {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: var(--atlas-radius-sm);
   background: rgba(79, 183, 197, 0.08);
   border: 1px solid rgba(79, 183, 197, 0.3);
   color: var(--atlas-cyan-soft);
@@ -169,8 +172,8 @@ textarea {
   justify-content: center;
   gap: 8px;
   min-height: 44px;
-  padding: 11px 18px;
-  border-radius: 999px;
+  padding: 11px 20px;
+  border-radius: 3px;
   font-size: 14px;
   line-height: 1.2;
   white-space: nowrap;
@@ -245,8 +248,8 @@ textarea {
   width: 100%;
   min-width: 0;
   height: 48px;
-  border-radius: 10px;
-  border: 1px solid var(--atlas-control);
+  border-radius: var(--atlas-radius-sm);
+  border: 1px solid rgba(201, 167, 93, 0.4);
   background: var(--atlas-field);
   color: var(--atlas-ivory);
   padding: 0 14px;
@@ -626,6 +629,38 @@ html[data-app] body {
     var(--atlas-tabbar-height) + env(safe-area-inset-bottom)
   );
   overscroll-behavior-y: none;
+}
+.atlas-apptop {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(10, 17, 40, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201, 167, 93, 0.18);
+}
+.atlas-apptop__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: var(--atlas-ivory);
+  font-family: var(--atlas-display);
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.atlas-apptop__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  text-decoration: none;
 }
 html[data-app] [data-web-only] {
   display: none !important;

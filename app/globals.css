@@ -2,21 +2,21 @@
 
 :root {
   color-scheme: dark;
-  --navy: #07111f;
-  --panel: #0d1a2b;
+  --navy: #0a1128;
+  --panel: #111c3d;
   --ivory: #f2ead8;
   --muted: #b9b2a3;
   --gold: #c9a75d;
-  --line: #2b3a4e;
+  --line: rgba(201, 167, 93, 0.28);
   --paper: #e9e0ca;
   --copper: #9d6b4c;
   --ink: #050b13;
   --map-cyan: #4fb7c5;
   --map-red: #b95d4b;
   --map-chalk: #dce7e4;
-  --surface: #0d1a2b;
+  --surface: #111c3d;
   --surface-deep: #050b13;
-  --surface-field: #081524;
+  --surface-field: #0f1a3a;
   --surface-soft: #101a28;
   --text-soft: #c8c0b2;
   --danger-surface: #2b1718;
@@ -25,7 +25,7 @@
   --header: rgba(5, 11, 19, 0.86);
   --footer: rgba(4, 9, 16, 0.78);
   --body-glow: rgba(54, 81, 112, 0.22);
-  --body-end: #050b13;
+  --body-end: #080e22;
   --control-bg: #081524;
   --control-border: #536177;
   --display-page: clamp(2.75rem, 3.7vw, 4.25rem);

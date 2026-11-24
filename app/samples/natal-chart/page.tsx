@@ -279,7 +279,7 @@ export default async function SampleNatalChartPage() {
             angles, houses and aspects.
           </p>
         </div>
-        <Link href="/#chart" className="atlas-button">
+        <Link href="/?chart=new#chart" className="atlas-button">
           Create my free natal chart
         </Link>
       </aside>

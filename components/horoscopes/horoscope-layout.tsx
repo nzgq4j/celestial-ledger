@@ -89,7 +89,10 @@ export async function HoroscopeUpsell({
   return (
     <aside className="sign-upsell">
       <p>{copy.upsellCopy}</p>
-      <Link className="atlas-button" href={signedIn ? "/account" : "/#chart"}>
+      <Link
+        className="atlas-button"
+        href={signedIn ? "/account" : "/?chart=new#chart"}
+      >
         {signedIn ? copy.upsellSignedIn : copy.upsellSignedOut}
       </Link>
     </aside>

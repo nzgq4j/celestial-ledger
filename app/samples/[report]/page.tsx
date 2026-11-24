@@ -672,7 +672,7 @@ export default async function SampleReportPage({
         <aside className="sample-weekly-reading__cta member-cta">
           <p className="eyebrow">Now, let your own chart speak</p>
           <h2>Follow the next seven days through your own natal sky.</h2>
-          <Link href="/#chart" className="atlas-button">
+          <Link href="/?chart=new#chart" className="atlas-button">
             Create my free natal chart
           </Link>
         </aside>
@@ -914,7 +914,7 @@ export default async function SampleReportPage({
       <aside className="member-cta">
         <p className="eyebrow">Now, let your own chart speak</p>
         <h2>Begin with the sky at your own first breath.</h2>
-        <Link href="/#chart" className="atlas-button">
+        <Link href="/?chart=new#chart" className="atlas-button">
           Create my free natal chart
         </Link>
       </aside>

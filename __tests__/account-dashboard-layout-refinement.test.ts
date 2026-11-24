@@ -36,20 +36,25 @@ describe("Member screens layout (Celestial Atlas redesign)", () => {
     expect(navigation).toContain('.has("focusReport")');
   });
 
-  it("builds Today from a greeting, Big Three chips, the personal reading and a side column", () => {
+  it("builds Today in the app layout: insight, greeting, Big Three, the personal reading, then day, moon, numbers and card panels", () => {
+    const layout = readFileSync("components/account/TodayLayout.tsx", "utf8");
+    expect(today).toContain("<TodayLayout");
     expect(today).toContain("<TodayHeading");
-    expect(today).toContain('className="member-head__chips"');
     expect(today).toContain("atlas-card atlas-card--feature today-feature");
     expect(today).toContain('className="today-arc"');
     expect(today).toContain("buildDailyReadingDayArc(analysis)");
-    expect(today).toContain('className="today-side"');
-    expect(today).toContain('className="today-lower"');
+    expect(today).toContain("personalCycles(primary.birth_date, profileDate)");
+    expect(layout).toContain("<TodayInsight");
+    expect(layout).toContain('className="today2-big3"');
+    expect(layout).toContain('className="today2-feature"');
+    expect(layout).toContain('className="today2-grid"');
+    expect(layout).toContain('className="today2-lower"');
   });
 
   it("gives members without a chart a clear first step", () => {
-    expect(today).toContain('href="/#chart"');
+    expect(today).toContain('href="/?chart=new#chart"');
     expect(today).toContain("m.noChartAction");
-    expect(chart).toContain('href="/#chart"');
+    expect(chart).toContain('href="/?chart=new#chart"');
   });
 
   it("lays out the chart as Big Three, wheel beside tabbed data, then interpretation", () => {

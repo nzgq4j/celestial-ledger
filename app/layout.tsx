@@ -5,7 +5,12 @@ import {
   Hanken_Grotesk,
   JetBrains_Mono,
 } from "next/font/google";
-import { AppTabBar, SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import {
+  AppTabBar,
+  AppTopBar,
+  SiteFooter,
+  SiteHeader,
+} from "@/components/SiteChrome";
 import { AppShell } from "@/components/AppShell";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { getAppPlatform } from "@/lib/app-shell/server";
@@ -170,6 +175,7 @@ export default async function RootLayout({
           <div className="meridian" aria-hidden="true" />
           <AppShell />
           <NativeBridge />
+          <AppTopBar identity={identity} />
           <SiteHeader
             identity={identity}
             tarotEnabled={tarotReadingFlags().enabled}

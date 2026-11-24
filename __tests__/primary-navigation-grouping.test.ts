@@ -6,17 +6,26 @@ const css = readFileSync("app/atlas.css", "utf8");
 const header = chrome.split("export function SiteFooter")[0];
 
 describe("primary navigation (Celestial Atlas redesign)", () => {
-  it("offers five member destinations and four visitor destinations", () => {
+  it("offers the five app destinations to members and four visitor destinations", () => {
     const member = header.split(": [")[0];
     for (const href of [
       'href: "/account"',
-      'href: "/account?view=charts"',
       'href: "/horoscopes"',
+      'href: "/numbers"',
       'href: "/tarot"',
-      'href: "/reports"',
+      'href: "/account?view=library"',
     ])
       expect(member).toContain(href);
     expect(header).toContain('href: "/membership"');
+    // My chart and Reports stay one tap away in the account menu.
+    expect(header).toContain('<Link href="/account?view=charts">');
+    expect(header).toContain('<Link href="/reports">');
+  });
+
+  it("uses the app tabs Today, Stars, Numbers, Tarot and Journal", () => {
+    const tabBar = chrome.split("export function AppTabBar")[1];
+    for (const key of ["today", "stars", "numbers", "tarot", "journal"])
+      expect(tabBar).toContain(`key: "${key}"`);
   });
 
   it("keeps tarot behind its release flag and without beta labels", () => {
@@ -39,6 +48,11 @@ describe("primary navigation (Celestial Atlas redesign)", () => {
     expect(chrome.match(/data-app-hidden/g)?.length).toBeGreaterThanOrEqual(2);
     expect(css).toContain("html[data-app] [data-app-hidden]");
     expect(css).toContain("html[data-app] .atlas-tabbar");
-    expect(chrome).toContain('href: identity ? "/account?view=settings"');
+    // The app top bar's avatar opens account settings.
+    expect(chrome).toContain("export function AppTopBar");
+    expect(chrome).toContain(
+      'href={identity ? "/account?view=settings" : "/auth/login"}',
+    );
+    expect(chrome).toContain("data-app-only");
   });
 });

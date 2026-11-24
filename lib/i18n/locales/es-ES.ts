@@ -43,6 +43,10 @@ const pack = {
       freeMember: "Probar Atlas",
       contact: "Contacto",
       appTabsLabel: "Secciones de la app",
+      starsTab: "Astros",
+      numbersTab: "Números",
+      journalTab: "Diario",
+      articles: "Artículos",
     },
     preferences: { language: "Idioma" },
     account: {

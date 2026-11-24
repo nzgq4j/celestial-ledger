@@ -30,6 +30,12 @@ import { publishedDailySky } from "@/lib/horoscopes/generated";
 import { ATLAS_TRIAL_DAYS, isAtlasMember } from "@/lib/membership/plans";
 import { TodayHeading } from "@/components/account/TodayHeading";
 import { DailyReadingTodayButton } from "@/components/DailyReadingTodayButton";
+import { TodayLayout } from "@/components/account/TodayLayout";
+import { TarotSymbolicCardFace } from "@/components/TarotSymbolicCardFace";
+import { todayCopy } from "@/lib/account/today-copy";
+import { numerologyCopy, cycleText } from "@/lib/numerology/copy";
+import { personalCycles } from "@/lib/numerology";
+import { savedTarotSchema } from "@/lib/tarot/saved-schema";
 
 export async function TodayView({
   base,
@@ -113,7 +119,7 @@ export async function TodayView({
     tarotEnabled
       ? base.supabase
           .from("tarot_readings")
-          .select("id")
+          .select("id,payload")
           .gte("created_at", `${utcDate}T00:00:00.000Z`)
           .gt("expires_at", now.toISOString())
           .order("created_at", { ascending: false })
@@ -204,9 +210,169 @@ export async function TodayView({
     ? sky?.horoscopes.find((item) => item.slug === sun.sign.toLowerCase())
     : undefined;
 
+  const t = todayCopy[locale];
+  const numCopy = numerologyCopy[locale];
+  const moonSign = moon ? localizeAstroTerm(moon.sign, locale) : undefined;
+  const cycles = primary?.birth_date
+    ? personalCycles(primary.birth_date, profileDate)
+    : undefined;
+  const tarotPayload = tarotToday
+    ? savedTarotSchema.safeParse((tarotToday as { payload?: unknown }).payload)
+    : undefined;
+  const drawnCard = tarotPayload?.success
+    ? tarotPayload.data.cards[0]
+    : undefined;
+
+  const featureCard = !primary ? (
+    <article className="atlas-card atlas-card--feature today-feature">
+      <p className="atlas-kicker">{m.noChartKicker}</p>
+      <h2 className="atlas-section-title today-feature__title">
+        {m.noChartTitle}
+      </h2>
+      <p className="today-feature__body">{m.noChartCopy}</p>
+      <div className="member-actions">
+        <Link href="/?chart=new#chart" className="atlas-button">
+          {m.noChartAction}
+        </Link>
+      </div>
+    </article>
+  ) : parsedReading ? (
+    <TodayReading reading={parsedReading} locale={locale} copy={m} />
+  ) : (
+    <article
+      className="atlas-card atlas-card--feature today-feature"
+      aria-labelledby="today-feature-title"
+    >
+      <p className="atlas-kicker">{m.personalReadingKicker}</p>
+      {primaryAllowance?.status === "allowance_exhausted" ||
+      primaryAllowance?.status === "not_included" ? (
+        <>
+          <h2
+            id="today-feature-title"
+            className="atlas-section-title today-feature__title"
+          >
+            {primaryAllowance.status === "not_included"
+              ? m.notIncludedTitle
+              : m.exhaustedTitle}
+          </h2>
+          {!atlas && <p className="today-feature__body">{m.exhaustedCopy}</p>}
+          {primaryAllowance.resetsAt &&
+            primaryAllowance.status === "allowance_exhausted" && (
+              <p className="today-feature__note">
+                {fillCopy(m.nextFreeReading, {
+                  date: formatDay(primaryAllowance.resetsAt),
+                })}
+              </p>
+            )}
+          {!atlas && (
+            <div className="member-actions">
+              <Link href="/membership" className="atlas-button">
+                {fillCopy(m.startTrial, { days: ATLAS_TRIAL_DAYS })}
+              </Link>
+              <Link href="/membership" className="atlas-button-ghost">
+                {m.comparePlans}
+              </Link>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <h2
+            id="today-feature-title"
+            className="atlas-section-title today-feature__title"
+          >
+            {m.noReadingTitle}
+          </h2>
+          <p className="today-feature__body">{m.noReadingCopy}</p>
+          {!primaryAllowance && (
+            <p className="today-feature__note">{m.allowanceUnknown}</p>
+          )}
+          <DailyReadingTodayButton
+            birthProfileId={primary.id}
+            label={m.generateToday}
+            busyLabel={m.generatingToday}
+            failedLabel={m.generateFailed}
+          />
+        </>
+      )}
+    </article>
+  );
+
+  const side = primary ? (
+    <AllowanceMeter
+      copy={m}
+      atlas={atlas}
+      primaryAllowance={primaryAllowance}
+      companionAllowance={companionAllowance}
+      companionTotal={
+        companionDecision?.allowed
+          ? (companionDecision.allowance ?? undefined)
+          : undefined
+      }
+      hasCompanion={Boolean(companion)}
+      formatDay={formatDay}
+      weekly={
+        !weeklyEnabled
+          ? { label: m.weeklyPreparing, tone: "muted" }
+          : weeklyThisWeek
+            ? {
+                label: m.weeklyReady,
+                href: `/weekly-readings/${weeklyThisWeek.id}`,
+                tone: "cyan",
+              }
+            : weeklyDecision?.allowed
+              ? {
+                  label: m.weeklyGenerate,
+                  href: "/account?view=create#weekly-reading",
+                  tone: "cyan",
+                }
+              : {
+                  label: m.weeklyAtlas,
+                  href: "/membership",
+                  tone: "gold",
+                }
+      }
+    />
+  ) : undefined;
+
+  const lower = latestReport ? (
+    <Link
+      href={`/reports/${latestReport.id}`}
+      className="member-link-card today-teaser today2-cta"
+    >
+      <span className="atlas-kicker">{m.continueKicker}</span>
+      <span className="today-teaser__title">
+        {latestReport.report_type === "recovery_reflection"
+          ? accountCopy.recoveryReflection
+          : accountCopy.careerPurpose}
+      </span>
+      <span className="today-teaser__meta">
+        {fillCopy(m.savedOn, {
+          date: formatDay(latestReport.created_at),
+        })}
+        {latestReport.expires_at &&
+          ` · ${fillCopy(m.keptUntil, { date: formatDay(latestReport.expires_at) })}`}
+      </span>
+    </Link>
+  ) : (
+    <Link
+      href="/account?view=library"
+      className="member-link-card today-teaser today2-cta"
+    >
+      <span className="atlas-kicker">{m.reportsKicker}</span>
+      <span className="today-teaser__title">{m.reportsTitle}</span>
+      <span className="today-teaser__link">{m.exploreReports} →</span>
+    </Link>
+  );
+
+  const firstSentence = (text: string) => {
+    const match = /^.*?[.!?](\s|$)/.exec(text.trim());
+    return (match ? match[0] : text).trim();
+  };
+
   return (
-    <>
-      <div className="member-head">
+    <TodayLayout
+      heading={
         <TodayHeading
           name={base.displayName || accountCopy.explorer}
           locale={locale}
@@ -218,229 +384,128 @@ export async function TodayView({
             fallback: m.greetingDefault,
           }}
         />
-        {bigThree.length > 0 && (
-          <ul className="member-head__chips" aria-label={m.bigThree}>
-            {bigThree.map((item) => (
-              <li className="atlas-chip" key={item.key}>
-                <span aria-hidden="true">{item.glyph}</span>
-                <span className="member-sr">{item.label}</span>
-                {localizeAstroTerm(item.sign, locale)}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="today-grid">
-        {!primary ? (
-          <article className="atlas-card atlas-card--feature today-feature">
-            <p className="atlas-kicker">{m.noChartKicker}</p>
-            <h2 className="atlas-section-title today-feature__title">
-              {m.noChartTitle}
-            </h2>
-            <p className="today-feature__body">{m.noChartCopy}</p>
-            <div className="member-actions">
-              <Link href="/#chart" className="atlas-button">
-                {m.noChartAction}
-              </Link>
-            </div>
-          </article>
-        ) : parsedReading ? (
-          <TodayReading reading={parsedReading} locale={locale} copy={m} />
-        ) : (
-          <article
-            className="atlas-card atlas-card--feature today-feature"
-            aria-labelledby="today-feature-title"
-          >
-            <p className="atlas-kicker">{m.personalReadingKicker}</p>
-            {primaryAllowance?.status === "allowance_exhausted" ||
-            primaryAllowance?.status === "not_included" ? (
-              <>
-                <h2
-                  id="today-feature-title"
-                  className="atlas-section-title today-feature__title"
-                >
-                  {primaryAllowance.status === "not_included"
-                    ? m.notIncludedTitle
-                    : m.exhaustedTitle}
-                </h2>
-                {!atlas && (
-                  <p className="today-feature__body">{m.exhaustedCopy}</p>
-                )}
-                {primaryAllowance.resetsAt &&
-                  primaryAllowance.status === "allowance_exhausted" && (
-                    <p className="today-feature__note">
-                      {fillCopy(m.nextFreeReading, {
-                        date: formatDay(primaryAllowance.resetsAt),
-                      })}
-                    </p>
-                  )}
-                {!atlas && (
-                  <div className="member-actions">
-                    <Link href="/membership" className="atlas-button">
-                      {fillCopy(m.startTrial, { days: ATLAS_TRIAL_DAYS })}
-                    </Link>
-                    <Link href="/membership" className="atlas-button-ghost">
-                      {m.comparePlans}
-                    </Link>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h2
-                  id="today-feature-title"
-                  className="atlas-section-title today-feature__title"
-                >
-                  {m.noReadingTitle}
-                </h2>
-                <p className="today-feature__body">{m.noReadingCopy}</p>
-                {!primaryAllowance && (
-                  <p className="today-feature__note">{m.allowanceUnknown}</p>
-                )}
-                <DailyReadingTodayButton
-                  birthProfileId={primary.id}
-                  label={m.generateToday}
-                  busyLabel={m.generatingToday}
-                  failedLabel={m.generateFailed}
-                />
-              </>
-            )}
-          </article>
-        )}
-
-        <div className="today-side">
-          {tarotEnabled && (
-            <Link
-              href={tarotToday ? `/account/tarot/${tarotToday.id}` : "/tarot"}
-              className="member-link-card today-tarot"
-            >
-              <span className="today-tarot__card" aria-hidden="true">
-                ✦
-              </span>
-              <span>
-                <span className="atlas-kicker">{m.tarotKicker}</span>
-                <span className="today-tarot__title">
-                  {tarotToday ? m.tarotDrawnTitle : m.tarotTitle}
-                </span>
-                <span className="today-tarot__copy">
-                  {tarotToday ? m.tarotDrawnCopy : m.tarotCopy}
-                </span>
-              </span>
-            </Link>
-          )}
-
-          {primary && (
-            <AllowanceMeter
-              copy={m}
-              atlas={atlas}
-              primaryAllowance={primaryAllowance}
-              companionAllowance={companionAllowance}
-              companionTotal={
-                companionDecision?.allowed
-                  ? (companionDecision.allowance ?? undefined)
-                  : undefined
+      }
+      insight={
+        cycles && moonSign
+          ? {
+              title: fillCopy(t.insightTitle, {
+                day: cycles.personalDay,
+                sign: moonSign,
+              }),
+              body: cycleText(numCopy.personalDay, cycles.personalDay),
+              meta: t.insightMeta,
+              now: t.now,
+              dismiss: t.dismiss,
+            }
+          : undefined
+      }
+      bigThree={{
+        label: m.bigThree,
+        items: chart
+          ? [
+              ...bigThree.map((item) => ({
+                key: item.key,
+                label: item.label,
+                glyph: signGlyph(item.sign) ?? item.glyph,
+                sign: localizeAstroTerm(item.sign, locale),
+              })),
+              ...(ascendant
+                ? []
+                : [
+                    {
+                      key: "asc",
+                      label: m.rising,
+                      glyph: "?",
+                      sign: t.addBirthTime,
+                      missing: true,
+                    },
+                  ]),
+            ]
+          : [],
+      }}
+      feature={featureCard}
+      horoscope={
+        sunHoroscope && sun
+          ? {
+              kicker: fillCopy(t.dayKicker, { sign: sunHoroscope.sign }),
+              overview: sunHoroscope.overview,
+              loveLabel: t.love,
+              love: firstSentence(sunHoroscope.relationships),
+              href: `/horoscopes/${sunHoroscope.slug}`,
+              linkLabel: t.fullHoroscope,
+            }
+          : undefined
+      }
+      moon={
+        moon && moonPhase && moonSign
+          ? {
+              kicker: t.moonKicker,
+              phase: moonPhase,
+              detail: fillCopy(t.moonLit, {
+                percent: Math.round(moon.illuminated * 100),
+                sign: moonSign,
+              }),
+              text: numCopy.moonPhaseText[moon.phaseIndex] ?? "",
+              illuminated: moon.illuminated,
+              waxing: moon.waxing,
+              href: "/clock",
+            }
+          : undefined
+      }
+      numbers={
+        cycles
+          ? {
+              kicker: t.numbersKicker,
+              cells: [
+                { label: t.year, value: cycles.personalYear },
+                { label: t.month, value: cycles.personalMonth },
+                { label: t.day, value: cycles.personalDay },
+              ],
+              text: cycleText(numCopy.personalDay, cycles.personalDay),
+              href: "/numbers",
+              linkLabel: t.allNumbers,
+            }
+          : undefined
+      }
+      card={
+        !tarotEnabled
+          ? undefined
+          : drawnCard
+            ? {
+                kicker: t.cardKicker,
+                title: drawnCard.name,
+                orientation:
+                  drawnCard.orientation === "reversed" ? t.reversed : t.upright,
+                reversed: drawnCard.orientation === "reversed",
+                meaning: drawnCard.meaning,
+                href: `/account/tarot/${tarotToday!.id}`,
+                linkLabel: t.fullTarot,
+                face: (
+                  <TarotSymbolicCardFace
+                    arcana={drawnCard.arcana}
+                    suit={drawnCard.suit}
+                    number={drawnCard.number}
+                    name={drawnCard.name}
+                    orientation={drawnCard.orientation}
+                  />
+                ),
               }
-              hasCompanion={Boolean(companion)}
-              formatDay={formatDay}
-              weekly={
-                !weeklyEnabled
-                  ? { label: m.weeklyPreparing, tone: "muted" }
-                  : weeklyThisWeek
-                    ? {
-                        label: m.weeklyReady,
-                        href: `/weekly-readings/${weeklyThisWeek.id}`,
-                        tone: "cyan",
-                      }
-                    : weeklyDecision?.allowed
-                      ? {
-                          label: m.weeklyGenerate,
-                          href: "/account?view=create#weekly-reading",
-                          tone: "cyan",
-                        }
-                      : {
-                          label: m.weeklyAtlas,
-                          href: "/membership",
-                          tone: "gold",
-                        }
+            : {
+                kicker: t.cardKicker,
+                title: t.cardDrawTitle,
+                meaning: t.cardDrawCopy,
+                href: "/tarot",
+                linkLabel: t.drawCard,
+                face: (
+                  <span className="today2-card__back" aria-hidden="true">
+                    ✦
+                  </span>
+                ),
               }
-            />
-          )}
-
-          <Link href="/clock" className="member-link-card today-clock">
-            <span className="today-clock__dial" aria-hidden="true">
-              {bodyGlyph("Moon")}
-            </span>
-            <span className="today-clock__text">
-              <span className="today-clock__title">{m.clockTitle}</span>
-              {moon && moonPhase && (
-                <span className="today-clock__copy">
-                  {fillCopy(m.clockCopy, {
-                    phase: moonPhase,
-                    percent: Math.round(moon.illuminated * 100),
-                  })}
-                </span>
-              )}
-            </span>
-            <span className="member-arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
-        </div>
-      </div>
-
-      <div className="today-lower">
-        {sunHoroscope ? (
-          <Link
-            href={`/horoscopes/${sunHoroscope.slug}`}
-            className="member-link-card today-teaser"
-          >
-            <span className="atlas-kicker">
-              {signGlyph(sun!.sign)}{" "}
-              {fillCopy(m.horoscopeKicker, { sign: sunHoroscope.sign })}
-            </span>
-            <span className="today-teaser__title">{sunHoroscope.theme}</span>
-            <span className="today-teaser__link">{m.allSigns} →</span>
-          </Link>
-        ) : (
-          <Link href="/horoscopes" className="member-link-card today-teaser">
-            <span className="atlas-kicker">
-              {pack.messages.navigation.dailyHoroscopes}
-            </span>
-            <span className="today-teaser__link">{m.allSigns} →</span>
-          </Link>
-        )}
-        {latestReport ? (
-          <Link
-            href={`/reports/${latestReport.id}`}
-            className="member-link-card today-teaser"
-          >
-            <span className="atlas-kicker">{m.continueKicker}</span>
-            <span className="today-teaser__title">
-              {latestReport.report_type === "recovery_reflection"
-                ? accountCopy.recoveryReflection
-                : accountCopy.careerPurpose}
-            </span>
-            <span className="today-teaser__meta">
-              {fillCopy(m.savedOn, {
-                date: formatDay(latestReport.created_at),
-              })}
-              {latestReport.expires_at &&
-                ` · ${fillCopy(m.keptUntil, { date: formatDay(latestReport.expires_at) })}`}
-            </span>
-          </Link>
-        ) : (
-          <Link
-            href="/account?view=library"
-            className="member-link-card today-teaser"
-          >
-            <span className="atlas-kicker">{m.reportsKicker}</span>
-            <span className="today-teaser__title">{m.reportsTitle}</span>
-            <span className="today-teaser__link">{m.exploreReports} →</span>
-          </Link>
-        )}
-      </div>
-    </>
+      }
+      side={side}
+      lower={lower}
+    />
   );
 }
 

@@ -88,7 +88,7 @@ export function DailyReadingGenerator({
     return (
       <div className="daily-reading-empty">
         <p>{copy.dailyReadingNeedsChart}</p>
-        <Link href="/#chart" className="atlas-button-ghost">
+        <Link href="/?chart=new#chart" className="atlas-button-ghost">
           {copy.createNatalChart}
         </Link>
       </div>

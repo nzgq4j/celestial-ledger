@@ -31,7 +31,7 @@ describe("header identity menu", () => {
     expect(header).toContain('href="/auth/login"');
     expect(header).toContain('href="/account?view=settings"');
     expect(header).toContain('href="/account?view=membership"');
-    expect(header).toContain('href="/#chart"');
+    expect(header).toContain('href="/?chart=new#chart"');
   });
 
   it("uses the existing sign-out server action", () => {

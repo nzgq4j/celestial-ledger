@@ -16,6 +16,7 @@ export function currentMoon(at = new Date()) {
     return {
       phaseIndex: moonPhaseIndex(elongation),
       illuminated: Illumination(Body.Moon, at).phase_fraction,
+      waxing: elongation < 180,
       sign: longitudeToZodiac(longitude).sign as string,
     };
   } catch {

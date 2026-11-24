@@ -53,7 +53,7 @@ export function WeeklyReadingGenerator({
     return (
       <div className="daily-reading-empty">
         <p>{copy.weeklyReadingNeedsChart}</p>
-        <Link href="/#chart" className="atlas-button-ghost">
+        <Link href="/?chart=new#chart" className="atlas-button-ghost">
           {copy.createNatalChart}
         </Link>
       </div>

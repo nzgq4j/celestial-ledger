@@ -127,7 +127,7 @@ export function ReportOffers({ pack, member, prices }: ReportOffersProps) {
           );
         else if (!member.profiles.length)
           action = (
-            <Link href="/#chart" className="atlas-button">
+            <Link href="/?chart=new#chart" className="atlas-button">
               {m.createChartFirst}
             </Link>
           );

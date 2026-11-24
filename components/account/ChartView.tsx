@@ -90,7 +90,7 @@ export async function ChartView({
         <article className="atlas-card atlas-card--feature member-empty">
           <p className="today-feature__body">{m.noChartCopy}</p>
           <div className="member-actions">
-            <Link href="/#chart" className="atlas-button">
+            <Link href="/?chart=new#chart" className="atlas-button">
               {m.noChartAction}
             </Link>
           </div>
@@ -267,7 +267,7 @@ export async function ChartView({
             </Link>
           ))}
           <Link
-            href={canAddChart ? "/#chart" : "/membership"}
+            href={canAddChart ? "/?chart=new#chart" : "/membership"}
             className="atlas-chip chart-switch chart-switch--add"
           >
             {canAddChart ? m.addChart : m.addChartAtlas}

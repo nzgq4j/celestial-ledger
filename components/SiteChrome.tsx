@@ -14,18 +14,25 @@ type NavItem = { key: string; href: string; label: string };
 
 /** Which primary destination the current URL belongs to. */
 function activeDestination(pathname: string, view: string | null) {
+  if (pathname.startsWith("/account/tarot")) return "tarot";
   if (pathname.startsWith("/account")) {
-    if (view === "charts") return "chart";
-    if (view === "library") return "library";
+    if (view === "charts") return "stars";
+    if (view === "library") return "journal";
     if (view === "settings" || view === "membership") return "account";
     return "today";
   }
-  if (pathname.startsWith("/horoscopes")) return "horoscopes";
+  if (pathname.startsWith("/daily-readings")) return "today";
+  if (pathname.startsWith("/horoscopes") || pathname.startsWith("/clock"))
+    return "stars";
+  if (pathname.startsWith("/numbers")) return "numbers";
   if (pathname.startsWith("/tarot")) return "tarot";
-  if (pathname.startsWith("/reports") || pathname.startsWith("/samples"))
-    return "reports";
+  if (
+    pathname.startsWith("/weekly-readings") ||
+    pathname.startsWith("/reports")
+  )
+    return "journal";
+  if (pathname.startsWith("/samples")) return "reports";
   if (pathname.startsWith("/membership")) return "membership";
-  if (pathname.startsWith("/clock")) return "clock";
   return "home";
 }
 
@@ -79,13 +86,17 @@ export function SiteHeader({
     identity
       ? [
           { key: "today", href: "/account", label: nav.today },
-          { key: "chart", href: "/account?view=charts", label: nav.myChart },
-          { key: "horoscopes", href: "/horoscopes", label: nav.horoscopes },
+          { key: "stars", href: "/horoscopes", label: nav.starsTab },
+          { key: "numbers", href: "/numbers", label: nav.numbersTab },
           { key: "tarot", href: "/tarot", label: nav.tarot },
-          { key: "reports", href: "/reports", label: nav.reports },
+          {
+            key: "journal",
+            href: "/account?view=library",
+            label: nav.journalTab,
+          },
         ]
       : [
-          { key: "horoscopes", href: "/horoscopes", label: nav.horoscopes },
+          { key: "stars", href: "/horoscopes", label: nav.horoscopes },
           { key: "tarot", href: "/tarot", label: nav.tarot },
           { key: "reports", href: "/reports", label: nav.reports },
           { key: "membership", href: "/membership", label: nav.membership },
@@ -151,12 +162,9 @@ export function SiteHeader({
                     <strong>{identity.displayName}</strong>
                     <small>{identity.email}</small>
                   </p>
-                  <div className="atlas-menu__group atlas-menu__group--compact">
-                    <Link href="/horoscopes">{nav.horoscopes}</Link>
-                    <Link href="/reports">{nav.reports}</Link>
-                  </div>
                   <div className="atlas-menu__group">
-                    <Link href="/account?view=library">{nav.library}</Link>
+                    <Link href="/account?view=charts">{nav.myChart}</Link>
+                    <Link href="/reports">{nav.reports}</Link>
                     <Link href="/account?view=settings">
                       {nav.accountSettings}
                     </Link>
@@ -173,7 +181,10 @@ export function SiteHeader({
               <Link href="/auth/login" className="atlas-header__signin">
                 {nav.signIn}
               </Link>
-              <Link href="/#chart" className="atlas-button atlas-button--sm">
+              <Link
+                href="/?chart=new#chart"
+                className="atlas-button atlas-button--sm"
+              >
                 {nav.getMyChart}
               </Link>
               <details
@@ -216,7 +227,7 @@ export function SiteFooter() {
         {new Date().getFullYear()} Celestial Atlas
       </span>
       <nav className="atlas-footer__links" aria-label={copy.trust}>
-        <Link href="/journal">{nav.journal}</Link>
+        <Link href="/journal">{nav.articles}</Link>
         <Link href="/method">{copy.method}</Link>
         <Link href="/privacy">{copy.privacy}</Link>
         <Link href="/terms">{copy.terms}</Link>
@@ -269,31 +280,20 @@ export function AppTabBar({
     {
       key: "today",
       href: identity ? "/account" : "/",
-      icon: "☉︎",
+      icon: "☉\uFE0E",
       label: nav.today,
     },
-    {
-      key: "chart",
-      href: identity ? "/account?view=charts" : "/#chart",
-      icon: "◎",
-      label: nav.chartTab,
-    },
+    { key: "stars", href: "/horoscopes", icon: "✦", label: nav.starsTab },
+    { key: "numbers", href: "/numbers", icon: "#", label: nav.numbersTab },
     ...(tarotEnabled
-      ? [{ key: "tarot", href: "/tarot", icon: "✦", label: nav.tarot }]
+      ? [{ key: "tarot", href: "/tarot", icon: "◈", label: nav.tarot }]
       : []),
-    platform
-      ? {
-          key: "account",
-          href: identity ? "/account?view=settings" : "/auth/login",
-          icon: "◯",
-          label: nav.accountTab,
-        }
-      : {
-          key: "library",
-          href: "/account?view=library",
-          icon: "☰",
-          label: nav.libraryTab,
-        },
+    {
+      key: "journal",
+      href: identity ? "/account?view=library" : "/auth/login",
+      icon: "❧",
+      label: nav.journalTab,
+    },
   ];
   return (
     <nav
@@ -312,5 +312,30 @@ export function AppTabBar({
         <TabBarLinks tabs={tabs} />
       </Suspense>
     </nav>
+  );
+}
+
+/**
+ * Compact top bar for the Android app, where the web header is hidden: the
+ * brand and an avatar that opens account settings (the Account tab became
+ * Journal in the app layout).
+ */
+export function AppTopBar({ identity }: { identity: HeaderIdentity | null }) {
+  const { pack } = useLocale();
+  const nav = pack.messages.navigation;
+  return (
+    <header className="atlas-apptop" data-app-only>
+      <Link href={identity ? "/account" : "/"} className="atlas-apptop__brand">
+        <Image src="/celestialatlas-logo.png" alt="" width="26" height="26" />
+        <span>Celestial Atlas</span>
+      </Link>
+      <Link
+        href={identity ? "/account?view=settings" : "/auth/login"}
+        className="atlas-avatar atlas-apptop__avatar"
+        aria-label={identity ? nav.accountSettings : nav.signIn}
+      >
+        {identity ? identity.displayName.slice(0, 1).toUpperCase() : "◯"}
+      </Link>
+    </header>
   );
 }

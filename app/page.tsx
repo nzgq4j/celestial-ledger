@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import HoroscopeApp from "@/components/HoroscopeApp";
 import { createClient } from "@/lib/supabase/server";
 import { createPageMetadata } from "@/lib/seo";
@@ -11,10 +12,17 @@ export const metadata = createPageMetadata({
   keywords: ["free birth chart", "personal natal chart", "astrology reading"],
 });
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ chart?: string | string[] }>;
+}) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) return <HoroscopeApp />;
+  // Signed-in members land on Today, as in the Celestial Atlas app. Links that
+  // add a chart pass ?chart=new to reach the calculator on this page.
+  if ((await searchParams).chart !== "new") redirect("/account");
 
   const { data: profile } = await supabase
     .from("profiles")

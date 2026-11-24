@@ -119,7 +119,7 @@ export default function MethodPage() {
       </aside>
 
       <div className="public-actions">
-        <Link href="/#chart" className="atlas-button">
+        <Link href="/?chart=new#chart" className="atlas-button">
           Create my free natal chart
         </Link>
         <Link href="/reports" className="atlas-button-ghost">

@@ -43,6 +43,10 @@ const pack = {
       freeMember: "Essayer Atlas",
       contact: "Contact",
       appTabsLabel: "Sections de l’app",
+      starsTab: "Astres",
+      numbersTab: "Nombres",
+      journalTab: "Journal",
+      articles: "Articles",
     },
     preferences: { language: "Langue" },
     account: {

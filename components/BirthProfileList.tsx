@@ -54,7 +54,7 @@ export function BirthProfileList({
           <h3>{copy.noChartsTitle}</h3>
           <p>{copy.noChartsCopy}</p>
         </div>
-        <Link href="/#chart" className="atlas-button-ghost">
+        <Link href="/?chart=new#chart" className="atlas-button-ghost">
           {copy.createMyChart}
         </Link>
       </div>

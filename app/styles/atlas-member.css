@@ -2170,3 +2170,426 @@ main.member-doc .sample-editions__cta {
   color: var(--atlas-muted);
   font-size: 13px;
 }
+
+/* ---------- Today (Celestial Atlas app layout) ---------- */
+
+.today2 {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  animation: today2-fade 0.5s ease both;
+}
+@keyframes today2-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.today2-eyebrow {
+  margin: 0;
+  font-family: var(--atlas-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--atlas-gold-kicker);
+}
+.today2-title {
+  font-family: var(--atlas-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--atlas-ivory);
+}
+.today2-lead {
+  margin: 0;
+  font-family: var(--atlas-display);
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--atlas-ivory);
+  text-wrap: pretty;
+}
+.today2-body {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--atlas-body);
+}
+.today2-body strong {
+  color: var(--atlas-ivory);
+  font-weight: 600;
+}
+.today2-meta {
+  font-size: 13px;
+  color: var(--atlas-muted);
+}
+.today2-meta--caps {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.today2-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--atlas-gold-light);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.today2-link:hover {
+  color: var(--atlas-ivory-bright);
+}
+
+/* Insight */
+.today2-insight {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  max-width: 520px;
+  padding: 14px 6px 14px 16px;
+  background: rgba(28, 40, 78, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+.today2-insight__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--atlas-gold);
+  border-radius: 9px;
+  background: var(--atlas-bg);
+}
+.today2-insight__icon span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--atlas-gold-light);
+  box-shadow: 0 0 10px var(--atlas-gold-light);
+}
+.today2-insight__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.today2-insight__meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--atlas-muted);
+}
+.today2-insight__title {
+  margin-bottom: 2px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--atlas-ivory);
+}
+.today2-insight__body {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--atlas-body);
+}
+.today2-insight__dismiss {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin-top: -10px;
+  border: 0;
+  background: none;
+  color: var(--atlas-muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+.today2-insight__dismiss:hover {
+  color: var(--atlas-ivory);
+}
+
+/* Big Three */
+.today2-big3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid rgba(201, 167, 93, 0.3);
+  border-radius: 6px;
+  background: rgba(17, 28, 61, 0.7);
+}
+.today2-big3__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 8px;
+  text-align: center;
+}
+.today2-big3__cell + .today2-big3__cell {
+  border-left: 1px solid rgba(201, 167, 93, 0.18);
+}
+.today2-big3__label {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--atlas-muted);
+}
+.today2-big3__glyph {
+  font-family:
+    "Noto Sans Symbols", "Noto Sans Symbols 2", "Segoe UI Symbol", serif;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--atlas-gold-light);
+  font-variant-emoji: text;
+}
+.today2-big3__glyph--missing {
+  color: var(--atlas-muted);
+}
+.today2-big3__sign {
+  font-family: var(--atlas-display);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--atlas-ivory);
+}
+
+/* Panels */
+.today2-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 18px;
+}
+.today2-panel {
+  display: flex;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid rgba(201, 167, 93, 0.28);
+  border-radius: 6px;
+  background: rgba(17, 28, 61, 0.78);
+  color: var(--atlas-ivory);
+  text-decoration: none;
+}
+.today2-panel--stack {
+  flex-direction: column;
+}
+.today2-panel--row {
+  align-items: center;
+  gap: 22px;
+}
+.today2-panel--link:hover,
+.today2-panel--link:focus-visible {
+  border-color: var(--atlas-gold-light);
+}
+
+/* Moon */
+.today2-moon {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid rgba(227, 194, 126, 0.6);
+  border-radius: 50%;
+  background: var(--atlas-moon-lit);
+  box-shadow: 0 0 40px rgba(227, 194, 126, 0.25);
+}
+.today2-moon__shade {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: var(--atlas-moon-shade);
+}
+.today2-moon__text,
+.today2-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Numbers */
+.today2-cycles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  text-align: center;
+}
+.today2-cycles__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 4px;
+  border: 1px solid rgba(201, 167, 93, 0.2);
+  border-radius: 4px;
+}
+.today2-cycles__value {
+  font-family: var(--atlas-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--atlas-gold-light);
+}
+.today2-cycles__label {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--atlas-muted);
+}
+
+/* Card of the day */
+.today2-panel--row:has(.today2-card) {
+  align-items: flex-start;
+}
+.today2-card {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  aspect-ratio: 5 / 8;
+  overflow: hidden;
+  border: 1px solid var(--atlas-gold);
+  border-radius: 5px;
+  background: var(--atlas-card-back);
+}
+/* The symbolic face is designed for a card about 200px wide; draw it at that
+   size and scale it to the 96px thumbnail so its text keeps its proportions. */
+.today2-card > .tarot-symbolic-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  transform: scale(0.48);
+  transform-origin: top left;
+}
+.today2-card__back {
+  font-size: 28px;
+  color: var(--atlas-gold-light);
+}
+
+/* Report link */
+.today2-cta {
+  border-color: rgba(201, 167, 93, 0.55);
+  border-radius: 6px;
+  background: linear-gradient(
+    120deg,
+    rgba(201, 167, 93, 0.16),
+    rgba(201, 167, 93, 0.04)
+  );
+}
+.today2-feature .today-feature {
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today2 {
+    animation: none;
+  }
+}
+
+/* ---------- Numbers ---------- */
+
+.numbers-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.numbers-h1 {
+  margin: 0;
+  font-family: var(--atlas-display);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--atlas-ivory);
+}
+.numbers-form {
+  max-width: 460px;
+}
+.numbers-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--atlas-muted);
+}
+.numbers-form__input {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 167, 93, 0.4);
+  border-radius: 4px;
+  background: var(--atlas-field);
+  color: var(--atlas-ivory);
+  font: inherit;
+  font-size: 16px;
+  letter-spacing: normal;
+  text-transform: none;
+  color-scheme: dark;
+}
+.numbers-form .atlas-button {
+  align-self: flex-start;
+}
+.numbers-form .atlas-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.numbers-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  max-width: 420px;
+}
+.numbers-picker__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 8px;
+  border: 1px solid rgba(201, 167, 93, 0.22);
+  border-radius: 5px;
+  background: rgba(17, 28, 61, 0.78);
+  color: var(--atlas-ivory);
+  cursor: pointer;
+}
+.numbers-picker__item[aria-checked="true"] {
+  border-color: var(--atlas-gold);
+  background: rgba(201, 167, 93, 0.14);
+}
+.numbers-picker__value {
+  font-family: var(--atlas-display);
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--atlas-gold-light);
+}
+.numbers-picker__label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--atlas-muted);
+}
+.numbers-title {
+  margin: 0;
+  font-size: 34px;
+}
+.numbers-keywords {
+  color: var(--atlas-gold-light);
+}
+.numbers-cycle__value {
+  font-family: var(--atlas-display);
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--atlas-gold-light);
+}
