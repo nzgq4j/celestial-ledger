@@ -7,7 +7,7 @@ export const pubSubPushSchema = z.object({
     messageId: z.string().max(256).optional(),
     message_id: z.string().max(256).optional(),
     publishTime: z.string().max(64).optional(),
-    attributes: z.record(z.string()).optional(),
+    attributes: z.record(z.string(), z.string()).optional(),
   }),
   subscription: z.string().max(512).optional(),
   deliveryAttempt: z.number().optional(),

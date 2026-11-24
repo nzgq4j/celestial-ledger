@@ -110,7 +110,7 @@ export const dailyEvidenceSchema = z
     kind: z.enum(["current_position", "transit", "lunar_phase"]),
     label: z.string().min(1),
     observedAtUtc: z.string().datetime(),
-    facts: z.record(z.union([z.string(), z.number(), z.boolean()])),
+    facts: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
     provenance: provenanceSchema,
   })
   .strict();

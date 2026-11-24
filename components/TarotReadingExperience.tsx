@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { PlanKey } from "@/lib/entitlements/domain";
 import { planMeetsTarotMinimum } from "@/lib/tarot/entitlement";
@@ -116,10 +117,11 @@ export function TarotReadingExperience({
     (reading) => !planMeetsTarotMinimum(currentPlan, reading.minimumPlan),
   );
   const busy = shuffling || pending;
+  const router = useRouter();
 
   function reset() {
     if (initialResult) {
-      window.location.assign("/tarot");
+      router.push("/tarot");
       return;
     }
     setShuffling(false);

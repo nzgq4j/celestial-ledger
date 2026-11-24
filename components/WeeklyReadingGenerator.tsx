@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 
@@ -20,6 +21,7 @@ export function WeeklyReadingGenerator({
   }>;
 }) {
   const { locale, pack } = useLocale();
+  const router = useRouter();
   const copy = pack.messages.account;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -39,7 +41,7 @@ export function WeeklyReadingGenerator({
       };
       if (!response.ok || !payload.readingId)
         throw new Error(payload.error ?? copy.weeklyReadingFailed);
-      window.location.assign(`/weekly-readings/${payload.readingId}`);
+      router.push(`/weekly-readings/${payload.readingId}`);
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : copy.weeklyReadingFailed,
