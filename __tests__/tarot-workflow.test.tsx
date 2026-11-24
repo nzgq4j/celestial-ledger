@@ -12,6 +12,9 @@ import { TarotReadingExperience } from "@/components/TarotReadingExperience";
 import { formatTarotMessage, TAROT_UI_MESSAGES } from "@/lib/tarot/ui-locales";
 import { TAROT_READINGS } from "@/lib/tarot/readings";
 import type { TarotDeck } from "@/lib/tarot/types";
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
 vi.mock("next/link", () => ({
   default: ({
     children,
