@@ -8,3 +8,6 @@ package-lock.json
 
 android/app/src/main/assets/
 android/**/build/
+
+celestial-atlas/
+UPDATE/
