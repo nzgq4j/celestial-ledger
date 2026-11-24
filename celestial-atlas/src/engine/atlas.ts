@@ -10,7 +10,7 @@ import {
 import type { Place } from './places';
 import {
   CALCULATION_VERSION, collect, contentId, makeEvidence, sealRecord,
-  type BirthChartRecord, type CardDrawRecord, type Evidence, type EvidenceMap, type NumerologyRecord, type SkyRecord,
+  type BirthChartRecord, type CalcRecord, type CardDrawRecord, type Evidence, type EvidenceMap, type NumerologyRecord, type SkyRecord,
 } from './records';
 import { resolveBirthTime, type Disambiguation } from './time';
 
@@ -224,6 +224,8 @@ export interface Report {
   cards: ReportCard[];
   /** IDs of every record the report draws on. */
   recordIds: string[];
+  /** The records themselves. */
+  records: CalcRecord[];
   /** All evidence referenced by the report. */
   evidence: EvidenceMap;
 }
@@ -702,6 +704,7 @@ export function report(p: Profile, ch: Chart, nums: Numbers, sk: Sky, cards: rea
     sections,
     cards: drawn.map((d,i) => ({ position:pos[i], name:d.card.name, orientation: d.reversed ? 'Reversed' : 'Upright', meaning: d.reversed ? d.card.reversed : d.card.upright, evidenceId: draw.evidenceIds[i] })),
     recordIds: [ch.record.id, nums.record.id, sk.record.id, draw.record.id],
+    records: [ch.record, nums.record, sk.record, draw.record],
     evidence: Object.fromEntries(Object.entries(evidence).filter(([id]) => used.has(id))),
   };
 }
