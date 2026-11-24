@@ -1,7 +1,19 @@
-// Celestial Atlas engine — low-precision astronomy, Pythagorean numerology, reading text.
-// Ported from the prototype's atlas.js. Logic and copy are intentionally identical.
-const D2R = Math.PI / 180;
-const norm = (d: number): number => ((d % 360) + 360) % 360;
+// Celestial Atlas engine — astronomy (astronomy-engine), Pythagorean numerology, reading text.
+// Ported from the prototype's atlas.js. Reading logic and copy are unchanged. Positions now
+// come from astronomy-engine, birth times are resolved with IANA time zones, Uranus,
+// Neptune and Pluto are included, and every calculated fact carries an evidence ID.
+import { DateTime } from 'luxon';
+import citiesMeta from '../data/cities-meta.json';
+import {
+  ENGINE_NAME, ENGINE_VERSION, angles as calcAngles, longitude, moonElongation, normalize as norm, speed,
+} from './ephemeris';
+import type { Place } from './places';
+import {
+  CALCULATION_VERSION, collect, contentId, makeEvidence, sealRecord,
+  type BirthChartRecord, type CardDrawRecord, type Evidence, type EvidenceMap, type NumerologyRecord, type SkyRecord,
+} from './records';
+import { resolveBirthTime, type Disambiguation } from './time';
+
 const VS = '︎';
 
 /* ---------- Types ---------- */
@@ -24,15 +36,7 @@ export interface Sign {
   shadow: string;
 }
 
-export interface City {
-  name: string;
-  lat: number;
-  lon: number;
-  /** Standard-time UTC offset in hours. */
-  tz: number;
-}
-
-export type PlanetKey = 'mercury' | 'venus' | 'mars' | 'jupiter' | 'saturn';
+export type PlanetKey = 'mercury' | 'venus' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'pluto';
 export type BodyKey = 'sun' | 'moon' | 'rising' | PlanetKey;
 
 export interface PlanetInfo {
@@ -57,20 +61,52 @@ export interface Profile {
   /** HH:MM, or empty when unknown */
   time: string;
   timeUnknown: boolean;
-  cityIdx: number;
-  dst: boolean;
+  place: Place;
+  /** Needed only when the local time occurred twice (clocks went back). */
+  disambiguation?: Disambiguation;
 }
 
-export type BodyPlacement = Placement & PlanetInfo & { key: BodyKey };
-export type PlanetPlacement = Placement & PlanetInfo & { key: PlanetKey; retro: boolean };
-export type MidheavenPlacement = Placement & { key: 'mc'; name: string; glyph: string };
+interface WithEvidence { evidenceId: string }
+export type BodyPlacement = Placement & PlanetInfo & WithEvidence & { key: BodyKey };
+export type PlanetPlacement = Placement & PlanetInfo & WithEvidence & { key: PlanetKey; retro: boolean };
+export type MidheavenPlacement = Placement & WithEvidence & { key: 'mc'; name: string; glyph: string };
+
+export type AspectKind = 'blend' | 'soft' | 'hard';
+export interface AspectDef {
+  name: string;
+  angle: number;
+  orb: number;
+  glyph: string;
+  kind: AspectKind;
+  text: string;
+}
+export interface Aspect {
+  a: BodyKey;
+  b: BodyKey;
+  aName: string;
+  bName: string;
+  def: AspectDef;
+  /** Distance from the exact angle, degrees */
+  orb: number;
+  evidenceId: string;
+  evidence: Evidence;
+}
 
 export interface Chart {
   sun: BodyPlacement;
-  moon: BodyPlacement;
+  moon: BodyPlacement & {
+    /** True when the birth time is unknown and the Moon may have changed sign that day. */
+    uncertain: boolean;
+    /** Every sign the Moon occupied on the birth date when the time is unknown. */
+    possibleSigns: Sign[];
+  };
   rising: BodyPlacement | null;
   mc: MidheavenPlacement | null;
   planets: PlanetPlacement[];
+  /** Equal-house cusps from the Ascendant; empty when the time is unknown. */
+  houses: { house: number; lon: number; evidenceId: string }[];
+  record: BirthChartRecord;
+  evidence: EvidenceMap;
 }
 
 export interface RetroNote {
@@ -87,13 +123,16 @@ export interface Sky {
   waxing: boolean;
   /** Days since new moon */
   age: number;
-  moon: Placement & PlanetInfo;
-  sun: Placement & PlanetInfo;
+  moon: Placement & PlanetInfo & WithEvidence;
+  sun: Placement & PlanetInfo & WithEvidence;
   planets: PlanetPlacement[];
   retroNotes: RetroNote[];
+  phaseEvidenceId: string;
+  record: SkyRecord;
+  evidence: EvidenceMap;
 }
 
-export interface Numbers {
+export interface NumbersCore {
   lifePath: number;
   expression: number;
   soulUrge: number;
@@ -102,6 +141,12 @@ export interface Numbers {
   personalYear: number;
   personalMonth: number;
   personalDay: number;
+}
+export type NumberKey = keyof NumbersCore;
+export interface Numbers extends NumbersCore {
+  evidenceIds: Record<NumberKey, string>;
+  record: NumerologyRecord;
+  evidence: EvidenceMap;
 }
 
 export type CoreNumberKey = 'lifePath' | 'expression' | 'soulUrge' | 'personality' | 'birthday';
@@ -162,6 +207,8 @@ export interface Drawn<C> {
 export interface ReportSection {
   h: string;
   body: string;
+  /** Evidence behind every claim in this section. */
+  evidenceIds: string[];
 }
 
 export interface ReportCard {
@@ -169,11 +216,16 @@ export interface ReportCard {
   name: string;
   orientation: 'Upright' | 'Reversed';
   meaning: string;
+  evidenceId: string;
 }
 
 export interface Report {
   sections: ReportSection[];
   cards: ReportCard[];
+  /** IDs of every record the report draws on. */
+  recordIds: string[];
+  /** All evidence referenced by the report. */
+  evidence: EvidenceMap;
 }
 
 /* ---------- Reference data ---------- */
@@ -241,20 +293,6 @@ export const SIGNS: Sign[] = [
     shadow:'Escaping instead of setting a boundary.' },
 ];
 
-export const CITIES: City[] = [
-  { name:'New York, USA', lat:40.71, lon:-74.01, tz:-5 }, { name:'Los Angeles, USA', lat:34.05, lon:-118.24, tz:-8 },
-  { name:'Chicago, USA', lat:41.88, lon:-87.63, tz:-6 }, { name:'Denver, USA', lat:39.74, lon:-104.99, tz:-7 },
-  { name:'Toronto, Canada', lat:43.65, lon:-79.38, tz:-5 }, { name:'Mexico City, Mexico', lat:19.43, lon:-99.13, tz:-6 },
-  { name:'São Paulo, Brazil', lat:-23.55, lon:-46.63, tz:-3 }, { name:'London, UK', lat:51.51, lon:-0.13, tz:0 },
-  { name:'Paris, France', lat:48.86, lon:2.35, tz:1 }, { name:'Avignon, France', lat:43.95, lon:4.81, tz:1 },
-  { name:'Madrid, Spain', lat:40.42, lon:-3.70, tz:1 }, { name:'Rome, Italy', lat:41.90, lon:12.50, tz:1 },
-  { name:'Berlin, Germany', lat:52.52, lon:13.40, tz:1 }, { name:'Lagos, Nigeria', lat:6.52, lon:3.38, tz:1 },
-  { name:'Cairo, Egypt', lat:30.04, lon:31.24, tz:2 }, { name:'Dubai, UAE', lat:25.20, lon:55.27, tz:4 },
-  { name:'Mumbai, India', lat:19.08, lon:72.88, tz:5.5 }, { name:'Singapore', lat:1.35, lon:103.82, tz:8 },
-  { name:'Seoul, South Korea', lat:37.57, lon:126.98, tz:9 }, { name:'Tokyo, Japan', lat:35.68, lon:139.69, tz:9 },
-  { name:'Sydney, Australia', lat:-33.87, lon:151.21, tz:10 },
-];
-
 export const PLANETS: Record<BodyKey, PlanetInfo> = {
   sun:{ name:'Sun', glyph:'☉'+VS, governs:'Core identity — who you are at your center and what energizes you', practical:'Lean into this when choosing work and goals.' },
   moon:{ name:'Moon', glyph:'☽'+VS, governs:'Emotional needs — what makes you feel safe and how you react under stress', practical:"Honor this when you're tired or upset." },
@@ -264,6 +302,10 @@ export const PLANETS: Record<BodyKey, PlanetInfo> = {
   mars:{ name:'Mars', glyph:'♂'+VS, governs:'Drive & conflict — how you act, compete, and get angry', practical:'Work with this energy, not against it.' },
   jupiter:{ name:'Jupiter', glyph:'♃'+VS, governs:'Growth & luck — where opportunity and generosity flow', practical:'Say yes in this area.' },
   saturn:{ name:'Saturn', glyph:'♄'+VS, governs:'Discipline & lessons — where you face pressure and build mastery', practical:'Slow, steady effort here pays off most.' },
+  // New copy (not in the prototype): outer planets added with the astronomy-engine switch.
+  uranus:{ name:'Uranus', glyph:'♅'+VS, governs:'Change & independence — where you break patterns and want freedom', practical:'Experiment here; the usual rules fit you least.' },
+  neptune:{ name:'Neptune', glyph:'♆'+VS, governs:'Imagination & ideals — where you dream, blur lines, and look for meaning', practical:'Let creativity lead here, and check the facts.' },
+  pluto:{ name:'Pluto', glyph:'♇'+VS, governs:'Depth & transformation — where you go all the way down and rebuild', practical:'Change here is slow and lasting. Loosen your grip.' },
 };
 
 const RETRO: Record<PlanetKey, string> = {
@@ -272,6 +314,10 @@ const RETRO: Record<PlanetKey, string> = {
   mars:'Energy turns inward. Rework strategy instead of forcing new fights.',
   jupiter:'Growth goes internal — review beliefs and long-term plans.',
   saturn:'Review commitments and structures. Fix foundations quietly.',
+  // New copy (not in the prototype).
+  uranus:'Change works on the inside first. Notice where you want more room.',
+  neptune:'Illusions thin out. A good stretch for checking what is real.',
+  pluto:'Old patterns come up for review. Let go of what you have outgrown.',
 };
 
 const PHASES: ReadonlyArray<readonly [string, string]> = [
@@ -285,120 +331,140 @@ const PHASES: ReadonlyArray<readonly [string, string]> = [
   ['Waning Crescent','Rest and recharge before the next cycle.'],
 ];
 
-/* ---------- Astronomy (low precision, about 1°) ---------- */
+export const ASPECTS: AspectDef[] = [
+  { name:'Conjunction', angle:0, orb:8, glyph:'☌', kind:'blend', text:'blend and amplify each other — this energy is concentrated in you.' },
+  { name:'Sextile', angle:60, orb:5, glyph:'⚹', kind:'soft', text:'cooperate easily — an opportunity, but one you have to act on.' },
+  { name:'Square', angle:90, orb:7, glyph:'□', kind:'hard', text:'create friction that pushes you to grow. Tension here becomes drive.' },
+  { name:'Trine', angle:120, orb:7, glyph:'△', kind:'soft', text:'flow naturally — a built-in talent you may take for granted.' },
+  { name:'Opposition', angle:180, orb:8, glyph:'☍', kind:'hard', text:'pull in opposite directions. Your work is balancing both, not choosing one.' },
+];
 
-type Elements = readonly [number, number, number, number, number, number, number, number, number, number, number, number];
+/* ---------- Positions ---------- */
 
-// JPL approximate Keplerian elements (J2000, per-century rates)
-const EL: Record<PlanetKey | 'earth', Elements> = {
-  mercury:[0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593,0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081],
-  venus:[0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255,0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418],
-  earth:[1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0,0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0],
-  mars:[1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891,0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343],
-  jupiter:[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909,-0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106],
-  saturn:[9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448,-0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794],
+export const PLANET_KEYS: PlanetKey[] = ['mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'];
+/** Planets in the prototype's free/premium split; outer planets follow them. */
+export const CLASSIC_PLANETS: PlanetKey[] = ['mercury','venus','mars','jupiter','saturn'];
+
+export const place = (lon: number): Placement => {
+  const L = norm(lon), i = Math.floor(L / 30), within = L - i * 30, deg = Math.floor(within);
+  return { lon: L, signIdx: i, sign: SIGNS[i], deg, min: Math.floor((within - deg) * 60 + 1e-8) };
 };
 
-function helio(el: Elements, T: number): [number, number] {
-  const [a0,e0,I0,L0,w0,O0,da,de,dI,dL,dw,dO] = el;
-  const a=a0+da*T, e=e0+de*T, I=(I0+dI*T)*D2R, L=L0+dL*T, wb=w0+dw*T, O=O0+dO*T;
-  const w=(wb-O)*D2R, Om=O*D2R;
-  let M = norm(L-wb); if (M>180) M-=360; M*=D2R;
-  let E = M + e*Math.sin(M);
-  for (let i=0;i<8;i++) E -= (E - e*Math.sin(E) - M) / (1 - e*Math.cos(E));
-  const xp=a*(Math.cos(E)-e), yp=a*Math.sqrt(1-e*e)*Math.sin(E);
-  const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(Om), sO=Math.sin(Om), cI=Math.cos(I);
-  return [(cw*cO - sw*sO*cI)*xp + (-sw*cO - cw*sO*cI)*yp, (cw*sO + sw*cO*cI)*xp + (-sw*sO + cw*cO*cI)*yp];
+export const formatPosition = (p: Placement): string =>
+  `${p.sign.name} ${p.deg}°${String(p.min).padStart(2, '0')}′ (${p.lon.toFixed(2)}°)`;
+
+const planetsAt = (date: Date, recordId: string): PlanetPlacement[] => PLANET_KEYS.map(k => {
+  const p = place(longitude(k, date)), retro = speed(k, date) < 0;
+  const evidenceId = makeEvidence(recordId, 'position', k, `${formatPosition(p)}${retro ? ' retrograde' : ''}`).id;
+  return { key: k, ...PLANETS[k], ...p, retro, evidenceId };
+});
+
+/** Aspects between the given bodies, using the prototype's orbs (first matching aspect wins). */
+export function findAspects(
+  bodies: ReadonlyArray<Placement & { key: BodyKey; name: string }>,
+  recordId: string,
+): Aspect[] {
+  const out: Aspect[] = [];
+  for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
+    let diff = Math.abs(bodies[i].lon - bodies[j].lon); if (diff > 180) diff = 360 - diff;
+    const def = ASPECTS.find(a => Math.abs(diff - a.angle) <= a.orb);
+    if (!def) continue;
+    const orb = Math.abs(diff - def.angle);
+    const evidence = makeEvidence(recordId, 'aspect', `${bodies[i].key}-${bodies[j].key}`, `${def.name}, ${orb.toFixed(2)}° orb`);
+    out.push({ a: bodies[i].key, b: bodies[j].key, aName: bodies[i].name, bName: bodies[j].name, def, orb, evidenceId: evidence.id, evidence });
+  }
+  return out;
+}
+
+export function chart(p: Profile): Chart {
+  const zone = p.place.timeZone;
+  const timeKnown = !(p.timeUnknown || !p.time);
+  const t = resolveBirthTime(p, zone);
+  const jsDate = t.utc;
+
+  // Unknown time: check the Moon across the whole local birth date.
+  const possibleSigns: Sign[] = [];
+  if (!timeKnown) {
+    const start = DateTime.fromISO(p.date, { zone }).startOf('day');
+    const end = start.endOf('day');
+    const a = Math.floor(longitude('moon', start.toJSDate()) / 30), b = Math.floor(longitude('moon', end.toJSDate()) / 30);
+    for (let i = a; ; i = (i + 1) % 12) { possibleSigns.push(SIGNS[i]); if (i === b) break; }
+  }
+  const moonUncertain = possibleSigns.length > 1;
+
+  const record = sealRecord<BirthChartRecord>({
+    kind: 'birth-chart', calculationVersion: CALCULATION_VERSION, engine: ENGINE_NAME, engineVersion: ENGINE_VERSION,
+    zodiac: 'tropical', coordinateFrame: 'geocentric apparent ecliptic of date', houseSystem: timeKnown ? 'equal' : 'none',
+    nodeType: 'not calculated', placeData: `${citiesMeta.source} ${citiesMeta.generated}`, placeId: p.place.id,
+    latitude: p.place.lat, longitude: p.place.lon, timeZone: zone, localDate: p.date, localTime: timeKnown ? p.time : null,
+    timeResolution: t.resolution, utc: jsDate.toISOString(), utcOffsetMinutes: t.offsetMinutes, timeKnown, moonSignUncertain: moonUncertain,
+  });
+  const rid = record.id;
+  const ev: Evidence[] = [];
+  const body = (key: 'sun' | 'moon', lon: number): BodyPlacement => {
+    const pl = place(lon);
+    const e = makeEvidence(rid, 'position', key, formatPosition(pl) + (key === 'moon' && moonUncertain ? ' (time unknown; sign uncertain)' : ''));
+    ev.push(e);
+    return { key, ...PLANETS[key], ...pl, evidenceId: e.id };
+  };
+  const sun = body('sun', longitude('sun', jsDate));
+  const moon = { ...body('moon', longitude('moon', jsDate)), uncertain: moonUncertain, possibleSigns };
+  const planets = planetsAt(jsDate, rid);
+  for (const pl of planets) ev.push(makeEvidence(rid, 'position', pl.key, `${formatPosition(pl)}${pl.retro ? ' retrograde' : ''}`));
+
+  let rising: BodyPlacement | null = null, mc: MidheavenPlacement | null = null;
+  const houses: Chart['houses'] = [];
+  if (timeKnown) {
+    const ang = calcAngles(jsDate, p.place.lat, p.place.lon);
+    const asc = place(ang.ascendant), mid = place(ang.midheaven);
+    const eA = makeEvidence(rid, 'angle', 'ascendant', formatPosition(asc));
+    const eM = makeEvidence(rid, 'angle', 'midheaven', formatPosition(mid));
+    ev.push(eA, eM);
+    rising = { key: 'rising', ...PLANETS.rising, ...asc, evidenceId: eA.id };
+    mc = { key: 'mc', name: 'Midheaven', glyph: 'MC', ...mid, evidenceId: eM.id };
+    for (let h = 0; h < 12; h++) {
+      const lon = norm(ang.ascendant + h * 30);
+      const e = makeEvidence(rid, 'house', `house-${h + 1}`, `Equal house ${h + 1} cusp ${formatPosition(place(lon))}`);
+      ev.push(e);
+      houses.push({ house: h + 1, lon, evidenceId: e.id });
+    }
+  }
+  return { sun, moon, rising, mc, planets, houses, record, evidence: collect(...ev) };
 }
 
 /**
- * Longitude provider. All chart and sky positions go through this interface so the
- * low-precision implementation below can later be replaced (for example with
- * astronomy-engine) without touching the reading logic.
+ * Aspects for a chart. Moon aspects are left out when the birth time is unknown,
+ * because the Moon moves about 13° in a day and those aspects depend on the exact time.
  */
-export interface Ephemeris {
-  /** Geocentric ecliptic longitude of a planet, degrees 0..360 */
-  planetLon(name: PlanetKey, jd: number): number;
-  sunLon(jd: number): number;
-  moonLon(jd: number): number;
-  ascendant(jd: number, lat: number, lon: number): number;
-  midheaven(jd: number, lon: number): number;
+export function chartAspects(ch: Chart, bodies: ReadonlyArray<BodyPlacement | PlanetPlacement>): Aspect[] {
+  const usable = ch.record.timeKnown ? bodies : bodies.filter(b => b.key !== 'moon');
+  return findAspects(usable, ch.record.id);
 }
 
-export const lowPrecisionEphemeris: Ephemeris = {
-  planetLon(name, jd) {
-    const T=(jd-2451545)/36525, p=helio(EL[name],T), e=helio(EL.earth,T);
-    return norm(Math.atan2(p[1]-e[1], p[0]-e[0])/D2R);
-  },
-  sunLon(jd) {
-    const n=jd-2451545, L=280.460+0.9856474*n, g=norm(357.528+0.9856003*n)*D2R;
-    return norm(L + 1.915*Math.sin(g) + 0.020*Math.sin(2*g));
-  },
-  moonLon(jd) {
-    const n=jd-2451545, L0=218.316+13.176396*n, M=(134.963+13.064993*n)*D2R, D=(297.850+12.190749*n)*D2R,
-      Ms=(357.528+0.9856003*n)*D2R, F=(93.272+13.229350*n)*D2R;
-    return norm(L0 + 6.289*Math.sin(M) + 1.274*Math.sin(2*D-M) + 0.658*Math.sin(2*D) + 0.214*Math.sin(2*M) - 0.186*Math.sin(Ms) - 0.114*Math.sin(2*F));
-  },
-  ascendant(jd, lat, lon) {
-    const T=(jd-2451545)/36525, ramc=norm(280.46061837+360.98564736629*(jd-2451545)+lon)*D2R;
-    const eps=(23.4393-0.013*T)*D2R, phi=lat*D2R;
-    return norm(Math.atan2(Math.cos(ramc), -(Math.sin(ramc)*Math.cos(eps) + Math.tan(phi)*Math.sin(eps)))/D2R);
-  },
-  midheaven(jd, lon) {
-    const T=(jd-2451545)/36525, ramc=norm(280.46061837+360.98564736629*(jd-2451545)+lon)*D2R, eps=(23.4393-0.013*T)*D2R;
-    return norm(Math.atan2(Math.sin(ramc), Math.cos(ramc)*Math.cos(eps))/D2R);
-  },
-};
-
-let ephemeris: Ephemeris = lowPrecisionEphemeris;
-/** Swap the longitude provider. Returns the previous one. */
-export function setEphemeris(next: Ephemeris): Ephemeris {
-  const prev = ephemeris;
-  ephemeris = next;
-  return prev;
-}
-
-const place = (lon: number): Placement => { const i=Math.floor(lon/30); return { lon, signIdx:i, sign:SIGNS[i], deg:Math.floor(lon%30), min:Math.floor((lon%1)*60) }; };
-const isRetro = (name: PlanetKey, jd: number): boolean => norm(ephemeris.planetLon(name, jd+1) - ephemeris.planetLon(name, jd)) > 180;
-
-const PLANET_KEYS: PlanetKey[] = ['mercury','venus','mars','jupiter','saturn'];
-
-/** Julian day of the birth moment. Unknown time uses local noon. */
-export function birthJD(p: Profile): number {
-  const [y,m,d] = p.date.split('-').map(Number);
-  const [hh,mm] = (p.timeUnknown || !p.time ? '12:00' : p.time).split(':').map(Number);
-  const c = CITIES[p.cityIdx] || CITIES[0];
-  const ms = Date.UTC(y, m-1, d, hh, mm) - (c.tz + (p.dst ? 1 : 0)) * 3600e3;
-  return ms/86400000 + 2440587.5;
-}
-const jdOf = (date: Date): number => date.getTime()/86400000 + 2440587.5;
-
-const planetsAt = (jd: number): PlanetPlacement[] =>
-  PLANET_KEYS.map(k => ({ key:k, ...PLANETS[k], ...place(ephemeris.planetLon(k, jd)), retro:isRetro(k, jd) }));
-
-export function chart(p: Profile): Chart {
-  const jd = birthJD(p), c = CITIES[p.cityIdx] || CITIES[0];
-  const noTime = p.timeUnknown || !p.time;
-  return {
-    sun:{ key:'sun', ...PLANETS.sun, ...place(ephemeris.sunLon(jd)) },
-    moon:{ key:'moon', ...PLANETS.moon, ...place(ephemeris.moonLon(jd)) },
-    rising: noTime ? null : { key:'rising', ...PLANETS.rising, ...place(ephemeris.ascendant(jd, c.lat, c.lon)) },
-    mc: noTime ? null : { key:'mc', name:'Midheaven', glyph:'MC', ...place(ephemeris.midheaven(jd, c.lon)) },
-    planets: planetsAt(jd),
-  };
-}
+const SYNODIC = 29.530588853;
 
 /** Current sky. `at` defaults to now; tests pass a fixed date. */
 export function sky(at: Date = new Date()): Sky {
-  const jd = jdOf(at), syn = 29.530588853;
-  const age = (((jd - 2451550.1) % syn) + syn) % syn;
-  const idx = Math.floor((age/syn)*8 + 0.5) % 8;
-  const illum = (1 - Math.cos(2*Math.PI*age/syn)) / 2;
-  const planets = planetsAt(jd);
+  const record = sealRecord<SkyRecord>({
+    kind: 'sky', calculationVersion: CALCULATION_VERSION, engine: ENGINE_NAME, engineVersion: ENGINE_VERSION,
+    zodiac: 'tropical', coordinateFrame: 'geocentric apparent ecliptic of date', utc: at.toISOString(),
+  });
+  const rid = record.id;
+  const elong = moonElongation(at);
+  const age = elong / 360 * SYNODIC;
+  const idx = Math.floor((age/SYNODIC)*8 + 0.5) % 8;
+  const illum = (1 - Math.cos(elong * Math.PI / 180)) / 2;
+  const planets = planetsAt(at, rid);
+  const sunP = place(longitude('sun', at)), moonP = place(longitude('moon', at));
+  const eSun = makeEvidence(rid, 'position', 'sun', formatPosition(sunP));
+  const eMoon = makeEvidence(rid, 'position', 'moon', formatPosition(moonP));
+  const ePhase = makeEvidence(rid, 'phase', 'moon-phase', `${PHASES[idx][0]}, ${Math.round(illum * 100)}% lit, elongation ${elong.toFixed(2)}°`);
+  const ev = [eSun, eMoon, ePhase, ...planets.map(pl => makeEvidence(rid, 'position', pl.key, `${formatPosition(pl)}${pl.retro ? ' retrograde' : ''}`))];
   return {
-    phase:PHASES[idx][0], phaseText:PHASES[idx][1], illum, waxing: age < syn/2, age,
-    moon:{ ...PLANETS.moon, ...place(ephemeris.moonLon(jd)) }, sun:{ ...PLANETS.sun, ...place(ephemeris.sunLon(jd)) },
+    phase:PHASES[idx][0], phaseText:PHASES[idx][1], illum, waxing: elong < 180, age,
+    moon:{ ...PLANETS.moon, ...moonP, evidenceId: eMoon.id }, sun:{ ...PLANETS.sun, ...sunP, evidenceId: eSun.id },
     planets, retroNotes: planets.filter(p => p.retro).map(p => ({ name:p.name, glyph:p.glyph, text:RETRO[p.key] })),
+    phaseEvidenceId: ePhase.id, record, evidence: collect(...ev),
   };
 }
 
@@ -414,7 +480,9 @@ export function lifePathOf(date: string): number {
   const [y,m,d] = date.split('-').map(Number);
   return reduce(reduce(m) + reduce(d) + reduce(y));
 }
-export function numbers(p: Pick<Profile, 'name' | 'date'>, today: Date = new Date()): Numbers {
+
+/** The prototype's numerology, without records. */
+export function numbersCore(p: Pick<Profile, 'name' | 'date'>, today: Date = new Date()): NumbersCore {
   const [, m, d] = p.date.split('-').map(Number);
   const py = reduce(reduce(m,false) + reduce(d,false) + reduce(today.getFullYear(),false), false);
   const pm = reduce(py + today.getMonth() + 1, false);
@@ -427,6 +495,21 @@ export function numbers(p: Pick<Profile, 'name' | 'date'>, today: Date = new Dat
     birthday: reduce(d),
     personalYear: py, personalMonth: pm, personalDay: pd,
   };
+}
+
+const localISODate = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+export function numbers(p: Pick<Profile, 'name' | 'date'>, today: Date = new Date()): Numbers {
+  const core = numbersCore(p, today);
+  const record = sealRecord<NumerologyRecord>({
+    kind: 'numerology', calculationVersion: CALCULATION_VERSION, method: 'pythagorean', masterNumbers: [11, 22, 33],
+    birthDate: p.date, referenceDate: localISODate(today), nameHash: contentId('name', clean(p.name)),
+  });
+  const keys = Object.keys(core) as NumberKey[];
+  const ev = keys.map(k => makeEvidence(record.id, k.startsWith('personal') ? 'cycle' : 'number', k, String(core[k])));
+  const evidenceIds = Object.fromEntries(keys.map((k, i) => [k, ev[i].id])) as Record<NumberKey, string>;
+  return { ...core, evidenceIds, record, evidence: collect(...ev) };
 }
 
 export const NUM: Record<number, NumberMeaning> = {
@@ -569,21 +652,56 @@ export function drawCards<C>(cards: readonly C[], seed: string, n: number): Draw
   return out;
 }
 
+/** A card draw with its record and one evidence entry per card. */
+export function recordDraw<C extends { id: string }>(
+  drawn: Drawn<C>[], deckSize: number, seed: string | null, positions?: readonly string[],
+): { record: CardDrawRecord; evidenceIds: string[]; evidence: EvidenceMap } {
+  const record = sealRecord<CardDrawRecord>({
+    kind: 'card-draw', calculationVersion: CALCULATION_VERSION, method: seed === null ? 'random' : 'seeded',
+    seedHash: seed === null ? null : contentId('seed', seed), deckSize, count: drawn.length,
+  });
+  const ev = drawn.map((d, i) => makeEvidence(record.id, 'card', positions?.[i] ?? `card-${i + 1}`, `${d.card.id} ${d.reversed ? 'reversed' : 'upright'}`));
+  return { record, evidenceIds: ev.map(e => e.id), evidence: collect(...ev) };
+}
+
+const lowerFirst = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
+
 export function report(p: Profile, ch: Chart, nums: Numbers, sk: Sky, cards: readonly TarotCardLike[], today: Date = new Date()): Report {
   const lp = NUM[nums.lifePath], su = NUM[nums.soulUrge], pe = NUM[nums.personality];
   const venus = ch.planets.find(x => x.key === 'venus')!, saturn = ch.planets.find(x => x.key === 'saturn')!;
   const inSun = sk.planets.filter(x => x.signIdx === ch.sun.signIdx);
   const first = p.name.split(' ')[0];
+  const n = nums.evidenceIds;
+  // Without a birth time the Moon's sign is only stated when it could not have changed that day.
+  const moonLine = ch.moon.uncertain
+    ? `Without a birth time your Moon could be in ${ch.moon.possibleSigns.map(s => s.name).join(' or ')}, so it is left out here. Your Soul Urge ${nums.soulUrge} (${su.title}) says this: ${lowerFirst(su.core)}`
+    : `Your Moon is in ${ch.moon.sign.name}: you process feelings with ${ch.moon.sign.style}. Your Soul Urge ${nums.soulUrge} (${su.title}) adds this: ${lowerFirst(su.core)}`;
   const sections: ReportSection[] = [
-    { h:'Your core blueprint', body:`${first}, you're a ${ch.sun.sign.name} Sun with a Life Path ${nums.lifePath} — ${lp.title}. ${ch.sun.sign.core} ${lp.core}` },
-    { h:'Your emotional landscape', body:`Your Moon is in ${ch.moon.sign.name}: you process feelings with ${ch.moon.sign.style}. Your Soul Urge ${nums.soulUrge} (${su.title}) adds this: ${su.core.charAt(0).toLowerCase()+su.core.slice(1)}` },
-    { h:'How others see you', body: (ch.rising ? `With ${ch.rising.sign.name} rising, people first meet your ${ch.rising.sign.style}. ` : 'Add your birth time to unlock your rising sign. ') + `Your Personality number ${nums.personality} (${pe.title}) reinforces it — ${pe.keywords.toLowerCase().replace(/ · /g, ', ')}.` },
-    { h:'Love', body:`Venus in ${venus.sign.name} means you show affection with ${venus.sign.style}. ${ch.sun.sign.love} ${lp.love}` },
-    { h:'Work & money', body:`${ch.sun.sign.work} ${lp.work} Saturn in ${saturn.sign.name} shows where discipline pays: bring ${saturn.sign.style} to long-term goals.` },
-    { h:'This year', body:`You're in a Personal Year ${nums.personalYear}. ${PERSONAL_YEAR[nums.personalYear]}` + (inSun.length ? ` Right now ${inSun.map(x=>x.name).join(' and ')} ${inSun.length>1?'are':'is'} moving through ${ch.sun.sign.name}, your Sun sign — expect that area of life to feel louder.` : '') + ` The Moon is ${sk.phase.toLowerCase()}: ${sk.phaseText.charAt(0).toLowerCase()+sk.phaseText.slice(1)}` },
-    { h:'Your growth edge', body:`${lp.challenge} As a ${ch.sun.sign.name}, also watch for: ${ch.sun.sign.shadow.charAt(0).toLowerCase()+ch.sun.sign.shadow.slice(1)}` },
+    { h:'Your core blueprint', body:`${first}, you're a ${ch.sun.sign.name} Sun with a Life Path ${nums.lifePath} — ${lp.title}. ${ch.sun.sign.core} ${lp.core}`,
+      evidenceIds:[ch.sun.evidenceId, n.lifePath] },
+    { h:'Your emotional landscape', body: moonLine,
+      evidenceIds:[ch.moon.evidenceId, n.soulUrge] },
+    { h:'How others see you', body: (ch.rising ? `With ${ch.rising.sign.name} rising, people first meet your ${ch.rising.sign.style}. ` : 'Add your birth time to unlock your rising sign. ') + `Your Personality number ${nums.personality} (${pe.title}) reinforces it — ${pe.keywords.toLowerCase().replace(/ · /g, ', ')}.`,
+      evidenceIds:[...(ch.rising ? [ch.rising.evidenceId] : []), n.personality] },
+    { h:'Love', body:`Venus in ${venus.sign.name} means you show affection with ${venus.sign.style}. ${ch.sun.sign.love} ${lp.love}`,
+      evidenceIds:[venus.evidenceId, ch.sun.evidenceId, n.lifePath] },
+    { h:'Work & money', body:`${ch.sun.sign.work} ${lp.work} Saturn in ${saturn.sign.name} shows where discipline pays: bring ${saturn.sign.style} to long-term goals.`,
+      evidenceIds:[ch.sun.evidenceId, n.lifePath, saturn.evidenceId] },
+    { h:'This year', body:`You're in a Personal Year ${nums.personalYear}. ${PERSONAL_YEAR[nums.personalYear]}` + (inSun.length ? ` Right now ${inSun.map(x=>x.name).join(' and ')} ${inSun.length>1?'are':'is'} moving through ${ch.sun.sign.name}, your Sun sign — expect that area of life to feel louder.` : '') + ` The Moon is ${sk.phase.toLowerCase()}: ${lowerFirst(sk.phaseText)}`,
+      evidenceIds:[n.personalYear, ch.sun.evidenceId, ...inSun.map(x => x.evidenceId), sk.phaseEvidenceId] },
+    { h:'Your growth edge', body:`${lp.challenge} As a ${ch.sun.sign.name}, also watch for: ${lowerFirst(ch.sun.sign.shadow)}`,
+      evidenceIds:[n.lifePath, ch.sun.evidenceId] },
   ];
-  const drawn = drawCards(cards, `${p.name}|${today.toDateString()}|report`, 3);
+  const seed = `${p.name}|${today.toDateString()}|report`;
+  const drawn = drawCards(cards, seed, 3);
   const pos = ['What supports you','What to work on','Where this is heading'];
-  return { sections, cards: drawn.map((d,i) => ({ position:pos[i], name:d.card.name, orientation: d.reversed ? 'Reversed' : 'Upright', meaning: d.reversed ? d.card.reversed : d.card.upright })) };
+  const draw = recordDraw(drawn, cards.length, seed, pos);
+  const evidence: EvidenceMap = { ...ch.evidence, ...nums.evidence, ...sk.evidence, ...draw.evidence };
+  const used = new Set([...sections.flatMap(s => s.evidenceIds), ...draw.evidenceIds]);
+  return {
+    sections,
+    cards: drawn.map((d,i) => ({ position:pos[i], name:d.card.name, orientation: d.reversed ? 'Reversed' : 'Upright', meaning: d.reversed ? d.card.reversed : d.card.upright, evidenceId: draw.evidenceIds[i] })),
+    recordIds: [ch.record.id, nums.record.id, sk.record.id, draw.record.id],
+    evidence: Object.fromEntries(Object.entries(evidence).filter(([id]) => used.has(id))),
+  };
 }
