@@ -77,7 +77,7 @@ await page.getByRole('button', { name: 'Save to journal' }).click();
 await page.getByRole('button', { name: 'Atlas+' }).first().click();
 await page.getByRole('dialog').waitFor();
 await axe('paywall'); await shot('11-paywall');
-await page.getByRole('button', { name: 'Start 7-day free trial' }).click();
+await page.getByRole('button', { name: 'Start 3-day free trial' }).click();
 
 await tab('Today').click();
 await page.getByRole('button', { name: /Read my report/ }).click();

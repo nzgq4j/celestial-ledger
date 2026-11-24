@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { billing, PLANS, type PlanId } from '../platform/billing';
+import { billing, PLANS, TRIAL_DAYS } from '../platform/billing';
 import { useApp } from '../state/store';
 import css from './screens.module.css';
 
@@ -11,7 +11,6 @@ export const PAYWALL_FEATURES = [
 
 export function Paywall() {
   const { closePaywall, startTrial } = useApp();
-  const [plan, setPlan] = useState<PlanId>('year');
   const [busy, setBusy] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -35,21 +34,20 @@ export function Paywall() {
             </li>
           ))}
         </ul>
-        <div role="radiogroup" aria-label="Plan" style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
           {PLANS.map(p => (
-            <button key={p.id} type="button" role="radio" aria-checked={plan === p.id}
-              className={plan === p.id ? `${css.plan} ${css.planOn}` : css.plan} onClick={() => setPlan(p.id)}>
+            <div key={p.id} className={`${css.plan} ${css.planOn}`}>
               <span>
                 <span style={{ display: 'block', fontSize: 15, fontWeight: 600 }}>{p.label}</span>
                 <span className="small" style={{ fontSize: 12.5 }}>{p.note}</span>
               </span>
               <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{p.price}</span>
-            </button>
+            </div>
           ))}
         </div>
         <button type="button" className="btn-primary" style={{ width: '100%', padding: 15, fontSize: 15 }} disabled={busy}
-          onClick={async () => { setBusy(true); try { await startTrial(plan); } finally { setBusy(false); } }}>
-          Start 7-day free trial
+          onClick={async () => { setBusy(true); try { await startTrial(PLANS[0].id); } finally { setBusy(false); } }}>
+          Start {TRIAL_DAYS}-day free trial
         </button>
         <p className="note" style={{ fontSize: 12, textAlign: 'center', marginTop: 12 }}>
           {billing.isDemo ? 'Cancel anytime. Demo only — no payment is taken.' : 'Cancel anytime.'}

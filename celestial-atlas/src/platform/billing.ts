@@ -2,13 +2,16 @@
 //
 // TODO(billing): wire Google Play Billing, for example with RevenueCat
 // (@revenuecat/purchases-capacitor): create the "atlas_plus" entitlement with
-// yearly and monthly products that include a 7-day free trial, implement
+// one yearly subscription (USD 6.99) that includes a 3-day free trial, implement
 // BillingService with Purchases.getOfferings / purchasePackage / restorePurchases /
 // getCustomerInfo, and swap it in below. Billing is the only feature allowed to
 // use the network.
 import { KEYS, load, save } from './storage';
 
-export type PlanId = 'year' | 'month';
+export type PlanId = 'year';
+
+/** Free trial length for Atlas+, in days. */
+export const TRIAL_DAYS = 3;
 
 export interface Plan {
   id: PlanId;
@@ -32,10 +35,9 @@ export interface BillingService {
   readonly isDemo: boolean;
 }
 
-/** Prototype plans and copy. */
+/** Atlas+ is a single yearly plan. The store's localised price replaces `price` once billing is wired. */
 export const PLANS: Plan[] = [
-  { id: 'year', label: 'Yearly', note: '7 days free, then billed annually · save 52%', price: '$39.99' },
-  { id: 'month', label: 'Monthly', note: '7 days free, then billed monthly', price: '$6.99' },
+  { id: 'year', label: 'Yearly', note: `${TRIAL_DAYS} days free, then billed annually`, price: '$6.99' },
 ];
 
 /** Simulated billing: stores the entitlement on the device. No payment is taken. */

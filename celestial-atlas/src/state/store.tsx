@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { chart, numbers, sky, type Chart, type Numbers, type Period, type Profile, type Report, type Sky } from '../engine/atlas';
 import type { EvidenceMap } from '../engine/records';
-import { billing } from '../platform/billing';
+import { billing, type PlanId } from '../platform/billing';
 import { onBackButton, onResume, tap } from '../platform/native';
 import { DEFAULT_NOTIF, cancelInsights, scheduleInsights, type NotifSettings } from '../platform/notifications';
 import { KEYS, load, removeAll, save } from '../platform/storage';
@@ -62,7 +62,7 @@ interface AppValue {
   showToast: (msg: string) => void;
   openPaywall: () => void;
   closePaywall: () => void;
-  startTrial: (plan: 'year' | 'month') => Promise<void>;
+  startTrial: (plan: PlanId) => Promise<void>;
   manageMembership: () => Promise<void>;
   setNotif: (next: NotifSettings) => Promise<void>;
   openReport: (r: Report) => void;
@@ -191,7 +191,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setJournal(prev => { const next = prev.filter(e => e.id !== id); void save(KEYS.journal, next); return next; });
   }, []);
 
-  const startTrial = useCallback(async (plan: 'year' | 'month') => {
+  const startTrial = useCallback(async (plan: PlanId) => {
     const ok = await billing.purchase(plan);
     setPremium(ok);
     setPaywall(false);

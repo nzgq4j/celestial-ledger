@@ -97,6 +97,7 @@ Houses, Ascendant, Midheaven and Moon aspects are left out. The Moon's degree is
 - Back button: closes the paywall, then steps back through visited tabs, then exits.
 - Daily insight: the next 14 mornings are scheduled at the chosen time with that day's Personal Day and Moon sign, and rescheduled when the app opens. They use inexact alarms (`isExactNotification: false`), so `SCHEDULE_EXACT_ALARM`, which the plugin would add and Google Play restricts, is removed from the manifest.
 - Backups are off (`allowBackup="false"` and data extraction rules) so birth data stays on the device.
+- Atlas+ is one yearly subscription at USD 6.99 with a 3-day free trial; it unlocks monthly forecasts, the full birth chart and the Atlas Report. Set up the matching subscription in the Play Console.
 - `BillingService` (`src/platform/billing.ts`) is a stub that grants Atlas+ locally with no payment. Google Play Billing (for example RevenueCat) must replace it before release.
 
 ## Toolchain notes
