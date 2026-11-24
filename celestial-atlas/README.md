@@ -1,6 +1,6 @@
 # Celestial Atlas (Android, Capacitor)
 
-The Celestial Atlas Android app: a Vite + React 18 + TypeScript web layer packaged with Capacitor 6. It ports the HTML prototype in `../UPDATE/` (brief: `../UPDATE/CLAUDE_CODE_PROMPT.md`).
+The Celestial Atlas Android app: a Vite + React 18 + TypeScript web layer packaged with Capacitor 8. It ports the HTML prototype in `../UPDATE/` (brief: `../UPDATE/CLAUDE_CODE_PROMPT.md`).
 
 This app is separate from the Next.js web application at the repository root. The root lint, typecheck and format checks exclude this folder; run its checks from here.
 
@@ -12,7 +12,7 @@ This app is separate from the Next.js web application at the repository root. Th
 | 4 | Design tokens, bundled fonts, shell, splash, onboarding | Done |
 | 5 | Today, Stars (with chart wheel), Numbers, Tarot, Journal, Report, Profile, Paywall | Done |
 | 6 | Splash, status bar, back button, local notifications, haptics, Preferences storage | Done; not yet run on a device |
-| 7 | Icons, adaptive icon, `versionCode 1`, `minSdk 23`, `targetSdk 36` | Done |
+| 7 | Icons, adaptive icon, `versionCode 1`, `minSdk 24`, `targetSdk 37` | Done |
 | 8 | Build and sync | Debug APK, release APK and release AAB build with Gradle (unsigned until a keystore is configured) |
 
 Copy changes from the prototype (outer planets, "8 more placements", "Mercury through Pluto", the astronomy-engine footnote, uncertain-Moon and birth-time messages, the time-zone line, tarot "Save to journal", the reset confirmation and the GeoNames credit) were approved by the owner on 2026-11-24.
@@ -50,7 +50,7 @@ node scripts/generate-android-assets.mjs
 
 ## Running on a device and building a signed AAB
 
-Requirements: Android Studio (or the Android SDK command-line tools) with SDK Platform 36, JDK 17 or 21, and a device with USB debugging enabled.
+Requirements: Node 22+, Android Studio (or the Android SDK command-line tools) with SDK Platform 37, JDK 21, and a device with USB debugging enabled.
 
 ```bash
 npm ci && npm run build && npx cap sync android
@@ -93,16 +93,16 @@ Houses, Ascendant, Midheaven and Moon aspects are left out. The Moon's degree is
 ## Native
 
 - `capacitor.config.ts`: native splash held until React renders, then a 1.5 s animated web splash; navy status bar with light text.
-- `MainActivity.java`: pads the WebView by the system bar, cutout and keyboard insets, because Android 15+ always draws edge to edge at target SDK 35+.
+- Edge to edge: Capacitor 8's built-in SystemBars passes the status bar, cutout and gesture bar insets to CSS (`insetsHandling: 'css'`); the top bar, tab bar, onboarding and dialogs pad themselves with `env(safe-area-inset-*)`.
 - Back button: closes the paywall, then steps back through visited tabs, then exits.
-- Daily insight: the next 14 mornings are scheduled at the chosen time with that day's Personal Day and Moon sign, and rescheduled when the app opens.
+- Daily insight: the next 14 mornings are scheduled at the chosen time with that day's Personal Day and Moon sign, and rescheduled when the app opens. They use inexact alarms (`isExactNotification: false`), so `SCHEDULE_EXACT_ALARM`, which the plugin would add and Google Play restricts, is removed from the manifest.
 - Backups are off (`allowBackup="false"` and data extraction rules) so birth data stays on the device.
 - `BillingService` (`src/platform/billing.ts`) is a stub that grants Atlas+ locally with no payment. Google Play Billing (for example RevenueCat) must replace it before release.
 
 ## Toolchain notes
 
-- TypeScript is pinned to 5.9: the Capacitor 6 CLI reads `capacitor.config.ts` through the TypeScript 5 compiler API.
-- Android Gradle Plugin 8.10.1 and Gradle 8.11.1 replace the Capacitor 6 template's 8.2.1, which does not support compile SDK 36.
-- Target SDK 36 is the newest level this toolchain supports. SDK 37 builds with Android Gradle Plugin 8.13.2 but with an "untested compile SDK" warning; official SDK 37 support needs Android Gradle Plugin 9, which Capacitor 6 and its plugins cannot use (they rely on `proguard-android.txt` and `lintOptions`, removed in AGP 9). Moving to SDK 37 therefore means upgrading Capacitor.
-- `npm audit` reports advisories in `tar`, `glob`, `minimatch` and `rimraf` from `@capacitor/cli` 6 (development only, not shipped). `npm audit --omit=dev` is clean.
+- Capacitor 8.6.2 (upgraded from the brief's Capacitor 6 to target SDK 37). Capacitor 8 requires Android 7.0, so the minimum SDK is 24 rather than the brief's 23.
+- Target and compile SDK 37 with Android Gradle Plugin 8.13.2 and Gradle 8.14.3. Gradle warns "We recommend using a newer Android Gradle plugin to use compile SDK version 37.0": official SDK 37 support starts with AGP 9, which Capacitor 8 and its plugins cannot use yet (they still use `lintOptions`). Capacitor 9 (release candidate at the time of writing) moves to AGP 9 and SDK 37 with a minimum SDK of 26.
+- TypeScript is pinned to 5.9; the Capacitor CLI reads `capacitor.config.ts` through the TypeScript 5 compiler API.
+- `npm audit` is clean, including development dependencies.
 - Journal entries live in Preferences. Above about 500 entries (`JOURNAL_SOFT_LIMIT`), consider `@capacitor-community/sqlite`.

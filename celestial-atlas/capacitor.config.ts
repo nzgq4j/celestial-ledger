@@ -19,10 +19,15 @@ const config: CapacitorConfig = {
       showSpinner: false,
       androidScaleType: 'CENTER_CROP',
     },
+    // Capacitor 8 draws edge to edge and passes the system bar insets to CSS
+    // (env(safe-area-inset-*)), which the top bar, tab bar and dialogs use.
+    SystemBars: {
+      insetsHandling: 'css',
+      initialViewportFitValueHint: 'cover',
+      style: 'DARK',
+    },
     StatusBar: {
       style: 'DARK',
-      backgroundColor: '#0a1128',
-      overlaysWebView: false,
     },
     LocalNotifications: {
       smallIcon: 'ic_stat_atlas',

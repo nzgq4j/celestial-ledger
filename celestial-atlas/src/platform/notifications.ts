@@ -52,6 +52,9 @@ export async function scheduleInsights(profile: Profile, settings: NotifSettings
   await LocalNotifications.schedule({
     notifications: deliveryTimes(settings.time).map((at, i) => ({
       id: ID_BASE + i, channelId: CHANNEL, ...insightFor(profile, at), schedule: { at, allowWhileIdle: false }, smallIcon: 'ic_stat_atlas',
+      // A morning insight does not need exact timing. Inexact alarms avoid the restricted
+      // SCHEDULE_EXACT_ALARM permission (removed in AndroidManifest.xml) and its settings prompt.
+      isExactNotification: false,
     })),
   });
   return true;
