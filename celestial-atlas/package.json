@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "e2e": "node e2e/smoke.mjs",
+    "build:cities": "node scripts/build-cities.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.3",
