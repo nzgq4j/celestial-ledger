@@ -33,6 +33,8 @@
     "node_modules",
     "tmp",
     ".codex-weekly-reading",
-    ".codex-horoscope-deploy"
+    ".codex-horoscope-deploy",
+    "celestial-atlas",
+    "UPDATE"
   ]
 }

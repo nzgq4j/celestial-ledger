@@ -1,0 +1,52 @@
+/* The tarot area takes the chosen deck's palette and spans the full width of the main column. */
+.root {
+  position: relative; overflow: hidden; margin: -22px -18px 0; min-height: 70dvh;
+  background: var(--t-bg); color: var(--t-ink); transition: background .5s ease, color .5s ease;
+}
+.root > header, .root > section, .root > footer { position: relative; }
+.header { display: flex; flex-direction: column; gap: 6px; padding: 22px 20px 6px; }
+.brand { font-family: var(--font-display); font-size: 24px; letter-spacing: 0.06em; font-weight: 600; }
+.nav { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: 14px; }
+.navBtn { background: none; border: none; color: var(--t-ink); padding: 0; min-height: 44px; font-size: 14px; text-align: left; }
+.section { padding: 16px 20px 40px; }
+.intro { text-align: center; max-width: 640px; margin: 0 auto 36px; animation: fadeUp .6s ease both; }
+.kicker { font-family: var(--font-display); font-style: italic; font-size: 16px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t-accent-text); margin-bottom: 14px; }
+.title { font-family: var(--font-display); font-size: 40px; font-weight: 600; line-height: 1.1; margin: 0 0 16px; }
+.lead { font-size: 15.5px; line-height: 1.6; margin: 0; }
+.deckGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px; }
+.deckCard {
+  text-align: left; border: 1px solid rgba(201, 168, 106, 0.25); background: rgba(255, 255, 255, 0.03); border-radius: 4px;
+  padding: 0; overflow: hidden; color: inherit; transition: transform .25s ease, border-color .25s ease;
+}
+.deckCard:hover { transform: translateY(-6px); border-color: rgba(201, 168, 106, 0.6); }
+.deckArt { width: 100%; aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center; }
+.deckSymbol { width: 44px; height: 44px; border: 2px solid; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.deckSymbol > div { width: 20px; height: 20px; border: 2px solid; transform: rotate(45deg); }
+.deckText { padding: 16px 14px 18px; }
+.deckName { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin-bottom: 6px; }
+.deckTagline { font-size: 13px; line-height: 1.5; }
+.spread {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; text-align: left;
+  border: 1px solid rgba(201, 168, 106, 0.25); background: rgba(255, 255, 255, 0.03); border-radius: 4px; padding: 20px; color: inherit;
+}
+.spread:hover { border-color: var(--t-accent); background: rgba(255, 255, 255, 0.06); }
+.count { font-family: var(--font-display); font-size: 28px; font-weight: 600; color: var(--t-accent-text); }
+.countLabel { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.quiet { background: none; border: none; color: var(--t-ink); padding: 0 8px; min-height: 44px; font-size: 14px; }
+.shuffle { position: relative; height: 220px; display: flex; align-items: center; justify-content: center; margin-bottom: 36px; }
+.shuffleCard { position: absolute; width: 110px; height: 170px; border-radius: 8px; background: var(--t-panel); border: 2px solid var(--t-accent); }
+.spreadGrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 16px; margin-bottom: 44px; }
+.slot { width: 136px; flex-shrink: 0; animation: fadeUp .5s ease both; display: flex; flex-direction: column; align-items: center; }
+.position { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; color: var(--t-accent-text); margin-bottom: 10px; min-height: 2.6em; display: flex; align-items: flex-end; }
+.cardName { font-family: var(--font-display); font-size: 17px; font-weight: 600; text-align: center; margin-top: 10px; }
+.orientation { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+.meanings { max-width: 760px; margin: 0 auto 40px; display: flex; flex-direction: column; gap: 18px; }
+.h2 { font-family: var(--font-display); font-size: 26px; font-weight: 600; text-align: center; margin: 0 0 4px; }
+.meaning { border-left: 2px solid var(--t-accent); padding-left: 18px; }
+.meaningHead { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 4px; }
+.meaningBody { font-size: 15px; line-height: 1.65; }
+.together { max-width: 760px; margin: 0 auto 44px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(201, 168, 106, 0.2); border-radius: 6px; padding: 26px 22px; }
+.actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.primary { background: var(--t-accent); border: none; border-radius: 3px; padding: 0 26px; min-height: 48px; font-size: 14px; font-weight: 600; letter-spacing: 0.03em; }
+.secondary { background: none; border: 1px solid rgba(201, 168, 106, 0.4); color: var(--t-ink); border-radius: 3px; padding: 0 22px; min-height: 48px; font-size: 14px; }
+.footer { text-align: center; padding: 20px 24px 28px; font-size: 12px; }

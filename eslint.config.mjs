@@ -18,5 +18,7 @@ export default defineConfig([
     "coverage/**",
     "next-env.d.ts",
     "android/**",
+    "celestial-atlas/**",
+    "UPDATE/**",
   ]),
 ]);

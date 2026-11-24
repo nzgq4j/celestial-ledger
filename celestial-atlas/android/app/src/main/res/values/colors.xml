@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="atlas_navy">#0A1128</color>
+    <color name="atlas_navy_deep">#080E22</color>
+    <color name="atlas_gold">#C9A35A</color>
+    <color name="atlas_gold_bright">#E3C27E</color>
+</resources>
