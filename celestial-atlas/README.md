@@ -12,8 +12,10 @@ This app is separate from the Next.js web application at the repository root. Th
 | 4 | Design tokens, bundled fonts, shell, splash, onboarding | Done |
 | 5 | Today, Stars (with chart wheel), Numbers, Tarot, Journal, Report, Profile, Paywall | Done |
 | 6 | Splash, status bar, back button, local notifications, haptics, Preferences storage | Done; not yet run on a device |
-| 7 | Icons, adaptive icon, `versionCode 1`, `minSdk 23`, `targetSdk 36` | Done; Gradle build not yet run |
-| 8 | Build and sync | Web build and `cap sync` done; release commands below |
+| 7 | Icons, adaptive icon, `versionCode 1`, `minSdk 23`, `targetSdk 36` | Done |
+| 8 | Build and sync | Debug APK, release APK and release AAB build with Gradle (unsigned until a keystore is configured) |
+
+Copy changes from the prototype (outer planets, "8 more placements", "Mercury through Pluto", the astronomy-engine footnote, uncertain-Moon and birth-time messages, the time-zone line, tarot "Save to journal", the reset confirmation and the GeoNames credit) were approved by the owner on 2026-11-24.
 
 ## Commands
 
@@ -101,5 +103,6 @@ Houses, Ascendant, Midheaven and Moon aspects are left out. The Moon's degree is
 
 - TypeScript is pinned to 5.9: the Capacitor 6 CLI reads `capacitor.config.ts` through the TypeScript 5 compiler API.
 - Android Gradle Plugin 8.10.1 and Gradle 8.11.1 replace the Capacitor 6 template's 8.2.1, which does not support compile SDK 36.
+- Target SDK 36 is the newest level this toolchain supports. SDK 37 builds with Android Gradle Plugin 8.13.2 but with an "untested compile SDK" warning; official SDK 37 support needs Android Gradle Plugin 9, which Capacitor 6 and its plugins cannot use (they rely on `proguard-android.txt` and `lintOptions`, removed in AGP 9). Moving to SDK 37 therefore means upgrading Capacitor.
 - `npm audit` reports advisories in `tar`, `glob`, `minimatch` and `rimraf` from `@capacitor/cli` 6 (development only, not shipped). `npm audit --omit=dev` is clean.
 - Journal entries live in Preferences. Above about 500 entries (`JOURNAL_SOFT_LIMIT`), consider `@capacitor-community/sqlite`.
