@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 e2e/out/
+
+# Release signing keys (never commit)
+*.jks
+*.keystore
+android/keystore.properties
