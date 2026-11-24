@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #12121f; }
+    @keyframes shuffleA { 0%{transform:translateX(0) rotate(0deg);} 30%{transform:translateX(-40px) rotate(-8deg);} 60%{transform:translateX(30px) rotate(6deg);} 100%{transform:translateX(0) rotate(0deg);} }
+    @keyframes shuffleB { 0%{transform:translateX(0) rotate(0deg);} 30%{transform:translateX(35px) rotate(7deg);} 60%{transform:translateX(-30px) rotate(-5deg);} 100%{transform:translateX(0) rotate(0deg);} }
+    @keyframes shuffleC { 0%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-18px) rotate(3deg);} 100%{transform:translateY(0) rotate(0deg);} }
+    @keyframes fadeUp { 0%{opacity:0; transform:translateY(14px);} 100%{opacity:1; transform:translateY(0);} }
+    @keyframes twinkle { 0%,100%{opacity:.25;} 50%{opacity:.9;} }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; background: {{ appBg }}; color: {{ appInk }}; font-family:'Work Sans',sans-serif; transition: background .5s ease, color .5s ease; position:relative; overflow:hidden;">
+
+  <div style="position:absolute; inset:0; pointer-events:none; opacity:0.5;">
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="0">
+      <div style="position:absolute; left:{{ s.left }}; top:{{ s.top }}; width:2px; height:2px; border-radius:50%; background:{{ appAccent }}; animation: twinkle {{ s.dur }} ease-in-out infinite; animation-delay:{{ s.delay }};"></div>
+    </sc-for>
+  </div>
+
+  <header style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:28px 48px; max-width:1240px; margin:0 auto;">
+    <div style="font-family:'Cormorant Garamond',serif; font-size:26px; letter-spacing:0.06em; font-weight:600;">Tarot &amp; Threshold</div>
+    <sc-if value="{{ showTopNav }}" hint-placeholder-val="{{ false }}">
+      <nav style="display:flex; gap:22px; font-size:14px; letter-spacing:0.02em;">
+        <button onClick="{{ changeDeck }}" style="background:none; border:none; color:{{ appInk }}; opacity:0.75; cursor:pointer; font-family:inherit; font-size:inherit; padding:0;" style-hover="opacity:1;">Deck: {{ deck.name }}</button>
+        <sc-if value="{{ reading }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ changeReading }}" style="background:none; border:none; color:{{ appInk }}; opacity:0.75; cursor:pointer; font-family:inherit; font-size:inherit; padding:0;" style-hover="opacity:1;">Reading: {{ reading.name }}</button>
+        </sc-if>
+        <button onClick="{{ restart }}" style="background:none; border:none; color:{{ appAccent }}; cursor:pointer; font-family:inherit; font-size:inherit; padding:0;">Start Over</button>
+      </nav>
+    </sc-if>
+  </header>
+
+  <!-- DECK SELECT -->
+  <sc-if value="{{ isDeckScreen }}" hint-placeholder-val="{{ true }}">
+    <main style="position:relative; max-width:1180px; margin:0 auto; padding:20px 48px 100px;">
+      <div style="text-align:center; max-width:640px; margin:0 auto 56px; animation: fadeUp .6s ease both;">
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; letter-spacing:0.14em; text-transform:uppercase; color:{{ appAccent }}; margin-bottom:14px;">Choose your deck</div>
+        <h1 style="font-family:'Cormorant Garamond',serif; font-size:52px; font-weight:600; line-height:1.1; margin:0 0 16px;">Five decks. One question worth asking.</h1>
+        <p style="font-size:16px; line-height:1.6; opacity:0.75; margin:0;">Every deck holds the same 78 cards and reads the same, upright or reversed &mdash; the art just meets you where your taste is.</p>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:24px;">
+        <sc-for list="{{ decks }}" as="d" hint-placeholder-count="5">
+          <button onClick="{{ d.onSelect }}" style="text-align:left; cursor:pointer; border:1px solid rgba(201,168,106,0.25); background:rgba(255,255,255,0.03); border-radius:4px; padding:0; overflow:hidden; font-family:inherit; color:inherit; transition:transform .25s ease, border-color .25s ease;" style-hover="transform:translateY(-6px); border-color:rgba(201,168,106,0.6);">
+            <div style="width:100%; aspect-ratio:3/4; background:{{ d.panel }}; display:flex; align-items:center; justify-content:center;">
+              <div style="width:44px; height:44px; border:2px solid {{ d.accent }}; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <div style="width:20px; height:20px; border:2px solid {{ d.accent }}; transform:rotate(45deg);"></div>
+              </div>
+            </div>
+            <div style="padding:18px 18px 22px;">
+              <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; margin-bottom:6px;">{{ d.name }}</div>
+              <div style="font-size:13px; line-height:1.5; opacity:0.7;">{{ d.tagline }}</div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- READING SELECT -->
+  <sc-if value="{{ isReadingScreen }}" hint-placeholder-val="{{ false }}">
+    <main style="position:relative; max-width:1000px; margin:0 auto; padding:20px 48px 100px;">
+      <div style="text-align:center; max-width:620px; margin:0 auto 48px; animation: fadeUp .6s ease both;">
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; letter-spacing:0.14em; text-transform:uppercase; color:{{ appAccent }}; margin-bottom:14px;">{{ deck.name }} deck selected</div>
+        <h1 style="font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; margin:0 0 16px;">How deep do you want to go?</h1>
+        <p style="font-size:15px; line-height:1.6; opacity:0.75; margin:0;">From a single card to the full life-and-love spread &mdash; every card can land upright or reversed.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <sc-for list="{{ readings }}" as="r" hint-placeholder-count="5">
+          <button onClick="{{ r.onSelect }}" style="display:flex; align-items:center; justify-content:space-between; gap:20px; text-align:left; cursor:pointer; border:1px solid rgba(201,168,106,0.25); background:rgba(255,255,255,0.03); border-radius:4px; padding:22px 26px; font-family:inherit; color:inherit; transition:border-color .2s ease, background .2s ease;" style-hover="border-color:{{ appAccent }}; background:rgba(255,255,255,0.06);">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; margin-bottom:6px;">{{ r.name }}</div>
+              <div style="font-size:13.5px; line-height:1.5; opacity:0.7; max-width:520px;">{{ r.blurb }}</div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:{{ appAccent }};">{{ r.count }}</div>
+              <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; opacity:0.55;">cards &middot; {{ r.time }}</div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+      <div style="margin-top:32px; text-align:center;">
+        <button onClick="{{ changeDeck }}" style="background:none; border:none; color:{{ appInk }}; opacity:0.6; cursor:pointer; font-size:13px; font-family:inherit;" style-hover="opacity:1;">&larr; choose a different deck</button>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- DRAWING -->
+  <sc-if value="{{ isDrawScreen }}" hint-placeholder-val="{{ false }}">
+    <main style="position:relative; max-width:700px; margin:0 auto; padding:60px 48px 100px; text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; letter-spacing:0.14em; text-transform:uppercase; color:{{ appAccent }}; margin-bottom:28px;">{{ reading.name }}</div>
+      <div style="position:relative; height:220px; display:flex; align-items:center; justify-content:center; margin-bottom:36px;">
+        <div style="position:absolute; width:110px; height:170px; border-radius:8px; background:{{ deck.panel }}; border:2px solid {{ appAccent }}; animation: shuffleA 1.4s ease-in-out infinite;"></div>
+        <div style="position:absolute; width:110px; height:170px; border-radius:8px; background:{{ deck.panel }}; border:2px solid {{ appAccent }}; animation: shuffleB 1.4s ease-in-out infinite; animation-delay:0.15s;"></div>
+        <div style="position:absolute; width:110px; height:170px; border-radius:8px; background:{{ deck.panel }}; border:2px solid {{ appAccent }}; animation: shuffleC 1.6s ease-in-out infinite; animation-delay:0.3s;"></div>
+      </div>
+      <p style="font-size:15px; opacity:0.7;">Shuffling {{ deck.name }}&hellip;</p>
+    </main>
+  </sc-if>
+
+  <!-- RESULTS -->
+  <sc-if value="{{ isResultScreen }}" hint-placeholder-val="{{ false }}">
+    <main style="position:relative; max-width:1180px; margin:0 auto; padding:20px 48px 120px;">
+      <div style="text-align:center; max-width:640px; margin:0 auto 44px; animation: fadeUp .6s ease both;">
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; letter-spacing:0.14em; text-transform:uppercase; color:{{ appAccent }}; margin-bottom:14px;">{{ reading.name }} &middot; {{ deck.name }}</div>
+        <h1 style="font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600; margin:0;">Your Reading</h1>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:28px 20px; margin-bottom:56px;">
+        <sc-for list="{{ drawnDisplay }}" as="c" hint-placeholder-count="3">
+          <div style="animation: fadeUp .5s ease both; width:160px; flex-shrink:0;">
+            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; text-align:center; color:{{ appAccent }}; margin-bottom:10px;">{{ c.position }}</div>
+            <div style="width:100%; aspect-ratio:5/8; border-radius:6px; overflow:hidden; border:1.5px solid {{ appAccent }}; background:{{ deck.panel }}; transform:{{ c.rotation }}; transition:transform .6s ease; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:10px 8px; box-sizing:border-box; position:relative;">
+              <sc-if value="{{ c.face.imagePath }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ c.face.imagePath }}" alt="{{ c.name }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
+              </sc-if>
+              <sc-if value="{{ c.face.hideSymbol }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute; inset:6px; border:1px solid rgba(201,168,106,0.4); border-radius:3px; pointer-events:none; z-index:1;"></div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:600; letter-spacing:0.04em; color:{{ appAccent }}; z-index:1;">{{ c.face.corner }}</div>
+                <div style="flex:1; display:flex; align-items:center; justify-content:center; z-index:1;">
+                  <sc-if value="{{ c.face.isMajor }}" hint-placeholder-val="{{ false }}">
+                    <div style="width:46px; height:46px; border:2px solid {{ appAccent }}; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative;">
+                      <div style="width:22px; height:22px; border:2px solid {{ appAccent }}; transform:rotate(45deg);"></div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.face.isWands }}" hint-placeholder-val="{{ false }}">
+                    <div style="width:10px; height:52px; background:{{ appAccent }}; border-radius:5px; transform:rotate(20deg);"></div>
+                  </sc-if>
+                  <sc-if value="{{ c.face.isCups }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                      <div style="width:36px; height:26px; border:3px solid {{ appAccent }}; border-top:none; border-radius:0 0 20px 20px;"></div>
+                      <div style="width:3px; height:14px; background:{{ appAccent }};"></div>
+                      <div style="width:24px; height:3px; background:{{ appAccent }}; border-radius:2px;"></div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.face.isSwords }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative; width:40px; height:52px;">
+                      <div style="position:absolute; left:50%; top:0; width:4px; height:44px; background:{{ appAccent }}; transform:translateX(-50%);"></div>
+                      <div style="position:absolute; left:50%; top:30px; width:28px; height:4px; background:{{ appAccent }}; transform:translateX(-50%);"></div>
+                      <div style="position:absolute; left:50%; bottom:0; width:8px; height:8px; background:{{ appAccent }}; transform:translateX(-50%) rotate(45deg);"></div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.face.isPentacles }}" hint-placeholder-val="{{ false }}">
+                    <div style="width:42px; height:42px; background:{{ appAccent }}; clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);"></div>
+                  </sc-if>
+                </div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:600; letter-spacing:0.04em; color:{{ appAccent }}; transform:rotate(180deg); z-index:1;">{{ c.face.corner }}</div>
+              </sc-if>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+              <div style="font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:600;">{{ c.name }}</div>
+              <div style="font-size:11px; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; margin-top:2px;">{{ c.orientationLabel }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="max-width:760px; margin:0 auto 48px;">
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; text-align:center; margin:0 0 22px;">What it means</h2>
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <sc-for list="{{ drawnDisplay }}" as="c" hint-placeholder-count="3">
+            <div style="border-left:2px solid {{ appAccent }}; padding-left:18px;">
+              <div style="font-size:13px; font-weight:600; letter-spacing:0.02em; margin-bottom:4px;">{{ c.position }} &mdash; {{ c.name }} ({{ c.orientationLabel }})</div>
+              <div style="font-size:15px; line-height:1.65; opacity:0.85;">{{ c.meaning }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="max-width:760px; margin:0 auto 56px; background:rgba(255,255,255,0.04); border:1px solid rgba(201,168,106,0.2); border-radius:6px; padding:32px 34px;">
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; margin:0 0 14px;">Reading it together</h2>
+        <p style="font-size:15.5px; line-height:1.75; opacity:0.9; margin:0;">{{ narrative }}</p>
+      </div>
+
+      <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <button onClick="{{ drawAgain }}" style="background:{{ appAccent }}; color:{{ deck.bg }}; border:none; border-radius:3px; padding:14px 28px; font-size:14px; font-weight:600; letter-spacing:0.03em; cursor:pointer; font-family:inherit;">Draw Again</button>
+        <button onClick="{{ changeReading }}" style="background:none; border:1px solid rgba(201,168,106,0.4); color:{{ appInk }}; border-radius:3px; padding:14px 28px; font-size:14px; cursor:pointer; font-family:inherit;">Different Reading</button>
+        <button onClick="{{ changeDeck }}" style="background:none; border:none; color:{{ appInk }}; opacity:0.6; padding:14px 8px; font-size:14px; cursor:pointer; font-family:inherit;" style-hover="opacity:1;">Change Deck</button>
+      </div>
+    </main>
+  </sc-if>
+
+  <footer style="position:relative; text-align:center; padding:24px; font-size:12px; opacity:0.4;">For reflection and entertainment &mdash; not a substitute for professional advice.</footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DECKS = [
+  { id:'cat', name:'The Whimsical Cats', tagline:'Storybook cats stand in for every archetype — soft color, big charm.', bg:'#fbf1e4', panel:'#fff9ef', ink:'#4a3428', accent:'#c07a72' },
+  { id:'traditional', name:'Traditional', tagline:'The classic deck — timeless symbolism in rich color and gold.', bg:'#241014', panel:'#3a1620', ink:'#f0e6d2', accent:'#c9a227' },
+  { id:'comic', name:'Silver Age', tagline:'Golden-age comic heroes reinterpret the arcana in bold ink and halftone.', bg:'#12203f', panel:'#1c3f94', ink:'#fff4d6', accent:'#e2231a' },
+  { id:'techno', name:'Neon Circuit', tagline:'Circuitry and holographic glow for a digital-age deck.', bg:'#05070c', panel:'#0d1420', ink:'#c9fbff', accent:'#4deeea' },
+  { id:'provencal', name:'Provençal', tagline:'Sun-washed lavender fields and faded linen from the French countryside.', bg:'#f3ede1', panel:'#fffaf1', ink:'#4a4038', accent:'#a8813f' },
+];
+
+const READINGS = [
+  { id:'daily', name:'Daily Draw', count:1, time:'1 min', positions:['Today'], blurb:'One card. One clear thing to carry into your day.' },
+  { id:'ppf', name:'Past, Present, Future', count:3, time:'3 min', positions:['Past','Present','Future'], blurb:"A quick read on how you got here and where you're headed." },
+  { id:'love5', name:'Love Reading', count:5, time:'5 min', positions:['You','Them','The Connection','Challenge','Potential'], blurb:'A focused look at a relationship — real or hoped-for.' },
+  { id:'celtic', name:'Celtic Cross', count:10, time:'10 min', positions:['Present','Challenge','Foundation','Recent Past','Possible Outcome','Near Future','Your Approach','External Influences','Hopes & Fears','Final Outcome'], blurb:'The classic ten-card spread for a full, layered picture.' },
+  { id:'grand', name:'Life & Love Grand Spread', count:14, time:'15+ min', positions:['Where You Are Now','Core Desire','Past Influence','Love: Current State','Love: What You Need','Love: Obstacle','Career & Purpose','Money & Security','Personal Growth','Family & Home','Hidden Influence','Advice','Near Future','Long-Term Outcome'], blurb:'The deepest reading — life and love together, full major and minor arcana in play.' },
+];
+
+class Component extends DCLogic {
+  state = { screen: 'deck', deckId: null, readingId: null, cards: null, drawn: [] };
+
+  componentDidMount() {
+    import('./tarotData.js').then(m => this.setState({ cards: m.default }));
+    const stars = [];
+    for (let i = 0; i < 40; i++) {
+      stars.push({ left: `${Math.random()*100}%`, top: `${Math.random()*100}%`, dur: `${2+Math.random()*3}s`, delay: `${Math.random()*3}s` });
+    }
+    this._stars = stars;
+  }
+
+  selectDeck = (id) => this.setState({ deckId: id, screen: 'reading' });
+
+  selectReading = (id) => {
+    this.setState({ readingId: id, screen: 'draw', drawn: [] });
+    const reading = READINGS.find(r => r.id === id);
+    setTimeout(() => {
+      const drawn = this.drawCards(reading.count, reading.positions);
+      this.setState({ drawn, screen: 'result' });
+    }, 1700);
+  };
+
+  drawCards(count, positions) {
+    const pool = [...this.state.cards];
+    const picks = [];
+    for (let i = 0; i < count; i++) {
+      const idx = Math.floor(Math.random() * pool.length);
+      const card = pool.splice(idx, 1)[0];
+      picks.push({ card, reversed: Math.random() < 0.5, position: positions[i] });
+    }
+    return picks;
+  }
+
+  restart = () => this.setState({ screen: 'deck', deckId: null, readingId: null, drawn: [] });
+  changeReading = () => this.setState({ screen: 'reading', drawn: [] });
+  changeDeck = () => this.setState({ screen: 'deck', readingId: null, drawn: [] });
+
+  cardFace(card, deckId) {
+    const isMajor = card.arcana === 'major';
+    const roman = ['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
+    const rankLabel = card.name.split(' of ')[0];
+    const hasArt = deckId === 'traditional' && isMajor && card.num >= 1 && card.num <= 20;
+    return {
+      isMajor,
+      isWands: card.suit === 'wands',
+      isCups: card.suit === 'cups',
+      isSwords: card.suit === 'swords',
+      isPentacles: card.suit === 'pentacles',
+      corner: isMajor ? roman[card.num] : rankLabel,
+      imagePath: hasArt ? `cards/${card.id}.png` : null,
+      hideSymbol: !hasArt,
+    };
+  }
+
+  buildNarrative(drawn) {
+    const sentences = drawn.map(d => {
+      const m = d.reversed ? d.card.reversed : d.card.upright;
+      const lower = m.charAt(0).toLowerCase() + m.slice(1);
+      return `In the position of ${d.position.toLowerCase()}, ${d.card.name}${d.reversed ? ' reversed' : ''} points to ${lower}`;
+    });
+    return sentences.join(' ');
+  }
+
+  renderVals() {
+    const deck = DECKS.find(d => d.id === this.state.deckId) || DECKS[0];
+    const reading = READINGS.find(r => r.id === this.state.readingId) || null;
+    const isDeck = this.state.screen === 'deck';
+    const drawnDisplay = this.state.drawn.map(d => ({
+      position: d.position,
+      name: d.card.name,
+      orientationLabel: d.reversed ? 'Reversed' : 'Upright',
+      rotation: d.reversed ? 'rotate(180deg)' : 'rotate(0deg)',
+      meaning: d.reversed ? d.card.reversed : d.card.upright,
+      face: this.cardFace(d.card, deck.id),
+    }));
+    return {
+      isDeckScreen: isDeck,
+      isReadingScreen: this.state.screen === 'reading',
+      isDrawScreen: this.state.screen === 'draw',
+      isResultScreen: this.state.screen === 'result',
+      showTopNav: !isDeck,
+      decks: DECKS.map(d => ({ ...d, onSelect: () => this.selectDeck(d.id) })),
+      readings: READINGS.map(r => ({ ...r, onSelect: () => this.selectReading(r.id) })),
+      deck, reading,
+      appBg: isDeck ? '#12121f' : deck.bg,
+      appInk: isDeck ? '#f5ede0' : deck.ink,
+      appAccent: isDeck ? '#c9a86a' : deck.accent,
+      stars: this._stars || [],
+      drawAgain: reading ? () => this.selectReading(reading.id) : null,
+      drawnDisplay,
+      narrative: this.state.drawn.length && this.state.cards ? this.buildNarrative(this.state.drawn) : '',
+      restart: this.restart,
+      changeReading: this.changeReading,
+      changeDeck: this.changeDeck,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

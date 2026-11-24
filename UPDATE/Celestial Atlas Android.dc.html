@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>body { margin:0; background:#1a1c24; } a { color:#e3c27e; } a:hover { color:#f3dca6; }</style>
+</helmet>
+<div style="min-height:100vh; padding:56px 56px 80px; box-sizing:border-box; font-family:'Work Sans',sans-serif; color:#efe6d2;">
+  <div style="margin-bottom:36px;">
+    <div style="font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:8px;">Android · 412 × 892</div>
+    <h1 style="font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; margin:0;">Celestial Atlas on Android</h1>
+  </div>
+  <div style="display:flex; gap:48px; flex-wrap:wrap; align-items:flex-start;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#aeb6cc;">01 · Today</div>
+      <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+        <div style="transform:translateZ(0); min-height:100%;">
+          <dc-import name="Celestial Atlas" demo="{{ true }}" embedded="{{ true }}" force-layout="mobile" initial-tab="home" hint-size="100%,820px"></dc-import>
+        </div>
+      </x-import>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#aeb6cc;">02 · Stars</div>
+      <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+        <div style="transform:translateZ(0); min-height:100%;">
+          <dc-import name="Celestial Atlas" demo="{{ true }}" embedded="{{ true }}" force-layout="mobile" initial-tab="stars" show-insight="{{ false }}" hint-size="100%,820px"></dc-import>
+        </div>
+      </x-import>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#aeb6cc;">03 · Numbers</div>
+      <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+        <div style="transform:translateZ(0); min-height:100%;">
+          <dc-import name="Celestial Atlas" demo="{{ true }}" embedded="{{ true }}" force-layout="mobile" initial-tab="numbers" show-insight="{{ false }}" hint-size="100%,820px"></dc-import>
+        </div>
+      </x-import>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+</body>
+</html>

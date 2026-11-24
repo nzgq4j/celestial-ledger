@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0a1128; }
+    a { color: #e3c27e; } a:hover { color: #f3dca6; }
+    input, select { color-scheme: dark; }
+    @keyframes fadeUp { 0%{opacity:0; transform:translateY(12px);} 100%{opacity:1; transform:translateY(0);} }
+    @keyframes twinkle { 0%,100%{opacity:.2;} 50%{opacity:.85;} }
+    @keyframes slowspin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+    @keyframes spinRev { from{transform:rotate(360deg);} to{transform:rotate(0deg);} }
+    @keyframes splashIn { 0%{opacity:0; transform:scale(.85);} 100%{opacity:1; transform:scale(1);} }
+    @keyframes corePulse { 0%,100%{box-shadow:0 0 18px rgba(227,194,126,.6); transform:scale(1);} 50%{box-shadow:0 0 44px rgba(227,194,126,.95); transform:scale(1.15);} }
+    @keyframes loadSweep { 0%{transform:translateX(-110%);} 100%{transform:translateX(260%);} }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; background:#0a1128; color:#efe6d2; font-family:'Work Sans',sans-serif; position:relative; overflow-x:clip;">
+
+  <div style="position:fixed; inset:0; pointer-events:none; overflow:hidden;">
+    <div style="position:absolute; right:-280px; top:-280px; width:760px; height:760px; border-radius:50%; border:1px solid rgba(201,163,90,0.13); animation:slowspin 400s linear infinite;">
+      <div style="position:absolute; inset:70px; border-radius:50%; border:1px dashed rgba(201,163,90,0.12);"></div>
+      <div style="position:absolute; inset:160px; border-radius:50%; border:1px solid rgba(201,163,90,0.1);"></div>
+      <div style="position:absolute; left:50%; top:0; bottom:0; width:1px; background:rgba(201,163,90,0.08);"></div>
+      <div style="position:absolute; top:50%; left:0; right:0; height:1px; background:rgba(201,163,90,0.08);"></div>
+    </div>
+    <div style="position:absolute; left:-200px; bottom:-260px; width:520px; height:520px; border-radius:50%; border:1px solid rgba(201,163,90,0.09);"></div>
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="0">
+      <div style="position:absolute; left:{{ s.left }}; top:{{ s.top }}; width:{{ s.size }}; height:{{ s.size }}; border-radius:50%; background:#e3c27e; animation:twinkle {{ s.dur }} ease-in-out infinite; animation-delay:{{ s.delay }};"></div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; box-sizing:border-box; text-align:center;">
+      <div style="position:relative; width:200px; height:200px; margin-bottom:44px; animation:splashIn 1s ease both;">
+        <div style="position:absolute; inset:0; border-radius:50%; border:1px solid rgba(201,163,90,0.55); animation:slowspin 24s linear infinite;">
+          <div style="position:absolute; left:50%; top:-4px; width:7px; height:7px; margin-left:-3.5px; border-radius:50%; background:#e3c27e; box-shadow:0 0 12px #e3c27e;"></div>
+        </div>
+        <div style="position:absolute; inset:26px; border-radius:50%; border:1px dashed rgba(201,163,90,0.45); animation:spinRev 36s linear infinite;">
+          <div style="position:absolute; left:-3px; top:50%; width:5px; height:5px; margin-top:-2.5px; border-radius:50%; background:#c9a35a;"></div>
+        </div>
+        <div style="position:absolute; inset:58px; border-radius:50%; border:1px solid rgba(201,163,90,0.35);"></div>
+        <div style="position:absolute; left:50%; top:-14px; bottom:-14px; width:1px; background:linear-gradient(transparent, rgba(201,163,90,0.5), transparent);"></div>
+        <div style="position:absolute; top:50%; left:-14px; right:-14px; height:1px; background:linear-gradient(90deg, transparent, rgba(201,163,90,0.5), transparent);"></div>
+        <div style="position:absolute; left:50%; top:50%; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; background:#e3c27e; animation:corePulse 2.4s ease-in-out infinite;"></div>
+      </div>
+      <div style="font-size:11px; letter-spacing:0.32em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:14px; animation:fadeUp .8s ease .3s both;">Tarot · Numbers · Stars</div>
+      <h1 style="font-family:'Cormorant Garamond',serif; font-size:56px; font-weight:600; line-height:1; margin:0 0 16px; letter-spacing:0.02em; animation:fadeUp .8s ease .45s both;">Celestial Atlas</h1>
+      <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:#c4c9d8; margin:0 0 40px; animation:fadeUp .8s ease .6s both;">Charting your sky…</p>
+      <div style="width:160px; height:2px; background:rgba(201,163,90,0.18); border-radius:1px; overflow:hidden; animation:fadeUp .8s ease .7s both;">
+        <div style="width:40%; height:100%; background:#e3c27e; border-radius:1px; animation:loadSweep 1.4s ease-in-out infinite;"></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ONBOARDING -->
+  <sc-if value="{{ needsOnboarding }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 20px; box-sizing:border-box;">
+      <div style="width:100%; max-width:460px; animation:fadeUp .6s ease both;">
+        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:36px;">
+          <sc-for list="{{ onbDots }}" as="d" hint-placeholder-count="4">
+            <div style="width:{{ d.w }}; height:4px; border-radius:2px; background:{{ d.bg }}; transition:all .3s ease;"></div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ onb0 }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center;">
+            <div style="width:120px; height:120px; margin:0 auto 32px; border-radius:50%; border:1px solid #c9a35a; position:relative; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; inset:12px; border-radius:50%; border:1px dashed rgba(201,163,90,0.5);"></div>
+              <div style="position:absolute; left:50%; top:-8px; bottom:-8px; width:1px; background:rgba(201,163,90,0.5);"></div>
+              <div style="position:absolute; top:50%; left:-8px; right:-8px; height:1px; background:rgba(201,163,90,0.5);"></div>
+              <div style="width:14px; height:14px; border-radius:50%; background:#e3c27e; box-shadow:0 0 24px rgba(227,194,126,0.7);"></div>
+            </div>
+            <div style="font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:14px;">Welcome to</div>
+            <h1 style="font-family:'Cormorant Garamond',serif; font-size:54px; font-weight:600; line-height:1; margin:0 0 18px; letter-spacing:0.01em;">Celestial Atlas</h1>
+            <p style="font-size:16px; line-height:1.65; color:#c4c9d8; margin:0 0 36px; text-wrap:pretty;">Your birth chart, your numbers, and the cards — read together, in plain language you can actually use.</p>
+            <button onClick="{{ onbNext }}" style="background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:15px 36px; font-weight:600; font-size:15px; letter-spacing:0.04em; cursor:pointer; font-family:inherit;" style-hover="background:#e3c27e;">Build my atlas</button>
+            <p style="font-size:12.5px; color:#8d96b3; margin:20px 0 0;">Takes about a minute. Saved on this device only.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onb1 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Step 1 of 3</div>
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; margin:0 0 10px;">What's your full birth name?</h2>
+          <p style="font-size:14.5px; line-height:1.6; color:#aeb6cc; margin:0 0 26px;">Numerology uses every letter of the name on your birth certificate — first, middle, and last.</p>
+          <input type="text" value="{{ draftName }}" onChange="{{ onName }}" placeholder="e.g. Amelia Rose Laurent" style="width:100%; box-sizing:border-box; background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:15px 16px; font-size:17px; border-radius:4px; font-family:inherit; outline:none;">
+        </sc-if>
+
+        <sc-if value="{{ onb2 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Step 2 of 3</div>
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; margin:0 0 10px;">When were you born?</h2>
+          <p style="font-size:14.5px; line-height:1.6; color:#aeb6cc; margin:0 0 26px;">Your birth time sets your rising sign. If you don't know it, we'll leave rising out.</p>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Date of birth
+              <input type="date" value="{{ draftDate }}" onChange="{{ onDate }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:14px 16px; font-size:16px; border-radius:4px; font-family:inherit; outline:none;">
+            </label>
+            <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Time of birth
+              <input type="time" value="{{ draftTime }}" onChange="{{ onTime }}" disabled="{{ draftTimeUnknown }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:14px 16px; font-size:16px; border-radius:4px; font-family:inherit; outline:none;">
+            </label>
+            <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:#c4c9d8; cursor:pointer;">
+              <input type="checkbox" checked="{{ draftTimeUnknown }}" onChange="{{ onTimeUnknown }}" style="width:18px; height:18px; accent-color:#c9a35a;">
+              I don't know my birth time
+            </label>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onb3 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Step 3 of 3</div>
+          <h2 style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; margin:0 0 10px;">Where were you born?</h2>
+          <p style="font-size:14.5px; line-height:1.6; color:#aeb6cc; margin:0 0 26px;">Pick the closest city — location and time zone place your chart.</p>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <select value="{{ draftCityIdx }}" onChange="{{ onCity }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:14px 16px; font-size:16px; border-radius:4px; font-family:inherit; outline:none;">
+              <sc-for list="{{ cities }}" as="c" hint-placeholder-count="0">
+                <option value="{{ c.idx }}">{{ c.name }}</option>
+              </sc-for>
+            </select>
+            <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:#c4c9d8; cursor:pointer;">
+              <input type="checkbox" checked="{{ draftDst }}" onChange="{{ onDst }}" style="width:18px; height:18px; accent-color:#c9a35a;">
+              Daylight saving time was in effect
+            </label>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onbShowNav }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:36px;">
+            <button onClick="{{ onbBack }}" style="background:none; border:none; color:#aeb6cc; font-size:14px; cursor:pointer; font-family:inherit; padding:10px 0;" style-hover="color:#efe6d2;">← Back</button>
+            <button onClick="{{ onbNext }}" disabled="{{ onbBlocked }}" style="background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:14px 30px; font-weight:600; font-size:15px; cursor:pointer; font-family:inherit; opacity:{{ onbOpacity }};">{{ onbNextLabel }}</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- APP SHELL -->
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative; display:flex; flex-direction:{{ shellDir }}; min-height:100vh; max-width:{{ shellMax }}; margin:0 auto;">
+
+      <sc-if value="{{ isWide }}" hint-placeholder-val="{{ true }}">
+        <aside style="width:248px; flex-shrink:0; position:sticky; top:0; height:100vh; box-sizing:border-box; padding:34px 22px; border-right:1px solid rgba(201,163,90,0.2); display:flex; flex-direction:column; gap:34px; background:rgba(8,14,34,0.6);">
+          <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+            <div style="width:30px; height:30px; border-radius:50%; border:1px solid #c9a35a; display:flex; align-items:center; justify-content:center;"><div style="width:7px; height:7px; border-radius:50%; background:#e3c27e;"></div></div>
+            <div style="font-family:'Cormorant Garamond',serif; font-size:23px; font-weight:600; letter-spacing:0.02em;">Celestial Atlas</div>
+          </div>
+          <nav style="display:flex; flex-direction:column; gap:4px;">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+              <button onClick="{{ n.go }}" style="display:flex; align-items:center; gap:14px; text-align:left; background:{{ n.bg }}; border:none; border-radius:4px; color:{{ n.color }}; padding:12px 12px; font-size:15px; cursor:pointer; font-family:inherit;" style-hover="color:#efe6d2;">
+                <span style="width:22px; text-align:center; font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:17px;">{{ n.glyph }}</span>{{ n.label }}
+              </button>
+            </sc-for>
+          </nav>
+          <div style="margin-top:auto; display:flex; flex-direction:column; gap:14px;">
+            <sc-if value="{{ notPremium }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ openPaywall }}" style="text-align:left; background:rgba(201,163,90,0.1); border:1px solid rgba(201,163,90,0.45); border-radius:5px; padding:16px; color:#efe6d2; cursor:pointer; font-family:inherit;" style-hover="background:rgba(201,163,90,0.18);">
+                <div style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; color:#e3c27e; margin-bottom:4px;">Atlas+</div>
+                <div style="font-size:12.5px; line-height:1.5; color:#c4c9d8;">Full chart, monthly forecasts &amp; the Atlas Report.</div>
+              </button>
+            </sc-if>
+            <button onClick="{{ goProfile }}" style="display:flex; align-items:center; gap:12px; background:none; border:none; padding:8px; cursor:pointer; color:#efe6d2; font-family:inherit; text-align:left;">
+              <div style="width:38px; height:38px; border-radius:50%; background:#16234a; border:1px solid rgba(201,163,90,0.5); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:#e3c27e;">{{ initial }}</div>
+              <div>
+                <div style="font-size:14px; font-weight:500;">{{ firstName }}</div>
+                <div style="font-size:12px; color:#8d96b3;">{{ planLabel }}</div>
+              </div>
+            </button>
+          </div>
+        </aside>
+      </sc-if>
+
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+          <div style="position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(10,17,40,0.88); backdrop-filter:blur(12px); border-bottom:1px solid rgba(201,163,90,0.18);">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:24px; height:24px; border-radius:50%; border:1px solid #c9a35a; display:flex; align-items:center; justify-content:center;"><div style="width:6px; height:6px; border-radius:50%; background:#e3c27e;"></div></div>
+              <div style="font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600;">Celestial Atlas</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <sc-if value="{{ notPremium }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ openPaywall }}" style="background:none; border:1px solid rgba(201,163,90,0.55); color:#e3c27e; border-radius:20px; padding:7px 14px; font-size:12px; font-weight:600; letter-spacing:0.06em; cursor:pointer; font-family:inherit; min-height:34px;">Atlas+</button>
+              </sc-if>
+              <button onClick="{{ goProfile }}" style="width:40px; height:40px; border-radius:50%; background:#16234a; border:1px solid rgba(201,163,90,0.5); color:#e3c27e; font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; cursor:pointer;">{{ initial }}</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <main style="flex:1; padding:{{ mainPad }}; box-sizing:border-box; width:100%; max-width:1080px;">
+
+          <!-- TODAY -->
+          <sc-if value="{{ tHome }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:22px; animation:fadeUp .5s ease both;">
+              <sc-if value="{{ showInsight }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(28,40,78,0.92); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px 16px; box-shadow:0 12px 32px rgba(0,0,0,0.35); max-width:520px;">
+                  <div style="width:38px; height:38px; flex-shrink:0; border-radius:9px; background:#0a1128; border:1px solid #c9a35a; display:flex; align-items:center; justify-content:center;"><div style="width:8px; height:8px; border-radius:50%; background:#e3c27e; box-shadow:0 0 10px #e3c27e;"></div></div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc; margin-bottom:3px;"><span>Celestial Atlas</span><span>now</span></div>
+                    <div style="font-size:14.5px; font-weight:600; margin-bottom:2px;">{{ insightTitle }}</div>
+                    <div style="font-size:13.5px; line-height:1.45; color:#d3d7e3;">{{ insightBody }}</div>
+                  </div>
+                  <button onClick="{{ dismissInsight }}" aria-label="Dismiss" style="background:none; border:none; color:#8d96b3; font-size:18px; cursor:pointer; padding:0 2px; line-height:1;" style-hover="color:#efe6d2;">×</button>
+                </div>
+              </sc-if>
+
+              <div>
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">{{ todayLabel }}</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; line-height:1.08; margin:0;">{{ greeting }}</h1>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border:1px solid rgba(201,163,90,0.3); border-radius:6px; background:rgba(17,28,61,0.7);">
+                <sc-for list="{{ big3 }}" as="b" hint-placeholder-count="3">
+                  <div style="padding:18px 12px; text-align:center; border-right:1px solid rgba(201,163,90,0.18);">
+                    <div style="font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:#aeb6cc; margin-bottom:8px;">{{ b.label }}</div>
+                    <div style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:28px; color:#e3c27e; line-height:1; margin-bottom:8px;">{{ b.signGlyph }}</div>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600;">{{ b.signName }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:18px;">
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px; display:flex; flex-direction:column; gap:12px;">
+                  <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Your day · {{ sunName }}</div>
+                  <p style="font-family:'Cormorant Garamond',serif; font-size:22px; line-height:1.35; margin:0; text-wrap:pretty;">{{ homeHoro.overview }}</p>
+                  <p style="font-size:14.5px; line-height:1.6; color:#c4c9d8; margin:0;"><strong style="color:#efe6d2; font-weight:600;">Love · </strong>{{ homeHoro.love }}</p>
+                  <button onClick="{{ goHoroscope }}" style="align-self:flex-start; background:none; border:none; color:#e3c27e; font-size:14px; font-weight:500; cursor:pointer; padding:4px 0; font-family:inherit;" style-hover="color:#f3dca6;">Full horoscope →</button>
+                </div>
+
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px; display:flex; gap:22px; align-items:center;">
+                  <div style="width:96px; height:96px; flex-shrink:0; border-radius:50%; overflow:hidden; position:relative; background:#e3c27e; box-shadow:0 0 40px rgba(227,194,126,0.25); border:1px solid rgba(227,194,126,0.6);">
+                    <div style="position:absolute; inset:-1px; border-radius:50%; background:#0d1633; transform:translateX({{ moonDarkX }});"></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Moon tonight</div>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; line-height:1.1;">{{ sky.phase }}</div>
+                    <div style="font-size:13px; color:#aeb6cc;">{{ sky.illumPct }} lit · in {{ sky.moonSign }}</div>
+                    <div style="font-size:14px; line-height:1.5; color:#d3d7e3;">{{ sky.phaseText }}</div>
+                  </div>
+                </div>
+
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px; display:flex; flex-direction:column; gap:16px;">
+                  <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Your numbers today</div>
+                  <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; text-align:center;">
+                    <sc-for list="{{ cyclesMini }}" as="c" hint-placeholder-count="3">
+                      <div style="border:1px solid rgba(201,163,90,0.2); border-radius:4px; padding:12px 4px;">
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:600; color:#e3c27e; line-height:1;">{{ c.value }}</div>
+                        <div style="font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#aeb6cc; margin-top:6px;">{{ c.label }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <p style="font-size:14.5px; line-height:1.6; color:#d3d7e3; margin:0;">{{ pdText }}</p>
+                </div>
+
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px; display:flex; gap:20px; align-items:flex-start;">
+                  <div style="width:96px; flex-shrink:0; aspect-ratio:5/8; border-radius:5px; overflow:hidden; border:1px solid #c9a35a; background:#16234a; position:relative; transform:{{ cod.rotation }};">
+                    <sc-if value="{{ cod.hasImg }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute; inset:0; background-image:{{ cod.bgImg }}; background-size:cover; background-position:center;"></div>
+                    </sc-if>
+                    <sc-if value="{{ cod.noImg }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute; inset:5px; border:1px solid rgba(201,163,90,0.45); border-radius:3px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:6px; text-align:center;">
+                        <div style="width:30px; height:30px; border:1.5px solid #c9a35a; border-radius:50%; display:flex; align-items:center; justify-content:center;"><div style="width:12px; height:12px; border:1.5px solid #c9a35a; transform:rotate(45deg);"></div></div>
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:12px; font-weight:600; color:#e3c27e; line-height:1.15;">{{ cod.corner }}</div>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:7px; min-width:0;">
+                    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Card of the day</div>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; line-height:1.1;">{{ cod.name }}</div>
+                    <div style="font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">{{ cod.orientation }}</div>
+                    <p style="font-size:14px; line-height:1.55; color:#d3d7e3; margin:0;">{{ cod.meaning }}</p>
+                    <div style="display:flex; gap:16px; margin-top:4px; flex-wrap:wrap;">
+                      <button onClick="{{ saveCod }}" style="background:none; border:none; color:#e3c27e; font-size:13.5px; cursor:pointer; padding:4px 0; font-family:inherit;">Save to journal</button>
+                      <button onClick="{{ goTarot }}" style="background:none; border:none; color:#aeb6cc; font-size:13.5px; cursor:pointer; padding:4px 0; font-family:inherit;" style-hover="color:#efe6d2;">Full tarot reading →</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button onClick="{{ openReport }}" style="text-align:left; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; background:linear-gradient(120deg, rgba(201,163,90,0.16), rgba(201,163,90,0.04)); border:1px solid rgba(201,163,90,0.55); border-radius:6px; padding:28px; color:#efe6d2; cursor:pointer; font-family:inherit;" style-hover="border-color:#e3c27e;">
+                <div style="max-width:560px;">
+                  <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:8px;">The Atlas Report {{ reportLockLabel }}</div>
+                  <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; line-height:1.15; margin-bottom:8px;">Your chart, your numbers and three cards — one complete life &amp; love reading.</div>
+                  <div style="font-size:14px; color:#c4c9d8;">Core blueprint · emotions · love · work &amp; money · this year · growth edge</div>
+                </div>
+                <div style="background:#c9a35a; color:#0a1128; border-radius:3px; padding:13px 24px; font-weight:600; font-size:14px; letter-spacing:0.04em;">{{ reportCta }}</div>
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- STARS -->
+          <sc-if value="{{ tStars }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:24px; animation:fadeUp .5s ease both;">
+              <div>
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Astrology</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:600; line-height:1.1; margin:0;">The Stars</h1>
+              </div>
+              <div style="display:flex; gap:4px; border-bottom:1px solid rgba(201,163,90,0.22); overflow-x:auto; overflow-y:hidden; scrollbar-width:none;">
+                <sc-for list="{{ starsTabs }}" as="t" hint-placeholder-count="4">
+                  <button onClick="{{ t.go }}" style="background:none; border:none; border-bottom:2px solid {{ t.border }}; color:{{ t.color }}; padding:12px 14px; font-size:14.5px; font-weight:500; cursor:pointer; font-family:inherit; white-space:nowrap;">{{ t.label }}</button>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ sHoro }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <sc-for list="{{ periods }}" as="p" hint-placeholder-count="3">
+                      <button onClick="{{ p.go }}" style="background:{{ p.bg }}; color:{{ p.color }}; border:1px solid rgba(201,163,90,0.45); border-radius:20px; padding:9px 18px; font-size:13.5px; font-weight:500; cursor:pointer; font-family:inherit; min-height:40px; white-space:nowrap;">{{ p.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <sc-for list="{{ signChips }}" as="s" hint-placeholder-count="12">
+                      <button onClick="{{ s.go }}" title="{{ s.name }}" style="display:flex; align-items:center; gap:6px; background:{{ s.bg }}; color:{{ s.color }}; border:1px solid {{ s.border }}; border-radius:4px; padding:8px 11px; font-size:13px; cursor:pointer; font-family:inherit; min-height:40px;">
+                        <span style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:15px;">{{ s.glyph }}</span>{{ s.name }}
+                      </button>
+                    </sc-for>
+                  </div>
+
+                  <sc-if value="{{ horoLocked }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.45); border-radius:6px; padding:36px 28px; text-align:center;">
+                      <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; margin-bottom:10px;">Monthly forecasts are part of Atlas+</div>
+                      <p style="font-size:15px; line-height:1.6; color:#c4c9d8; margin:0 auto 22px; max-width:440px;">Get the month ahead for every sign, with key dates to plan around.</p>
+                      <button onClick="{{ openPaywall }}" style="background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:13px 26px; font-weight:600; font-size:14px; cursor:pointer; font-family:inherit;">See Atlas+</button>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ horoOpen }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:30px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:30px;">
+                      <div style="display:flex; flex-direction:column; gap:14px;">
+                        <div style="display:flex; align-items:center; gap:14px;">
+                          <div style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:42px; color:#e3c27e; line-height:1;">{{ horo.glyph }}</div>
+                          <div>
+                            <div style="font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:600; line-height:1;">{{ horo.signName }}</div>
+                            <div style="font-size:12.5px; color:#aeb6cc; margin-top:4px;">{{ horo.label }}</div>
+                          </div>
+                        </div>
+                        <p style="font-family:'Cormorant Garamond',serif; font-size:21px; line-height:1.4; margin:0; text-wrap:pretty;">{{ horo.overview }}</p>
+                        <sc-if value="{{ horo.hasExtra }}" hint-placeholder-val="{{ false }}">
+                          <p style="font-size:14px; line-height:1.6; color:#e3c27e; margin:0;">{{ horo.extra }}</p>
+                        </sc-if>
+                      </div>
+                      <div style="display:flex; flex-direction:column; gap:16px;">
+                        <sc-for list="{{ horo.areas }}" as="a" hint-placeholder-count="3">
+                          <div>
+                            <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:5px;">{{ a.label }}</div>
+                            <div style="font-size:15px; line-height:1.6; color:#d9dce6;">{{ a.text }}</div>
+                          </div>
+                        </sc-for>
+                        <div style="display:flex; gap:22px; flex-wrap:wrap; padding-top:14px; border-top:1px solid rgba(201,163,90,0.18);">
+                          <sc-for list="{{ horo.ratings }}" as="r" hint-placeholder-count="3">
+                            <div>
+                              <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#aeb6cc; margin-bottom:6px;">{{ r.label }}</div>
+                              <div style="display:flex; gap:3px;">
+                                <sc-for list="{{ r.segs }}" as="g" hint-placeholder-count="5">
+                                  <div style="width:14px; height:5px; border-radius:1px; background:{{ g.bg }};"></div>
+                                </sc-for>
+                              </div>
+                            </div>
+                          </sc-for>
+                          <div>
+                            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#aeb6cc; margin-bottom:2px;">Lucky no.</div>
+                            <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:#e3c27e; line-height:1;">{{ horo.lucky }}</div>
+                          </div>
+                        </div>
+                        <button onClick="{{ saveHoro }}" style="align-self:flex-start; background:none; border:1px solid rgba(201,163,90,0.45); color:#efe6d2; border-radius:3px; padding:10px 18px; font-size:13.5px; cursor:pointer; font-family:inherit;" style-hover="border-color:#e3c27e;">Save to journal</button>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sChart }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <p style="font-size:14px; color:#aeb6cc; margin:0;">{{ birthLine }}</p>
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:28px; align-items:start;">
+                    <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+                      <div style="position:relative; width:100%; max-width:460px; aspect-ratio:1; container-type:inline-size;">
+                      <svg viewBox="0 0 400 400" style="position:absolute; inset:0; width:100%; height:100%; display:block;">
+                        <circle cx="200" cy="200" r="196" fill="none" stroke="rgba(201,163,90,0.25)" stroke-width="1"></circle>
+                        <sc-for list="{{ wheel.segments }}" as="s" hint-placeholder-count="0">
+                          <path d="{{ s.d }}" fill="{{ s.fill }}" stroke="rgba(201,163,90,0.55)" stroke-width="0.8"></path>
+                        </sc-for>
+                        <circle cx="200" cy="200" r="132" fill="rgba(10,17,40,0.6)" stroke="rgba(201,163,90,0.5)" stroke-width="0.8"></circle>
+                        <circle cx="200" cy="200" r="62" fill="#0b1430" stroke="rgba(201,163,90,0.45)" stroke-width="0.8"></circle>
+                        <sc-for list="{{ wheel.degTicks }}" as="t" hint-placeholder-count="0">
+                          <line x1="{{ t.x1 }}" y1="{{ t.y1 }}" x2="{{ t.x2 }}" y2="{{ t.y2 }}" stroke="rgba(201,163,90,0.45)" stroke-width="0.6"></line>
+                        </sc-for>
+                        <sc-for list="{{ wheel.segLines }}" as="l" hint-placeholder-count="0">
+                          <line x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" stroke="rgba(201,163,90,0.5)" stroke-width="0.8"></line>
+                        </sc-for>
+
+                        <sc-for list="{{ wheel.houseLines }}" as="h" hint-placeholder-count="0">
+                          <line x1="{{ h.x1 }}" y1="{{ h.y1 }}" x2="{{ h.x2 }}" y2="{{ h.y2 }}" stroke="#c9a35a" stroke-width="{{ h.w }}" opacity="{{ h.op }}"></line>
+                        </sc-for>
+
+                        <sc-for list="{{ wheel.aspectLines }}" as="a" hint-placeholder-count="0">
+                          <line x1="{{ a.x1 }}" y1="{{ a.y1 }}" x2="{{ a.x2 }}" y2="{{ a.y2 }}" stroke="{{ a.stroke }}" stroke-width="1" stroke-dasharray="{{ a.dash }}" opacity="0.85"></line>
+                        </sc-for>
+                        <sc-for list="{{ wheel.angles }}" as="a" hint-placeholder-count="0">
+                          <line x1="{{ a.x1 }}" y1="{{ a.y1 }}" x2="{{ a.x2 }}" y2="{{ a.y2 }}" stroke="#efe6d2" stroke-width="1.6"></line>
+                        </sc-for>
+                        <sc-for list="{{ wheel.planets }}" as="p" hint-placeholder-count="0">
+                          <line x1="{{ p.tx1 }}" y1="{{ p.ty1 }}" x2="{{ p.tx2 }}" y2="{{ p.ty2 }}" stroke="#e3c27e" stroke-width="1.2"></line>
+                          <circle cx="{{ p.ax }}" cy="{{ p.ay }}" r="2.2" fill="#e3c27e"></circle>
+                        </sc-for>
+                      </svg>
+                      <sc-for list="{{ wheel.labels }}" as="t" hint-placeholder-count="0">
+                        <div style="position:absolute; left:{{ t.left }}; top:{{ t.top }}; transform:translate(-50%,-50%); color:{{ t.color }}; font-size:{{ t.size }}; font-family:{{ t.font }}; font-weight:{{ t.weight }}; line-height:1; white-space:nowrap; pointer-events:none;">{{ t.text }}</div>
+                      </sc-for>
+                      </div>
+                      <p style="font-size:12.5px; line-height:1.5; color:#8d96b3; margin:0; text-align:center; max-width:420px;">{{ wheelNote }}</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:22px;">
+                      <sc-for list="{{ angleRows }}" as="a" hint-placeholder-count="0">
+                        <div style="display:flex; justify-content:space-between; gap:12px; padding-bottom:12px; border-bottom:1px solid rgba(201,163,90,0.15);">
+                          <div>
+                            <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#c9a35a; font-weight:600;">{{ a.label }}</div>
+                            <div style="font-size:13px; color:#aeb6cc; margin-top:3px;">{{ a.note }}</div>
+                          </div>
+                          <div style="font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; white-space:nowrap;">{{ a.sign }}</div>
+                        </div>
+                      </sc-for>
+                      <div>
+                        <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:12px;">Element balance</div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                          <sc-for list="{{ elementBal }}" as="b" hint-placeholder-count="4">
+                            <div style="display:grid; grid-template-columns:64px minmax(0,1fr) 20px; gap:10px; align-items:center; font-size:13px;">
+                              <span style="color:#d9dce6;">{{ b.label }}</span>
+                              <div style="height:6px; background:rgba(201,163,90,0.14); border-radius:3px;"><div style="height:100%; width:{{ b.width }}; background:#c9a35a; border-radius:3px;"></div></div>
+                              <span style="color:#aeb6cc; text-align:right;">{{ b.n }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <p style="font-size:14px; line-height:1.55; color:#d9dce6; margin:12px 0 0;">{{ elementNote }}</p>
+                      </div>
+                      <div>
+                        <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:12px;">Modality</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px;">
+                          <sc-for list="{{ modalityBal }}" as="b" hint-placeholder-count="3">
+                            <div style="border:1px solid rgba(201,163,90,0.22); border-radius:4px; padding:10px 6px; text-align:center;">
+                              <div style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:#e3c27e; line-height:1;">{{ b.n }}</div>
+                              <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc; margin-top:4px;">{{ b.label }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <sc-if value="{{ hasAspects }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:24px;">
+                      <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:14px;">Aspects</div>
+                      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px 26px;">
+                        <sc-for list="{{ aspectList }}" as="a" hint-placeholder-count="0">
+                          <div style="display:grid; grid-template-columns:26px minmax(0,1fr); gap:10px;">
+                            <span style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:18px; color:{{ a.color }}; text-align:center; line-height:1.3;">{{ a.glyph }}</span>
+                            <div>
+                              <div style="font-size:14.5px; font-weight:500;">{{ a.a }} {{ a.name }} {{ a.b }} <span style="color:#8d96b3; font-weight:400; font-size:12.5px;">· {{ a.orb }}</span></div>
+                              <div style="font-size:13.5px; line-height:1.55; color:#c4c9d8; margin-top:2px;">{{ a.text }}</div>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <div style="display:flex; flex-direction:column; border:1px solid rgba(201,163,90,0.28); border-radius:6px; background:rgba(17,28,61,0.78);">
+                    <sc-for list="{{ chartRows }}" as="r" hint-placeholder-count="3">
+                      <div style="display:grid; grid-template-columns:44px minmax(0,1fr); gap:16px; padding:20px 22px; border-bottom:1px solid rgba(201,163,90,0.15);">
+                        <div style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:24px; color:#e3c27e; text-align:center; line-height:1.3;">{{ r.glyph }}</div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                          <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">
+                            <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600;">{{ r.name }} in {{ r.signName }}</span>
+                            <span style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; color:#c9a35a;">{{ r.signGlyph }}</span>
+                            <span style="font-size:12.5px; color:#aeb6cc;">{{ r.deg }} {{ r.retro }}</span>
+                          </div>
+                          <div style="font-size:14.5px; line-height:1.6; color:#d9dce6;">{{ r.governs }}, expressed through {{ r.style }}.</div>
+                          <div style="font-size:13.5px; color:#aeb6cc;">{{ r.practical }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ chartLocked }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:26px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;">
+                        <div>
+                          <div style="font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600; margin-bottom:4px;">5 more placements</div>
+                          <div style="font-size:14px; color:#aeb6cc;">Mercury, Venus, Mars, Jupiter and Saturn — how you think, love, fight, grow and build.</div>
+                        </div>
+                        <button onClick="{{ openPaywall }}" style="background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:12px 22px; font-weight:600; font-size:14px; cursor:pointer; font-family:inherit;">Unlock with Atlas+</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <p style="font-size:12.5px; color:#8d96b3; margin:0;">Positions are calculated on-device and accurate to about a degree.</p>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sTransit }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px;">
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:26px; display:flex; flex-direction:column; gap:16px;">
+                    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Moon phase</div>
+                    <div style="display:flex; gap:22px; align-items:center;">
+                      <div style="width:120px; height:120px; flex-shrink:0; border-radius:50%; overflow:hidden; position:relative; background:#e3c27e; box-shadow:0 0 50px rgba(227,194,126,0.25); border:1px solid rgba(227,194,126,0.6);">
+                        <div style="position:absolute; inset:-1px; border-radius:50%; background:#0d1633; transform:translateX({{ moonDarkXLg }});"></div>
+                      </div>
+                      <div>
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:600; line-height:1.05;">{{ sky.phase }}</div>
+                        <div style="font-size:13.5px; color:#aeb6cc; margin-top:6px;">{{ sky.illumPct }} illuminated · Moon in {{ sky.moonSign }}</div>
+                      </div>
+                    </div>
+                    <p style="font-size:15px; line-height:1.6; color:#d9dce6; margin:0;">{{ sky.phaseText }}</p>
+                    <p style="font-size:14.5px; line-height:1.6; color:#e3c27e; margin:0;">{{ touchNote }}</p>
+                  </div>
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:26px; display:flex; flex-direction:column; gap:4px;">
+                    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">The sky right now</div>
+                    <sc-for list="{{ skyRows }}" as="p" hint-placeholder-count="7">
+                      <div style="display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:12px; align-items:center; padding:9px 0; border-bottom:1px solid rgba(201,163,90,0.12);">
+                        <span style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:18px; color:#e3c27e; text-align:center;">{{ p.glyph }}</span>
+                        <span style="font-size:14.5px;">{{ p.name }} <span style="color:#aeb6cc;">in {{ p.signName }}</span></span>
+                        <span style="font-size:12.5px; color:{{ p.retroColor }};">{{ p.deg }} {{ p.retro }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:26px; display:flex; flex-direction:column; gap:14px;">
+                    <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Retrogrades</div>
+                    <sc-for list="{{ retroNotes }}" as="n" hint-placeholder-count="0">
+                      <div>
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600;">{{ n.name }} retrograde</div>
+                        <div style="font-size:14.5px; line-height:1.6; color:#d9dce6;">{{ n.text }}</div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ noRetro }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:14.5px; line-height:1.6; color:#d9dce6;">No planets are retrograde right now — a good stretch for moving plans forward.</div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sCompat }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:30px; display:flex; flex-direction:column; gap:22px; max-width:760px;">
+                  <div style="display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:14px; align-items:end;">
+                    <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">You
+                      <select value="{{ signA }}" onChange="{{ onSignA }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit;">
+                        <sc-for list="{{ signOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.idx }}">{{ o.name }}</option></sc-for>
+                      </select>
+                    </label>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:26px; color:#c9a35a; padding-bottom:8px;">&amp;</div>
+                    <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Them
+                      <select value="{{ signB }}" onChange="{{ onSignB }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit;">
+                        <sc-for list="{{ signOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.idx }}">{{ o.name }}</option></sc-for>
+                      </select>
+                    </label>
+                  </div>
+                  <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:600;">{{ sc.band }}</div>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:600; color:#e3c27e;">{{ sc.score }}<span style="font-size:18px; color:#aeb6cc;">/100</span></div>
+                  </div>
+                  <div style="height:4px; background:rgba(201,163,90,0.15); border-radius:2px;"><div style="height:100%; width:{{ sc.width }}; background:#c9a35a; border-radius:2px; transition:width .5s ease;"></div></div>
+                  <p style="font-size:15.5px; line-height:1.7; color:#d9dce6; margin:0;">{{ sc.text }}</p>
+                  <button onClick="{{ saveSignCompat }}" style="align-self:flex-start; background:none; border:1px solid rgba(201,163,90,0.45); color:#efe6d2; border-radius:3px; padding:10px 18px; font-size:13.5px; cursor:pointer; font-family:inherit;">Save to journal</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- NUMBERS -->
+          <sc-if value="{{ tNumbers }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:24px; animation:fadeUp .5s ease both;">
+              <div>
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Numerology</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:600; line-height:1.1; margin:0;">Your Numbers</h1>
+              </div>
+              <div style="display:flex; gap:4px; border-bottom:1px solid rgba(201,163,90,0.22); overflow-x:auto; overflow-y:hidden; scrollbar-width:none;">
+                <sc-for list="{{ numTabs }}" as="t" hint-placeholder-count="3">
+                  <button onClick="{{ t.go }}" style="background:none; border:none; border-bottom:2px solid {{ t.border }}; color:{{ t.color }}; padding:12px 14px; font-size:14.5px; font-weight:500; cursor:pointer; font-family:inherit; white-space:nowrap;">{{ t.label }}</button>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ nCore }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; gap:18px;">
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+                    <sc-for list="{{ numCards }}" as="n" hint-placeholder-count="5">
+                      <button onClick="{{ n.go }}" style="background:{{ n.bg }}; border:1px solid {{ n.border }}; border-radius:5px; padding:18px 12px; color:#efe6d2; cursor:pointer; font-family:inherit; text-align:center;">
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; color:#e3c27e; line-height:1;">{{ n.value }}</div>
+                        <div style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#aeb6cc; margin-top:8px;">{{ n.label }}</div>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:30px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:28px;">
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                      <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">{{ numDetail.label }} {{ numDetail.value }}</div>
+                      <div style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:600; line-height:1.1;">{{ numDetail.title }}</div>
+                      <div style="font-size:13px; letter-spacing:0.04em; color:#e3c27e;">{{ numDetail.keywords }}</div>
+                      <p style="font-size:13.5px; line-height:1.6; color:#aeb6cc; margin:0;">{{ numDetail.frame }}</p>
+                      <p style="font-family:'Cormorant Garamond',serif; font-size:21px; line-height:1.4; margin:0; text-wrap:pretty;">{{ numDetail.core }}</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:16px;">
+                      <sc-for list="{{ numDetail.areas }}" as="a" hint-placeholder-count="3">
+                        <div>
+                          <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:5px;">{{ a.label }}</div>
+                          <div style="font-size:15px; line-height:1.6; color:#d9dce6;">{{ a.text }}</div>
+                        </div>
+                      </sc-for>
+                      <button onClick="{{ saveNum }}" style="align-self:flex-start; background:none; border:1px solid rgba(201,163,90,0.45); color:#efe6d2; border-radius:3px; padding:10px 18px; font-size:13.5px; cursor:pointer; font-family:inherit;">Save to journal</button>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ nCycles }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px;">
+                  <sc-for list="{{ cycles }}" as="c" hint-placeholder-count="3">
+                    <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:26px; display:flex; flex-direction:column; gap:10px;">
+                      <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">{{ c.label }}</div>
+                      <div style="font-family:'Cormorant Garamond',serif; font-size:64px; font-weight:600; color:#e3c27e; line-height:1;">{{ c.value }}</div>
+                      <div style="font-size:12.5px; color:#aeb6cc;">{{ c.span }}</div>
+                      <p style="font-size:15px; line-height:1.6; color:#d9dce6; margin:0;">{{ c.text }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ nCompat }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:30px; display:flex; flex-direction:column; gap:20px; max-width:760px;">
+                  <p style="font-size:14.5px; line-height:1.6; color:#aeb6cc; margin:0;">Compare your Life Path {{ myLP }} with someone else's.</p>
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
+                    <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Their name
+                      <input type="text" value="{{ partnerName }}" onChange="{{ onPartnerName }}" placeholder="Optional" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit; outline:none;">
+                    </label>
+                    <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Their birth date
+                      <input type="date" value="{{ partnerDate }}" onChange="{{ onPartnerDate }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit; outline:none;">
+                    </label>
+                  </div>
+                  <sc-if value="{{ hasNumCompat }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex; flex-direction:column; gap:16px; padding-top:20px; border-top:1px solid rgba(201,163,90,0.18);">
+                      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:48px; font-weight:600; color:#e3c27e; line-height:1;">{{ nc.a }} <span style="font-size:24px; color:#aeb6cc;">&amp;</span> {{ nc.b }}</div>
+                        <div>
+                          <div style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600;">{{ nc.band }}</div>
+                          <div style="font-size:13px; color:#aeb6cc;">{{ nc.score }}/100 · You &amp; {{ nc.who }}</div>
+                        </div>
+                      </div>
+                      <div style="height:4px; background:rgba(201,163,90,0.15); border-radius:2px;"><div style="height:100%; width:{{ nc.width }}; background:#c9a35a; border-radius:2px;"></div></div>
+                      <p style="font-size:15.5px; line-height:1.7; color:#d9dce6; margin:0;">{{ nc.text }}</p>
+                      <button onClick="{{ saveNumCompat }}" style="align-self:flex-start; background:none; border:1px solid rgba(201,163,90,0.45); color:#efe6d2; border-radius:3px; padding:10px 18px; font-size:13.5px; cursor:pointer; font-family:inherit;">Save to journal</button>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- TAROT -->
+          <sc-if value="{{ tTarot }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:0 -18px; border-radius:6px; overflow:hidden; border:1px solid rgba(201,163,90,0.2);">
+              <dc-import name="Tarot Reading" hint-size="100%,900px"></dc-import>
+            </div>
+          </sc-if>
+
+          <!-- JOURNAL -->
+          <sc-if value="{{ tJournal }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:22px; animation:fadeUp .5s ease both; max-width:780px;">
+              <div>
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">{{ journalCount }}</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:600; line-height:1.1; margin:0;">Journal</h1>
+              </div>
+              <sc-if value="{{ journalEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px dashed rgba(201,163,90,0.4); border-radius:6px; padding:40px 28px; text-align:center;">
+                  <div style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; margin-bottom:8px;">Nothing saved yet</div>
+                  <p style="font-size:14.5px; color:#aeb6cc; margin:0;">Tap “Save to journal” on any horoscope, number, card or report to keep it here.</p>
+                </div>
+              </sc-if>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ journalEntries }}" as="e" hint-placeholder-count="0">
+                  <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.25); border-radius:6px;">
+                    <button onClick="{{ e.toggle }}" style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:14px; background:none; border:none; color:#efe6d2; padding:18px 22px; cursor:pointer; font-family:inherit; text-align:left;">
+                      <div>
+                        <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:4px;">{{ e.type }} · {{ e.dateLabel }}</div>
+                        <div style="font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600;">{{ e.title }}</div>
+                      </div>
+                      <span style="color:#aeb6cc; font-size:18px;">{{ e.chevron }}</span>
+                    </button>
+                    <sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:0 22px 20px; display:flex; flex-direction:column; gap:14px;">
+                        <div style="font-size:15px; line-height:1.7; color:#d9dce6; white-space:pre-line;">{{ e.body }}</div>
+                        <button onClick="{{ e.del }}" style="align-self:flex-start; background:none; border:none; color:#d98c7a; font-size:13px; cursor:pointer; padding:4px 0; font-family:inherit;">Delete entry</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- REPORT -->
+          <sc-if value="{{ tReport }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:26px; animation:fadeUp .5s ease both; max-width:780px;">
+              <button onClick="{{ goHome }}" style="align-self:flex-start; background:none; border:none; color:#aeb6cc; font-size:14px; cursor:pointer; padding:0; font-family:inherit;" style-hover="color:#efe6d2;">← Today</button>
+              <div style="text-align:center; padding:10px 0 6px;">
+                <div style="font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:12px;">The Atlas Report · {{ todayShort }}</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:46px; font-weight:600; line-height:1.05; margin:0 0 12px;">{{ fullName }}</h1>
+                <div style="font-size:14px; color:#aeb6cc;">{{ reportSub }}</div>
+              </div>
+              <sc-for list="{{ reportSections }}" as="s" hint-placeholder-count="7">
+                <div style="display:grid; grid-template-columns:48px minmax(0,1fr); gap:16px; padding-bottom:24px; border-bottom:1px solid rgba(201,163,90,0.18);">
+                  <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#c9a35a; line-height:1.1;">{{ s.num }}</div>
+                  <div>
+                    <h2 style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; margin:0 0 8px;">{{ s.h }}</h2>
+                    <p style="font-size:16px; line-height:1.75; color:#d9dce6; margin:0; text-wrap:pretty;">{{ s.body }}</p>
+                  </div>
+                </div>
+              </sc-for>
+              <div>
+                <h2 style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; margin:0 0 14px;">Three cards for this season</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
+                  <sc-for list="{{ reportCards }}" as="c" hint-placeholder-count="3">
+                    <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:20px; display:flex; flex-direction:column; gap:6px;">
+                      <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#c9a35a; font-weight:600;">{{ c.position }}</div>
+                      <div style="font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600;">{{ c.name }}</div>
+                      <div style="font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">{{ c.orientation }}</div>
+                      <p style="font-size:14px; line-height:1.55; color:#d9dce6; margin:4px 0 0;">{{ c.meaning }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <button onClick="{{ saveReport }}" style="background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:14px 26px; font-weight:600; font-size:14px; cursor:pointer; font-family:inherit;">Save report to journal</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- PROFILE -->
+          <sc-if value="{{ tProfile }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:22px; animation:fadeUp .5s ease both; max-width:640px;">
+              <div>
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Profile</div>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:600; line-height:1.1; margin:0;">{{ fullName }}</h1>
+              </div>
+              <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:26px; display:flex; flex-direction:column; gap:16px;">
+                <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#c9a35a; font-weight:600;">Birth details</div>
+                <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Full birth name
+                  <input type="text" value="{{ draftName }}" onChange="{{ onName }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit; outline:none;">
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px;">
+                  <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Date
+                    <input type="date" value="{{ draftDate }}" onChange="{{ onDate }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit; outline:none;">
+                  </label>
+                  <label style="display:flex; flex-direction:column; gap:8px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#aeb6cc;">Time
+                    <input type="time" value="{{ draftTime }}" onChange="{{ onTime }}" disabled="{{ draftTimeUnknown }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit; outline:none;">
+                  </label>
+                </div>
+                <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:#c4c9d8; cursor:pointer;">
+                  <input type="checkbox" checked="{{ draftTimeUnknown }}" onChange="{{ onTimeUnknown }}" style="width:18px; height:18px; accent-color:#c9a35a;">
+                  Birth time unknown
+                </label>
+                <select value="{{ draftCityIdx }}" onChange="{{ onCity }}" style="background:#0f1a3a; border:1px solid rgba(201,163,90,0.4); color:#efe6d2; padding:13px 14px; font-size:15px; border-radius:4px; font-family:inherit;">
+                  <sc-for list="{{ cities }}" as="c" hint-placeholder-count="0"><option value="{{ c.idx }}">{{ c.name }}</option></sc-for>
+                </select>
+                <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:#c4c9d8; cursor:pointer;">
+                  <input type="checkbox" checked="{{ draftDst }}" onChange="{{ onDst }}" style="width:18px; height:18px; accent-color:#c9a35a;">
+                  Daylight saving time was in effect
+                </label>
+                <button onClick="{{ saveProfile }}" style="align-self:flex-start; background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:12px 24px; font-weight:600; font-size:14px; cursor:pointer; font-family:inherit;">Save changes</button>
+              </div>
+              <div style="background:rgba(17,28,61,0.78); border:1px solid rgba(201,163,90,0.28); border-radius:6px; padding:8px 26px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; padding:16px 0; border-bottom:1px solid rgba(201,163,90,0.15);">
+                  <div>
+                    <div style="font-size:15px; font-weight:500;">Daily insight notification</div>
+                    <div style="font-size:13px; color:#aeb6cc;">Your personal day and the moon, each morning.</div>
+                  </div>
+                  <button onClick="{{ toggleNotif }}" aria-label="Toggle notifications" style="width:50px; height:30px; flex-shrink:0; border-radius:15px; border:none; background:{{ notifTrack }}; position:relative; cursor:pointer;">
+                    <span style="position:absolute; top:3px; left:{{ notifKnob }}; width:24px; height:24px; border-radius:50%; background:#efe6d2; transition:left .2s ease;"></span>
+                  </button>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; padding:16px 0; border-bottom:1px solid rgba(201,163,90,0.15);">
+                  <div>
+                    <div style="font-size:15px; font-weight:500;">Membership</div>
+                    <div style="font-size:13px; color:#aeb6cc;">{{ planLabel }}</div>
+                  </div>
+                  <button onClick="{{ membershipAction }}" style="background:none; border:1px solid rgba(201,163,90,0.45); color:#efe6d2; border-radius:3px; padding:9px 16px; font-size:13px; cursor:pointer; font-family:inherit;">{{ membershipLabel }}</button>
+                </div>
+                <div style="padding:16px 0;">
+                  <button onClick="{{ resetAll }}" style="background:none; border:none; color:#d98c7a; font-size:14px; cursor:pointer; padding:0; font-family:inherit;">Reset app &amp; start over</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </main>
+      </div>
+
+      <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+        <nav style="position:{{ navPos }}; bottom:0; left:{{ navLeft }}; transform:{{ navShift }}; width:100%; box-sizing:border-box; max-width:{{ shellMax }}; z-index:30; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); background:rgba(8,14,34,0.94); backdrop-filter:blur(14px); border-top:1px solid rgba(201,163,90,0.25); padding:6px 4px 18px;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+            <button onClick="{{ n.go }}" style="display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; color:{{ n.color }}; padding:8px 2px; min-height:52px; cursor:pointer; font-family:inherit;">
+              <span style="font-family:'Noto Sans Symbols','Noto Sans Symbols 2',serif; font-size:19px; line-height:1;">{{ n.glyph }}</span>
+              <span style="font-size:11px; letter-spacing:0.04em;">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </nav>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- PAYWALL -->
+  <sc-if value="{{ paywallOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePaywall }}" style="position:fixed; inset:0; z-index:50; background:rgba(4,8,20,0.78); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px;">
+      <div onClick="{{ stop }}" style="width:100%; max-width:440px; background:#0e1834; border:1px solid rgba(201,163,90,0.5); border-radius:8px; padding:32px 28px; position:relative; animation:fadeUp .35s ease both; max-height:92vh; overflow:auto; box-sizing:border-box;">
+        <button onClick="{{ closePaywall }}" aria-label="Close" style="position:absolute; top:12px; right:14px; background:none; border:none; color:#aeb6cc; font-size:24px; cursor:pointer;">×</button>
+        <div style="font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#c9a35a; font-weight:600; margin-bottom:10px;">Atlas+</div>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:600; line-height:1.1; margin:0 0 20px;">See the whole map.</h2>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+          <sc-for list="{{ paywallFeatures }}" as="f" hint-placeholder-count="3">
+            <div style="display:flex; gap:12px; font-size:14.5px; line-height:1.5; color:#d9dce6;"><span style="color:#e3c27e;">✦</span>{{ f }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:22px;">
+          <sc-for list="{{ plans }}" as="p" hint-placeholder-count="2">
+            <button onClick="{{ p.select }}" style="display:flex; justify-content:space-between; align-items:center; background:{{ p.bg }}; border:1.5px solid {{ p.border }}; border-radius:6px; padding:16px 18px; color:#efe6d2; cursor:pointer; font-family:inherit; text-align:left;">
+              <div>
+                <div style="font-size:15px; font-weight:600;">{{ p.label }}</div>
+                <div style="font-size:12.5px; color:#aeb6cc;">{{ p.note }}</div>
+              </div>
+              <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600;">{{ p.price }}</div>
+            </button>
+          </sc-for>
+        </div>
+        <button onClick="{{ startTrial }}" style="width:100%; background:#c9a35a; color:#0a1128; border:none; border-radius:3px; padding:15px; font-weight:600; font-size:15px; letter-spacing:0.03em; cursor:pointer; font-family:inherit;" style-hover="background:#e3c27e;">Start 7-day free trial</button>
+        <p style="font-size:12px; color:#8d96b3; text-align:center; margin:12px 0 0;">Cancel anytime. Demo only — no payment is taken.</p>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; left:50%; bottom:96px; transform:translateX(-50%); z-index:60; background:#efe6d2; color:#0a1128; padding:11px 20px; border-radius:22px; font-size:14px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,0.4); animation:fadeUp .25s ease both;">{{ toast }}</div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;premium&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;forceLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;mobile&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;'auto'|'mobile'|'desktop'&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;showInsight&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;splash&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;demo&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;initialTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;stars&quot;,&quot;numbers&quot;,&quot;tarot&quot;,&quot;journal&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;embedded&quot;:{&quot;editor&quot;:null,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const TABS = [
+  { id:'home', label:'Today', glyph:'☉\uFE0E' },
+  { id:'stars', label:'Stars', glyph:'✦' },
+  { id:'numbers', label:'Numbers', glyph:'#' },
+  { id:'tarot', label:'Tarot', glyph:'◈' },
+  { id:'journal', label:'Journal', glyph:'❧' },
+];
+const LS = { p:'atlas_profile', j:'atlas_journal', pr:'atlas_premium', n:'atlas_notif' };
+const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+const store = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const GOLD = '#e3c27e', MUTED = '#aeb6cc';
+const DEMO = { name:'Amelia Rose Laurent', date:'1991-07-28', time:'06:45', timeUnknown:false, cityIdx:9, dst:true };
+const blankDraft = { name:'', date:'', time:'', timeUnknown:false, cityIdx:0, dst:false };
+const validDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+const ROMAN = ['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
+
+const EL_FILL = { Fire:'rgba(227,140,90,0.13)', Earth:'rgba(150,185,110,0.12)', Air:'rgba(175,195,235,0.11)', Water:'rgba(110,150,215,0.15)' };
+const ASPECTS = [
+  { name:'Conjunction', angle:0, orb:8, glyph:'☌', kind:'blend', text:'blend and amplify each other — this energy is concentrated in you.' },
+  { name:'Sextile', angle:60, orb:5, glyph:'⚹', kind:'soft', text:'cooperate easily — an opportunity, but one you have to act on.' },
+  { name:'Square', angle:90, orb:7, glyph:'□', kind:'hard', text:'create friction that pushes you to grow. Tension here becomes drive.' },
+  { name:'Trine', angle:120, orb:7, glyph:'△', kind:'soft', text:'flow naturally — a built-in talent you may take for granted.' },
+  { name:'Opposition', angle:180, orb:8, glyph:'☍', kind:'hard', text:'pull in opposite directions. Your work is balancing both, not choosing one.' },
+];
+function buildWheel(chart, bodies) {
+  const C = 200, R0 = 192, R1 = 160, R2 = 132, R3 = 62;
+  const asc = chart.rising ? chart.rising.lon : 0;
+  const ang = L => (180 + L - asc) * Math.PI / 180;
+  const pt = (L, r) => { const a = ang(L); return [+(C + r * Math.cos(a)).toFixed(2), +(C - r * Math.sin(a)).toFixed(2)]; };
+  const segments = [], signGlyphs = [], segLines = [], degTicks = [];
+  for (let i = 0; i < 12; i++) {
+    const L1 = i * 30, L2 = L1 + 30, [ax, ay] = pt(L1, R0), [bx, by] = pt(L2, R0), [cx, cy] = pt(L2, R1), [dx, dy] = pt(L1, R1);
+    segments.push({ d:`M${ax} ${ay} A${R0} ${R0} 0 0 0 ${bx} ${by} L${cx} ${cy} A${R1} ${R1} 0 0 1 ${dx} ${dy} Z`, fill: EL_FILL[SIGN_LIST[i].element] });
+    const [gx, gy] = pt(L1 + 15, (R0 + R1) / 2);
+    signGlyphs.push({ x: gx, y: gy, glyph: SIGN_LIST[i].glyph });
+    const [x1, y1] = pt(L1, R0), [x2, y2] = pt(L1, R2);
+    segLines.push({ x1, y1, x2, y2 });
+    for (let d = 5; d < 30; d += 5) { const [t1x, t1y] = pt(L1 + d, R1), [t2x, t2y] = pt(L1 + d, R1 - (d % 10 === 0 ? 7 : 4)); degTicks.push({ x1:t1x, y1:t1y, x2:t2x, y2:t2y }); }
+  }
+  const houseLines = [], houseNums = [];
+  if (chart.rising) for (let h = 0; h < 12; h++) {
+    const L = asc + h * 30, [x1, y1] = pt(L, R2), [x2, y2] = pt(L, R3), [nx, ny] = pt(L + 15, R3 + 12);
+    houseLines.push({ x1, y1, x2, y2, w: h % 3 === 0 ? 1.4 : 0.6, op: h % 3 === 0 ? 0.8 : 0.35 });
+    houseNums.push({ x: nx, y: ny, n: String(h + 1) });
+  }
+  const sorted = [...bodies].sort((a, b) => a.lon - b.lon), disp = [];
+  sorted.forEach((b, i) => { let d = b.lon; if (i && d - disp[i - 1] < 10) d = disp[i - 1] + 10; disp.push(d); });
+  const planets = sorted.map((b, i) => {
+    const [x, y] = pt(disp[i], R2 - 22), [tx1, ty1] = pt(b.lon, R1), [tx2, ty2] = pt(b.lon, R2 - 4), [lx, ly] = pt(disp[i], R2 - 44), [ax2, ay2] = pt(b.lon, R3);
+    return { x, y, glyph: b.glyph, tx1, ty1, tx2, ty2, lx, ly, label: `${b.deg}°`, ax: ax2, ay: ay2, lon: b.lon, name: b.name };
+  });
+  const aspectLines = [], aspectList = [];
+  for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
+    let diff = Math.abs(bodies[i].lon - bodies[j].lon); if (diff > 180) diff = 360 - diff;
+    const asp = ASPECTS.find(a => Math.abs(diff - a.angle) <= a.orb);
+    if (!asp) continue;
+    const [x1, y1] = pt(bodies[i].lon, R3), [x2, y2] = pt(bodies[j].lon, R3);
+    if (asp.kind !== 'blend') aspectLines.push({ x1, y1, x2, y2, stroke: asp.kind === 'soft' ? '#8fb4e8' : '#e38a7a', dash: asp.angle === 60 || asp.angle === 90 ? '4 3' : 'none' });
+    aspectList.push({ a: bodies[i].name, b: bodies[j].name, glyph: asp.glyph, name: asp.name, orb: `${Math.abs(diff - asp.angle).toFixed(1)}° orb`, color: asp.kind === 'soft' ? '#8fb4e8' : asp.kind === 'hard' ? '#e38a7a' : '#e3c27e', text: `${bodies[i].name} and ${bodies[j].name} ${asp.text}` });
+  }
+  const angles = [];
+  if (chart.rising) {
+    const [ax1, ay1] = pt(asc, R0 + 4), [ax2, ay2] = pt(asc, R3), [alx, aly] = pt(asc, R0 - 2);
+    angles.push({ x1: ax1, y1: ay1, x2: ax2, y2: ay2, lx: alx - 14, ly: aly - 8, label: 'AC' });
+    if (chart.mc) { const [m1x, m1y] = pt(chart.mc.lon, R0 + 4), [m2x, m2y] = pt(chart.mc.lon, R3); angles.push({ x1: m1x, y1: m1y, x2: m2x, y2: m2y, lx: m1x + 10, ly: m1y + 4, label: 'MC' }); }
+  }
+  const pc = v => `${(v / 4).toFixed(2)}%`;
+  const labels = [
+    ...signGlyphs.map(g => ({ left: pc(g.x), top: pc(g.y), text: g.glyph, color: '#e3c27e', size: '4.25cqw', font: "'Noto Sans Symbols','Noto Sans Symbols 2',serif", weight: '400' })),
+    ...houseNums.map(n => ({ left: pc(n.x), top: pc(n.y), text: n.n, color: '#8d96b3', size: '2.3cqw', font: "'Work Sans',sans-serif", weight: '400' })),
+    ...angles.map(a => ({ left: pc(a.lx), top: pc(a.ly), text: a.label, color: '#efe6d2', size: '2.5cqw', font: "'Work Sans',sans-serif", weight: '600' })),
+    ...planets.flatMap(p => [
+      { left: pc(p.x), top: pc(p.y), text: p.glyph, color: '#efe6d2', size: '4.5cqw', font: "'Noto Sans Symbols','Noto Sans Symbols 2',serif", weight: '400' },
+      { left: pc(p.lx), top: pc(p.ly), text: p.label, color: '#aeb6cc', size: '2.3cqw', font: "'Work Sans',sans-serif", weight: '400' },
+    ]),
+  ];
+  return { labels, segments, signGlyphs, segLines, degTicks, houseLines, houseNums, planets, aspectLines, aspectList, angles, hasHouses: !!chart.rising };
+}
+let SIGN_LIST = [];
+
+class Component extends DCLogic {
+  state = {
+    lib:null, cards:null, profile: load(LS.p, null), draft:{ ...blankDraft }, onbStep:0,
+    tab:'home', starsTab:'horoscope', period:'daily', horoSign:null, numTab:'core', numSel:'lifePath',
+    partnerName:'', partnerDate:'', signA:null, signB:4, premium: load(LS.pr, false), paywall:false, plan:'year',
+    journal: load(LS.j, []), openEntry:null, toast:null, insightDismissed:false, report:null,
+    notif: load(LS.n, true), w: typeof window !== 'undefined' ? window.innerWidth : 1200,
+  };
+
+  componentDidMount() {
+    if (this.props.initialTab) this.setState({ tab: this.props.initialTab });
+    const splashMs = this.props.splash === false ? 0 : 2200;
+    this._splashT = setTimeout(() => this.setState({ splashDone: true }), splashMs);
+    Promise.all([import('./atlas.js'), import('./tarotData.js')]).then(([lib, td]) => this.setState({ lib, cards: td.default }));
+    this._onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+    this._stars = Array.from({ length: 70 }, () => ({ left:`${Math.random()*100}%`, top:`${Math.random()*100}%`, size: Math.random() < 0.15 ? '3px' : '2px', dur:`${2+Math.random()*4}s`, delay:`${Math.random()*4}s` }));
+    this.forceUpdate();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._onResize); clearTimeout(this._tt); clearTimeout(this._splashT); }
+
+  go = (tab) => {
+    const patch = { tab };
+    if (tab === 'profile' && this.profile()) patch.draft = { ...this.profile() };
+    this.setState(patch);
+    try { window.scrollTo(0, 0); } catch (e) {}
+  };
+  toastMsg(msg) { clearTimeout(this._tt); this.setState({ toast: msg }); this._tt = setTimeout(() => this.setState({ toast: null }), 2200); }
+  addJournal(type, title, body) {
+    const journal = [{ id: Date.now(), type, title, body, date: new Date().toISOString() }, ...this.state.journal];
+    store(LS.j, journal); this.setState({ journal }); this.toastMsg('Saved to your journal');
+  }
+  setDraft(patch) { this.setState(s => ({ draft: { ...s.draft, ...patch } })); }
+  isPremium() { return !!(this.props.premium || this.state.premium); }
+
+  profile() { return this.state.profile || (this.props.demo ? DEMO : null); }
+  derive() {
+    const lib = this.state.lib, profile = this.profile();
+    const key = JSON.stringify(profile) + new Date().toDateString();
+    if (this._dk !== key) { this._d = { chart: lib.chart(profile), nums: lib.numbers(profile), sky: lib.sky() }; this._dk = key; }
+    return this._d;
+  }
+
+  onbNext = () => {
+    const { onbStep, draft } = this.state;
+    if (onbStep < 3) return this.setState({ onbStep: onbStep + 1 });
+    const profile = { ...draft, name: draft.name.trim() };
+    store(LS.p, profile); this.setState({ profile, tab:'home' });
+  };
+
+  openReport = () => {
+    if (!this.isPremium()) return this.setState({ paywall: true });
+    const { lib, cards } = this.state, profile = this.profile(), d = this.derive();
+    this.setState({ report: lib.report(profile, d.chart, d.nums, d.sky, cards) }); this.go('report');
+  };
+
+  renderVals() {
+    const S = this.state, lib = S.lib, premium = this.isPremium();
+    const forced = this.props.forceLayout || 'auto';
+    const isWide = forced === 'desktop' || (forced !== 'mobile' && S.w >= 900);
+    const base = { stars: this._stars || [], paywallOpen: false, hasToast: !!S.toast, toast: S.toast };
+    if (!lib || !S.cards || !S.splashDone) return { ...base, loading: true, needsOnboarding: false, ready: false };
+
+    const draft = S.draft;
+    const draftVals = {
+      draftName: draft.name, draftDate: draft.date, draftTime: draft.time, draftTimeUnknown: draft.timeUnknown,
+      draftCityIdx: String(draft.cityIdx), draftDst: draft.dst,
+      onName: e => this.setDraft({ name: e.target.value }), onDate: e => this.setDraft({ date: e.target.value }),
+      onTime: e => this.setDraft({ time: e.target.value }), onTimeUnknown: e => this.setDraft({ timeUnknown: e.target.checked }),
+      onCity: e => this.setDraft({ cityIdx: +e.target.value }), onDst: e => this.setDraft({ dst: e.target.checked }),
+      cities: lib.CITIES.map((c, idx) => ({ idx: String(idx), name: c.name })),
+    };
+
+    if (!this.profile()) {
+      const st = S.onbStep;
+      const blocked = (st === 1 && draft.name.trim().length < 2) || (st === 2 && (!validDate(draft.date) || (!draft.timeUnknown && !draft.time)));
+      return {
+        ...base, ...draftVals, loading: false, needsOnboarding: true, ready: false,
+        onb0: st === 0, onb1: st === 1, onb2: st === 2, onb3: st === 3, onbShowNav: st > 0,
+        onbDots: [0,1,2,3].map(i => ({ w: i === st ? '28px' : '8px', bg: i <= st ? '#c9a35a' : 'rgba(201,163,90,0.25)' })),
+        onbNext: this.onbNext, onbBack: () => this.setState({ onbStep: Math.max(0, st - 1) }),
+        onbBlocked: blocked, onbOpacity: blocked ? 0.4 : 1, onbNextLabel: st === 3 ? 'Create my atlas' : 'Continue',
+      };
+    }
+
+    const p = this.profile(), { chart, nums, sky } = this.derive(), now = new Date();
+    const emb = !!this.props.embedded;
+    const first = p.name.split(' ')[0];
+    const hr = now.getHours();
+    const sunIdx = chart.sun.signIdx;
+    const sp = (pl) => ({ glyph: pl.glyph, name: pl.name, signName: pl.sign.name, signGlyph: pl.sign.glyph, deg: `${pl.deg}°`, retro: pl.retro ? '℞ retrograde' : '', governs: pl.governs, style: pl.sign.style, practical: pl.practical });
+
+    const navItems = TABS.map(t => {
+      const active = S.tab === t.id;
+      return { ...t, go: () => this.go(t.id), color: active ? GOLD : MUTED, bg: active ? 'rgba(201,163,90,0.12)' : 'transparent' };
+    });
+
+    // horoscope
+    const hSign = S.horoSign ?? sunIdx;
+    const horoLocked = S.period === 'monthly' && !premium;
+    const h = lib.horoscope(hSign, S.period, now, sky.moon.signIdx);
+    const horo = {
+      glyph: h.sign.glyph, signName: h.sign.name, label: h.label, overview: h.overview, extra: h.extra, hasExtra: !!h.extra, lucky: h.lucky,
+      areas: [{ label:'Love', text:h.love }, { label:'Work & money', text:h.work }, { label:'Wellbeing', text:h.well }],
+      ratings: h.ratings.map(r => ({ label: r.label, segs: [1,2,3,4,5].map(i => ({ bg: i <= r.value ? '#c9a35a' : 'rgba(201,163,90,0.18)' })) })),
+    };
+    const homeH = lib.horoscope(sunIdx, 'daily', now, sky.moon.signIdx);
+
+    // card of day
+    const cd = lib.drawCards(S.cards, `${p.name}|${now.toDateString()}|cod`, 1)[0];
+    const hasImg = cd.card.arcana === 'major' && cd.card.num >= 1 && cd.card.num <= 20;
+    const cod = {
+      name: cd.card.name, orientation: cd.reversed ? 'Reversed' : 'Upright', meaning: cd.reversed ? cd.card.reversed : cd.card.upright,
+      hasImg, noImg: !hasImg, bgImg: hasImg ? `url("cards/${cd.card.id}.png")` : 'none', rotation: cd.reversed ? 'rotate(180deg)' : 'none',
+      corner: cd.card.arcana === 'major' ? `${ROMAN[cd.card.num]} · ${cd.card.name}` : cd.card.name,
+    };
+
+    // numbers
+    const nd = lib.NUM_TYPES.find(t => t.key === S.numSel), nv = nums[S.numSel], nm = lib.NUM[nv];
+    const myLP = nums.lifePath;
+    let nc = null;
+    if (validDate(S.partnerDate)) {
+      const b = lib.lifePathOf(S.partnerDate), r = lib.numCompat(myLP, b);
+      nc = { a: myLP, b, ...r, width: `${r.score}%`, who: S.partnerName.trim() || 'them' };
+    }
+    const signA = S.signA ?? sunIdx, scr = lib.signCompat(signA, S.signB);
+
+    const subTab = (list, cur, key) => list.map(([id, label]) => ({ label, go: () => this.setState({ [key]: id }), border: cur === id ? '#c9a35a' : 'transparent', color: cur === id ? '#efe6d2' : MUTED }));
+    const inSun = sky.planets.filter(x => x.signIdx === sunIdx).map(x => x.name);
+    if (sky.moon.signIdx === sunIdx) inSun.unshift('the Moon');
+    const moonOff = (size) => `${(sky.waxing ? -1 : 1) * Math.round(sky.illum * size * 1.02)}px`;
+    const city = lib.CITIES[p.cityIdx] || lib.CITIES[0];
+    const [by, bm, bd] = p.date.split('-').map(Number);
+    const birthStr = new Date(by, bm - 1, bd).toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+
+    const rep = S.report;
+    SIGN_LIST = lib.SIGNS;
+    const bodies = [chart.sun, chart.moon, ...(premium ? chart.planets : [])];
+    const wheel = buildWheel(chart, bodies);
+    const balSrc = [...bodies, ...(chart.rising ? [chart.rising] : [])];
+    const bal = (key, vals) => vals.map(v => { const n = balSrc.filter(b => b.sign[key] === v).length; return { label: v, n: String(n), width: `${Math.round(n / balSrc.length * 100)}%` }; });
+    const elements = bal('element', ['Fire','Earth','Air','Water']);
+    const domEl = [...elements].sort((a, b) => +b.n - +a.n)[0].label;
+    const EL_NOTE = { Fire:'Fire-heavy: you run on enthusiasm and action. Make sure you rest before you burn out.', Earth:'Earth-heavy: practical, grounded, results-focused. Leave room for spontaneity.', Air:'Air-heavy: you live in ideas and conversation. Ground plans with deadlines.', Water:'Water-heavy: feeling-led and intuitive. Protect your energy around draining people.' };
+    return {
+      ...base, ...draftVals, loading: false, needsOnboarding: false, ready: true,
+      shellDir: isWide ? 'row' : 'column', navPos: emb ? 'sticky' : 'fixed', navLeft: emb ? '0' : '50%', navShift: emb ? 'none' : 'translateX(-50%)',
+      isWide, isNarrow: !isWide, shellMax: forced === 'mobile' ? '440px' : '1360px', mainPad: isWide ? '40px 48px 80px' : '22px 18px 120px',
+      navItems, firstName: first, fullName: p.name, initial: first.charAt(0).toUpperCase(),
+      premium, notPremium: !premium, planLabel: premium ? 'Atlas+ member' : 'Free plan',
+      openPaywall: () => this.setState({ paywall: true }), goProfile: () => this.go('profile'),
+      goHome: () => this.go('home'), goTarot: () => this.go('tarot'), goHoroscope: () => { this.setState({ starsTab:'horoscope', period:'daily', horoSign:null }); this.go('stars'); },
+      tHome: S.tab === 'home', tStars: S.tab === 'stars', tNumbers: S.tab === 'numbers', tTarot: S.tab === 'tarot',
+      tJournal: S.tab === 'journal', tReport: S.tab === 'report' && !!rep, tProfile: S.tab === 'profile',
+
+      showInsight: S.notif && !S.insightDismissed && (this.props.showInsight ?? true),
+      dismissInsight: () => this.setState({ insightDismissed: true }),
+      insightTitle: `Personal Day ${nums.personalDay} · Moon in ${sky.moon.sign.name}`,
+      insightBody: lib.PERSONAL_DAY[nums.personalDay],
+      greeting: `${hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'}, ${first}.`,
+      todayLabel: now.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' }),
+      big3: [
+        { label:'Sun', signGlyph: chart.sun.sign.glyph, signName: chart.sun.sign.name },
+        { label:'Moon', signGlyph: chart.moon.sign.glyph, signName: chart.moon.sign.name },
+        chart.rising ? { label:'Rising', signGlyph: chart.rising.sign.glyph, signName: chart.rising.sign.name } : { label:'Rising', signGlyph:'?', signName:'Add birth time' },
+      ],
+      sunName: chart.sun.sign.name, homeHoro: { overview: homeH.overview, love: homeH.love },
+      sky: { phase: sky.phase, phaseText: sky.phaseText, illumPct: `${Math.round(sky.illum*100)}%`, moonSign: sky.moon.sign.name },
+      moonDarkX: moonOff(96), moonDarkXLg: moonOff(120),
+      cyclesMini: [{ label:'Year', value: nums.personalYear }, { label:'Month', value: nums.personalMonth }, { label:'Day', value: nums.personalDay }],
+      pdText: lib.PERSONAL_DAY[nums.personalDay],
+      cod, saveCod: () => this.addJournal('Card of the day', `${cod.name} · ${cod.orientation}`, cod.meaning),
+      openReport: this.openReport, reportLockLabel: premium ? '' : '· Atlas+', reportCta: premium ? 'Read my report' : 'Unlock',
+
+      starsTabs: subTab([['horoscope','Horoscope'],['chart','Birth chart'],['transits','Transits & moon'],['compat','Compatibility']], S.starsTab, 'starsTab'),
+      sHoro: S.starsTab === 'horoscope', sChart: S.starsTab === 'chart', sTransit: S.starsTab === 'transits', sCompat: S.starsTab === 'compat',
+      periods: [['daily','Daily'],['weekly','Weekly'],['monthly', premium ? 'Monthly' : 'Monthly · Atlas+']].map(([id, label]) => ({ label, go: () => this.setState({ period: id }), bg: S.period === id ? '#c9a35a' : 'transparent', color: S.period === id ? '#0a1128' : '#efe6d2' })),
+      signChips: lib.SIGNS.map((s, i) => ({ name: s.name, glyph: s.glyph, go: () => this.setState({ horoSign: i }), bg: i === hSign ? 'rgba(201,163,90,0.16)' : 'transparent', color: i === hSign ? GOLD : MUTED, border: i === hSign ? '#c9a35a' : 'rgba(201,163,90,0.2)' })),
+      horoLocked, horoOpen: !horoLocked, horo,
+      saveHoro: () => this.addJournal('Horoscope', `${h.sign.name} · ${h.label}`, `${h.overview}${h.extra ? '\n\n' + h.extra : ''}\n\nLove: ${h.love}\nWork & money: ${h.work}\nWellbeing: ${h.well}`),
+
+      birthLine: `${birthStr}${p.timeUnknown ? ' · time unknown' : ' · ' + p.time} · ${city.name}`,
+      chartRows: [sp(chart.sun), sp(chart.moon), ...(chart.rising ? [sp(chart.rising)] : []), ...(premium ? chart.planets.map(sp) : [])],
+      chartLocked: !premium,
+      wheel, elementBal: elements, modalityBal: bal('modality', ['Cardinal','Fixed','Mutable']), elementNote: EL_NOTE[domEl],
+      aspectList: wheel.aspectList, hasAspects: wheel.aspectList.length > 0,
+      wheelNote: chart.rising ? 'Equal houses from your Ascendant (AC, left). Inner lines show aspects — blue flows, red pushes.' : 'Add your birth time for houses and Ascendant. Wheel shown with 0° Aries at left.',
+      angleRows: [chart.rising, chart.mc].filter(Boolean).map(a => ({ label: a.key === 'mc' ? 'Midheaven (MC)' : 'Ascendant (AC)', sign: `${a.sign.name} ${a.deg}°${String(a.min).padStart(2,'0')}′`, note: a.key === 'mc' ? 'Your public direction — career and reputation.' : 'Your approach to life and first impression.' })),
+      skyRows: [sky.sun, sky.moon, ...sky.planets].map(x => ({ glyph: x.glyph, name: x.name, signName: x.sign.name, deg: `${x.deg}°`, retro: x.retro ? '℞' : '', retroColor: x.retro ? '#e3a37e' : MUTED })),
+      retroNotes: sky.retroNotes, noRetro: sky.retroNotes.length === 0,
+      touchNote: inSun.length ? `${inSun.join(' and ')} ${inSun.length > 1 ? 'are' : 'is'} moving through ${chart.sun.sign.name}, your Sun sign — expect that energy to feel personal right now.` : `No planets are passing through ${chart.sun.sign.name} right now — a steadier stretch for you.`,
+
+      signOptions: lib.SIGNS.map((s, idx) => ({ idx: String(idx), name: s.name })), signA: String(signA), signB: String(S.signB),
+      onSignA: e => this.setState({ signA: +e.target.value }), onSignB: e => this.setState({ signB: +e.target.value }),
+      sc: { ...scr, width: `${scr.score}%` },
+      saveSignCompat: () => this.addJournal('Compatibility', `${lib.SIGNS[signA].name} & ${lib.SIGNS[S.signB].name} · ${scr.band}`, scr.text),
+
+      numTabs: subTab([['core','Core numbers'],['cycles','Cycles'],['compat','Compatibility']], S.numTab, 'numTab'),
+      nCore: S.numTab === 'core', nCycles: S.numTab === 'cycles', nCompat: S.numTab === 'compat',
+      numCards: lib.NUM_TYPES.map(t => ({ label: t.label, value: nums[t.key], go: () => this.setState({ numSel: t.key }), bg: t.key === S.numSel ? 'rgba(201,163,90,0.14)' : 'rgba(17,28,61,0.78)', border: t.key === S.numSel ? '#c9a35a' : 'rgba(201,163,90,0.22)' })),
+      numDetail: { label: nd.label, value: nv, title: nm.title, keywords: nm.keywords, frame: nd.frame, core: nm.core, areas: [{ label:'Love', text:nm.love }, { label:'Work', text:nm.work }, { label:'Your challenge', text:nm.challenge }] },
+      saveNum: () => this.addJournal('Numerology', `${nd.label} ${nv} · ${nm.title}`, `${nd.frame}\n\n${nm.core}\n\nLove: ${nm.love}\nWork: ${nm.work}\nChallenge: ${nm.challenge}`),
+      cycles: [
+        { label:'Personal Year', value: nums.personalYear, span: `${now.getFullYear()}`, text: lib.PERSONAL_YEAR[nums.personalYear] },
+        { label:'Personal Month', value: nums.personalMonth, span: now.toLocaleDateString(undefined, { month:'long', year:'numeric' }), text: `This month's theme: ${lib.PERSONAL_DAY[nums.personalMonth]}` },
+        { label:'Personal Day', value: nums.personalDay, span: 'Today', text: lib.PERSONAL_DAY[nums.personalDay] },
+      ],
+      myLP, partnerName: S.partnerName, partnerDate: S.partnerDate,
+      onPartnerName: e => this.setState({ partnerName: e.target.value }), onPartnerDate: e => this.setState({ partnerDate: e.target.value }),
+      hasNumCompat: !!nc, nc: nc || {},
+      saveNumCompat: () => nc && this.addJournal('Compatibility', `Life Paths ${nc.a} & ${nc.b} · ${nc.band}`, nc.text),
+
+      journalCount: S.journal.length === 1 ? '1 saved reading' : `${S.journal.length} saved readings`,
+      journalEmpty: S.journal.length === 0,
+      journalEntries: S.journal.map(e => ({
+        ...e, dateLabel: new Date(e.date).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }),
+        open: S.openEntry === e.id, chevron: S.openEntry === e.id ? '−' : '+',
+        toggle: () => this.setState({ openEntry: S.openEntry === e.id ? null : e.id }),
+        del: () => { const journal = S.journal.filter(x => x.id !== e.id); store(LS.j, journal); this.setState({ journal }); },
+      })),
+
+      todayShort: now.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' }),
+      reportSub: `${chart.sun.sign.name} Sun · ${chart.moon.sign.name} Moon${chart.rising ? ' · ' + chart.rising.sign.name + ' Rising' : ''} · Life Path ${myLP}`,
+      reportSections: rep ? rep.sections.map((s, i) => ({ ...s, num: ROMAN[i + 1] })) : [],
+      reportCards: rep ? rep.cards : [],
+      saveReport: () => rep && this.addJournal('Atlas Report', `Atlas Report · ${now.toLocaleDateString(undefined, { month:'short', day:'numeric' })}`, rep.sections.map(s => `${s.h}\n${s.body}`).join('\n\n') + '\n\n' + rep.cards.map(c => `${c.position}: ${c.name} (${c.orientation}) — ${c.meaning}`).join('\n')),
+
+      saveProfile: () => {
+        if (draft.name.trim().length < 2 || !validDate(draft.date)) return this.toastMsg('Add a name and birth date');
+        const profile = { ...draft, name: draft.name.trim() }; store(LS.p, profile); this.setState({ profile }); this.toastMsg('Profile updated');
+      },
+      notifTrack: S.notif ? '#c9a35a' : 'rgba(174,182,204,0.3)', notifKnob: S.notif ? '23px' : '3px',
+      toggleNotif: () => { store(LS.n, !S.notif); this.setState({ notif: !S.notif, insightDismissed: false }); },
+      membershipLabel: premium ? 'Cancel trial' : 'Upgrade',
+      membershipAction: () => { if (premium) { store(LS.pr, false); this.setState({ premium: false }); } else this.setState({ paywall: true }); },
+      resetAll: () => { [LS.p, LS.j, LS.pr, LS.n].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); this.setState({ profile: null, journal: [], premium: false, notif: true, onbStep: 0, draft: { ...blankDraft }, tab: 'home', report: null }); },
+
+      paywallOpen: S.paywall, closePaywall: () => this.setState({ paywall: false }), stop: e => e.stopPropagation(),
+      paywallFeatures: ['Monthly forecasts with key dates for every sign', 'Your full birth chart — Mercury through Saturn', 'The Atlas Report: chart, numbers and tarot in one life & love reading'],
+      plans: [['year','Yearly','7 days free, then billed annually · save 52%','$39.99'], ['month','Monthly','7 days free, then billed monthly','$6.99']].map(([id, label, note, price]) => ({ label, note, price, select: () => this.setState({ plan: id }), border: S.plan === id ? '#c9a35a' : 'rgba(201,163,90,0.25)', bg: S.plan === id ? 'rgba(201,163,90,0.1)' : 'transparent' })),
+      startTrial: () => { store(LS.pr, true); this.setState({ premium: true, paywall: false }); this.toastMsg('Welcome to Atlas+'); },
+    };
+  }
+}
+
+</script>
+</body>
+</html>
