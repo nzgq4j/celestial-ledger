@@ -8,23 +8,29 @@ used by Claude cannot change these settings, so they are applied by hand or with
 `scripts/configure-supabase-email-templates.mjs --apply` and a personal access
 token.
 
-## 1. Sender (custom SMTP)
+## 1. Sender (Resend SMTP)
 
-Supabase's built-in sender is for testing only: it sends a few emails an hour
-and may deliver only to the project's team members. Production needs a custom
-SMTP provider.
+Supabase's built-in sender is for testing only: the project is limited to 2
+emails an hour and delivery may be restricted to team members. Production uses
+Resend.
 
-1. Open **Authentication > Emails > SMTP Settings** (or **Project Settings >
-   Authentication > SMTP**).
-2. If **Enable custom SMTP** is off, sign up with an email provider (for
-   example Resend, Postmark, Amazon SES or SendGrid) and verify the domain
-   `celestialatlas.app` there. The provider lists the DNS records to add
-   (SPF, DKIM and usually a return-path CNAME).
-3. Enter the provider's host, port, user and password, with:
+1. **Domain.** In Resend, **Domains > Add domain** `celestialatlas.app`. Resend
+   lists DNS records: an MX and an SPF TXT record on the `send` subdomain and a
+   DKIM TXT record at `resend._domainkey`. Add them in Vercel (**Domains >
+   celestialatlas.app > DNS Records**), which hosts the domain's DNS. They do
+   not touch the existing root MX and SPF records of the current mailbox. Wait
+   for Resend to show the domain as **Verified**.
+2. **API key.** In Resend, **API Keys > Create API key** with **Sending access**,
+   limited to `celestialatlas.app`. Copy it; Resend shows it once.
+3. **Supabase.** **Authentication > Emails > SMTP Settings**, turn on **Enable
+   custom SMTP** and enter:
    - Sender email: `no-reply@celestialatlas.app`
    - Sender name: `Celestial Atlas`
-4. Under **Authentication > Rate Limits**, raise **emails per hour** to suit
-   expected sign-ups (custom SMTP allows it).
+   - Host: `smtp.resend.com`, port `465`
+   - Username: `resend`
+   - Password: the Resend API key (enter it only here, never in chat or git)
+4. **Rate limit.** **Authentication > Rate Limits**: raise **emails sent per
+   hour** (for example to 100) once custom SMTP is on.
 
 ## 2. Links
 
