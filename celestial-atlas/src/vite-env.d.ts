@@ -11,3 +11,6 @@ interface ImportMetaEnv {
   readonly NEXT_PUBLIC_SUPABASE_URL?: string;
   readonly NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?: string;
 }
+
+/** True in Vercel preview builds (demo mode). */
+declare const __ATLAS_PREVIEW__: boolean;

@@ -19,7 +19,7 @@ const storage: SupportedStorage = {
   removeItem: async k => { await Preferences.remove({ key: k }); },
 };
 
-export const supabase: SupabaseClient | null = url && key
+export const supabase: SupabaseClient | null = !__ATLAS_PREVIEW__ && url && key
   ? createClient(url, key, {
       auth: { storage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
     })
