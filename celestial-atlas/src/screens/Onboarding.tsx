@@ -109,7 +109,7 @@ export function Onboarding() {
           <IonToolbar>
             <div className={css.onbNav}>
               <IonButton fill="clear" color="medium" onClick={() => setStep(Math.max(0, step - 1))}>{o.back}</IonButton>
-              <IonButton disabled={blocked} onClick={next}>{step === 3 ? o.create : o.continue}</IonButton>
+              <IonButton color="primary" fill="solid" disabled={blocked} onClick={next}>{step === 3 ? o.create : o.continue}</IonButton>
             </div>
           </IonToolbar>
         </IonFooter>

@@ -137,7 +137,7 @@ function Shell() {
           </IonTitle>
           <IonButtons slot="end">
             {!app.premium && app.profile && (
-              <IonButton fill="outline" shape="round" size="small" onClick={app.openPaywall}>{s.common.atlasPlus}</IonButton>
+              <IonButton color="primary" fill="outline" shape="round" size="small" onClick={app.openPaywall}>{s.common.atlasPlus}</IonButton>
             )}
             {app.profile && (
               <IonButton className={css.avatarButton} aria-label={`${s.common.profile.replace('{name}', first)}`} onClick={() => app.go('profile')}>
