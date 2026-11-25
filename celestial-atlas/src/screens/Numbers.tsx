@@ -7,6 +7,7 @@ import { fill, useContent, useStrings } from '../i18n';
 import { useApp, type NumTab } from '../state/store';
 import { MIN_DATE, todayISO, validDate } from '../state/validation';
 import { CalcDetails, Meter } from '../ui/components';
+import { PickerField } from '../ui/PickerField';
 import css from './screens.module.css';
 
 export function Numbers() {
@@ -110,8 +111,8 @@ export function Numbers() {
                   onIonInput={e => app.setUi({ partnerName: String(e.detail.value ?? '') })} />
               </IonItem>
               <IonItem>
-                <IonInput type="date" label={s.theirDate} labelPlacement="stacked" fill="outline" min={MIN_DATE} max={todayISO()} value={app.ui.partnerDate}
-                  onIonInput={e => app.setUi({ partnerDate: String(e.detail.value ?? '') })} />
+                <PickerField kind="date" label={s.theirDate} value={app.ui.partnerDate} min={MIN_DATE} max={todayISO()}
+                  onChange={partnerDate => app.setUi({ partnerDate })} />
               </IonItem>
             </IonList>
             {nc && (

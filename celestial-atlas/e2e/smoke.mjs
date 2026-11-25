@@ -9,6 +9,16 @@ import fs from 'node:fs';
 const out = process.argv[2] || 'e2e/out';
 fs.mkdirSync(out, { recursive: true });
 const BASE = process.env.BASE_URL || 'http://localhost:4173/';
+async function pick(page, label, value) {
+  await page.locator('.picker-field').filter({ hasText: label }).click();
+  const sheet = page.locator('ion-modal.picker-sheet').last();
+  const dt = sheet.locator('ion-datetime');
+  await dt.waitFor();
+  await page.waitForTimeout(400);
+  await dt.evaluate((el, v) => { el.value = v; }, value);
+  await sheet.getByRole('button', { name: 'Done' }).click();
+  await page.waitForTimeout(500);
+}
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 412, height: 892 }, deviceScaleFactor: 1, timezoneId: 'Europe/Paris', locale: 'en-US' });
 const page = await ctx.newPage();
@@ -31,8 +41,8 @@ await page.getByText('Build my atlas').click();
 await page.locator('ion-input').filter({ hasText: 'Full birth name' }).locator('input').fill('Amelia Rose Laurent');
 await axe('onboarding-name');
 await page.getByRole('button', { name: 'Continue' }).click();
-await page.locator('ion-input').filter({ hasText: 'Date of birth' }).locator('input').fill('1991-07-28');
-await page.locator('ion-input').filter({ hasText: 'Time of birth' }).locator('input').fill('06:45');
+await pick(page, 'Date of birth', '1991-07-28');
+await pick(page, 'Time of birth', '2000-01-01T06:45:00');
 await axe('onboarding-date'); await shot('02-date');
 await page.getByRole('button', { name: 'Continue' }).click();
 await page.locator('ion-searchbar input').fill('Avignon');
@@ -59,7 +69,7 @@ await tab('Numbers').click();
 await axe('numbers'); await shot('08-numbers');
 await seg('Cycles').click(); await axe('numbers-cycles');
 await seg('Compatibility').click();
-await page.locator('ion-input').filter({ hasText: 'Their birth date' }).locator('input').fill('1988-03-14');
+await pick(page, 'Their birth date', '1988-03-14');
 await axe('numbers-compat');
 
 await tab('Tarot').click();

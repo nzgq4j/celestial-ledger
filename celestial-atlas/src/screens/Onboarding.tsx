@@ -1,4 +1,5 @@
 import { IonButton, IonContent, IonFooter, IonInput, IonItem, IonList, IonText, IonToolbar } from '@ionic/react';
+import { useKeyboardOpen } from '../ui/useKeyboardOpen';
 import { useState } from 'react';
 import { fill, useStrings } from '../i18n';
 import { useApp } from '../state/store';
@@ -31,9 +32,12 @@ export function Onboarding() {
   };
 
   const problem = nameProblem(draft.name);
+  // The step buttons would sit behind the phone keyboard's toolbar; hide them while typing.
+  const keyboardOpen = useKeyboardOpen();
 
   return (
     <div className="ion-page">
+      <div className={css.safeTop} aria-hidden="true" />
       <IonContent fullscreen>
         <div className={css.onboard}>
           <div className={css.onboardInner}>
@@ -104,7 +108,7 @@ export function Onboarding() {
           </div>
         </div>
       </IonContent>
-      {step > 0 && (
+      {step > 0 && !keyboardOpen && (
         <IonFooter>
           <IonToolbar>
             <div className={css.onbNav}>

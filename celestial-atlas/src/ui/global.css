@@ -153,3 +153,22 @@ ion-card-header { padding-bottom: 6px; }
 
 /* Outline inputs draw their label on the border; give it room inside list items. */
 .field-list ion-item { --padding-top: 10px; --padding-bottom: 2px; --background: transparent; overflow: visible; }
+
+/* Date and time picker fields (src/ui/PickerField.tsx), styled like outlined inputs. */
+.picker-field {
+  position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px;
+  padding: 0 16px; margin-top: 8px; background: transparent; color: var(--ink); text-align: left;
+  border: 1px solid var(--ion-color-step-300, rgba(201, 163, 90, 0.28)); border-radius: 4px; font: inherit; cursor: pointer;
+}
+.picker-field:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-color: var(--gold); }
+.picker-field:disabled { opacity: 0.45; cursor: default; }
+.picker-label {
+  position: absolute; top: -9px; left: 12px; padding: 0 4px; background: var(--bg, #0a1128);
+  font-size: 12px; line-height: 16px; color: var(--ink-soft, #d6cfbf);
+}
+.picker-value { flex: 1; font-size: 16px; }
+.picker-placeholder { color: #8d96b3; }
+.picker-icon { font-size: 20px; color: var(--muted); flex: none; }
+ion-modal.picker-sheet { --height: auto; --border-radius: 12px; --background: #111c3d; }
+ion-modal.picker-sheet ion-datetime { --background: #111c3d; margin: 0 auto 12px; }
+ion-card .picker-label { background: var(--ion-card-background, #111c3d); }
