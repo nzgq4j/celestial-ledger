@@ -243,6 +243,10 @@ export const es: Strings = {
   },
   profile: {
     language: 'Idioma',
+    appearance: 'Apariencia',
+    themeSystem: 'Igual que el dispositivo',
+    themeLight: 'Claro',
+    themeDark: 'Oscuro',
     eyebrow: 'Perfil',
     birthDetails: 'Datos de nacimiento',
     fullName: 'Nombre completo de nacimiento',

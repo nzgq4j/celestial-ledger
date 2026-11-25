@@ -5,10 +5,11 @@ import { type TarotCard } from '../engine/tarotData';
 import { cardsIn, decksIn, narrativeIn, spreadsIn } from '../engine/localize';
 import { fill, useContent, useStrings } from '../i18n';
 import { tap } from '../platform/native';
+import { resolveTheme } from '../platform/theme';
 import { useApp } from '../state/store';
 import { readable } from '../ui/color';
 import { CardFace, Starfield, cardArt } from '../ui/components';
-import { CHOOSER, SPREADS, buildNarrative, drawSpread, type DrawnCard } from '../engine/tarotDecks';
+import { CHOOSER, CHOOSER_LIGHT, SPREADS, buildNarrative, drawSpread, type DrawnCard } from '../engine/tarotDecks';
 import t from './tarot.module.css';
 
 type Screen = 'deck' | 'reading' | 'draw' | 'result';
@@ -30,7 +31,9 @@ export function Tarot() {
   const deck = DECKS.find(d => d.id === deckId) ?? DECKS[0];
   const spread = SPREADS_IN.find(r => r.id === spreadId) ?? null;
   const onChooser = screen === 'deck';
-  const bg = onChooser ? CHOOSER.bg : deck.bg, ink = onChooser ? CHOOSER.ink : deck.ink, accent = onChooser ? CHOOSER.accent : deck.accent;
+  // Decks keep their own artwork colours; the chooser follows the app theme.
+  const chooser = resolveTheme(app.theme) === 'light' ? CHOOSER_LIGHT : CHOOSER;
+  const bg = onChooser ? chooser.bg : deck.bg, ink = onChooser ? chooser.ink : deck.ink, accent = onChooser ? chooser.accent : deck.accent;
   const accentText = readable(accent, bg);
   const vars = { '--t-bg': bg, '--t-ink': ink, '--t-accent': accent, '--t-accent-text': accentText, '--t-panel': deck.panel } as CSSProperties;
   // Buttons take the deck's colours so they stay readable on light and dark decks.

@@ -20,10 +20,13 @@ import { setupIonicReact } from '@ionic/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { applyTheme, readThemePref } from './platform/theme';
 import { AppProvider } from './state/store';
 
 // Material Design on every platform, so the web and Android look the same.
 setupIonicReact({ mode: 'md' });
+// Apply the saved appearance before the first paint.
+applyTheme(readThemePref())(); // paint only; the store follows device changes
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

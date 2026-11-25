@@ -11,6 +11,7 @@ import type { Content } from '../engine/content';
 import { DEFAULT_NOTIF, cancelInsights, syncInsights, type NotifSettings } from '../platform/notifications';
 import { disablePush, onPushTap } from '../platform/push';
 import { KEYS, load, removeAll, save } from '../platform/storage';
+import { applyTheme, isThemePref, readThemePref, rememberThemePref, type ThemePref } from '../platform/theme';
 import { supabase } from '../platform/supabase';
 import type { JournalEntry } from './journal';
 import { chooseProfile, mergeJournal } from './sync';
@@ -59,6 +60,9 @@ interface AppValue {
   loaded: boolean;
   /** Reader's language, and the reading content in it. */
   locale: Locale;
+  /** Appearance preference: system, light or dark. */
+  theme: ThemePref;
+  setTheme: (t: ThemePref) => void;
   content: Content;
   setLocale: (l: Locale) => void;
   /** True after a password-recovery link: ask for a new password. */
@@ -141,6 +145,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [localPremium, setLocalPremium] = useState(false);
   const [notif, setNotifState] = useState<NotifSettings>(DEFAULT_NOTIF);
   const [locale, setLocaleState] = useState<Locale>(() => detectLocale());
+  const [theme, setThemeState] = useState<ThemePref>(() => readThemePref());
+  useEffect(() => applyTheme(theme), [theme]);
   const [passwordPrompt, setPasswordPrompt] = useState(false);
   const content = contentFor(locale);
   const contentRef = useRef(content);
@@ -176,8 +182,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       billing.isEntitled(),
       load<NotifSettings>(KEYS.notif, DEFAULT_NOTIF),
       load<string | null>(KEYS.locale, null),
-    ]).then(([p, j, pr, n, l]) => {
+      load<string | null>(KEYS.theme, null),
+    ]).then(([p, j, pr, n, l, t]) => {
       if (alive && isLocale(l)) setLocaleState(l);
+      if (alive && isThemePref(t)) { setThemeState(t); rememberThemePref(t); }
       if (!alive) return;
       setProfileState(p && 'place' in p ? p : null);
       setJournal(Array.isArray(j) ? j : []);
@@ -420,9 +428,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [userId]);
 
   const setLocale = useCallback((l: Locale) => { setLocaleState(l); void save(KEYS.locale, l); }, []);
+  const setTheme = useCallback((t: ThemePref) => { setThemeState(t); rememberThemePref(t); void save(KEYS.theme, t); }, []);
 
   const value: AppValue = {
-    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
+    loaded, locale, content, setLocale, theme, setTheme, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
     account: { available: supabase !== null, email: session?.user.email ?? null, membership, syncing },
     go, setStarsTab, setNumTab, setAccountTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),

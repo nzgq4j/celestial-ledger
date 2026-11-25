@@ -33,7 +33,8 @@ export interface WheelGeometry {
   hasHouses: boolean;
 }
 
-export const ASPECT_COLOR = { soft: '#8fb4e8', hard: '#e38a7a', blend: '#e3c27e' } as const;
+/** Theme colours (CSS variables), applied through style props. */
+export const ASPECT_COLOR = { soft: 'var(--soft-aspect)', hard: 'var(--hard-aspect)', blend: 'var(--gold-bright)' } as const;
 
 /** `signNames` are the reader's sign names (English by default). */
 export function buildWheel(chart: Chart, bodies: WheelBody[], aspects: Aspect[], signNames: readonly string[] = SIGNS.map(x => x.name)): WheelGeometry {

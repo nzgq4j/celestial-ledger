@@ -8,6 +8,7 @@ export const KEYS = {
   premium: 'atlas_premium',
   notif: 'atlas_notif',
   locale: 'atlas_locale',
+  theme: 'atlas_theme',
 } as const;
 
 export async function load<T>(key: string, fallback: T): Promise<T> {

@@ -43,7 +43,7 @@ export function Onboarding() {
           <div className={css.onboardInner}>
             <div className={css.dots} aria-hidden="true">
               {[0, 1, 2, 3].map(i => (
-                <div key={i} style={{ width: i === step ? 28 : 8, background: i <= step ? 'var(--gold)' : 'rgba(201,163,90,0.25)' }} />
+                <div key={i} style={{ width: i === step ? 28 : 8, background: i <= step ? 'var(--gold)' : 'rgb(var(--gold-rgb) / 0.25)' }} />
               ))}
             </div>
 

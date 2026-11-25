@@ -98,7 +98,7 @@ function HoroscopeTab() {
                   <div className="body">{a.text}</div>
                 </div>
               ))}
-              <div style={{ display: 'flex', gap: 22, flexWrap: 'wrap', paddingTop: 14, borderTop: '1px solid rgba(201,163,90,0.18)' }}>
+              <div style={{ display: 'flex', gap: 22, flexWrap: 'wrap', paddingTop: 14, borderTop: '1px solid rgb(var(--gold-rgb) / 0.18)' }}>
                 {h.ratings.map(r => <RatingBar key={r.label} label={ratingLabels[r.label] ?? r.label} value={r.value} />)}
                 <div>
                   <div className="label-caps" style={{ marginBottom: 2 }}>{s.lucky}</div>
@@ -189,7 +189,7 @@ function BirthChartTab() {
                 {elements.map(b => (
                   <div key={b.label} style={{ display: 'grid', gridTemplateColumns: '64px minmax(0,1fr) 20px', gap: 10, alignItems: 'center', fontSize: 13 }}>
                     <span style={{ color: 'var(--ink-soft)' }}>{b.label}</span>
-                    <div style={{ height: 6, background: 'rgba(201,163,90,0.14)', borderRadius: 3 }}><div style={{ height: '100%', width: `${b.width}%`, background: 'var(--gold)', borderRadius: 3 }} /></div>
+                    <div style={{ height: 6, background: 'rgb(var(--gold-rgb) / 0.14)', borderRadius: 3 }}><div style={{ height: '100%', width: `${b.width}%`, background: 'var(--gold)', borderRadius: 3 }} /></div>
                     <span style={{ color: 'var(--muted)', textAlign: 'right' }}>{b.n}</span>
                   </div>
                 ))}
@@ -200,7 +200,7 @@ function BirthChartTab() {
               <div className="eyebrow" style={{ marginBottom: 12 }}>{s.modality}</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
                 {modalities.map(b => (
-                  <div key={b.label} style={{ border: '1px solid rgba(201,163,90,0.22)', borderRadius: 4, padding: '10px 6px', textAlign: 'center' }}>
+                  <div key={b.label} style={{ border: '1px solid rgb(var(--gold-rgb) / 0.22)', borderRadius: 4, padding: '10px 6px', textAlign: 'center' }}>
                     <div className="serif" style={{ fontSize: 26, fontWeight: 600, color: 'var(--gold-bright)', lineHeight: 1 }}>{b.n}</div>
                     <div className="label-caps" style={{ letterSpacing: '0.08em', marginTop: 4 }}>{b.label}</div>
                   </div>
