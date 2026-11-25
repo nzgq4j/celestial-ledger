@@ -19,7 +19,7 @@
     "test:ephemeris-server": "node scripts/check-ephemeris-server.mjs",
     "licenses": "node scripts/check-licenses.mjs",
     "verify": "npm run typecheck && npm run lint && npm test && npm --prefix celestial-atlas test && npm run build",
-    "build:app": "npm --prefix celestial-atlas ci --no-audit --no-fund && npm --prefix celestial-atlas run build && node scripts/copy-app.mjs"
+    "build:app": "npm --prefix celestial-atlas ci --include=dev --no-audit --no-fund && npm --prefix celestial-atlas run build && node scripts/copy-app.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
