@@ -38,16 +38,6 @@ export async function signUp(email: string, password: string, redirectTo: string
 }
 
 /** Sends a one-time sign-in code by email (also creates the account if new). */
-export async function sendEmailCode(email: string) {
-  const { error } = await client().auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-  if (error) throw new AccountError(error.code ?? 'CODE_FAILED', error.message);
-}
-
-export async function verifyEmailCode(email: string, token: string) {
-  const { error } = await client().auth.verifyOtp({ email, token, type: 'email' });
-  if (error) throw new AccountError(error.code ?? 'CODE_INVALID', error.message);
-}
-
 export async function sendPasswordReset(email: string, redirectTo: string) {
   const { error } = await client().auth.resetPasswordForEmail(email, { redirectTo });
   if (error) throw new AccountError(error.code ?? 'RESET_FAILED', error.message);

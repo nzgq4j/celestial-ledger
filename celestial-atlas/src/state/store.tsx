@@ -8,7 +8,7 @@ import { onBackButton, onResume, tap } from '../platform/native';
 import { localizeChart, localizeSky } from '../engine/localize';
 import { contentFor, detectLocale, isLocale, stringsFor, type Locale } from '../i18n';
 import type { Content } from '../engine/content';
-import { DEFAULT_NOTIF, cancelInsights, syncInsights, type NotifSettings } from '../platform/notifications';
+import { DEFAULT_NOTIF, anyNotif, cancelInsights, normalizeNotif, syncInsights, type NotifSettings } from '../platform/notifications';
 import { disablePush, onPushTap } from '../platform/push';
 import { KEYS, load, removeAll, save } from '../platform/storage';
 import { applyTheme, isThemePref, readThemePref, rememberThemePref, type ThemePref } from '../platform/theme';
@@ -190,7 +190,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setProfileState(p && 'place' in p ? p : null);
       setJournal(Array.isArray(j) ? j : []);
       setLocalPremium(pr);
-      setNotifState(typeof n === 'object' && n !== null && 'enabled' in n ? n : DEFAULT_NOTIF);
+      setNotifState(normalizeNotif(n));
       setLoaded(true);
     });
     return () => { alive = false; };
@@ -256,9 +256,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!loaded || !profile) return;
     const n = notifRef.current;
     void syncInsights(profile, n, false, contentRef.current).then(r => {
-      setNotifIssue(n.enabled && (r === 'blocked' || r === 'failed') ? r : null);
-      // The browser has not granted permission (for example after reinstalling): show the switch off.
-      if (r === 'needs-permission') { const off = { ...n, enabled: false }; setNotifState(off); void save(KEYS.notif, off); }
+      setNotifIssue(anyNotif(n) && (r === 'blocked' || r === 'failed') ? r : null);
+      // The browser has not granted permission (for example after reinstalling): show the switches off.
+      if (r === 'needs-permission') { const off = { ...n, enabled: false, news: false }; setNotifState(off); void save(KEYS.notif, off); }
     });
   }, [loaded, profile, locale]);
 
@@ -400,11 +400,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [userId, showToast]);
 
   const setNotif = useCallback(async (next: NotifSettings) => {
+    const prev = notifRef.current;
     setNotifState(next);
     await save(KEYS.notif, next);
     if (profile) {
-      const r = await syncInsights(profile, next, next.enabled, contentRef.current);
-      setNotifIssue(next.enabled && (r === 'blocked' || r === 'failed') ? r : r === 'needs-permission' && next.enabled ? 'blocked' : null);
+      // Ask for permission only when a switch was just turned on.
+      const turnedOn = (next.enabled && !prev.enabled) || (next.news && !prev.news);
+      const r = await syncInsights(profile, next, turnedOn, contentRef.current);
+      const on = anyNotif(next);
+      setNotifIssue(on && (r === 'blocked' || r === 'failed') ? r : r === 'needs-permission' && on ? 'blocked' : null);
     }
   }, [profile]);
 
