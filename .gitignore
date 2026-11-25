@@ -22,3 +22,9 @@ npm-debug.log*
 /public/index.html
 /public/assets/
 /public/favicon.svg
+/public/apple-touch-icon.png
+/public/favicon-32.png
+/public/icon-192.png
+/public/icon-512.png
+/public/icon-maskable-512.png
+/public/manifest.webmanifest

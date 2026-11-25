@@ -31,7 +31,7 @@ export function Numbers() {
         <div className="eyebrow">{s.eyebrow}</div>
         <h1 className="h1">{s.title}</h1>
       </div>
-      <IonSegment value={app.numTab} aria-label={s.sections} onIonChange={e => app.setNumTab(e.detail.value as NumTab)}>
+      <IonSegment scrollable value={app.numTab} aria-label={s.sections} onIonChange={e => app.setNumTab(e.detail.value as NumTab)}>
         <IonSegmentButton value="core"><IonLabel>{s.core}</IonLabel></IonSegmentButton>
         <IonSegmentButton value="cycles"><IonLabel>{s.cycles}</IonLabel></IonSegmentButton>
         <IonSegmentButton value="compat"><IonLabel>{s.compat}</IonLabel></IonSegmentButton>
