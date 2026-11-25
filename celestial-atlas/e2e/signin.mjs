@@ -48,13 +48,13 @@ await page.evaluate(() => localStorage.setItem('CapacitorStorage.atlas_profile',
 await page.goto(`${BASE}profile`);
 await page.locator('ion-tab-bar').waitFor({ timeout: 10000 });
 await page.getByRole('button', { name: 'Sign in' }).first().click();
-const modal = page.locator('ion-modal').last();
+const modal = page.locator('ion-modal').filter({ has: page.locator('#signin-title') });
 await expect('sign-in screen opens', modal.getByText('New to Celestial Atlas?'));
 await expect('Create account is available before typing anything', modal.getByRole('button', { name: 'Create account' }));
 await axe('signin'); await shot('S1-signin');
 
 await modal.getByRole('button', { name: 'Create account' }).click();
-await expect('create account screen', modal.getByText('Confirm password'));
+await expect('create account screen', modal.locator('#signin-title').filter({ hasText: 'Create account' }));
 await axe('create'); await shot('S2-create');
 
 await modal.locator('ion-input').filter({ hasText: 'Email' }).locator('input').fill('new@example.com');
