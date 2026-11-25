@@ -3,7 +3,7 @@ import type { Strings } from './strings';
 
 export const es: Strings = {
   appName: 'Celestial Atlas',
-  tabs: { home: 'Hoy', stars: 'Astros', numbers: 'Números', tarot: 'Tarot', journal: 'Diario', label: 'Secciones de la app' },
+  tabs: { home: 'Hoy', stars: 'Astros', numbers: 'Números', tarot: 'Tarot', journal: 'Diario', account: 'Cuenta', label: 'Secciones de la app' },
   common: {
     done: "Listo",
     back: 'Atrás',
@@ -252,6 +252,9 @@ export const es: Strings = {
     saved: 'Perfil actualizado',
     invalid: 'Añade un nombre y una fecha de nacimiento',
     account: 'Cuenta',
+    settings: 'Ajustes',
+    sections: 'Secciones de la cuenta',
+    notSignedInShort: 'Sin iniciar sesión',
     signedInAs: 'Sesión iniciada como {email}',
     syncing: 'Sincronizando…',
     synced: 'Tu perfil y tu diario se sincronizan con esta cuenta.',

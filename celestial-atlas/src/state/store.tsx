@@ -21,6 +21,8 @@ export type StarsTab = 'horoscope' | 'chart' | 'transits' | 'compat';
 export type NumTab = 'core' | 'cycles' | 'compat';
 const STARS_TABS: StarsTab[] = ['horoscope', 'chart', 'transits', 'compat'];
 const NUM_TABS: NumTab[] = ['core', 'cycles', 'compat'];
+/** Sections of the Account page: the journal (default) and settings. */
+export type AccountTab = 'journal' | 'settings';
 
 /** Per-screen choices that survive switching tabs, as in the prototype. */
 export interface UiState {
@@ -72,6 +74,7 @@ interface AppValue {
   tab: TabId;
   starsTab: StarsTab;
   numTab: NumTab;
+  accountTab: AccountTab;
   paywall: boolean;
   signInOpen: boolean;
   toast: string | null;
@@ -85,6 +88,7 @@ interface AppValue {
   go: (tab: TabId, sub?: string) => void;
   setStarsTab: (t: StarsTab) => void;
   setNumTab: (t: NumTab) => void;
+  setAccountTab: (t: AccountTab) => void;
   back: () => boolean;
   setUi: (patch: Partial<UiState>) => void;
   setProfile: (p: Profile) => Promise<void>;
@@ -211,6 +215,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Section changes replace the history entry so back leaves the tab, as in standard tab UIs.
   const setStarsTab = useCallback((t: StarsTab) => { const r = { tab: 'stars' as const, sub: t }; replaceRoute(r); setRoute(r); }, []);
   const setNumTab = useCallback((t: NumTab) => { const r = { tab: 'numbers' as const, sub: t }; replaceRoute(r); setRoute(r); }, []);
+  // /journal and /profile both open the Account page; /profile/settings opens its settings.
+  const accountTab: AccountTab = route.tab === 'profile' && route.sub === 'settings' ? 'settings' : 'journal';
+  const setAccountTab = useCallback((t: AccountTab) => {
+    const r: Route = t === 'settings' ? { tab: 'profile', sub: 'settings' } : { tab: 'profile' };
+    replaceRoute(r); setRoute(r);
+  }, []);
 
   const back = useCallback((): boolean => {
     if (signInOpen) { setSignInOpen(false); return true; }
@@ -412,9 +422,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => { setLocaleState(l); void save(KEYS.locale, l); }, []);
 
   const value: AppValue = {
-    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
+    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
     account: { available: supabase !== null, email: session?.user.email ?? null, membership, syncing },
-    go, setStarsTab, setNumTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
+    go, setStarsTab, setNumTab, setAccountTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),
     openSignIn: () => setSignInOpen(true), closeSignIn: () => setSignInOpen(false),
     startTrial, manageMembership, setNotif, openReport, signOut, resetAll,

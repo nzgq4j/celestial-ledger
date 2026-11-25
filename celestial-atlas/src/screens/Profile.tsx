@@ -17,7 +17,8 @@ import { DateTimeFields, TimeZoneCheck, blankDraft, draftFromProfile, draftToPro
 import { PlaceSearch } from './PlaceSearch';
 import css from './screens.module.css';
 
-export function Profile() {
+/** Settings section of the Account page: birth details, account, preferences. */
+export function AccountSettings() {
   const app = useApp();
   const strings = useStrings();
   const s = strings.profile;
@@ -72,11 +73,7 @@ export function Profile() {
   });
 
   return (
-    <div className="screen fade-up" style={{ gap: 18, maxWidth: 640 }}>
-      <div className={css.pageHead}>
-        <div className="eyebrow">{s.eyebrow}</div>
-        <h1 className="h1">{p?.name || s.eyebrow}</h1>
-      </div>
+    <div className="stack" style={{ gap: 18 }}>
 
       {p && (
         <IonCard>

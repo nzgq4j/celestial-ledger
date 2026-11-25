@@ -15,7 +15,7 @@ export function useOpenReport() {
   return () => {
     if (!app.premium) return app.openPaywall();
     // The report draws on name numbers; legacy profiles may not have the full birth name yet.
-    if (!app.profile?.name.trim()) { app.showToast(s.report.needsName); app.go('profile'); return; }
+    if (!app.profile?.name.trim()) { app.showToast(s.report.needsName); app.go('profile', 'settings'); return; }
     const d = app.derived!;
     app.openReport(report(app.profile!, d.chart, d.nums, d.sky, cardsIn(c), app.now, c));
   };
