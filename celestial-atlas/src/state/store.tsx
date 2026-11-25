@@ -308,20 +308,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSyncing(true);
     void (async () => {
       try {
-        // Profile: the account's chart wins; otherwise upload the one made on this device.
+        // Profile: the account's chart wins; otherwise upload the one made on this device,
+        // unless that chart and journal belong to a different account.
+        const owner = await load<string | null>(KEYS.owner, null);
+        const foreign = !!owner && owner !== userId;
         const remote = await account.loadProfile();
         if (!alive) return;
-        const choice = chooseProfile(remote, profileRef.current);
-        if (choice.profile && choice.profile !== profileRef.current) {
+        const choice = chooseProfile(remote, profileRef.current, foreign);
+        if (choice.profile !== profileRef.current) {
           setProfileState(choice.profile);
           await save(KEYS.profile, choice.profile);
         }
         if (choice.upload && choice.profile) await account.saveProfile(choice.profile);
         // Journal: upload entries saved on this device; any that fail stay local and are retried next sign-in.
         const pending: JournalEntry[] = [];
-        for (const e of journalRef.current.filter(x => !x.remoteId)) {
+        for (const e of foreign ? [] : journalRef.current.filter(x => !x.remoteId)) {
           try { await account.addJournalEntry(e); } catch { pending.push(e); }
         }
+        await save(KEYS.owner, userId);
         const entries = mergeJournal(await account.loadJournal(), pending);
         if (!alive) return;
         setJournal(entries);
@@ -350,6 +354,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setProfile = useCallback(async (p: Profile) => {
     setProfileState(p);
     await save(KEYS.profile, p);
+    // A chart saved while signed out belongs to this device until an account adopts it.
+    if (!userId) await save(KEYS.owner, null);
     if (userId) {
       try { await account.saveProfile(p); }
       catch (e) { showToast(e instanceof account.AccountError && e.code === 'CHART_LIMIT' ? stringsRef.current.toasts.chartLimit : stringsRef.current.toasts.savedOffline); }

@@ -10,6 +10,16 @@ const entry = (title: string, date: string, remoteId?: string): JournalEntry =>
   ({ id: Date.parse(date), type: 'Tarot', title, body: 'b', date, ...(remoteId ? { remoteId } : {}) });
 
 describe('chooseProfile', () => {
+  it('never moves a chart that belongs to another account', () => {
+    expect(chooseProfile(null, profile('David Example'), true)).toEqual({ profile: null, upload: false });
+    const remote = profile('Diane Example', '1990-02-02');
+    expect(chooseProfile(remote, profile('David Example'), true)).toEqual({ profile: remote, upload: false });
+  });
+  it('adopts a chart made while signed out when the account has none', () => {
+    const local = profile('Diane Example');
+    expect(chooseProfile(null, local, false)).toEqual({ profile: local, upload: true });
+  });
+
   it('keeps the account chart when it has a name', () => {
     const remote = profile('Amelia Rose Laurent');
     expect(chooseProfile(remote, profile('Someone Else', '2000-01-01'))).toEqual({ profile: remote, upload: false });

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { fill, useStrings } from '../i18n';
 import * as account from '../platform/account';
 import { API_BASE } from '../platform/api';
+import { isNative } from '../platform/native';
 import { useApp } from '../state/store';
 import css from './screens.module.css';
 
@@ -65,6 +66,8 @@ export function SignIn() {
   };
 
   const creating = view === 'create';
+  // The Android app signs in with Google only; email and password are web-only.
+  const googleOnly = isNative();
   return (
     <>
       <IonHeader>
@@ -89,44 +92,48 @@ export function SignIn() {
             <GoogleMark />
             <span>{s.google}</span>
           </button>
-          <div className={css.orRule} role="separator"><span>{s.or}</span></div>
-          <IonList lines="none" className="field-list" style={{ marginTop: 16 }}>
-            <IonItem>
-              <IonInput type="email" label={s.email} labelPlacement="stacked" fill="outline" autocomplete="email" inputmode="email"
-                value={email} onIonInput={e => setEmail(String(e.detail.value ?? ''))} />
-            </IonItem>
-            <IonItem>
-              <IonInput type="password" label={creating ? s.newPassword : s.passwordLabel} labelPlacement="stacked" fill="outline"
-                autocomplete={creating ? 'new-password' : 'current-password'} helperText={creating ? s.passwordHint : undefined}
-                value={password} onIonInput={e => setPassword(String(e.detail.value ?? ''))} />
-            </IonItem>
-            {creating && (
+          {googleOnly ? (
+            message && <IonText color={message.tone} role="alert"><p className="small-text">{message.text}</p></IonText>
+          ) : (<>
+            <div className={css.orRule} role="separator"><span>{s.or}</span></div>
+            <IonList lines="none" className="field-list" style={{ marginTop: 16 }}>
               <IonItem>
-                <IonInput type="password" label={s.confirmPassword} labelPlacement="stacked" fill="outline" autocomplete="new-password"
-                  value={confirm} onIonInput={e => setConfirm(String(e.detail.value ?? ''))} />
+                <IonInput type="email" label={s.email} labelPlacement="stacked" fill="outline" autocomplete="email" inputmode="email"
+                  value={email} onIonInput={e => setEmail(String(e.detail.value ?? ''))} />
               </IonItem>
-            )}
-          </IonList>
-          {message && <IonText color={message.tone} role="alert"><p className="small-text">{message.text}</p></IonText>}
+              <IonItem>
+                <IonInput type="password" label={creating ? s.newPassword : s.passwordLabel} labelPlacement="stacked" fill="outline"
+                  autocomplete={creating ? 'new-password' : 'current-password'} helperText={creating ? s.passwordHint : undefined}
+                  value={password} onIonInput={e => setPassword(String(e.detail.value ?? ''))} />
+              </IonItem>
+              {creating && (
+                <IonItem>
+                  <IonInput type="password" label={s.confirmPassword} labelPlacement="stacked" fill="outline" autocomplete="new-password"
+                    value={confirm} onIonInput={e => setConfirm(String(e.detail.value ?? ''))} />
+                </IonItem>
+              )}
+            </IonList>
+            {message && <IonText color={message.tone} role="alert"><p className="small-text">{message.text}</p></IonText>}
 
-          {creating ? (
-            <>
-              <IonButton type="submit" expand="block" disabled={busy || !trimmed || !password || !confirm}>{s.create}</IonButton>
-              <div className={css.switchRow}>
-                <span className="small">{s.haveAccount}</span>
-                <IonButton fill="clear" size="small" onClick={() => show('signin')}>{s.signIn}</IonButton>
-              </div>
-            </>
-          ) : (
-            <>
-              <IonButton type="submit" expand="block" disabled={busy || !trimmed || !password}>{s.signIn}</IonButton>
-              <IonButton fill="clear" color="medium" size="small" disabled={busy} onClick={forgot}>{s.forgot}</IonButton>
-              <div className={css.switchRow}>
-                <span className="small">{s.newHere}</span>
-                <IonButton fill="outline" size="small" onClick={() => show('create')}>{s.create}</IonButton>
-              </div>
-            </>
-          )}
+            {creating ? (
+              <>
+                <IonButton type="submit" expand="block" disabled={busy || !trimmed || !password || !confirm}>{s.create}</IonButton>
+                <div className={css.switchRow}>
+                  <span className="small">{s.haveAccount}</span>
+                  <IonButton fill="clear" size="small" onClick={() => show('signin')}>{s.signIn}</IonButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <IonButton type="submit" expand="block" disabled={busy || !trimmed || !password}>{s.signIn}</IonButton>
+                <IonButton fill="clear" color="medium" size="small" disabled={busy} onClick={forgot}>{s.forgot}</IonButton>
+                <div className={css.switchRow}>
+                  <span className="small">{s.newHere}</span>
+                  <IonButton fill="outline" size="small" onClick={() => show('create')}>{s.create}</IonButton>
+                </div>
+              </>
+            )}
+          </>)}
           {busy && <p className="small" role="status">{s.working}</p>}
         </form>
       </IonContent>
