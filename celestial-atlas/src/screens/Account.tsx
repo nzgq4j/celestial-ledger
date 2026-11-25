@@ -10,7 +10,8 @@ export function Account() {
   const app = useApp();
   const strings = useStrings();
   const s = strings.profile;
-  const name = app.profile?.name.trim() || s.account;
+  // Signed in: the account's own name. Signed out: the name on this device's chart.
+  const name = app.account.name || app.profile?.name.trim() || s.account;
   const email = app.account.email;
 
   return (

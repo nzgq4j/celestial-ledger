@@ -52,6 +52,8 @@ export interface AccountState {
   /** Accounts are configured in this build. */
   available: boolean;
   email: string | null;
+  /** The signed-in account's display name (Google name, or the email's local part). */
+  name: string | null;
   membership: account.Membership | null;
   syncing: boolean;
 }
@@ -448,7 +450,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: AppValue = {
     loaded, locale, content, setLocale, theme, setTheme, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
-    account: { available: supabase !== null, email: session?.user.email ?? null, membership, syncing },
+    account: { available: supabase !== null, email: session?.user.email ?? null, name: account.displayName(session?.user ?? null), membership, syncing },
     go, setStarsTab, setNumTab, setAccountTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),
     openSignIn: () => setSignInOpen(true), closeSignIn: () => setSignInOpen(false),
