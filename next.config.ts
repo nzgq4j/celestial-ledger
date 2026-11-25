@@ -32,28 +32,52 @@ const nextConfig: NextConfig = {
       process.env.SUPABASE_PUBLISHABLE_KEY ??
       "",
   },
-  experimental: {
-    serverActions: { bodySizeLimit: "1mb" },
-  },
+  // The website is the Celestial Atlas app (built from celestial-atlas/ into
+  // public/ by `npm run build`). Every path that is not an API route or a
+  // static file opens the app, which routes on the client.
+  rewrites: async () => ({
+    beforeFiles: [],
+    afterFiles: [],
+    fallback: [{ source: "/:path*", destination: "/index.html" }],
+  }),
+  // Addresses from the retired website.
+  redirects: async () => [
+    ...[
+      "/horoscopes",
+      "/horoscopes/:sign",
+      "/weekly-readings/:path*",
+      "/clock",
+    ].map((source) => ({ source, destination: "/stars", permanent: true })),
+    ...[
+      "/daily-readings/:path*",
+      "/method",
+      "/samples/:path*",
+      "/blog/:path*",
+      "/journal/:slug",
+      "/contact",
+    ].map((source) => ({ source, destination: "/today", permanent: true })),
+    ...[
+      "/account/:path*",
+      "/membership",
+      "/reports/:path*",
+      "/auth/login",
+      "/auth/create-account",
+      "/auth/forgot-password",
+      "/auth/update-password",
+      "/auth/check-email",
+      "/auth/claim-subscription",
+    ].map((source) => ({ source, destination: "/profile", permanent: false })),
+  ],
   headers: async () => [
     {
-      source: "/account/:path*",
-      headers: [
-        { key: "Cache-Control", value: "private, no-store" },
-        {
-          key: "X-Robots-Tag",
-          value: "noindex, nofollow, noarchive",
-        },
-      ],
+      // The app shell is revalidated on every load so a release reaches readers at once.
+      source: "/index.html",
+      headers: [{ key: "Cache-Control", value: "no-cache" }],
     },
     {
-      source: "/daily-readings/:path*",
+      source: "/assets/:path*",
       headers: [
-        { key: "Cache-Control", value: "private, no-store" },
-        {
-          key: "X-Robots-Tag",
-          value: "noindex, nofollow, noarchive",
-        },
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
       ],
     },
     {

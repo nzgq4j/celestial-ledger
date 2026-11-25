@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     appJson(request, { code, error }, status);
 
   const auth = await authenticateRequest(request);
-  if (!auth.ok) return fail(auth.code.toUpperCase(), "Sign in first.", auth.status);
+  if (!auth.ok)
+    return fail(auth.code.toUpperCase(), "Sign in first.", auth.status);
   const { userId, authTime } = auth.user;
 
   let body: unknown;
@@ -36,7 +37,11 @@ export async function POST(request: Request) {
 
   const now = Math.floor(Date.now() / 1000);
   if (!authTime || now - authTime > RECENT_SIGN_IN_SECONDS)
-    return fail("REAUTH_REQUIRED", "Sign in again to delete your account.", 401);
+    return fail(
+      "REAUTH_REQUIRED",
+      "Sign in again to delete your account.",
+      401,
+    );
 
   const admin = createAdminClient();
   // A subscription that will renew must be cancelled first, or it would keep billing.
@@ -58,7 +63,11 @@ export async function POST(request: Request) {
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) {
     console.error(
-      JSON.stringify({ level: "error", message: "Account deletion failed", code: error.code ?? "UNKNOWN" }),
+      JSON.stringify({
+        level: "error",
+        message: "Account deletion failed",
+        code: error.code ?? "UNKNOWN",
+      }),
     );
     return fail(
       "DELETE_BLOCKED",

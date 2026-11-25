@@ -1,10 +1,6 @@
 import { obfuscatedAccountIdFor } from "@/lib/google-play/account-id";
 import { loadPlayCatalog } from "@/lib/google-play/store";
-import {
-  appJson,
-  appPreflight,
-  authenticateRequest,
-} from "@/lib/request-auth";
+import { appJson, appPreflight, authenticateRequest } from "@/lib/request-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

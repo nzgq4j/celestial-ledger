@@ -1,42 +1,19 @@
-import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/supabase/database.types";
-import { isDemoMode, supabasePublicConfig } from "@/lib/supabase/config";
 
-export async function GET(request: NextRequest) {
-  if (isDemoMode()) {
-    return NextResponse.redirect(
-      new URL("/auth/login?error=preview_disabled", request.url),
-    );
-  }
-
+/**
+ * OAuth and email-link callback. The app keeps its own session, so the
+ * one-time code is handed to it; the app exchanges it with the code verifier
+ * it stored when the flow started.
+ */
+export function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const requestedNext = request.nextUrl.searchParams.get("next");
-  const next =
-    requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
-      ? requestedNext
-      : "/account";
-
-  if (code) {
-    const response = NextResponse.redirect(
-      new URL(next, "https://www.celestialatlas.app"),
-    );
-    const { url, publishableKey } = supabasePublicConfig();
-    const supabase = createServerClient<Database>(url, publishableKey, {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll(cookiesToSet) {
-          for (const { name, value, options } of cookiesToSet) {
-            response.cookies.set(name, value, options);
-          }
-        },
-      },
-    });
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return response;
-  }
-
-  return NextResponse.redirect(
-    new URL("/auth/login?error=oauth_failed", request.url),
-  );
+  const target = new URL("/profile", request.url);
+  if (code && /^[A-Za-z0-9._-]{8,512}$/.test(code))
+    target.searchParams.set("code", code);
+  return NextResponse.redirect(target, {
+    headers: {
+      "Cache-Control": "private, no-store",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
 }

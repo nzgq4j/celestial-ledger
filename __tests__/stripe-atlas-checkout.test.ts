@@ -6,9 +6,7 @@ import { trialEligibleFromHistory } from "@/lib/stripe/trial";
 
 const read = (path: string) => readFileSync(path, "utf8");
 const checkoutRoutes = [
-  "app/api/stripe/subscription-checkout/route.ts",
-  "app/api/stripe/anonymous-subscription-checkout/route.ts",
-  "app/api/checkout/route.ts",
+  "app/api/app/checkout/route.ts",
   "lib/stripe/checkout.ts",
 ].map(read);
 
@@ -56,8 +54,8 @@ describe("Atlas checkout sessions", () => {
     expect(checkoutPaymentMethodConfiguration()).toEqual({
       payment_method_configuration: "pmc_1AtlasGooglePay",
     });
-    expect(read("app/api/checkout/route.ts")).toContain(
-      "...checkoutPaymentMethodConfiguration()",
+    expect(read("lib/stripe/checkout.ts")).toContain(
+      "checkoutPaymentMethodConfiguration()",
     );
   });
 
@@ -152,30 +150,19 @@ describe("Atlas trial eligibility", () => {
 });
 
 describe("Atlas subscription routes", () => {
-  const subscriptionCheckout = read(
-    "app/api/stripe/subscription-checkout/route.ts",
-  );
-  const anonymousCheckout = read(
-    "app/api/stripe/anonymous-subscription-checkout/route.ts",
-  );
+  const appCheckout = read("app/api/app/checkout/route.ts");
   const webhook = read("app/api/stripe/webhook/route.ts");
   const catalog = read("lib/stripe/catalog.ts");
 
-  it("sells only Atlas, by interval, from active commerce_plan_prices", () => {
-    for (const route of [subscriptionCheckout, anonymousCheckout]) {
-      expect(route).toContain("z.literal(ATLAS_PLAN_KEY)");
-      expect(route).toContain("z.enum(BILLING_INTERVALS)");
-      expect(route).not.toContain('"personal"');
-      expect(route).toContain("activeAtlasPrice(admin");
-      expect(route).toContain("ATLAS_UNAVAILABLE_MESSAGE");
-      expect(route).toContain("atlasTrialEligible(");
-      expect(route).not.toMatch(/Premium/);
-    }
+  it("sells only the app's Atlas+ price from active commerce_plan_prices", () => {
+    expect(appCheckout).toContain("activeAtlasPrice(admin");
+    expect(appCheckout).toContain("isAtlasAppPrice(price)");
+    expect(appCheckout).toContain("atlasTrialEligible(");
+    expect(appCheckout).toContain(
+      'z.object({ plan: z.literal("year") }).strict()',
+    );
     expect(catalog).toContain('.from("commerce_plan_prices")');
     expect(catalog).toContain('.eq("active", true)');
-    expect(catalog).toMatch(
-      /ATLAS_UNAVAILABLE_MESSAGE\s*=\s*"Atlas membership is not yet available\."/,
-    );
   });
 
   it("maps Stripe prices to plans through commerce_plan_prices, then the legacy price", () => {
@@ -200,7 +187,7 @@ describe("Atlas subscription routes", () => {
   });
 
   it("sends Google Play members to Google Play to manage Atlas", () => {
-    const portal = read("app/api/stripe/portal/route.ts");
+    const portal = read("app/api/app/portal/route.ts");
     expect(portal).toContain('current?.provider === "google_play"');
     expect(portal).toContain("GOOGLE_PLAY_SUBSCRIPTIONS_URL");
     expect(read("lib/membership/plans.ts")).toContain(

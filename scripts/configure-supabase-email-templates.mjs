@@ -75,7 +75,9 @@ const config = {
     heading: "Confirm your email address",
     paragraphs: [
       "Welcome to Celestial Atlas. Confirm your email address to finish creating your private account.",
+      "Enter this code in the app, or use the button below.",
     ],
+    code: "{{ .Token }}",
     action: { label: "Confirm email address", href: confirmUrl("email") },
   }),
   mailer_subjects_invite: "You’re invited to Celestial Atlas",
@@ -87,13 +89,15 @@ const config = {
     ],
     action: { label: "Accept invitation", href: confirmUrl("invite") },
   }),
-  mailer_subjects_magic_link: "Your Celestial Atlas sign-in link",
+  mailer_subjects_magic_link:
+    "{{ .Token }} is your Celestial Atlas sign-in code",
   mailer_templates_magic_link_content: brandedEmail({
     eyebrow: "Secure sign in",
     heading: "Continue to Celestial Atlas",
     paragraphs: [
-      "Use this single-use link to sign in. If you did not request it, you can ignore this email.",
+      "Enter this single-use code in the Celestial Atlas app to sign in, or use the button below on this device. If you did not request it, you can ignore this email.",
     ],
+    code: "{{ .Token }}",
     action: { label: "Sign in securely", href: confirmUrl("magiclink") },
   }),
   mailer_subjects_email_change:
@@ -117,7 +121,7 @@ const config = {
     ],
     action: {
       label: "Reset password",
-      href: confirmUrl("recovery", "&amp;next=/auth/update-password"),
+      href: confirmUrl("recovery"),
     },
   }),
   mailer_subjects_reauthentication:
@@ -137,7 +141,7 @@ const config = {
     heading: "Your password was changed",
     paragraphs: [
       "The password for your Celestial Atlas account was recently changed.",
-      `If this was not you, use <a href="${appUrl}/auth/forgot-password" style="color:#d4b15f;">password recovery</a> immediately.`,
+      `If this was not you, use <a href="${appUrl}/profile" style="color:#d4b15f;">password recovery</a> immediately.`,
     ],
   }),
   mailer_subjects_email_changed_notification:

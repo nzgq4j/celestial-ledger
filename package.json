@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:app && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
@@ -18,58 +18,32 @@
     "test:watch": "vitest",
     "test:ephemeris-server": "node scripts/check-ephemeris-server.mjs",
     "licenses": "node scripts/check-licenses.mjs",
-    "verify": "npm run typecheck && npm run lint && npm test && npm run build",
-    "android:assets": "node android-app/scripts/generate-assets.mjs",
-    "android:sync": "cap sync android && node android-app/scripts/sync-origin.mjs",
-    "android:open": "cap open android",
-    "android:bundle": "npm run android:sync && cd android && ./gradlew bundleRelease",
-    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "verify": "npm run typecheck && npm run lint && npm test && npm --prefix celestial-atlas test && npm run build",
+    "build:app": "npm --prefix celestial-atlas ci --no-audit --no-fund && npm --prefix celestial-atlas run build && node scripts/copy-app.mjs"
   },
   "dependencies": {
-    "@capacitor/android": "8.6.0",
-    "@capacitor/app": "8.1.2",
-    "@capacitor/browser": "8.0.5",
-    "@capacitor/core": "8.6.0",
-    "@capacitor/push-notifications": "8.1.3",
-    "@capacitor/splash-screen": "8.0.2",
-    "@capacitor/status-bar": "8.0.4",
-    "@capgo/native-purchases": "8.9.6",
     "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.111.0",
     "astronomy-engine": "2.1.19",
     "next": "16.4.6",
     "nodemailer": "^10.6.1",
-    "openai": "7.63.0",
-    "pdf-lib": "1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "sharp": "0.35.5",
     "stripe": "22.4.0",
-    "tz-lookup": "6.1.25",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@capacitor/cli": "8.6.0",
     "@electric-sql/pglite": "0.3.14",
-    "@tailwindcss/postcss": "4.3.3",
-    "@testing-library/jest-dom": "6.9.1",
-    "@testing-library/react": "16.3.2",
     "@types/node": "22.20.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "@types/tz-lookup": "6.1.2",
-    "autoprefixer": "10.5.4",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.6",
-    "jsdom": "26.1.0",
-    "postcss": "8.5.25",
     "prettier": "3.9.6",
-    "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "^5.1.1"
   },
   "overrides": {
-    "postcss": "8.5.25",
-    "sharp": "$sharp"
+    "postcss": "8.5.25"
   }
 }

@@ -25,7 +25,11 @@ export type RequestUser = {
 
 export type RequestAuth =
   | { ok: true; user: RequestUser }
-  | { ok: false; status: 401 | 403; code: "origin_rejected" | "sign_in_required" };
+  | {
+      ok: false;
+      status: 401 | 403;
+      code: "origin_rejected" | "sign_in_required";
+    };
 
 const BEARER = /^Bearer ([A-Za-z0-9._-]{20,4096})$/;
 
@@ -101,7 +105,11 @@ export async function authenticateRequest(
   if (token) {
     const { url, publishableKey } = supabasePublicConfig();
     const client = createSupabaseClient(url, publishableKey, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
     });
     const { data, error } = await client.auth.getClaims(token);
     const user = error ? null : toUser(data?.claims, "bearer");

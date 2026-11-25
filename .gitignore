@@ -17,3 +17,8 @@ npm-debug.log*
 /.codex-*/
 
 /outputs-*-check.txt
+
+# App build copied into public/ by scripts/copy-app.mjs
+/public/index.html
+/public/assets/
+/public/favicon.svg

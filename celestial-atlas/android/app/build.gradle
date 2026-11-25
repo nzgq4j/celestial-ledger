@@ -14,7 +14,8 @@ android {
         applicationId "com.celestialatlas.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        // Same Play listing as the earlier app (com.celestialatlas.app): pass -PversionCode=N above the last upload.
+        versionCode project.hasProperty('versionCode') ? project.property('versionCode').toInteger() : 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

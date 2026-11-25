@@ -27,10 +27,15 @@ export async function POST(request: Request) {
     return fail("UNAVAILABLE", "Atlas+ is not available right now.", 403);
 
   const auth = await authenticateRequest(request);
-  if (!auth.ok) return fail(auth.code.toUpperCase(), "Sign in first.", auth.status);
+  if (!auth.ok)
+    return fail(auth.code.toUpperCase(), "Sign in first.", auth.status);
   const { userId, email } = auth.user;
   if (!email)
-    return fail("EMAIL_UNVERIFIED", "Your account email could not be verified.", 422);
+    return fail(
+      "EMAIL_UNVERIFIED",
+      "Your account email could not be verified.",
+      422,
+    );
 
   let body: unknown;
   try {
@@ -54,7 +59,9 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (current)
     return fail(
-      current.provider === "google_play" ? "MANAGED_IN_GOOGLE_PLAY" : "ALREADY_SUBSCRIBED",
+      current.provider === "google_play"
+        ? "MANAGED_IN_GOOGLE_PLAY"
+        : "ALREADY_SUBSCRIBED",
       current.provider === "google_play"
         ? "Your Atlas+ membership is managed in Google Play."
         : "You already have Atlas+.",
@@ -67,7 +74,8 @@ export async function POST(request: Request) {
     return fail("BILLING_PROFILE_FAILED", "Billing could not be started.", 500);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) return fail("NOT_CONFIGURED", "Checkout is not configured.", 500);
+  if (!appUrl)
+    return fail("NOT_CONFIGURED", "Checkout is not configured.", 500);
 
   const session = await stripe.checkout.sessions.create(
     subscriptionCheckoutSessionParams({
