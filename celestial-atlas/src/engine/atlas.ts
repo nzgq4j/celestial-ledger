@@ -12,6 +12,9 @@ import {
   CALCULATION_VERSION, collect, contentId, makeEvidence, sealRecord,
   type BirthChartRecord, type CalcRecord, type CardDrawRecord, type Evidence, type EvidenceMap, type NumerologyRecord, type SkyRecord,
 } from './records';
+import { fillTemplate as fill, type Content } from './content';
+import TAROT_CARDS from './tarotData';
+import { DECKS, SPREADS } from './tarotDecks';
 import { resolveBirthTime, type Disambiguation } from './time';
 
 const VS = '︎';
@@ -116,6 +119,8 @@ export interface RetroNote {
 }
 
 export interface Sky {
+  /** 0 = New Moon … 7 = Waning Crescent. */
+  phaseIdx: number;
   phase: string;
   phaseText: string;
   /** Illuminated fraction, 0..1 */
@@ -463,7 +468,7 @@ export function sky(at: Date = new Date()): Sky {
   const ePhase = makeEvidence(rid, 'phase', 'moon-phase', `${PHASES[idx][0]}, ${Math.round(illum * 100)}% lit, elongation ${elong.toFixed(2)}°`);
   const ev = [eSun, eMoon, ePhase, ...planets.map(pl => makeEvidence(rid, 'position', pl.key, `${formatPosition(pl)}${pl.retro ? ' retrograde' : ''}`))];
   return {
-    phase:PHASES[idx][0], phaseText:PHASES[idx][1], illum, waxing: elong < 180, age,
+    phaseIdx: idx, phase:PHASES[idx][0], phaseText:PHASES[idx][1], illum, waxing: elong < 180, age,
     moon:{ ...PLANETS.moon, ...moonP, evidenceId: eMoon.id }, sun:{ ...PLANETS.sun, ...sunP, evidenceId: eSun.id },
     planets, retroNotes: planets.filter(p => p.retro).map(p => ({ name:p.name, glyph:p.glyph, text:RETRO[p.key] })),
     phaseEvidenceId: ePhase.id, record, evidence: collect(...ev),
@@ -578,7 +583,6 @@ const WORK = ["Pick the one task that moves the needle and do it first.","A conv
 const WELL = ["Get outside for twenty minutes; it resets your mood.","Sleep is your highest-return investment right now.","Move your body in a way you actually enjoy.","Cut back on screens tonight — your mind needs quiet.","Drink more water and eat something real at lunch.","Book the appointment you've been putting off.","Journal for five minutes: what's actually bothering you?","Say no to one obligation. Rest isn't optional.","Stretch between tasks; tension builds quietly.","Call a friend who makes you laugh."];
 const KEYNOTES = ['Good for money conversations','Social energy peaks','Rest and reset','Strong day to start something','Clear the backlog','Romance is favored','Ask for feedback','Plans and travel go smoothly'];
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 type ElemRel = 'same' | 'support' | 'tense';
 function elemRel(a: Element, b: Element): ElemRel {
@@ -586,66 +590,70 @@ function elemRel(a: Element, b: Element): ElemRel {
   const pair = [a,b].sort().join('-');
   return pair === 'Air-Fire' || pair === 'Earth-Water' ? 'support' : 'tense';
 }
-const MOON_REL: Record<ElemRel, (m: string) => string> = {
-  same:(m) => `The Moon in ${m} shares your element — your instincts and emotions line up. Trust your first read today.`,
-  support:(m) => `The Moon in ${m} supports your sign. Others are receptive; it's a good day to ask for something.`,
-  tense:(m) => `The Moon in ${m} rubs against your element. Expect small friction — don't make big calls while irritated.`,
-};
+/** Sign with its reader-facing text in the given language; element and modality stay as keys. */
+export const signIn = (i: number, c: Content = EN): Sign => (c === EN ? SIGNS[i] : { ...SIGNS[i], ...c.signs[i] });
+const lowerFirstIn = (c: Content, t: string): string => (c.lowercaseInline ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+const lowerIn = (c: Content, t: string): string => (c.lowercaseInline ? t.toLowerCase() : t);
+const keywordList = (c: Content, k: string): string => lowerIn(c, k).replace(/ · /g, ', ');
 
-export function horoscope(signIdx: number, period: Period, date: Date = new Date(), moonIdx = 0): Horoscope {
-  const s = SIGNS[signIdx];
+export function horoscope(signIdx: number, period: Period, date: Date = new Date(), moonIdx = 0, c: Content = EN): Horoscope {
+  const s = signIn(signIdx, c), h = c.horoscope;
   const startOfWeek = new Date(date); startOfWeek.setDate(date.getDate() - ((date.getDay()+6)%7));
   const key = period === 'daily' ? date.toDateString() : period === 'weekly' ? startOfWeek.toDateString() : `${date.getFullYear()}-${date.getMonth()}`;
   const r = rng(`${signIdx}|${period}|${key}`);
-  const label = period === 'daily' ? date.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' })
-    : period === 'weekly' ? `Week of ${startOfWeek.toLocaleDateString(undefined, { month:'long', day:'numeric' })}`
-    : `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-  let overview = `${pick(r, OPEN[s.element])} ${s.name} works best with ${s.style} — use it.`;
-  if (period === 'daily') overview += ' ' + MOON_REL[elemRel(s.element, SIGNS[moonIdx].element)](SIGNS[moonIdx].name);
-  if (period !== 'daily') overview += ` Watch for your usual trap: ${s.shadow.charAt(0).toLowerCase() + s.shadow.slice(1)}`;
+  const label = period === 'daily' ? date.toLocaleDateString(c.locale, { weekday:'long', month:'long', day:'numeric' })
+    : period === 'weekly' ? fill(h.weekOf, { date: startOfWeek.toLocaleDateString(c.locale, { month:'long', day:'numeric' }) })
+    : date.toLocaleDateString(c.locale, { month:'long', year:'numeric' });
+  let overview = fill(h.overview, { open: pick(r, h.open[s.element]), sign: s.name, style: s.style });
+  if (period === 'daily') overview += ' ' + fill(h.moonRel[elemRel(s.element, SIGNS[moonIdx].element)], { moon: c.signs[moonIdx].name });
+  if (period !== 'daily') overview += fill(h.trap, { shadow: lowerFirstIn(c, s.shadow) });
   let extra: string | null = null;
-  if (period === 'weekly') extra = `Best day this week: ${pick(r, DAYS)}.`;
+  if (period === 'weekly') extra = fill(h.bestDay, { day: pick(r, h.days) });
   if (period === 'monthly') {
     const dim = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const ds = new Set<number>(); while (ds.size < 3) ds.add(1 + Math.floor(r()*dim));
-    extra = 'Key dates: ' + [...ds].sort((a,b)=>a-b).map(d => `${MONTHS[date.getMonth()].slice(0,3)} ${d} — ${pick(r, KEYNOTES).toLowerCase()}`).join('; ') + '.';
+    extra = fill(h.keyDates, { list: [...ds].sort((a,b)=>a-b).map(d => fill(h.keyDate, {
+      date: new Date(date.getFullYear(), date.getMonth(), d).toLocaleDateString(c.locale, { month:'short', day:'numeric' }),
+      note: lowerIn(c, pick(r, h.keynotes)),
+    })).join(h.keyDateSeparator) });
   }
   const rate = (): number => 2 + Math.floor(r()*4);
   return {
     sign:s, period, label, overview,
-    love: pick(r, LOVE) + (period === 'monthly' ? ' ' + s.love : ''),
-    work: pick(r, WORK) + (period === 'monthly' ? ' ' + s.work : ''),
-    well: pick(r, WELL),
+    love: pick(r, h.love) + (period === 'monthly' ? ' ' + s.love : ''),
+    work: pick(r, h.work) + (period === 'monthly' ? ' ' + s.work : ''),
+    well: pick(r, h.well),
     ratings:[{ label:'Love', value:rate() }, { label:'Work', value:rate() }, { label:'Energy', value:rate() }],
     lucky: 1 + Math.floor(r()*9), extra,
   };
 }
 
-export function signCompat(a: number, b: number): Compat {
-  const A = SIGNS[a], B = SIGNS[b], diff = Math.abs(a-b);
+export function signCompat(a: number, b: number, c: Content = EN): Compat {
+  const A = signIn(a, c), B = signIn(b, c), diff = Math.abs(a-b), t = c.compat.sign;
   let score: number, band: string, body: string;
-  if (a === b) { score = 80; band = 'Mirror match'; body = "You understand each other instantly — and share the same blind spots. Make sure someone handles what neither of you likes doing."; }
-  else if (diff === 6) { score = 76; band = 'Magnetic opposites'; body = 'Strong attraction from opposite ends of the zodiac. Each of you has what the other lacks; the work is respecting it instead of trying to change it.'; }
+  if (a === b) { score = 80; ({ band, body } = t.mirror); }
+  else if (diff === 6) { score = 76; ({ band, body } = t.opposite); }
   else {
     const rel = elemRel(A.element, B.element);
-    if (rel === 'same') { score = 90; band = 'Natural match'; body = `Both ${A.element} signs — you run on the same fuel. Easy rhythm, shared values, and fewer translation problems.`; }
-    else if (rel === 'support') { score = 83; band = 'Complementary'; body = `${A.element} and ${B.element} feed each other. You bring out each other's strengths when you keep talking.`; }
-    else { score = 58; band = 'Growth match'; body = `${A.element} and ${B.element} work differently. It takes effort, but you'll learn the most from each other.`; }
+    const ea = c.elements[A.element], eb = c.elements[B.element];
+    if (rel === 'same') { score = 90; band = t.same.band; body = fill(t.same.body, { element: ea }); }
+    else if (rel === 'support') { score = 83; band = t.support.band; body = fill(t.support.body, { a: ea, b: eb }); }
+    else { score = 58; band = t.tense.band; body = fill(t.tense.body, { a: ea, b: eb }); }
   }
-  return { score, band, text:`${body} ${A.name} brings ${A.keywords.toLowerCase()} energy; ${B.name} brings ${B.keywords.toLowerCase()}. In practice: ${A.love.charAt(0).toLowerCase()+A.love.slice(1)}` };
+  return { score, band, text: `${body} ${fill(t.tail, { a: A.name, aKeywords: lowerIn(c, A.keywords), b: B.name, bKeywords: lowerIn(c, B.keywords), aLove: lowerFirstIn(c, A.love) })}` };
 }
 
-export function numCompat(a: number, b: number): Compat {
+export function numCompat(a: number, b: number, c: Content = EN): Compat {
   const base = (n: number): number => n === 11 ? 2 : n === 22 ? 4 : n === 33 ? 6 : n;
-  const x = base(a), y = base(b);
+  const x = base(a), y = base(b), t = c.compat.num;
   const group = (n: number): number => [1,5,7].includes(n) ? 0 : [2,4,8].includes(n) ? 1 : 2;
   const good = ['1-3','1-9','2-6','2-9','3-5','4-6','4-7','5-7','6-9','1-5','8-4'];
   let score: number, band: string, body: string;
-  if (x === y) { score = 84; band = 'Mirror match'; body = 'Same core number — you instinctively get each other. Watch for competing over the same role.'; }
-  else if (group(x) === group(y)) { score = 90; band = 'Natural match'; body = 'Your numbers share a core rhythm. Goals and pace tend to line up without much negotiation.'; }
-  else if (good.includes([x,y].sort().join('-')) || good.includes([y,x].join('-'))) { score = 74; band = 'Complementary'; body = 'Different strengths that fit together well. Divide roles clearly and you cover each other.'; }
-  else { score = 56; band = 'Growth match'; body = "Different priorities. It works when you're explicit about needs instead of assuming."; }
-  return { score, band, text:`${body} You (${a}, ${NUM[a].title}) bring ${NUM[a].keywords.toLowerCase().replace(/ · /g, ', ')}. They (${b}, ${NUM[b].title}) bring ${NUM[b].keywords.toLowerCase().replace(/ · /g, ', ')}.` };
+  if (x === y) { score = 84; ({ band, body } = t.mirror); }
+  else if (group(x) === group(y)) { score = 90; ({ band, body } = t.natural); }
+  else if (good.includes([x,y].sort().join('-')) || good.includes([y,x].join('-'))) { score = 74; ({ band, body } = t.complementary); }
+  else { score = 56; ({ band, body } = t.growth); }
+  return { score, band, text: `${body} ${fill(t.tail, { a, aTitle: c.num[a].title, aKeywords: keywordList(c, c.num[a].keywords), b, bTitle: c.num[b].title, bKeywords: keywordList(c, c.num[b].keywords) })}` };
 }
 
 export function drawCards<C>(cards: readonly C[], seed: string, n: number): Drawn<C>[] {
@@ -666,45 +674,132 @@ export function recordDraw<C extends { id: string }>(
   return { record, evidenceIds: ev.map(e => e.id), evidence: collect(...ev) };
 }
 
-const lowerFirst = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
-
-export function report(p: Profile, ch: Chart, nums: Numbers, sk: Sky, cards: readonly TarotCardLike[], today: Date = new Date()): Report {
-  const lp = NUM[nums.lifePath], su = NUM[nums.soulUrge], pe = NUM[nums.personality];
+export function report(p: Profile, ch: Chart, nums: Numbers, sk: Sky, cards: readonly TarotCardLike[], today: Date = new Date(), c: Content = EN): Report {
+  const t = c.report;
+  const lp = c.num[nums.lifePath], su = c.num[nums.soulUrge], pe = c.num[nums.personality];
+  const sun = signIn(ch.sun.signIdx, c);
   const venus = ch.planets.find(x => x.key === 'venus')!, saturn = ch.planets.find(x => x.key === 'saturn')!;
+  const venusSign = signIn(venus.signIdx, c), saturnSign = signIn(saturn.signIdx, c);
   const inSun = sk.planets.filter(x => x.signIdx === ch.sun.signIdx);
   const first = p.name.split(' ')[0];
   const n = nums.evidenceIds;
+  const phaseIdx = sk.phaseIdx;
   // Without a birth time the Moon's sign is only stated when it could not have changed that day.
   const moonLine = ch.moon.uncertain
-    ? `Without a birth time your Moon could be in ${ch.moon.possibleSigns.map(s => s.name).join(' or ')}, so it is left out here. Your Soul Urge ${nums.soulUrge} (${su.title}) says this: ${lowerFirst(su.core)}`
-    : `Your Moon is in ${ch.moon.sign.name}: you process feelings with ${ch.moon.sign.style}. Your Soul Urge ${nums.soulUrge} (${su.title}) adds this: ${lowerFirst(su.core)}`;
+    ? fill(t.moonUncertain, { signs: ch.moon.possibleSigns.map(x => c.signs[SIGNS.indexOf(x)].name).join(t.or), soulUrge: nums.soulUrge, suTitle: su.title, suCore: lowerFirstIn(c, su.core) })
+    : fill(t.moon, { moon: c.signs[ch.moon.signIdx].name, moonStyle: c.signs[ch.moon.signIdx].style, soulUrge: nums.soulUrge, suTitle: su.title, suCore: lowerFirstIn(c, su.core) });
+  const transit = inSun.length
+    ? fill(inSun.length > 1 ? t.transitMany : t.transitOne, { planets: inSun.map(x => c.bodies[x.key].name).join(t.and), sun: sun.name })
+    : '';
   const sections: ReportSection[] = [
-    { h:'Your core blueprint', body:`${first}, you're a ${ch.sun.sign.name} Sun with a Life Path ${nums.lifePath} — ${lp.title}. ${ch.sun.sign.core} ${lp.core}`,
+    { h:t.headings.core, body: fill(t.core, { first, sun: sun.name, lifePath: nums.lifePath, lpTitle: lp.title, sunCore: sun.core, lpCore: lp.core }),
       evidenceIds:[ch.sun.evidenceId, n.lifePath] },
-    { h:'Your emotional landscape', body: moonLine,
+    { h:t.headings.emotional, body: moonLine,
       evidenceIds:[ch.moon.evidenceId, n.soulUrge] },
-    { h:'How others see you', body: (ch.rising ? `With ${ch.rising.sign.name} rising, people first meet your ${ch.rising.sign.style}. ` : 'Add your birth time to unlock your rising sign. ') + `Your Personality number ${nums.personality} (${pe.title}) reinforces it — ${pe.keywords.toLowerCase().replace(/ · /g, ', ')}.`,
+    { h:t.headings.seen, body: (ch.rising ? fill(t.rising, { rising: c.signs[ch.rising.signIdx].name, risingStyle: c.signs[ch.rising.signIdx].style }) : t.noRising)
+        + fill(t.personality, { personality: nums.personality, peTitle: pe.title, peKeywords: keywordList(c, pe.keywords) }),
       evidenceIds:[...(ch.rising ? [ch.rising.evidenceId] : []), n.personality] },
-    { h:'Love', body:`Venus in ${venus.sign.name} means you show affection with ${venus.sign.style}. ${ch.sun.sign.love} ${lp.love}`,
+    { h:t.headings.love, body: fill(t.love, { venus: venusSign.name, venusStyle: venusSign.style, sunLove: sun.love, lpLove: lp.love }),
       evidenceIds:[venus.evidenceId, ch.sun.evidenceId, n.lifePath] },
-    { h:'Work & money', body:`${ch.sun.sign.work} ${lp.work} Saturn in ${saturn.sign.name} shows where discipline pays: bring ${saturn.sign.style} to long-term goals.`,
+    { h:t.headings.work, body: fill(t.work, { sunWork: sun.work, lpWork: lp.work, saturn: saturnSign.name, saturnStyle: saturnSign.style }),
       evidenceIds:[ch.sun.evidenceId, n.lifePath, saturn.evidenceId] },
-    { h:'This year', body:`You're in a Personal Year ${nums.personalYear}. ${PERSONAL_YEAR[nums.personalYear]}` + (inSun.length ? ` Right now ${inSun.map(x=>x.name).join(' and ')} ${inSun.length>1?'are':'is'} moving through ${ch.sun.sign.name}, your Sun sign — expect that area of life to feel louder.` : '') + ` The Moon is ${sk.phase.toLowerCase()}: ${lowerFirst(sk.phaseText)}`,
+    { h:t.headings.year, body: fill(t.year, { year: nums.personalYear, yearText: c.personalYear[nums.personalYear] }) + transit
+        + fill(t.moonPhase, { phase: lowerIn(c, c.phases[phaseIdx][0]), phaseText: lowerFirstIn(c, c.phases[phaseIdx][1]) }),
       evidenceIds:[n.personalYear, ch.sun.evidenceId, ...inSun.map(x => x.evidenceId), sk.phaseEvidenceId] },
-    { h:'Your growth edge', body:`${lp.challenge} As a ${ch.sun.sign.name}, also watch for: ${lowerFirst(ch.sun.sign.shadow)}`,
+    { h:t.headings.growth, body: fill(t.growth, { challenge: lp.challenge, sun: sun.name, shadow: lowerFirstIn(c, sun.shadow) }),
       evidenceIds:[n.lifePath, ch.sun.evidenceId] },
   ];
   const seed = `${p.name}|${today.toDateString()}|report`;
   const drawn = drawCards(cards, seed, 3);
-  const pos = ['What supports you','What to work on','Where this is heading'];
-  const draw = recordDraw(drawn, cards.length, seed, pos);
+  // Evidence keeps the English positions so record IDs match in every language.
+  const draw = recordDraw(drawn, cards.length, seed, EN.report.positions);
+  const pos = t.positions;
   const evidence: EvidenceMap = { ...ch.evidence, ...nums.evidence, ...sk.evidence, ...draw.evidence };
   const used = new Set([...sections.flatMap(s => s.evidenceIds), ...draw.evidenceIds]);
   return {
     sections,
-    cards: drawn.map((d,i) => ({ position:pos[i], name:d.card.name, orientation: d.reversed ? 'Reversed' : 'Upright', meaning: d.reversed ? d.card.reversed : d.card.upright, evidenceId: draw.evidenceIds[i] })),
+    cards: drawn.map((d,i) => ({ position:pos[i], name:c.tarot.cards[d.card.id]?.name ?? d.card.name, orientation: d.reversed ? 'Reversed' : 'Upright', meaning: (c.tarot.cards[d.card.id] ?? d.card)[d.reversed ? 'reversed' : 'upright'], evidenceId: draw.evidenceIds[i] })),
     recordIds: [ch.record.id, nums.record.id, sk.record.id, draw.record.id],
     records: [ch.record, nums.record, sk.record, draw.record],
     evidence: Object.fromEntries(Object.entries(evidence).filter(([id]) => used.has(id))),
   };
 }
+
+/* ---------- English reader text ---------- */
+
+/** The English pack, built from the reference data above so English output is unchanged. */
+export const EN: Content = {
+  locale: 'en-US',
+  lowercaseInline: true,
+  signs: SIGNS.map(({ name, dates, ruler, keywords, style, core, love, work, shadow }) => ({ name, dates, ruler, keywords, style, core, love, work, shadow })),
+  elements: { Fire: 'Fire', Earth: 'Earth', Air: 'Air', Water: 'Water' },
+  modalities: { Cardinal: 'Cardinal', Fixed: 'Fixed', Mutable: 'Mutable' },
+  bodies: Object.fromEntries(Object.entries(PLANETS).map(([k, v]) => [k, { name: v.name, governs: v.governs, practical: v.practical }])) as Content['bodies'],
+  midheaven: 'Midheaven',
+  retro: RETRO,
+  phases: PHASES,
+  aspects: Object.fromEntries(ASPECTS.map(a => [a.name, { name: a.name, text: a.text }])),
+  num: NUM,
+  numTypes: Object.fromEntries(NUM_TYPES.map(t => [t.key, { label: t.label, frame: t.frame }])) as Content['numTypes'],
+  personalYear: PERSONAL_YEAR,
+  personalDay: PERSONAL_DAY,
+  horoscope: {
+    open: OPEN, love: LOVE, work: WORK, well: WELL, keynotes: KEYNOTES, days: DAYS,
+    moonRel: {
+      same: 'The Moon in {moon} shares your element — your instincts and emotions line up. Trust your first read today.',
+      support: "The Moon in {moon} supports your sign. Others are receptive; it's a good day to ask for something.",
+      tense: "The Moon in {moon} rubs against your element. Expect small friction — don't make big calls while irritated.",
+    },
+    overview: '{open} {sign} works best with {style} — use it.',
+    trap: ' Watch for your usual trap: {shadow}',
+    weekOf: 'Week of {date}',
+    bestDay: 'Best day this week: {day}.',
+    keyDates: 'Key dates: {list}.',
+    keyDate: '{date} — {note}',
+    keyDateSeparator: '; ',
+  },
+  compat: {
+    sign: {
+      mirror: { band: 'Mirror match', body: "You understand each other instantly — and share the same blind spots. Make sure someone handles what neither of you likes doing." },
+      opposite: { band: 'Magnetic opposites', body: 'Strong attraction from opposite ends of the zodiac. Each of you has what the other lacks; the work is respecting it instead of trying to change it.' },
+      same: { band: 'Natural match', body: 'Both {element} signs — you run on the same fuel. Easy rhythm, shared values, and fewer translation problems.' },
+      support: { band: 'Complementary', body: "{a} and {b} feed each other. You bring out each other's strengths when you keep talking." },
+      tense: { band: 'Growth match', body: "{a} and {b} work differently. It takes effort, but you'll learn the most from each other." },
+      tail: '{a} brings {aKeywords} energy; {b} brings {bKeywords}. In practice: {aLove}',
+    },
+    num: {
+      mirror: { band: 'Mirror match', body: 'Same core number — you instinctively get each other. Watch for competing over the same role.' },
+      natural: { band: 'Natural match', body: 'Your numbers share a core rhythm. Goals and pace tend to line up without much negotiation.' },
+      complementary: { band: 'Complementary', body: 'Different strengths that fit together well. Divide roles clearly and you cover each other.' },
+      growth: { band: 'Growth match', body: "Different priorities. It works when you're explicit about needs instead of assuming." },
+      tail: 'You ({a}, {aTitle}) bring {aKeywords}. They ({b}, {bTitle}) bring {bKeywords}.',
+    },
+  },
+  report: {
+    headings: { core: 'Your core blueprint', emotional: 'Your emotional landscape', seen: 'How others see you', love: 'Love', work: 'Work & money', year: 'This year', growth: 'Your growth edge' },
+    positions: ['What supports you', 'What to work on', 'Where this is heading'],
+    core: "{first}, you're a {sun} Sun with a Life Path {lifePath} — {lpTitle}. {sunCore} {lpCore}",
+    moonUncertain: 'Without a birth time your Moon could be in {signs}, so it is left out here. Your Soul Urge {soulUrge} ({suTitle}) says this: {suCore}',
+    or: ' or ',
+    moon: 'Your Moon is in {moon}: you process feelings with {moonStyle}. Your Soul Urge {soulUrge} ({suTitle}) adds this: {suCore}',
+    rising: 'With {rising} rising, people first meet your {risingStyle}. ',
+    noRising: 'Add your birth time to unlock your rising sign. ',
+    personality: 'Your Personality number {personality} ({peTitle}) reinforces it — {peKeywords}.',
+    love: 'Venus in {venus} means you show affection with {venusStyle}. {sunLove} {lpLove}',
+    work: '{sunWork} {lpWork} Saturn in {saturn} shows where discipline pays: bring {saturnStyle} to long-term goals.',
+    year: "You're in a Personal Year {year}. {yearText}",
+    transitOne: ' Right now {planets} is moving through {sun}, your Sun sign — expect that area of life to feel louder.',
+    transitMany: ' Right now {planets} are moving through {sun}, your Sun sign — expect that area of life to feel louder.',
+    and: ' and ',
+    moonPhase: ' The Moon is {phase}: {phaseText}',
+    growth: '{challenge} As a {sun}, also watch for: {shadow}',
+  },
+  tarot: {
+    cards: Object.fromEntries(TAROT_CARDS.map(card => [card.id, { name: card.name, upright: card.upright, reversed: card.reversed }])),
+    decks: Object.fromEntries(DECKS.map(d => [d.id, { name: d.name, tagline: d.tagline }])),
+    spreads: Object.fromEntries(SPREADS.map(sp => [sp.id, { name: sp.name, time: sp.time, blurb: sp.blurb, positions: sp.positions }])),
+    narrative: 'In the position of {position}, {card}{reversed} points to {meaning}',
+    reversedSuffix: ' reversed',
+  },
+  notification: { title: 'Personal Day {day} · Moon in {moon}' },
+};

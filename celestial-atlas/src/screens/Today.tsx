@@ -1,8 +1,8 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonIcon } from '@ionic/react';
 import { closeOutline } from 'ionicons/icons';
-import { PERSONAL_DAY, drawCards, horoscope, recordDraw, report } from '../engine/atlas';
-import TAROT_CARDS from '../engine/tarotData';
-import { fill, useStrings } from '../i18n';
+import { drawCards, horoscope, recordDraw, report } from '../engine/atlas';
+import { cardsIn } from '../engine/localize';
+import { fill, useContent, useStrings } from '../i18n';
 import { useApp } from '../state/store';
 import { CardFace, MoonDisc, cardArt } from '../ui/components';
 import css from './screens.module.css';
@@ -12,30 +12,33 @@ import tcss from './today.module.css';
 export function useOpenReport() {
   const app = useApp();
   const s = useStrings();
+  const c = useContent();
   return () => {
     if (!app.premium) return app.openPaywall();
     // The report draws on name numbers; legacy profiles may not have the full birth name yet.
     if (!app.profile?.name.trim()) { app.showToast(s.report.needsName); app.go('profile'); return; }
     const d = app.derived!;
-    app.openReport(report(app.profile!, d.chart, d.nums, d.sky, TAROT_CARDS, app.now));
+    app.openReport(report(app.profile!, d.chart, d.nums, d.sky, cardsIn(c), app.now, c));
   };
 }
 
 export function Today() {
   const app = useApp();
   const s = useStrings();
+  const c = useContent();
   const t = s.today;
   const openReport = useOpenReport();
   const p = app.profile!, { chart, nums, sky } = app.derived!, now = app.now;
   const first = p.name.split(' ')[0] || '';
-  const home = horoscope(chart.sun.signIdx, 'daily', now, sky.moon.signIdx);
+  const home = horoscope(chart.sun.signIdx, 'daily', now, sky.moon.signIdx, c);
   const hour = now.getHours();
   const greeting = fill(hour < 12 ? t.morning : hour < 18 ? t.afternoon : t.evening, { name: first }).replace(/,\s*\./, '.');
 
   const seed = `${p.name}|${now.toDateString()}|cod`;
-  const drawn = drawCards(TAROT_CARDS, seed, 1);
+  const cards = cardsIn(c);
+  const drawn = drawCards(cards, seed, 1);
   const cd = drawn[0];
-  const draw = recordDraw(drawn, TAROT_CARDS.length, seed, ['Card of the day']);
+  const draw = recordDraw(drawn, cards.length, seed, ['Card of the day']);
   const cod = {
     name: cd.card.name, orientation: cd.reversed ? s.common.reversed : s.common.upright,
     meaning: cd.reversed ? cd.card.reversed : cd.card.upright,
@@ -62,7 +65,7 @@ export function Today() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className={tcss.insightMeta}><span>{t.insightMeta}</span><span>{t.now}</span></div>
               <div className={tcss.insightTitle}>{fill(t.insightTitle, { day: nums.personalDay, sign: sky.moon.sign.name })}</div>
-              <div className={tcss.insightBody}>{PERSONAL_DAY[nums.personalDay]}</div>
+              <div className={tcss.insightBody}>{c.personalDay[nums.personalDay]}</div>
             </div>
             <IonButton fill="clear" color="medium" aria-label={t.dismiss} onClick={() => app.setUi({ insightDismissed: true })}>
               <IonIcon aria-hidden="true" slot="icon-only" icon={closeOutline} />
@@ -72,7 +75,7 @@ export function Today() {
       )}
 
       <div className={css.pageHead}>
-        <div className="eyebrow">{now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+        <div className="eyebrow">{now.toLocaleDateString(c.locale, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         <h1 className="display" style={{ fontSize: 40, lineHeight: 1.08 }}>{greeting}</h1>
       </div>
 
@@ -125,7 +128,7 @@ export function Today() {
                 </div>
               ))}
             </div>
-            <p className="body">{PERSONAL_DAY[nums.personalDay]}</p>
+            <p className="body">{c.personalDay[nums.personalDay]}</p>
           </IonCardContent>
         </IonCard>
 

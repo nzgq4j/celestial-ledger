@@ -1,13 +1,14 @@
 import { IonButton, IonCard, IonItem, IonLabel, IonList, IonNote } from '@ionic/react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { recordDraw } from '../engine/atlas';
-import TAROT_CARDS, { type TarotCard } from '../engine/tarotData';
-import { fill, useStrings } from '../i18n';
+import { type TarotCard } from '../engine/tarotData';
+import { cardsIn, decksIn, narrativeIn, spreadsIn } from '../engine/localize';
+import { fill, useContent, useStrings } from '../i18n';
 import { tap } from '../platform/native';
 import { useApp } from '../state/store';
 import { readable } from '../ui/color';
 import { CardFace, Starfield, cardArt } from '../ui/components';
-import { CHOOSER, DECKS, SPREADS, buildNarrative, drawSpread, type DrawnCard } from './tarotDecks';
+import { CHOOSER, SPREADS, buildNarrative, drawSpread, type DrawnCard } from '../engine/tarotDecks';
 import t from './tarot.module.css';
 
 type Screen = 'deck' | 'reading' | 'draw' | 'result';
@@ -17,6 +18,8 @@ export function Tarot() {
   const app = useApp();
   const strings = useStrings();
   const s = strings.tarot;
+  const c = useContent();
+  const DECKS = decksIn(c), SPREADS_IN = spreadsIn(c), CARDS = cardsIn(c), narrative = narrativeIn(c);
   const [screen, setScreen] = useState<Screen>('deck');
   const [deckId, setDeckId] = useState<string | null>(null);
   const [spreadId, setSpreadId] = useState<string | null>(null);
@@ -25,7 +28,7 @@ export function Tarot() {
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const deck = DECKS.find(d => d.id === deckId) ?? DECKS[0];
-  const spread = SPREADS.find(r => r.id === spreadId) ?? null;
+  const spread = SPREADS_IN.find(r => r.id === spreadId) ?? null;
   const onChooser = screen === 'deck';
   const bg = onChooser ? CHOOSER.bg : deck.bg, ink = onChooser ? CHOOSER.ink : deck.ink, accent = onChooser ? CHOOSER.accent : deck.accent;
   const accentText = readable(accent, bg);
@@ -35,10 +38,10 @@ export function Tarot() {
   const outlineVars = { '--color': ink, '--border-color': 'rgba(201,168,106,0.5)' } as CSSProperties;
 
   const selectSpread = (id: string) => {
-    const sp = SPREADS.find(r => r.id === id)!;
+    const sp = SPREADS_IN.find(r => r.id === id)!;
     setSpreadId(id); setDrawn([]); setScreen('draw');
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => { setDrawn(drawSpread(TAROT_CARDS, sp.positions)); setScreen('result'); void tap(); }, SHUFFLE_MS);
+    timer.current = setTimeout(() => { setDrawn(drawSpread(CARDS, sp.positions)); setScreen('result'); void tap(); }, SHUFFLE_MS);
   };
   const restart = () => { clearTimeout(timer.current); setScreen('deck'); setDeckId(null); setSpreadId(null); setDrawn([]); };
   const changeReading = () => { clearTimeout(timer.current); setScreen('reading'); setDrawn([]); };
@@ -46,9 +49,9 @@ export function Tarot() {
 
   const save = () => {
     if (!spread) return;
-    const rec = recordDraw(drawn, TAROT_CARDS.length, null, spread.positions);
+    const rec = recordDraw(drawn, CARDS.length, null, SPREADS.find(r => r.id === spread.id)!.positions);
     const body = drawn.map(d => `${d.position} — ${d.card.name} (${d.reversed ? strings.common.reversed : strings.common.upright}): ${d.reversed ? d.card.reversed : d.card.upright}`).join('\n')
-      + `\n\n${buildNarrative(drawn)}`;
+      + `\n\n${buildNarrative(drawn, narrative)}`;
     app.addJournal('Tarot', `${spread.name} · ${deck.name}`, body, { recordIds: [rec.record.id], evidence: rec.evidence });
   };
 
@@ -97,7 +100,7 @@ export function Tarot() {
             <p className={t.lead}>{s.depthLead}</p>
           </div>
           <IonList className={t.spreadList} lines="full">
-            {SPREADS.map(r => (
+            {SPREADS_IN.map(r => (
               <IonItem key={r.id} button detail onClick={() => selectSpread(r.id)}>
                 <IonLabel className="ion-text-wrap">
                   <h2 className={t.deckName}>{r.name}</h2>
@@ -156,7 +159,7 @@ export function Tarot() {
           </div>
           <div className={t.together}>
             <h2 className={t.h2} style={{ textAlign: 'left', fontSize: 22 }}>{s.together}</h2>
-            <p className={t.meaningBody} style={{ margin: 0, lineHeight: 1.75 }}>{buildNarrative(drawn)}</p>
+            <p className={t.meaningBody} style={{ margin: 0, lineHeight: 1.75 }}>{buildNarrative(drawn, narrative)}</p>
           </div>
           <div className={t.actions}>
             <IonButton style={buttonVars} onClick={() => selectSpread(spread.id)}>{s.drawAgain}</IonButton>

@@ -99,6 +99,13 @@ export const en = {
     unlock: 'Unlock',
   },
   stars: {
+    aspectLine: '{a} and {b} {text}',
+    elementNotes: {
+      Fire: 'Fire-heavy: you run on enthusiasm and action. Make sure you rest before you burn out.',
+      Earth: 'Earth-heavy: practical, grounded, results-focused. Leave room for spontaneity.',
+      Air: 'Air-heavy: you live in ideas and conversation. Ground plans with deadlines.',
+      Water: 'Water-heavy: feeling-led and intuitive. Protect your energy around draining people.',
+    },
     eyebrow: 'Astrology',
     title: 'The Stars',
     sections: 'Astrology sections',
@@ -160,6 +167,7 @@ export const en = {
     score: 'Compatibility score',
   },
   numbers: {
+    journalTitle: 'Life Paths {a} & {b} · {band}',
     eyebrow: 'Numerology',
     title: 'Your Numbers',
     sections: 'Numerology sections',
@@ -230,6 +238,7 @@ export const en = {
     },
   },
   report: {
+    journalTitle: 'Atlas Report · {date}',
     kicker: 'The Atlas Report · {date}',
     sub: '{sun} Sun · {moon} Moon{rising} · Life Path {lp}',
     rising: ' · {sign} Rising',
@@ -239,6 +248,7 @@ export const en = {
     needsName: 'Add your full birth name in your profile to read the Atlas Report.',
   },
   profile: {
+    language: 'Language',
     eyebrow: 'Profile',
     birthDetails: 'Birth details',
     fullName: 'Full birth name',
@@ -296,6 +306,12 @@ export const en = {
     pending: 'Finishing your purchase…',
   },
   signin: {
+    linkFailed: "That link has expired or was already used. Request a new one.",
+    newPasswordTitle: "Choose a new password",
+    newPasswordLabel: "New password (at least 8 characters)",
+    newPasswordSave: "Save password",
+    newPasswordSaved: "Password updated",
+    passwordTooShort: "Use at least 8 characters.",
     title: 'Sign in',
     lead: 'Keep your profile, journal and Atlas+ on every device.',
     methods: 'Sign-in method',
@@ -316,6 +332,15 @@ export const en = {
     working: 'One moment…',
     welcome: 'Signed in',
     invalidEmail: 'Enter a valid email address.',
+  },
+  toasts: {
+    syncFailed: 'Sync failed. Your changes are saved on this device.',
+    chartLimit: 'Your plan allows one saved chart.',
+    savedOffline: 'Saved on this device; your account will update when you are back online.',
+    deleteFailed: 'Could not delete from your account. Try again later.',
+    welcome: 'Welcome to Atlas+',
+    confirming: 'Welcome to Atlas+. Confirming your membership…',
+    signedOut: 'Signed out',
   },
   legal: {
     kicker: 'Celestial Atlas',

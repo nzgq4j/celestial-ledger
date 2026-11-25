@@ -1,10 +1,11 @@
 import {
-  IonApp, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonModal, IonTabBar, IonTabButton,
+  IonAlert, IonApp, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonModal, IonTabBar, IonTabButton,
   IonLabel, IonTitle, IonToast, IonToolbar,
 } from '@ionic/react';
 import { albumsOutline, arrowBackOutline, bookOutline, calculatorOutline, sparklesOutline, sunnyOutline } from 'ionicons/icons';
-import { useEffect, useMemo, useState } from 'react';
-import { LocaleContext, detectLocale, useStrings } from './i18n';
+import { useEffect, useState } from 'react';
+import { LocaleContext, stringsFor, useStrings } from './i18n';
+import { updatePassword } from './platform/account';
 import { hideNativeSplash, setupSystemBars } from './platform/native';
 import { Journal } from './screens/Journal';
 import { Legal } from './screens/Legal';
@@ -36,7 +37,9 @@ const SPLASH_MS = 1500;
 
 export function App() {
   const app = useApp();
-  const locale = useMemo(() => detectLocale(), []);
+  const locale = app.locale;
+  const s = stringsFor(locale);
+  useEffect(() => { document.documentElement.lang = locale; }, [locale]);
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
@@ -65,6 +68,25 @@ export function App() {
         <IonModal isOpen={app.signInOpen} onDidDismiss={app.closeSignIn} aria-labelledby="signin-title">
           <SignIn />
         </IonModal>
+        <IonAlert
+          isOpen={app.passwordPrompt}
+          header={s.signin.newPasswordTitle}
+          backdropDismiss={false}
+          inputs={[{ name: 'password', type: 'password', placeholder: s.signin.newPasswordLabel, attributes: { autocomplete: 'new-password', minlength: 8, 'aria-label': s.signin.newPasswordLabel } }]}
+          buttons={[
+            { text: s.common.cancel, role: 'cancel', handler: () => app.closePasswordPrompt() },
+            {
+              text: s.signin.newPasswordSave,
+              handler: (values: { password?: string }) => {
+                const pw = values.password ?? '';
+                if (pw.length < 8) { app.showToast(s.signin.passwordTooShort); return false; }
+                void updatePassword(pw).then(() => app.showToast(s.signin.newPasswordSaved), (e: unknown) => app.showToast(e instanceof Error ? e.message : String(e)));
+                app.closePasswordPrompt();
+                return true;
+              },
+            },
+          ]}
+        />
         <IonToast isOpen={!!app.toast} message={app.toast ?? ''} duration={2600} position="bottom" positionAnchor="atlas-tabbar" />
       </IonApp>
     </LocaleContext.Provider>

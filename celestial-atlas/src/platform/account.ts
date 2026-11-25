@@ -53,6 +53,28 @@ export async function sendPasswordReset(email: string, redirectTo: string) {
   if (error) throw new AccountError(error.code ?? 'RESET_FAILED', error.message);
 }
 
+export type EmailLinkType = 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change' | 'email';
+const LINK_TYPES: readonly EmailLinkType[] = ['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email'];
+
+/** Reads an email-link token from the URL fragment (#token_hash=…&type=…), if present. */
+export function emailLinkFromHash(hash: string): { tokenHash: string; type: EmailLinkType } | null {
+  const params = new URLSearchParams(hash.replace(/^#/, ''));
+  const tokenHash = params.get('token_hash'), type = params.get('type') as EmailLinkType | null;
+  if (!tokenHash || !/^[A-Za-z0-9_-]{8,512}$/.test(tokenHash) || !type || !LINK_TYPES.includes(type)) return null;
+  return { tokenHash, type };
+}
+
+/** Completes a link from a confirmation, sign-in or recovery email. */
+export async function verifyEmailLink(tokenHash: string, type: EmailLinkType) {
+  const { error } = await client().auth.verifyOtp({ token_hash: tokenHash, type });
+  if (error) throw new AccountError(error.code ?? 'LINK_INVALID', error.message);
+}
+
+export async function updatePassword(password: string) {
+  const { error } = await client().auth.updateUser({ password });
+  if (error) throw new AccountError(error.code ?? 'PASSWORD_FAILED', error.message);
+}
+
 export async function signOut() {
   await client().auth.signOut();
 }

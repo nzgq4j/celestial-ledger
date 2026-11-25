@@ -2,8 +2,8 @@ import {
   IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonInput, IonItem, IonLabel, IonList,
   IonRippleEffect, IonSegment, IonSegmentButton,
 } from '@ionic/react';
-import { NUM, NUM_TYPES, PERSONAL_DAY, PERSONAL_YEAR, lifePathOf, numCompat } from '../engine/atlas';
-import { fill, useStrings } from '../i18n';
+import { NUM_TYPES, lifePathOf, numCompat } from '../engine/atlas';
+import { fill, useContent, useStrings } from '../i18n';
 import { useApp, type NumTab } from '../state/store';
 import { MIN_DATE, todayISO, validDate } from '../state/validation';
 import { CalcDetails, Meter } from '../ui/components';
@@ -13,15 +13,17 @@ export function Numbers() {
   const app = useApp();
   const strings = useStrings();
   const s = strings.numbers;
+  const c = useContent();
+  const typesIn = NUM_TYPES.map(t => ({ ...t, ...c.numTypes[t.key] }));
   const { nums } = app.derived!;
   const now = app.now;
   const hasName = !!app.profile?.name.trim();
-  const types = hasName ? NUM_TYPES : NUM_TYPES.filter(t => t.key === 'lifePath' || t.key === 'birthday');
+  const types = hasName ? typesIn : typesIn.filter(t => t.key === 'lifePath' || t.key === 'birthday');
   const sel = types.some(t => t.key === app.ui.numSel) ? app.ui.numSel : 'lifePath';
-  const nd = NUM_TYPES.find(t => t.key === sel)!, nv = nums[sel], nm = NUM[nv];
+  const nd = typesIn.find(t => t.key === sel)!, nv = nums[sel], nm = c.num[nv];
   const myLP = nums.lifePath;
   const partnerOk = validDate(app.ui.partnerDate);
-  const nc = partnerOk ? (() => { const b = lifePathOf(app.ui.partnerDate), r = numCompat(myLP, b); return { a: myLP, b, ...r, who: app.ui.partnerName.trim() || s.them }; })() : null;
+  const nc = partnerOk ? (() => { const b = lifePathOf(app.ui.partnerDate), r = numCompat(myLP, b, c); return { a: myLP, b, ...r, who: app.ui.partnerName.trim() || s.them }; })() : null;
 
   return (
     <div className="screen fade-up">
@@ -82,9 +84,9 @@ export function Numbers() {
       {app.numTab === 'cycles' && (
         <div className="grid-auto">
           {[
-            { label: s.personalYear, value: nums.personalYear, span: `${now.getFullYear()}`, text: PERSONAL_YEAR[nums.personalYear], ev: nums.evidenceIds.personalYear },
-            { label: s.personalMonth, value: nums.personalMonth, span: now.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }), text: fill(s.monthTheme, { text: PERSONAL_DAY[nums.personalMonth] }), ev: nums.evidenceIds.personalMonth },
-            { label: s.personalDay, value: nums.personalDay, span: s.today, text: PERSONAL_DAY[nums.personalDay], ev: nums.evidenceIds.personalDay },
+            { label: s.personalYear, value: nums.personalYear, span: `${now.getFullYear()}`, text: c.personalYear[nums.personalYear], ev: nums.evidenceIds.personalYear },
+            { label: s.personalMonth, value: nums.personalMonth, span: now.toLocaleDateString(c.locale, { month: 'long', year: 'numeric' }), text: fill(s.monthTheme, { text: c.personalDay[nums.personalMonth] }), ev: nums.evidenceIds.personalMonth },
+            { label: s.personalDay, value: nums.personalDay, span: s.today, text: c.personalDay[nums.personalDay], ev: nums.evidenceIds.personalDay },
           ].map(c => (
             <IonCard key={c.label} data-evidence={c.ev}>
               <IonCardHeader><IonCardSubtitle className="eyebrow">{c.label}</IonCardSubtitle></IonCardHeader>
@@ -123,7 +125,7 @@ export function Numbers() {
                 </div>
                 <Meter value={nc.score} label={s.score} />
                 <p className="body" style={{ fontSize: 15.5, lineHeight: 1.7 }}>{nc.text}</p>
-                <IonButton fill="outline" onClick={() => app.addJournal('Compatibility', `Life Paths ${nc.a} & ${nc.b} · ${nc.band}`, nc.text)}>{strings.common.saveToJournal}</IonButton>
+                <IonButton fill="outline" onClick={() => app.addJournal('Compatibility', fill(s.journalTitle, { a: nc.a, b: nc.b, band: nc.band }), nc.text)}>{strings.common.saveToJournal}</IonButton>
               </div>
             )}
           </IonCardContent>

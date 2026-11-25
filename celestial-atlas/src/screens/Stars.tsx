@@ -2,9 +2,10 @@ import {
   IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonChip, IonItem, IonLabel, IonList, IonNote,
   IonSegment, IonSegmentButton, IonSelect, IonSelectOption,
 } from '@ionic/react';
-import { SIGNS, chartAspects, horoscope, signCompat, type BodyPlacement, type Chart, type Period, type PlanetPlacement } from '../engine/atlas';
+import { SIGNS, chartAspects, horoscope, signCompat, signIn, type BodyPlacement, type Chart, type Period, type PlanetPlacement } from '../engine/atlas';
 import { placeLabel } from '../engine/places';
-import { fill, useStrings } from '../i18n';
+import { aspectText } from '../engine/localize';
+import { fill, useContent, useStrings } from '../i18n';
 import { useApp, type StarsTab } from '../state/store';
 import { ChartWheel } from '../ui/ChartWheel';
 import { CalcDetails, Meter, MoonDisc, RatingBar } from '../ui/components';
@@ -39,12 +40,13 @@ export function Stars() {
 function HoroscopeTab() {
   const app = useApp();
   const strings = useStrings();
+  const c = useContent();
   const s = strings.stars;
   const { chart, sky } = app.derived!;
   const sign = app.ui.horoSign ?? chart.sun.signIdx;
   const period = app.ui.period;
   const locked = period === 'monthly' && !app.premium;
-  const h = horoscope(sign, period, app.now, sky.moon.signIdx);
+  const h = horoscope(sign, period, app.now, sky.moon.signIdx, c);
   const areas = [{ label: s.love, text: h.love }, { label: s.workMoney, text: h.work }, { label: s.wellbeing, text: h.well }];
   const ratingLabels: Record<string, string> = { Love: s.ratingLove, Work: s.ratingWork, Energy: s.ratingEnergy };
 
@@ -56,7 +58,7 @@ function HoroscopeTab() {
         <IonSegmentButton value="monthly"><IonLabel>{app.premium ? s.monthly : s.monthlyPlus}</IonLabel></IonSegmentButton>
       </IonSegment>
       <div className={css.chipRow} role="radiogroup" aria-label={s.sign}>
-        {SIGNS.map((z, i) => (
+        {SIGNS.map((_, i) => signIn(i, c)).map((z, i) => (
           <IonChip key={z.name} role="radio" aria-checked={i === sign} outline={i !== sign} color={i === sign ? 'primary' : undefined}
             onClick={() => app.setUi({ horoSign: i })}>
             <span className="glyph" aria-hidden="true" style={{ marginRight: 6 }}>{z.glyph}</span>{z.name}
@@ -115,12 +117,6 @@ function HoroscopeTab() {
 
 /* ---------- Birth chart ---------- */
 
-const EL_NOTE: Record<string, string> = {
-  Fire: 'Fire-heavy: you run on enthusiasm and action. Make sure you rest before you burn out.',
-  Earth: 'Earth-heavy: practical, grounded, results-focused. Leave room for spontaneity.',
-  Air: 'Air-heavy: you live in ideas and conversation. Ground plans with deadlines.',
-  Water: 'Water-heavy: feeling-led and intuitive. Protect your energy around draining people.',
-};
 
 /** Bodies shown on the wheel and counted in the balance. */
 export function chartBodies(chart: Chart, premium: boolean): (BodyPlacement | PlanetPlacement)[] {
@@ -131,6 +127,7 @@ export function chartBodies(chart: Chart, premium: boolean): (BodyPlacement | Pl
 function BirthChartTab() {
   const app = useApp();
   const strings = useStrings();
+  const c = useContent();
   const s = strings.stars;
   const p = app.profile!, { chart } = app.derived!, premium = app.premium;
   const timeKnown = chart.record.timeKnown;
@@ -140,19 +137,19 @@ function BirthChartTab() {
     key: b.key, name: b.name, glyph: b.glyph, lon: b.lon, evidenceId: b.evidenceId,
     deg: b.key === 'moon' && !timeKnown ? null : b.deg,
   }));
-  const wheel = buildWheel(chart, wheelBodies, aspects);
+  const wheel = buildWheel(chart, wheelBodies, aspects, c.signs.map(x => x.name));
 
   const balSrc = [...bodies, ...(chart.rising ? [chart.rising] : [])];
   const bal = (key: 'element' | 'modality', vals: string[]) => vals.map(v => {
     const n = balSrc.filter(b => b.sign[key] === v).length;
-    return { label: v, n, width: Math.round(n / balSrc.length * 100) };
+    return { key: v, label: (key === 'element' ? c.elements : c.modalities)[v as never] as string, n, width: Math.round(n / balSrc.length * 100) };
   });
   const elements = bal('element', ['Fire', 'Earth', 'Air', 'Water']);
   const modalities = bal('modality', ['Cardinal', 'Fixed', 'Mutable']);
-  const domEl = [...elements].sort((a, b) => b.n - a.n)[0].label;
+  const domEl = [...elements].sort((a, b) => b.n - a.n)[0].key as keyof typeof s.elementNotes;
 
   const [by, bm, bd] = p.date.split('-').map(Number);
-  const birthStr = new Date(by, bm - 1, bd).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  const birthStr = new Date(by, bm - 1, bd).toLocaleDateString(c.locale, { year: 'numeric', month: 'long', day: 'numeric' });
   const angleRows = [chart.rising, chart.mc].filter(Boolean).map(a => ({
     label: a!.key === 'mc' ? s.midheaven : s.ascendant, sign: `${a!.sign.name} ${a!.deg}°${String(a!.min).padStart(2, '0')}′`,
     note: a!.key === 'mc' ? s.mcNote : s.ascNote, ev: a!.evidenceId,
@@ -194,7 +191,7 @@ function BirthChartTab() {
                   </div>
                 ))}
               </div>
-              <p className="body" style={{ fontSize: 14, marginTop: 12 }}>{EL_NOTE[domEl]}</p>
+              <p className="body" style={{ fontSize: 14, marginTop: 12 }}>{s.elementNotes[domEl]}</p>
             </div>
             <div>
               <div className="eyebrow" style={{ marginBottom: 12 }}>{s.modality}</div>
@@ -219,8 +216,8 @@ function BirthChartTab() {
               <IonItem key={a.evidenceId} data-evidence={a.evidenceId}>
                 <span slot="start" className="glyph" style={{ fontSize: 18, color: ASPECT_COLOR[a.def.kind], width: 22, textAlign: 'center' }} aria-hidden="true">{a.def.glyph}</span>
                 <IonLabel className="ion-text-wrap">
-                  <h3>{a.aName} {a.def.name} {a.bName} <IonNote>· {fill(s.orb, { orb: a.orb.toFixed(1) })}</IonNote></h3>
-                  <p>{a.aName} and {a.bName} {a.def.text}</p>
+                  <h3>{a.aName} {aspectText(a, c).name} {a.bName} <IonNote>· {fill(s.orb, { orb: a.orb.toFixed(1) })}</IonNote></h3>
+                  <p>{fill(s.aspectLine, { a: a.aName, b: a.bName, text: aspectText(a, c).text })}</p>
                 </IonLabel>
               </IonItem>
             ))}
@@ -336,22 +333,23 @@ function TransitsTab() {
 function CompatTab() {
   const app = useApp();
   const strings = useStrings();
+  const c = useContent();
   const s = strings.stars;
   const { chart } = app.derived!;
   const signA = app.ui.signA ?? chart.sun.signIdx, signB = app.ui.signB;
-  const sc = signCompat(signA, signB);
+  const sc = signCompat(signA, signB, c);
   return (
     <IonCard style={{ maxWidth: 760 }}>
       <IonCardContent className="stack" style={{ gap: 20 }}>
         <IonList lines="full">
           <IonItem>
             <IonSelect label={s.you} labelPlacement="stacked" value={signA} interface="action-sheet" onIonChange={e => app.setUi({ signA: Number(e.detail.value) })}>
-              {SIGNS.map((z, i) => <IonSelectOption key={z.name} value={i}>{z.name}</IonSelectOption>)}
+              {c.signs.map((z, i) => <IonSelectOption key={i} value={i}>{z.name}</IonSelectOption>)}
             </IonSelect>
           </IonItem>
           <IonItem>
             <IonSelect label={s.them} labelPlacement="stacked" value={signB} interface="action-sheet" onIonChange={e => app.setUi({ signB: Number(e.detail.value) })}>
-              {SIGNS.map((z, i) => <IonSelectOption key={z.name} value={i}>{z.name}</IonSelectOption>)}
+              {c.signs.map((z, i) => <IonSelectOption key={i} value={i}>{z.name}</IonSelectOption>)}
             </IonSelect>
           </IonItem>
         </IonList>
@@ -361,7 +359,7 @@ function CompatTab() {
         </div>
         <Meter value={sc.score} label={s.score} />
         <p className="body" style={{ fontSize: 15.5, lineHeight: 1.7 }}>{sc.text}</p>
-        <IonButton fill="outline" onClick={() => app.addJournal('Compatibility', `${SIGNS[signA].name} & ${SIGNS[signB].name} · ${sc.band}`, sc.text)}>{strings.common.saveToJournal}</IonButton>
+        <IonButton fill="outline" onClick={() => app.addJournal('Compatibility', `${c.signs[signA].name} & ${c.signs[signB].name} · ${sc.band}`, sc.text)}>{strings.common.saveToJournal}</IonButton>
       </IonCardContent>
     </IonCard>
   );

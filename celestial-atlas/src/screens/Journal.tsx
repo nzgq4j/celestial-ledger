@@ -46,7 +46,7 @@ export function Journal() {
               <IonItem slot="header" lines="full">
                 <IonLabel className="ion-text-wrap">
                   <div className="eyebrow" style={{ letterSpacing: '0.14em', marginBottom: 4 }}>
-                    {(s.types as Record<string, string>)[e.type] ?? e.type} · {new Date(e.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {(s.types as Record<string, string>)[e.type] ?? e.type} · {new Date(e.date).toLocaleDateString(app.locale, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <h2 className="serif" style={{ fontSize: 21, fontWeight: 600 }}>{e.title}</h2>
                 </IonLabel>

@@ -1,5 +1,5 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
-import { fill, useStrings } from '../i18n';
+import { fill, useContent, useStrings } from '../i18n';
 import { useApp } from '../state/store';
 import { CalcDetails, ROMAN } from '../ui/components';
 
@@ -7,6 +7,7 @@ export function ReportScreen() {
   const app = useApp();
   const strings = useStrings();
   const s = strings.report;
+  const c = useContent();
   const rep = app.report!, p = app.profile!, { chart, nums } = app.derived!, now = app.now;
   const moon = chart.moon.uncertain ? chart.moon.possibleSigns.map(x => x.name).join(' / ') : chart.moon.sign.name;
   const sub = fill(s.sub, {
@@ -15,8 +16,8 @@ export function ReportScreen() {
   });
 
   const saveReport = () => app.addJournal(
-    'Atlas Report', `Atlas Report · ${now.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`,
-    rep.sections.map(x => `${x.h}\n${x.body}`).join('\n\n') + '\n\n' + rep.cards.map(c => `${c.position}: ${c.name} (${c.orientation}) — ${c.meaning}`).join('\n'),
+    'Atlas Report', fill(s.journalTitle, { date: now.toLocaleDateString(c.locale, { month: 'short', day: 'numeric' }) }),
+    rep.sections.map(x => `${x.h}\n${x.body}`).join('\n\n') + '\n\n' + rep.cards.map(k => `${k.position}: ${k.name} (${k.orientation === 'Reversed' ? strings.common.reversed : strings.common.upright}) — ${k.meaning}`).join('\n'),
     { recordIds: rep.recordIds, evidence: rep.evidence },
   );
 
@@ -24,7 +25,7 @@ export function ReportScreen() {
     <div className="screen fade-up" style={{ gap: 22, maxWidth: 780 }}>
       <div style={{ textAlign: 'center', padding: '6px 0' }}>
         <div className="eyebrow" style={{ letterSpacing: '0.22em', marginBottom: 12 }}>
-          {fill(s.kicker, { date: now.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) })}
+          {fill(s.kicker, { date: now.toLocaleDateString(c.locale, { month: 'long', day: 'numeric', year: 'numeric' }) })}
         </div>
         <h1 className="display" style={{ fontSize: 42, lineHeight: 1.05, marginBottom: 12 }}>{p.name}</h1>
         <div className="small">{sub}</div>

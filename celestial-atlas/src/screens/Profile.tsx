@@ -1,9 +1,9 @@
 import {
   IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonInput, IonItem, IonLabel, IonList, IonNote,
-  IonText, IonToggle, useIonAlert,
+  IonSelect, IonSelectOption, IonText, IonToggle, useIonAlert,
 } from '@ionic/react';
 import { useState } from 'react';
-import { fill, useStrings } from '../i18n';
+import { AVAILABLE_LOCALES, LANGUAGE_NAMES, fill, useStrings, type Locale } from '../i18n';
 import * as account from '../platform/account';
 import { ApiError } from '../platform/api';
 import { billing } from '../platform/billing';
@@ -25,7 +25,7 @@ export function Profile() {
   const set = (patch: Partial<Draft>) => setDraft(d => ({ ...d, ...patch }));
   const problem = nameProblem(draft.name);
   const m = app.account.membership;
-  const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
+  const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString(app.locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
 
   const saveProfile = async () => {
     const next = nameUsable(draft.name) ? draftToProfile(draft) : null;
@@ -117,6 +117,12 @@ export function Profile() {
 
       <IonCard>
         <IonList lines="full">
+          <IonItem>
+            <IonSelect label={s.language} interface="action-sheet" value={app.locale}
+              onIonChange={e => app.setLocale(e.detail.value as Locale)}>
+              {AVAILABLE_LOCALES.map(l => <IonSelectOption key={l} value={l} lang={l}>{LANGUAGE_NAMES[l]}</IonSelectOption>)}
+            </IonSelect>
+          </IonItem>
           <IonItem>
             <IonToggle checked={app.notif.enabled} onIonChange={e => void app.setNotif({ ...app.notif, enabled: e.detail.checked })}>
               <IonLabel className="ion-text-wrap">

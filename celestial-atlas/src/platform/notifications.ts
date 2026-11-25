@@ -2,7 +2,8 @@
 // Local notifications carry fixed text, so the next 14 days are scheduled ahead with
 // their own text and the schedule is refreshed whenever the app opens.
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { PERSONAL_DAY, numbersCore, sky, type Profile } from '../engine/atlas';
+import { EN, numbersCore, sky, type Profile } from '../engine/atlas';
+import { fillTemplate, type Content } from '../engine/content';
 import { isNative } from './native';
 
 export interface NotifSettings {
@@ -16,10 +17,10 @@ const CHANNEL = 'daily-insight';
 const DAYS_AHEAD = 14;
 const ID_BASE = 1000;
 
-export function insightFor(profile: Pick<Profile, 'name' | 'date'>, at: Date): { title: string; body: string } {
+export function insightFor(profile: Pick<Profile, 'name' | 'date'>, at: Date, c: Content = EN): { title: string; body: string } {
   const pd = numbersCore(profile, at).personalDay;
-  const moon = sky(at).moon.sign.name;
-  return { title: `Personal Day ${pd} · Moon in ${moon}`, body: PERSONAL_DAY[pd] };
+  const moon = c.signs[sky(at).moon.signIdx].name;
+  return { title: fillTemplate(c.notification.title, { day: pd, moon }), body: c.personalDay[pd] };
 }
 
 /** The next `DAYS_AHEAD` delivery times at `time`, starting today if it is still ahead. */
@@ -41,7 +42,7 @@ export async function cancelInsights(): Promise<void> {
  * Reschedule the daily insight. Returns false when notifications are not permitted.
  * Asks for permission only when `ask` is true (the user just turned the setting on).
  */
-export async function scheduleInsights(profile: Profile, settings: NotifSettings, ask = false): Promise<boolean> {
+export async function scheduleInsights(profile: Profile, settings: NotifSettings, ask = false, c: Content = EN): Promise<boolean> {
   if (!isNative()) return true;
   await cancelInsights();
   if (!settings.enabled) return true;
@@ -51,7 +52,7 @@ export async function scheduleInsights(profile: Profile, settings: NotifSettings
   await LocalNotifications.createChannel({ id: CHANNEL, name: 'Daily insight', importance: 3, visibility: 0 }).catch(() => undefined);
   await LocalNotifications.schedule({
     notifications: deliveryTimes(settings.time).map((at, i) => ({
-      id: ID_BASE + i, channelId: CHANNEL, ...insightFor(profile, at), schedule: { at, allowWhileIdle: false }, smallIcon: 'ic_stat_atlas',
+      id: ID_BASE + i, channelId: CHANNEL, ...insightFor(profile, at, c), schedule: { at, allowWhileIdle: false }, smallIcon: 'ic_stat_atlas',
       // A morning insight does not need exact timing. Inexact alarms avoid the restricted
       // SCHEDULE_EXACT_ALARM permission (removed in AndroidManifest.xml) and its settings prompt.
       isExactNotification: false,

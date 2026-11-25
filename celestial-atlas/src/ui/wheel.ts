@@ -35,7 +35,8 @@ export interface WheelGeometry {
 
 export const ASPECT_COLOR = { soft: '#8fb4e8', hard: '#e38a7a', blend: '#e3c27e' } as const;
 
-export function buildWheel(chart: Chart, bodies: WheelBody[], aspects: Aspect[]): WheelGeometry {
+/** `signNames` are the reader's sign names (English by default). */
+export function buildWheel(chart: Chart, bodies: WheelBody[], aspects: Aspect[], signNames: readonly string[] = SIGNS.map(x => x.name)): WheelGeometry {
   const C = 200, R0 = 192, R1 = 160, R2 = 132, R3 = 62;
   const asc = chart.rising ? chart.rising.lon : 0;
   const ang = (L: number) => (180 + L - asc) * Math.PI / 180;
@@ -45,9 +46,9 @@ export function buildWheel(chart: Chart, bodies: WheelBody[], aspects: Aspect[])
   const segLines: WheelGeometry['segLines'] = [], degTicks: WheelGeometry['degTicks'] = [];
   for (let i = 0; i < 12; i++) {
     const L1 = i * 30, L2 = L1 + 30, [ax, ay] = pt(L1, R0), [bx, by] = pt(L2, R0), [cx, cy] = pt(L2, R1), [dx, dy] = pt(L1, R1);
-    segments.push({ d: `M${ax} ${ay} A${R0} ${R0} 0 0 0 ${bx} ${by} L${cx} ${cy} A${R1} ${R1} 0 0 1 ${dx} ${dy} Z`, fill: EL_FILL[SIGNS[i].element], sign: SIGNS[i].name });
+    segments.push({ d: `M${ax} ${ay} A${R0} ${R0} 0 0 0 ${bx} ${by} L${cx} ${cy} A${R1} ${R1} 0 0 1 ${dx} ${dy} Z`, fill: EL_FILL[SIGNS[i].element], sign: signNames[i] });
     const [gx, gy] = pt(L1 + 15, (R0 + R1) / 2);
-    signGlyphs.push({ x: gx, y: gy, glyph: SIGNS[i].glyph, name: SIGNS[i].name });
+    signGlyphs.push({ x: gx, y: gy, glyph: SIGNS[i].glyph, name: signNames[i] });
     const [x1, y1] = pt(L1, R0), [x2, y2] = pt(L1, R2);
     segLines.push({ x1, y1, x2, y2 });
     for (let d = 5; d < 30; d += 5) {

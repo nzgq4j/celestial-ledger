@@ -100,5 +100,15 @@ await seg('Birth chart').click();
 await shot('15-chart-premium');
 const evidenceMarks = await page.locator('[data-evidence]').count();
 
+// Switch the language to Spanish and check the reading content follows.
+await page.getByRole('button', { name: /^Profile/ }).click();
+await page.locator('ion-select').filter({ hasText: 'English' }).click();
+await page.getByRole('radio', { name: 'Español' }).or(page.getByRole('button', { name: 'Español' })).first().click();
+await page.locator('ion-tab-bar').getByRole('tab', { name: 'Hoy' }).click();
+await page.getByText(/Buen(os días|as tardes|as noches), Amelia\./).waitFor();
+await axe('today-es'); await shot('16-today-es');
+await page.locator('ion-tab-bar').getByRole('tab', { name: 'Astros' }).or(page.locator('ion-tab-bar').getByRole('tab').nth(1)).first().click();
+await axe('stars-es'); await shot('17-stars-es');
+
 console.log(JSON.stringify({ errors, violations, evidenceMarks }, null, 2));
 await browser.close();

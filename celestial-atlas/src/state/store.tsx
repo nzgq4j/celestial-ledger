@@ -5,6 +5,9 @@ import type { EvidenceMap } from '../engine/records';
 import * as account from '../platform/account';
 import { billing, type PlanId } from '../platform/billing';
 import { onBackButton, onResume, tap } from '../platform/native';
+import { localizeChart, localizeSky } from '../engine/localize';
+import { contentFor, detectLocale, isLocale, stringsFor, type Locale } from '../i18n';
+import type { Content } from '../engine/content';
 import { DEFAULT_NOTIF, cancelInsights, scheduleInsights, type NotifSettings } from '../platform/notifications';
 import { KEYS, load, removeAll, save } from '../platform/storage';
 import { supabase } from '../platform/supabase';
@@ -52,6 +55,13 @@ export interface AccountState {
 
 interface AppValue {
   loaded: boolean;
+  /** Reader's language, and the reading content in it. */
+  locale: Locale;
+  content: Content;
+  setLocale: (l: Locale) => void;
+  /** True after a password-recovery link: ask for a new password. */
+  passwordPrompt: boolean;
+  closePasswordPrompt: () => void;
   profile: Profile | null;
   journal: JournalEntry[];
   premium: boolean;
@@ -102,7 +112,7 @@ export function useApp(): AppValue {
 
 /** Chart, numbers and sky for the profile. The chart is recomputed when the profile changes,
  *  numbers once a day, and the sky once an hour. */
-function useDerived(profile: Profile | null, now: Date): { derived: Derived | null; error: string | null } {
+function useDerived(profile: Profile | null, now: Date, c: Content): { derived: Derived | null; error: string | null } {
   const profileKey = profile ? JSON.stringify(profile) : '';
   const dayKey = now.toDateString();
   const hourKey = `${dayKey} ${now.getHours()}`;
@@ -114,7 +124,7 @@ function useDerived(profile: Profile | null, now: Date): { derived: Derived | nu
   const sk = useMemo(() => sky(now), [hourKey]);
   if (!profile || !ch || !nums) return { derived: null, error: null };
   if (ch instanceof Error) return { derived: null, error: ch.message };
-  return { derived: { chart: ch, nums, sky: sk }, error: null };
+  return { derived: { chart: localizeChart(ch, c), nums, sky: localizeSky(sk, c) }, error: null };
 }
 
 const currentRoute = (): Route => parsePath(window.location.pathname);
@@ -125,6 +135,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [journal, setJournal] = useState<JournalEntry[]>([]);
   const [localPremium, setLocalPremium] = useState(false);
   const [notif, setNotifState] = useState<NotifSettings>(DEFAULT_NOTIF);
+  const [locale, setLocaleState] = useState<Locale>(() => detectLocale());
+  const [passwordPrompt, setPasswordPrompt] = useState(false);
+  const content = contentFor(locale);
+  const contentRef = useRef(content);
+  const stringsRef = useRef(stringsFor(locale));
+  stringsRef.current = stringsFor(locale);
+  contentRef.current = content;
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [route, setRoute] = useState<Route>(() => { initHistory(); return currentRoute(); });
   const [paywall, setPaywall] = useState(false);
@@ -153,7 +170,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       load<JournalEntry[]>(KEYS.journal, []),
       billing.isEntitled(),
       load<NotifSettings>(KEYS.notif, DEFAULT_NOTIF),
-    ]).then(([p, j, pr, n]) => {
+      load<string | null>(KEYS.locale, null),
+    ]).then(([p, j, pr, n, l]) => {
+      if (alive && isLocale(l)) setLocaleState(l);
       if (!alive) return;
       setProfileState(p && 'place' in p ? p : null);
       setJournal(Array.isArray(j) ? j : []);
@@ -214,15 +233,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded || !profile) return;
     const n = notifRef.current;
-    void scheduleInsights(profile, n).then(ok => setNotifBlocked(!ok && n.enabled));
-  }, [loaded, profile]);
+    void scheduleInsights(profile, n, false, contentRef.current).then(ok => setNotifBlocked(!ok && n.enabled));
+  }, [loaded, profile, locale]);
 
   /* ---------- Account and sync ---------- */
 
   useEffect(() => {
     if (!supabase) return;
     void supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    const { data } = supabase.auth.onAuthStateChange((event, s) => {
+      setSession(s);
+      if (event === 'PASSWORD_RECOVERY') setPasswordPrompt(true);
+    });
+    // Email links arrive as #token_hash=…&type=… (see /auth/confirm on the server).
+    const link = account.emailLinkFromHash(window.location.hash);
+    if (link) {
+      window.history.replaceState(window.history.state, '', window.location.pathname);
+      void account.verifyEmailLink(link.tokenHash, link.type)
+        .then(() => { if (link.type === 'recovery') setPasswordPrompt(true); else showToast(stringsRef.current.signin.welcome); })
+        .catch(() => showToast(stringsRef.current.signin.linkFailed));
+    }
     return () => data.subscription.unsubscribe();
   }, []);
 
@@ -258,7 +288,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await save(KEYS.journal, entries);
         setMembership(await account.loadMembership());
       } catch (e) {
-        if (alive) showToast(e instanceof Error ? e.message : 'Sync failed');
+        if (alive) showToast(stringsRef.current.toasts.syncFailed);
       } finally {
         if (alive) setSyncing(false);
       }
@@ -282,7 +312,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await save(KEYS.profile, p);
     if (userId) {
       try { await account.saveProfile(p); }
-      catch (e) { showToast(e instanceof account.AccountError && e.code === 'CHART_LIMIT' ? 'Your plan allows one saved chart.' : 'Saved on this device; your account will update when you are back online.'); }
+      catch (e) { showToast(e instanceof account.AccountError && e.code === 'CHART_LIMIT' ? stringsRef.current.toasts.chartLimit : stringsRef.current.toasts.savedOffline); }
     }
   }, [userId, showToast]);
 
@@ -290,7 +320,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const entry: JournalEntry = { id: Date.now(), type, title, body, date: new Date().toISOString(), ...refs };
     setJournal(prev => { const next = [entry, ...prev]; void save(KEYS.journal, next); return next; });
     void tap();
-    showToast('Saved to your journal');
+    showToast(stringsRef.current.common.savedToJournal);
     if (userId) {
       void account.addJournalEntry(entry).then(remote => {
         setJournal(prev => { const next = prev.map(e => (e.id === entry.id ? { ...remote, id: entry.id } : e)); void save(KEYS.journal, next); return next; });
@@ -301,7 +331,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const deleteJournal = useCallback((id: number) => {
     const target = journalRef.current.find(e => e.id === id);
     setJournal(prev => { const next = prev.filter(e => e.id !== id); void save(KEYS.journal, next); return next; });
-    if (target?.remoteId && userId) void account.deleteJournalEntry(target.remoteId).catch(() => showToast('Could not delete from your account. Try again later.'));
+    if (target?.remoteId && userId) void account.deleteJournalEntry(target.remoteId).catch(() => showToast(stringsRef.current.toasts.deleteFailed));
   }, [userId, showToast]);
 
   const refreshMembership = useCallback(async () => {
@@ -314,7 +344,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setPaywall(false);
     if (billing.needsAccount) await refreshMembership();
     else setLocalPremium(outcome === 'active');
-    if (outcome === 'active') { void tap(); showToast('Welcome to Atlas+'); }
+    if (outcome === 'active') { void tap(); showToast(stringsRef.current.toasts.welcome); }
   }, [showToast, refreshMembership]);
 
   const manageMembership = useCallback(async () => {
@@ -331,7 +361,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const params = new URLSearchParams(window.location.search);
     if (params.get('checkout') !== 'complete') return;
     window.history.replaceState(window.history.state, '', window.location.pathname);
-    showToast('Welcome to Atlas+. Confirming your membership…');
+    showToast(stringsRef.current.toasts.confirming);
     let tries = 0;
     const id = setInterval(() => {
       tries += 1;
@@ -348,7 +378,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUiState(s => ({ ...s, insightDismissed: false }));
     await save(KEYS.notif, next);
     if (profile) {
-      const ok = await scheduleInsights(profile, next, next.enabled);
+      const ok = await scheduleInsights(profile, next, next.enabled, contentRef.current);
       setNotifBlocked(!ok && next.enabled);
     }
   }, [profile]);
@@ -358,7 +388,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await account.signOut().catch(() => undefined);
     setMembership(null);
-    showToast('Signed out');
+    showToast(stringsRef.current.toasts.signedOut);
   }, [showToast]);
 
   const resetAll = useCallback(async () => {
@@ -371,15 +401,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     replaceRoute(home); setRoute(home);
   }, [userId]);
 
+  const setLocale = useCallback((l: Locale) => { setLocaleState(l); void save(KEYS.locale, l); }, []);
+
   const value: AppValue = {
-    loaded, profile, journal, premium, notif, notifBlocked, route, tab, starsTab, numTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
+    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifBlocked, route, tab, starsTab, numTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
     account: { available: supabase !== null, email: session?.user.email ?? null, membership, syncing },
     go, setStarsTab, setNumTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),
     openSignIn: () => setSignInOpen(true), closeSignIn: () => setSignInOpen(false),
     startTrial, manageMembership, setNotif, openReport, signOut, resetAll,
   };
-  const { derived, error: derivedError } = useDerived(profile, now);
+  const { derived, error: derivedError } = useDerived(profile, now, content);
   value.derived = derived;
   value.derivedError = derivedError;
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DECKS } from '../screens/tarotDecks';
+import { DECKS } from '../engine/tarotDecks';
 import { contrast, readable } from './color';
 
 describe('contrast helpers', () => {
