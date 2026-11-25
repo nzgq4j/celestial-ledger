@@ -9,6 +9,8 @@ export const KEYS = {
   notif: 'atlas_notif',
   locale: 'atlas_locale',
   theme: 'atlas_theme',
+  /** The account the device's chart and journal belong to (absent: made while signed out). */
+  owner: 'atlas_owner',
 } as const;
 
 export async function load<T>(key: string, fallback: T): Promise<T> {

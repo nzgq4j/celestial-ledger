@@ -6,7 +6,13 @@ import type { Profile } from '../engine/atlas';
  * The account's chart wins when it has a name; a legacy account chart without a name borrows the
  * device's name; with no account chart, the device's profile is uploaded.
  */
-export function chooseProfile(remote: Profile | null, local: Profile | null): { profile: Profile | null; upload: boolean } {
+export function chooseProfile(
+  remote: Profile | null,
+  local: Profile | null,
+  localBelongsToOtherAccount = false,
+): { profile: Profile | null; upload: boolean } {
+  // A chart synced to another account never moves to this one.
+  if (localBelongsToOtherAccount) return { profile: remote, upload: false };
   if (remote && remote.name.trim()) return { profile: remote, upload: false };
   if (remote) {
     const name = local?.name.trim() ?? '';
