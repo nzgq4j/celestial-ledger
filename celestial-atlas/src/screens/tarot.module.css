@@ -15,8 +15,8 @@
 .lead { font-size: 15.5px; line-height: 1.6; margin: 0; }
 .deckGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px; }
 .deckCard {
-  text-align: left; border: 1px solid rgba(201, 168, 106, 0.25); background: rgba(255, 255, 255, 0.03); border-radius: 4px;
-  padding: 0; overflow: hidden; color: inherit; transition: transform .25s ease, border-color .25s ease;
+  margin: 0; text-align: left; border: 1px solid rgba(201, 168, 106, 0.25); --background: rgba(255, 255, 255, 0.03); border-radius: 4px;
+  overflow: hidden; --color: var(--t-ink); color: var(--t-ink); transition: transform .25s ease, border-color .25s ease;
 }
 .deckCard:hover { transform: translateY(-6px); border-color: rgba(201, 168, 106, 0.6); }
 .deckArt { width: 100%; aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center; }
@@ -50,3 +50,7 @@
 .primary { background: var(--t-accent); border: none; border-radius: 3px; padding: 0 26px; min-height: 48px; font-size: 14px; font-weight: 600; letter-spacing: 0.03em; }
 .secondary { background: none; border: 1px solid rgba(201, 168, 106, 0.4); color: var(--t-ink); border-radius: 3px; padding: 0 22px; min-height: 48px; font-size: 14px; }
 .footer { text-align: center; padding: 20px 24px 28px; font-size: 12px; }
+.spreadList { background: transparent; border: 1px solid rgba(201, 168, 106, 0.25); border-radius: 4px; padding: 0; }
+.spreadList ion-item { --background: rgba(255, 255, 255, 0.03); --color: var(--t-ink); --border-color: rgba(201, 168, 106, 0.2); --detail-icon-color: var(--t-ink); }
+.countNote { display: flex; flex-direction: column; align-items: flex-end; color: var(--t-ink); }
+.nav ion-button { margin: 0; --padding-start: 0; --padding-end: 14px; text-transform: none; font-weight: 500; }

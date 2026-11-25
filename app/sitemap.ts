@@ -1,94 +1,21 @@
 import type { MetadataRoute } from "next";
-import { getAdminSettings } from "@/lib/admin/settings";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { zodiacSlugs } from "@/lib/horoscopes/daily";
-import { localeTags } from "@/lib/i18n/config";
-import { localizedAlternates, localizedPublicUrl } from "@/lib/seo";
 
-const publicRoutes = [
-  { path: "", changeFrequency: "weekly", priority: 1 },
-  { path: "/weekly-readings", changeFrequency: "weekly", priority: 0.8 },
-  { path: "/reports", changeFrequency: "weekly", priority: 0.8 },
-  { path: "/membership", changeFrequency: "monthly", priority: 0.75 },
-  { path: "/samples", changeFrequency: "monthly", priority: 0.8 },
-  {
-    path: "/samples/natal-chart",
-    changeFrequency: "monthly",
-    priority: 0.8,
-  },
-  {
-    path: "/samples/daily-reading",
-    changeFrequency: "monthly",
-    priority: 0.75,
-  },
-  {
-    path: "/samples/career-purpose",
-    changeFrequency: "monthly",
-    priority: 0.7,
-  },
-  {
-    path: "/samples/recovery-reflection",
-    changeFrequency: "monthly",
-    priority: 0.7,
-  },
-  {
-    path: "/samples/weekly-reading",
-    changeFrequency: "monthly",
-    priority: 0.7,
-  },
-  { path: "/method", changeFrequency: "monthly", priority: 0.75 },
-  { path: "/clock", changeFrequency: "daily", priority: 0.8 },
-  { path: "/journal", changeFrequency: "weekly", priority: 0.8 },
-  { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
-  { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
-  { path: "/contact", changeFrequency: "yearly", priority: 0.4 },
-] as const;
+const base = (
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://celestialatlas.app"
+).replace(/\/$/, "");
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const settings = await getAdminSettings();
-  const base = settings.seo.canonicalBase.replace(/\/$/, "");
-  let posts: { slug: string; updated_at: string }[] = [];
-  try {
-    const result = await createAdminClient()
-      .from("blog_posts")
-      .select("slug,updated_at")
-      .eq("status", "published")
-      .lte("published_at", new Date().toISOString());
-    posts = result.data ?? [];
-  } catch {
-    // Builds without runtime credentials still publish the complete static map.
-  }
-
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  const localizedRoutes = [
-    "/horoscopes",
-    ...zodiacSlugs.map((slug) => `/horoscopes/${slug}`),
-  ];
-
+/** Public screens of the app. Private screens (profile, journal, report) are left out. */
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    ...publicRoutes.map(({ path, changeFrequency, priority }) => ({
-      url: `${base}${path}`,
-      changeFrequency,
-      priority,
-      ...(path === ""
-        ? { alternates: { languages: localizedAlternates("/") } }
-        : {}),
-    })),
-    ...localizedRoutes.flatMap((path) =>
-      localeTags.map((locale) => ({
-        url: localizedPublicUrl(path, locale),
-        lastModified: today,
-        changeFrequency: "daily" as const,
-        priority: path === "/horoscopes" ? 0.9 : 0.8,
-        alternates: { languages: localizedAlternates(path) },
-      })),
-    ),
-    ...posts.map((post) => ({
-      url: `${base}/journal/${post.slug}`,
-      lastModified: new Date(post.updated_at),
-      changeFrequency: "monthly" as const,
-      priority: 0.65,
-    })),
-  ];
+    { path: "/", priority: 1, changeFrequency: "daily" as const },
+    { path: "/stars", priority: 0.8, changeFrequency: "daily" as const },
+    { path: "/numbers", priority: 0.7, changeFrequency: "weekly" as const },
+    { path: "/tarot", priority: 0.7, changeFrequency: "weekly" as const },
+    { path: "/privacy", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/terms", priority: 0.3, changeFrequency: "yearly" as const },
+  ].map(({ path, priority, changeFrequency }) => ({
+    url: `${base}${path}`,
+    priority,
+    changeFrequency,
+  }));
 }

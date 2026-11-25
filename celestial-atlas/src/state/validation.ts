@@ -19,13 +19,14 @@ const letters = (s: string) => s.toLowerCase().normalize('NFD').replace(/[^a-z]/
 /**
  * Numerology needs at least one vowel (Soul Urge) and one consonant (Personality);
  * without them those numbers come out as 0, which has no meaning.
- * Returns a message to show, or null when the name is usable.
+ * Returns a problem code for the interface to explain, or null when the name is usable.
  */
-export function nameProblem(name: string): string | null {
+export type NameProblem = 'noVowel' | 'noConsonant';
+export function nameProblem(name: string): NameProblem | null {
   const l = letters(name);
   if (name.trim().length < 2 || l.length < 2) return null; // the Continue button stays disabled
-  if (!/[aeiou]/.test(l)) return 'Numerology needs at least one vowel (a, e, i, o or u) in your full birth name.';
-  if (!/[^aeiou]/.test(l)) return 'Numerology needs at least one consonant in your full birth name.';
+  if (!/[aeiou]/.test(l)) return 'noVowel';
+  if (!/[^aeiou]/.test(l)) return 'noConsonant';
   return null;
 }
 

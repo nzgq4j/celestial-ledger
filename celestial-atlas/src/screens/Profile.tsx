@@ -1,93 +1,162 @@
+import {
+  IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonInput, IonItem, IonLabel, IonList, IonNote,
+  IonSelect, IonSelectOption, IonText, IonToggle, useIonAlert,
+} from '@ionic/react';
 import { useState } from 'react';
+import { AVAILABLE_LOCALES, LANGUAGE_NAMES, fill, useStrings, type Locale } from '../i18n';
+import * as account from '../platform/account';
+import { ApiError } from '../platform/api';
 import { billing } from '../platform/billing';
 import { useApp } from '../state/store';
 import { nameProblem, nameUsable } from '../state/validation';
 import { CalcDetails } from '../ui/components';
-import { DateTimeFields, TimeZoneCheck, draftFromProfile, draftToProfile, type Draft } from './BirthFields';
+import { DateTimeFields, TimeZoneCheck, blankDraft, draftFromProfile, draftToProfile, type Draft } from './BirthFields';
 import { PlaceSearch } from './PlaceSearch';
 import css from './screens.module.css';
 
 export function Profile() {
   const app = useApp();
-  const p = app.profile!;
-  const [draft, setDraft] = useState<Draft>(() => draftFromProfile(p));
+  const strings = useStrings();
+  const s = strings.profile;
+  const o = strings.onboarding;
+  const [alert] = useIonAlert();
+  const p = app.profile;
+  const [draft, setDraft] = useState<Draft>(() => (p ? draftFromProfile(p) : blankDraft));
   const set = (patch: Partial<Draft>) => setDraft(d => ({ ...d, ...patch }));
-  const nameMsg = nameProblem(draft.name);
+  const problem = nameProblem(draft.name);
+  const m = app.account.membership;
+  const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString(app.locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
 
   const saveProfile = async () => {
     const next = nameUsable(draft.name) ? draftToProfile(draft) : null;
-    if (!next) { app.showToast('Add a name and birth date'); return; }
+    if (!next) { app.showToast(s.invalid); return; }
     await app.setProfile(next);
-    app.showToast('Profile updated');
+    app.showToast(s.saved);
   };
 
-  const confirmReset = async () => {
-    if (!window.confirm('Reset the app? Your profile and journal will be deleted from this device.')) return;
-    await app.resetAll();
-  };
+  const confirmReset = () => void alert({
+    message: s.resetConfirm,
+    buttons: [
+      { text: strings.common.cancel, role: 'cancel' },
+      { text: s.reset, role: 'destructive', handler: () => { void app.resetAll(); } },
+    ],
+  });
+
+  const confirmDelete = () => void alert({
+    header: s.deleteTitle,
+    message: s.deleteCopy,
+    inputs: [{ name: 'confirm', type: 'text', placeholder: 'DELETE', attributes: { autocapitalize: 'characters', 'aria-label': 'DELETE' } }],
+    buttons: [
+      { text: strings.common.cancel, role: 'cancel' },
+      {
+        text: s.deleteAccount, role: 'destructive',
+        handler: (values: { confirm?: string }) => {
+          if (values.confirm?.trim() !== 'DELETE') return false;
+          void account.deleteAccount().then(async () => {
+            await app.resetAll();
+            app.showToast(s.deleted);
+          }).catch((e: unknown) => {
+            if (e instanceof ApiError && e.code === 'REAUTH_REQUIRED') { app.showToast(s.deleteReauth); app.openSignIn(); return; }
+            app.showToast(e instanceof ApiError && e.code === 'ACTIVE_SUBSCRIPTION' ? s.deleteActiveSub : e instanceof Error ? e.message : String(e));
+          });
+          return true;
+        },
+      },
+    ],
+  });
 
   return (
-    <div className="screen fade-up" style={{ gap: 22, maxWidth: 640 }}>
+    <div className="screen fade-up" style={{ gap: 18, maxWidth: 640 }}>
       <div className={css.pageHead}>
-        <div className="eyebrow">Profile</div>
-        <h1 className="h1">{p.name}</h1>
+        <div className="eyebrow">{s.eyebrow}</div>
+        <h1 className="h1">{p?.name || s.eyebrow}</h1>
       </div>
 
-      <div className="panel stack" style={{ gap: 16 }}>
-        <div className="eyebrow">Birth details</div>
-        <label className="field">Full birth name
-          <input className="input" type="text" value={draft.name} onChange={e => set({ name: e.target.value })} autoComplete="name" />
-        </label>
-        {nameMsg && <p className="error" role="alert">{nameMsg}</p>}
-        <DateTimeFields draft={draft} set={set} compact />
-        <label className="check">
-          <input type="checkbox" checked={draft.timeUnknown} onChange={e => set({ timeUnknown: e.target.checked, disambiguation: undefined })} />
-          Birth time unknown
-        </label>
-        <PlaceSearch value={draft.place} onChange={place => set({ place, disambiguation: undefined })} label="Change birthplace" />
-        <TimeZoneCheck draft={draft} set={set} />
-        <button type="button" className="btn-primary" style={{ alignSelf: 'flex-start' }} onClick={saveProfile}>Save changes</button>
-        {app.derived && <CalcDetails records={[app.derived.chart.record]} />}
-      </div>
+      {p && (
+        <IonCard>
+          <IonCardHeader><IonCardSubtitle className="eyebrow">{s.birthDetails}</IonCardSubtitle></IonCardHeader>
+          <IonCardContent className="stack" style={{ gap: 6 }}>
+            <IonList lines="none" className="field-list">
+              <IonItem>
+                <IonInput label={s.fullName} labelPlacement="stacked" fill="outline" value={draft.name} autocomplete="name"
+                  onIonInput={e => set({ name: String(e.detail.value ?? '') })} />
+              </IonItem>
+            </IonList>
+            {problem && <IonText color="danger" role="alert"><p className="small-text">{o[problem]}</p></IonText>}
+            <DateTimeFields draft={draft} set={set} />
+            <PlaceSearch value={draft.place} onChange={place => set({ place, disambiguation: undefined })} label={s.changePlace} />
+            <TimeZoneCheck draft={draft} set={set} />
+            <IonButton onClick={() => void saveProfile()}>{s.save}</IonButton>
+            {app.derived && <CalcDetails records={[app.derived.chart.record]} summary={strings.common.howCalculated} />}
+          </IonCardContent>
+        </IonCard>
+      )}
 
-      <div className="panel" style={{ padding: '8px 22px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '16px 0', borderBottom: '1px solid var(--hairline-soft)' }}>
-          <div>
-            <div id="notif-label" style={{ fontSize: 15, fontWeight: 500 }}>Daily insight notification</div>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Your personal day and the moon, each morning.</div>
-            {app.notifBlocked && <div className="error" style={{ fontSize: 13, marginTop: 4 }}>Notifications are turned off for Celestial Atlas in Android settings.</div>}
-          </div>
-          <button type="button" role="switch" aria-checked={app.notif.enabled} aria-labelledby="notif-label"
-            onClick={() => void app.setNotif({ ...app.notif, enabled: !app.notif.enabled })}
-            style={{ width: 52, height: 44, flexShrink: 0, border: 'none', background: 'none', padding: 0, position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 1, top: 7, width: 50, height: 30, borderRadius: 15, background: app.notif.enabled ? 'var(--gold)' : 'rgba(174,182,204,0.3)' }} />
-            <span style={{ position: 'absolute', top: 10, left: app.notif.enabled ? 24 : 4, width: 24, height: 24, borderRadius: '50%', background: 'var(--ink)', transition: 'left .2s ease' }} />
-          </button>
-        </div>
-        {app.notif.enabled && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--hairline-soft)' }}>
-            <label htmlFor="notif-time" style={{ fontSize: 15 }}>Notification time</label>
-            <input id="notif-time" className="input" type="time" value={app.notif.time} style={{ width: 140 }}
-              onChange={e => e.target.value && void app.setNotif({ ...app.notif, time: e.target.value })} />
-          </div>
-        )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '16px 0', borderBottom: '1px solid var(--hairline-soft)' }}>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 500 }}>Membership</div>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>{app.premium ? 'Atlas+ member' : 'Free plan'}</div>
-          </div>
-          <button type="button" className="btn-outline" style={{ alignSelf: 'center', fontSize: 13 }} onClick={() => void app.manageMembership()}>
-            {app.premium ? (billing.isDemo ? 'Cancel trial' : 'Manage') : 'Upgrade'}
-          </button>
-        </div>
-        <div style={{ padding: '8px 0' }}>
-          <button type="button" className="btn-danger" onClick={() => void confirmReset()}>Reset app &amp; start over</button>
-        </div>
-      </div>
+      {app.account.available && (
+        <IonCard>
+          <IonCardHeader><IonCardSubtitle className="eyebrow">{s.account}</IonCardSubtitle></IonCardHeader>
+          <IonCardContent className="stack" style={{ gap: 10 }}>
+            {app.account.email ? (
+              <>
+                <p className="body" style={{ margin: 0 }}>{fill(s.signedInAs, { email: app.account.email })}</p>
+                <p className="small" style={{ margin: 0 }}>{app.account.syncing ? s.syncing : s.synced}</p>
+                <div className={css.buttonRow}>
+                  <IonButton fill="outline" onClick={() => void app.signOut()}>{s.signOut}</IonButton>
+                  <IonButton fill="clear" color="danger" onClick={confirmDelete}>{s.deleteAccount}</IonButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="small" style={{ margin: 0 }}>{s.notSignedIn}</p>
+                <IonButton onClick={app.openSignIn}>{strings.common.signIn}</IonButton>
+              </>
+            )}
+          </IonCardContent>
+        </IonCard>
+      )}
 
-      <p className="note" style={{ lineHeight: 1.6 }}>
-        Birthplaces from GeoNames (geonames.org), licensed under CC BY 4.0. Positions from astronomy-engine (MIT). Fonts under the SIL Open Font License.
-      </p>
+      <IonCard>
+        <IonList lines="full">
+          <IonItem>
+            <IonSelect label={s.language} interface="action-sheet" value={app.locale}
+              onIonChange={e => app.setLocale(e.detail.value as Locale)}>
+              {AVAILABLE_LOCALES.map(l => <IonSelectOption key={l} value={l} lang={l}>{LANGUAGE_NAMES[l]}</IonSelectOption>)}
+            </IonSelect>
+          </IonItem>
+          <IonItem>
+            <IonToggle checked={app.notif.enabled} onIonChange={e => void app.setNotif({ ...app.notif, enabled: e.detail.checked })}>
+              <IonLabel className="ion-text-wrap">
+                <h3>{s.notifTitle}</h3>
+                <p>{s.notifCopy}</p>
+                {app.notifBlocked && <IonText color="danger"><p>{s.notifBlocked}</p></IonText>}
+              </IonLabel>
+            </IonToggle>
+          </IonItem>
+          {app.notif.enabled && (
+            <IonItem>
+              <IonInput type="time" label={s.notifTime} value={app.notif.time}
+                onIonChange={e => { const v = String(e.detail.value ?? ''); if (v) void app.setNotif({ ...app.notif, time: v }); }} />
+            </IonItem>
+          )}
+          <IonItem>
+            <IonLabel className="ion-text-wrap">
+              <h3>{s.membership}</h3>
+              <p>{app.premium ? s.member : s.free}</p>
+              {m?.currentPeriodEnd && <p>{fill(m.cancelAtPeriodEnd ? s.ends : s.renews, { date: fmt(m.currentPeriodEnd) })}</p>}
+            </IonLabel>
+            <IonButton slot="end" fill="outline" onClick={() => void app.manageMembership()}>
+              {app.premium ? (billing.isDemo ? s.cancelTrial : s.manage) : s.upgrade}
+            </IonButton>
+          </IonItem>
+          <IonItem button detail onClick={() => app.go('privacy')}><IonLabel>{s.privacy}</IonLabel></IonItem>
+          <IonItem button detail onClick={() => app.go('terms')}><IonLabel>{s.terms}</IonLabel></IonItem>
+          <IonItem lines="none">
+            <IonButton fill="clear" color="danger" className="link-button" onClick={confirmReset}>{s.reset}</IonButton>
+          </IonItem>
+        </IonList>
+      </IonCard>
+
+      <IonNote className="note" style={{ lineHeight: 1.6, display: 'block' }}>{s.credits}</IonNote>
     </div>
   );
 }

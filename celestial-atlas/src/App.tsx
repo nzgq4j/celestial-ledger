@@ -1,32 +1,45 @@
+import {
+  IonAlert, IonApp, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonModal, IonTabBar, IonTabButton,
+  IonLabel, IonTitle, IonToast, IonToolbar,
+} from '@ionic/react';
+import { albumsOutline, arrowBackOutline, bookOutline, calculatorOutline, sparklesOutline, sunnyOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
+import { LocaleContext, stringsFor, useStrings } from './i18n';
+import { updatePassword } from './platform/account';
 import { hideNativeSplash, setupSystemBars } from './platform/native';
 import { Journal } from './screens/Journal';
+import { Legal } from './screens/Legal';
 import { Numbers } from './screens/Numbers';
 import { Onboarding } from './screens/Onboarding';
 import { Paywall } from './screens/Paywall';
 import { Profile } from './screens/Profile';
 import { ReportScreen } from './screens/Report';
+import { SignIn } from './screens/SignIn';
 import { Splash } from './screens/Splash';
 import { Stars } from './screens/Stars';
 import { Tarot } from './screens/Tarot';
 import { Today } from './screens/Today';
 import css from './screens/screens.module.css';
 import { useApp, type TabId } from './state/store';
-import { Mark, Starfield, Toast } from './ui/components';
+import { Mark, Starfield } from './ui/components';
 
-const TABS: { id: TabId; label: string; glyph: string }[] = [
-  { id: 'home', label: 'Today', glyph: '☉︎' },
-  { id: 'stars', label: 'Stars', glyph: '✦' },
-  { id: 'numbers', label: 'Numbers', glyph: '#' },
-  { id: 'tarot', label: 'Tarot', glyph: '◈' },
-  { id: 'journal', label: 'Journal', glyph: '❧' },
+const TABS: { id: TabId; icon: string }[] = [
+  { id: 'home', icon: sunnyOutline },
+  { id: 'stars', icon: sparklesOutline },
+  { id: 'numbers', icon: calculatorOutline },
+  { id: 'tarot', icon: albumsOutline },
+  { id: 'journal', icon: bookOutline },
 ];
+const MAIN_TABS = new Set<TabId>(TABS.map(t => t.id));
 
 /** How long the animated web splash shows after the native splash hides. */
 const SPLASH_MS = 1500;
 
 export function App() {
   const app = useApp();
+  const locale = app.locale;
+  const s = stringsFor(locale);
+  useEffect(() => { document.documentElement.lang = locale; }, [locale]);
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
@@ -36,31 +49,64 @@ export function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Legal pages are reachable without a profile.
+  const legal = app.tab === 'privacy' || app.tab === 'terms';
   let content;
   if (!app.loaded || !splashDone) content = <Splash />;
+  else if (legal) content = <Shell />;
   else if (!app.profile) content = <Onboarding />;
   else content = <Shell />;
 
   return (
-    <>
-      <Starfield />
-      {content}
-      {app.paywall && <Paywall />}
-      <Toast message={app.toast} />
-    </>
+    <LocaleContext.Provider value={locale}>
+      <IonApp>
+        <Starfield />
+        {content}
+        <IonModal isOpen={app.paywall} onDidDismiss={app.closePaywall} aria-labelledby="paywall-title">
+          <Paywall />
+        </IonModal>
+        <IonModal isOpen={app.signInOpen} onDidDismiss={app.closeSignIn} aria-labelledby="signin-title">
+          <SignIn />
+        </IonModal>
+        <IonAlert
+          isOpen={app.passwordPrompt}
+          header={s.signin.newPasswordTitle}
+          backdropDismiss={false}
+          inputs={[{ name: 'password', type: 'password', placeholder: s.signin.newPasswordLabel, attributes: { autocomplete: 'new-password', minlength: 8, 'aria-label': s.signin.newPasswordLabel } }]}
+          buttons={[
+            { text: s.common.cancel, role: 'cancel', handler: () => app.closePasswordPrompt() },
+            {
+              text: s.signin.newPasswordSave,
+              handler: (values: { password?: string }) => {
+                const pw = values.password ?? '';
+                if (pw.length < 8) { app.showToast(s.signin.passwordTooShort); return false; }
+                void updatePassword(pw).then(() => app.showToast(s.signin.newPasswordSaved), (e: unknown) => app.showToast(e instanceof Error ? e.message : String(e)));
+                app.closePasswordPrompt();
+                return true;
+              },
+            },
+          ]}
+        />
+        <IonToast isOpen={!!app.toast} message={app.toast ?? ''} duration={2600} position="bottom" positionAnchor="atlas-tabbar" />
+      </IonApp>
+    </LocaleContext.Provider>
   );
 }
 
 function Shell() {
   const app = useApp();
-  const first = app.profile!.name.split(' ')[0];
-  const premium = app.premium;
+  const s = useStrings();
+  const first = app.profile?.name.split(' ')[0] || '';
+  const sub = !MAIN_TABS.has(app.tab);
+
   const screen = (() => {
+    if (app.tab === 'privacy' || app.tab === 'terms') return <Legal kind={app.tab} />;
+    if (app.tab === 'profile') return <Profile />;
     if (app.derivedError || !app.derived) {
       return (
         <div className="panel stack" style={{ gap: 12 }}>
-          <p className="body">Your chart could not be calculated from the saved birth details. Check them in your profile.</p>
-          <button type="button" className="btn-primary" style={{ alignSelf: 'flex-start' }} onClick={() => app.go('profile')}>Open profile</button>
+          <p className="body">{s.common.chartError}</p>
+          <IonButton onClick={() => app.go('profile')}>{s.common.openProfile}</IonButton>
         </div>
       );
     }
@@ -71,33 +117,51 @@ function Shell() {
       case 'tarot': return <Tarot />;
       case 'journal': return <Journal />;
       case 'report': return app.report ? <ReportScreen /> : <Today />;
-      case 'profile': return <Profile />;
+      default: return <Today />;
     }
   })();
+
   return (
-    <div className={css.shell}>
-      <header className={css.topbar}>
-        <div className={css.brand}><Mark />Celestial Atlas</div>
-        <div className={css.topActions}>
-          {!premium && <button type="button" className={css.plusChip} onClick={app.openPaywall}>Atlas+</button>}
-          <button type="button" className={css.avatar} onClick={() => app.go('profile')} aria-label={`Profile: ${first}`}>
-            {first.charAt(0).toUpperCase()}
-          </button>
-        </div>
-      </header>
-      <main className={css.main} aria-hidden={app.paywall || undefined}>{screen}</main>
-      <nav className={css.tabbar} aria-label="Main">
-        {TABS.map(t => {
-          const on = app.tab === t.id;
-          return (
-            <button key={t.id} type="button" className={on ? `${css.tab} ${css.tabOn}` : css.tab}
-              aria-current={on ? 'page' : undefined} onClick={() => app.go(t.id)}>
-              <span className={css.tabGlyph} aria-hidden="true">{t.glyph}</span>
-              <span className={css.tabLabel}>{t.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+    <div className="ion-page" id="atlas-shell">
+      <IonHeader>
+        <IonToolbar>
+          {sub && (
+            <IonButtons slot="start">
+              <IonButton aria-label={s.common.back} onClick={() => { if (!app.back()) app.go('home'); }}>
+                <IonIcon aria-hidden="true" slot="icon-only" icon={arrowBackOutline} />
+              </IonButton>
+            </IonButtons>
+          )}
+          <IonTitle>
+            <span className={css.brand}><Mark />{s.appName}</span>
+          </IonTitle>
+          <IonButtons slot="end">
+            {!app.premium && app.profile && (
+              <IonButton fill="outline" shape="round" size="small" onClick={app.openPaywall}>{s.common.atlasPlus}</IonButton>
+            )}
+            {app.profile && (
+              <IonButton className={css.avatarButton} aria-label={`${s.common.profile.replace('{name}', first)}`} onClick={() => app.go('profile')}>
+                <span className={css.avatar} aria-hidden="true">{first.charAt(0).toUpperCase() || '·'}</span>
+              </IonButton>
+            )}
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <main className={css.main}>{screen}</main>
+      </IonContent>
+      {app.profile && (
+        <IonFooter>
+          <IonTabBar id="atlas-tabbar" selectedTab={MAIN_TABS.has(app.tab) ? app.tab : undefined} aria-label={s.tabs.label}>
+            {TABS.map(t => (
+              <IonTabButton key={t.id} tab={t.id} onClick={() => app.go(t.id)}>
+                <IonIcon aria-hidden="true" icon={t.icon} />
+                <IonLabel>{s.tabs[t.id as keyof typeof s.tabs]}</IonLabel>
+              </IonTabButton>
+            ))}
+          </IonTabBar>
+        </IonFooter>
+      )}
     </div>
   );
 }

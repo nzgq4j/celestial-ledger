@@ -28,37 +28,38 @@ await page.goto(BASE);
 await page.getByText('Build my atlas').waitFor({ timeout: 8000 });
 await axe('welcome'); await shot('01-welcome');
 await page.getByText('Build my atlas').click();
-await page.getByLabel("What's your full birth name?").fill('Amelia Rose Laurent');
+await page.locator('ion-input').filter({ hasText: 'Full birth name' }).locator('input').fill('Amelia Rose Laurent');
 await axe('onboarding-name');
 await page.getByRole('button', { name: 'Continue' }).click();
-await page.getByLabel('Date of birth').fill('1991-07-28');
-await page.getByLabel('Time of birth').fill('06:45');
+await page.locator('ion-input').filter({ hasText: 'Date of birth' }).locator('input').fill('1991-07-28');
+await page.locator('ion-input').filter({ hasText: 'Time of birth' }).locator('input').fill('06:45');
 await axe('onboarding-date'); await shot('02-date');
 await page.getByRole('button', { name: 'Continue' }).click();
-await page.getByRole('combobox').fill('Avignon');
-await page.getByRole('option').first().click();
+await page.locator('ion-searchbar input').fill('Avignon');
+await page.locator('ion-item[button]').filter({ hasText: 'Avignon' }).first().click();
 await page.getByText(/Time zone Europe\/Paris/).waitFor();
 await axe('onboarding-place'); await shot('03-place');
 await page.getByRole('button', { name: 'Create my atlas' }).click();
 await page.getByText('Good morning, Amelia.').or(page.getByText(/Good (afternoon|evening), Amelia\./)).waitFor();
 await axe('today'); await shot('04-today');
 
-const tab = name => page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name });
+const seg = name => page.locator('ion-segment-button').filter({ hasText: name }).first();
+const tab = name => page.locator('ion-tab-bar').getByRole('tab', { name });
 await tab('Stars').click();
 await axe('stars-horoscope'); await shot('05-horoscope');
-await page.getByRole('tab', { name: 'Birth chart' }).click();
+await seg('Birth chart').click();
 await page.locator('svg[role=img]').waitFor();
 await axe('stars-chart'); await shot('06-chart');
-await page.getByRole('tab', { name: 'Transits & moon' }).click();
+await seg('Transits & moon').click();
 await axe('stars-transits'); await shot('07-transits');
-await page.getByRole('tab', { name: 'Compatibility' }).click();
+await seg('Compatibility').click();
 await axe('stars-compat');
 
 await tab('Numbers').click();
 await axe('numbers'); await shot('08-numbers');
-await page.getByRole('tab', { name: 'Cycles' }).click(); await axe('numbers-cycles');
-await page.getByRole('tab', { name: 'Compatibility' }).click();
-await page.getByLabel('Their birth date').fill('1988-03-14');
+await seg('Cycles').click(); await axe('numbers-cycles');
+await seg('Compatibility').click();
+await page.locator('ion-input').filter({ hasText: 'Their birth date' }).locator('input').fill('1988-03-14');
 await axe('numbers-compat');
 
 await tab('Tarot').click();
@@ -66,38 +67,48 @@ await axe('tarot-decks'); await shot('09-tarot-decks');
 for (const deck of ['Traditional', 'The Whimsical Cats', 'Neon Circuit', 'Provençal', 'Silver Age']) {
   await tab('Tarot').click();
   if (await page.getByRole('button', { name: 'Start Over' }).isVisible()) await page.getByRole('button', { name: 'Start Over' }).click();
-  await page.getByRole('button', { name: new RegExp(deck) }).first().click();
-  await page.getByRole('button', { name: /Past, Present, Future/ }).click();
+  await page.locator('ion-card').filter({ hasText: deck }).first().click();
+  await page.locator('ion-item').filter({ hasText: 'Past, Present, Future' }).first().click();
   await page.getByText('Your Reading').waitFor({ timeout: 5000 });
   await axe(`tarot-result-${deck}`);
   if (deck === 'Traditional') await shot('10-tarot-result');
 }
 await page.getByRole('button', { name: 'Save to journal' }).click();
 
-await page.getByRole('button', { name: 'Atlas+' }).first().click();
-await page.getByRole('dialog').waitFor();
+await page.locator('ion-header').getByRole('button', { name: 'Atlas+' }).first().click();
+await page.locator('ion-modal').getByText('See the whole map.').waitFor();
 await axe('paywall'); await shot('11-paywall');
 await page.getByRole('button', { name: 'Start 3-day free trial' }).click();
 
 await tab('Today').click();
-await page.getByRole('button', { name: /Read my report/ }).click();
+await page.locator('ion-card').filter({ hasText: 'Read my report' }).click();
 await page.getByText('Three cards for this season').waitFor();
 await page.getByText('How this was calculated').click();
 await axe('report'); await shot('12-report');
 await page.getByRole('button', { name: 'Save report to journal' }).click();
 
 await tab('Journal').click();
-await page.getByRole('button', { name: /Atlas Report/ }).click();
+await page.locator('ion-accordion').filter({ hasText: 'Atlas Report' }).first().locator('ion-item').click();
 await axe('journal'); await shot('13-journal');
 
-await page.getByRole('button', { name: /Profile/ }).click();
+await page.getByRole('button', { name: /^Profile/ }).click();
 await axe('profile'); await shot('14-profile');
 
 // Back navigation goes to the previous tab.
 await tab('Stars').click();
-await page.getByRole('tab', { name: 'Birth chart' }).click();
+await seg('Birth chart').click();
 await shot('15-chart-premium');
 const evidenceMarks = await page.locator('[data-evidence]').count();
+
+// Switch the language to Spanish and check the reading content follows.
+await page.getByRole('button', { name: /^Profile/ }).click();
+await page.locator('ion-select').filter({ hasText: 'English' }).click();
+await page.getByRole('radio', { name: 'Español' }).or(page.getByRole('button', { name: 'Español' })).first().click();
+await page.locator('ion-tab-bar').getByRole('tab', { name: 'Hoy' }).click();
+await page.getByText(/Buen(os días|as tardes|as noches), Amelia\./).waitFor();
+await axe('today-es'); await shot('16-today-es');
+await page.locator('ion-tab-bar').getByRole('tab', { name: 'Astros' }).or(page.locator('ion-tab-bar').getByRole('tab').nth(1)).first().click();
+await axe('stars-es'); await shot('17-stars-es');
 
 console.log(JSON.stringify({ errors, violations, evidenceMarks }, null, 2));
 await browser.close();

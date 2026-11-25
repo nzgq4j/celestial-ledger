@@ -1,7 +1,9 @@
+import { IonCheckbox, IonInput, IonItem, IonList, IonRadio, IonRadioGroup, IonText } from '@ionic/react';
 import { DateTime } from 'luxon';
 import type { Profile } from '../engine/atlas';
 import type { Place } from '../engine/places';
 import { birthTimeProblem, resolveBirthTime, type Disambiguation } from '../engine/time';
+import { fill, useStrings } from '../i18n';
 import { MIN_DATE, todayISO, validDate } from '../state/validation';
 
 export interface Draft {
@@ -31,29 +33,37 @@ export function draftToProfile(d: Draft): Profile | null {
   };
 }
 
-export function DateTimeFields({ draft, set, compact = false }: { draft: Draft; set: (p: Partial<Draft>) => void; compact?: boolean }) {
+export function DateTimeFields({ draft, set, withUnknown = true }: { draft: Draft; set: (p: Partial<Draft>) => void; withUnknown?: boolean }) {
+  const s = useStrings();
   return (
-    <div style={{ display: compact ? 'grid' : 'flex', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', flexDirection: 'column', gap: 16 }}>
-      <label className="field">{compact ? 'Date' : 'Date of birth'}
-        <input className="input" type="date" value={draft.date} min={MIN_DATE} max={todayISO()}
-          onChange={e => set({ date: e.target.value, disambiguation: undefined })} />
-      </label>
-      <label className="field">{compact ? 'Time' : 'Time of birth'}
-        <input className="input" type="time" value={draft.time} disabled={draft.timeUnknown}
-          onChange={e => set({ time: e.target.value, disambiguation: undefined })} />
-      </label>
-    </div>
+    <IonList lines="none" className="field-list">
+      <IonItem>
+        <IonInput type="date" label={s.onboarding.dateLabel} labelPlacement="stacked" fill="outline" value={draft.date}
+          min={MIN_DATE} max={todayISO()} onIonInput={e => set({ date: String(e.detail.value ?? ''), disambiguation: undefined })} />
+      </IonItem>
+      <IonItem>
+        <IonInput type="time" label={s.onboarding.timeLabel} labelPlacement="stacked" fill="outline" value={draft.time}
+          disabled={draft.timeUnknown} onIonInput={e => set({ time: String(e.detail.value ?? ''), disambiguation: undefined })} />
+      </IonItem>
+      {withUnknown && (
+        <IonItem>
+          <IonCheckbox checked={draft.timeUnknown} labelPlacement="end" justify="start"
+            onIonChange={e => set({ timeUnknown: e.detail.checked, disambiguation: undefined })}>
+            {s.onboarding.timeUnknown}
+          </IonCheckbox>
+        </IonItem>
+      )}
+    </IonList>
   );
 }
 
 /** Explains how the local birth time maps to UTC, and asks about repeated times. */
 export function TimeZoneCheck({ draft, set }: { draft: Draft; set: (p: Partial<Draft>) => void }) {
+  const s = useStrings();
   if (!draft.place) return null;
-  const status = timeStatus({ ...draft, disambiguation: draft.disambiguation });
-  if (status === 'NONEXISTENT') {
-    return <p className="error" role="alert">This local time did not exist because the clock moved forward. Check the recorded time.</p>;
-  }
-  if (status === 'INVALID') return <p className="error" role="alert">Enter a valid birth date and time.</p>;
+  const status = timeStatus(draft);
+  if (status === 'NONEXISTENT') return <IonText color="danger" role="alert"><p className="small-text">{s.time.nonexistent}</p></IonText>;
+  if (status === 'INVALID') return <IonText color="danger" role="alert"><p className="small-text">{s.time.invalid}</p></IonText>;
   const ambiguous = status === 'AMBIGUOUS' || !!draft.disambiguation;
   let offset = '';
   if (status === 'ok') {
@@ -63,21 +73,13 @@ export function TimeZoneCheck({ draft, set }: { draft: Draft; set: (p: Partial<D
   return (
     <div className="stack" style={{ gap: 10 }}>
       {ambiguous && (
-        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-          <legend className="body" style={{ marginBottom: 6 }}>This local time occurred twice because the clock moved backward. Select the earlier or later occurrence.</legend>
-          {(['earlier', 'later'] as const).map(k => (
-            <label key={k} className="check">
-              <input type="radio" name="disambiguation" checked={draft.disambiguation === k} onChange={() => set({ disambiguation: k })} />
-              {k === 'earlier' ? 'Earlier occurrence' : 'Later occurrence'}
-            </label>
-          ))}
-        </fieldset>
+        <IonRadioGroup value={draft.disambiguation} onIonChange={e => set({ disambiguation: e.detail.value as Disambiguation })}>
+          <p className="body" id="ambiguous-label">{s.time.ambiguous}</p>
+          <IonItem lines="none"><IonRadio value="earlier" labelPlacement="end" justify="start">{s.time.earlier}</IonRadio></IonItem>
+          <IonItem lines="none"><IonRadio value="later" labelPlacement="end" justify="start">{s.time.later}</IonRadio></IonItem>
+        </IonRadioGroup>
       )}
-      {status === 'ok' && (
-        <p className="small" style={{ margin: 0 }}>
-          Time zone {draft.place.timeZone} · {offset} on that date.
-        </p>
-      )}
+      {status === 'ok' && <p className="small" style={{ margin: 0 }}>{fill(s.time.zone, { zone: draft.place.timeZone, offset })}</p>}
     </div>
   );
 }

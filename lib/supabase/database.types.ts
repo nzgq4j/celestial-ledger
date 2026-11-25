@@ -14,6 +14,42 @@ export type Database = {
   };
   public: {
     Tables: {
+      atlas_journal_entries: {
+        Row: {
+          body: string;
+          created_at: string;
+          entry_type: string;
+          evidence: Json;
+          expires_at: string;
+          id: string;
+          record_ids: string[];
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          entry_type: string;
+          evidence?: Json;
+          expires_at?: string;
+          id?: string;
+          record_ids?: string[];
+          title: string;
+          user_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          entry_type?: string;
+          evidence?: Json;
+          expires_at?: string;
+          id?: string;
+          record_ids?: string[];
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       device_push_tokens: {
         Row: {
           id: string;
@@ -312,6 +348,8 @@ export type Database = {
           disambiguation: string | null;
           display_name: string;
           expires_at: string;
+          full_name: string | null;
+          geoname_id: number | null;
           id: string;
           label: string;
           latitude: number;
@@ -337,6 +375,8 @@ export type Database = {
           disambiguation?: string | null;
           display_name: string;
           expires_at?: string;
+          full_name?: string | null;
+          geoname_id?: number | null;
           id?: string;
           label: string;
           latitude: number;
@@ -362,6 +402,8 @@ export type Database = {
           disambiguation?: string | null;
           display_name?: string;
           expires_at?: string;
+          full_name?: string | null;
+          geoname_id?: number | null;
           id?: string;
           label?: string;
           latitude?: number;
@@ -1538,6 +1580,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      atlas_membership: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
+      purge_expired_atlas_journal_entries: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       daily_reading_allowance: {
         Args: { p_user_id: string; p_birth_profile_id: string };
         Returns: Json;

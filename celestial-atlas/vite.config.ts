@@ -5,6 +5,11 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Accounts read the public Supabase URL and publishable key at build time,
+  // under either the app's VITE_ names or the website's NEXT_PUBLIC_ names on Vercel.
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
+  // Vercel preview builds run as a demo: no accounts and no payments, as on the old site.
+  define: { __ATLAS_PREVIEW__: JSON.stringify(process.env.VERCEL_ENV === 'preview') },
   // The GeoNames city list (~2.4 MB) is its own lazily loaded chunk, used only by the birthplace search.
   build: { chunkSizeWarningLimit: 2600 },
   test: {

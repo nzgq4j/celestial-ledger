@@ -1,13 +1,15 @@
-import { useEffect, useId, useState } from 'react';
+import { IonItem, IonLabel, IonList, IonNote, IonSearchbar } from '@ionic/react';
+import { useEffect, useState } from 'react';
+import { useStrings } from '../i18n';
 import { loadPlaces, placeLabel, searchPlaces, type Place } from '../engine/places';
 import css from './screens.module.css';
 
 /** Searchable birthplace picker over the bundled GeoNames list. */
 export function PlaceSearch({ value, onChange, label }: { value: Place | null; onChange: (p: Place) => void; label: string }) {
+  const s = useStrings();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[]>([]);
   const [ready, setReady] = useState(false);
-  const listId = useId();
 
   useEffect(() => { let alive = true; void loadPlaces().then(() => alive && setReady(true)); return () => { alive = false; }; }, []);
   useEffect(() => {
@@ -20,29 +22,35 @@ export function PlaceSearch({ value, onChange, label }: { value: Place | null; o
   return (
     <div className={css.placeSearch}>
       {value && (
-        <div className={css.placeChosen}>
-          <span className="small">Selected</span>
-          <span className={css.placeChosenName}>{placeLabel(value)}</span>
-        </div>
+        <IonItem lines="none" className={css.placeChosen}>
+          <IonLabel>
+            <IonNote>{s.place.selected}</IonNote>
+            <h2 className="serif" style={{ fontSize: 20, fontWeight: 600 }}>{placeLabel(value)}</h2>
+          </IonLabel>
+        </IonItem>
       )}
-      <label className="field">{label}
-        <input className="input" type="search" value={query} onChange={e => setQuery(e.target.value)}
-          placeholder={ready ? 'Start typing a city' : 'Loading cities…'} autoComplete="off" spellCheck={false}
-          role="combobox" aria-expanded={results.length > 0} aria-controls={listId} aria-autocomplete="list" />
-      </label>
+      <IonSearchbar
+        value={query}
+        onIonInput={e => setQuery(e.detail.value ?? '')}
+        placeholder={ready ? s.place.search : s.place.loading}
+        aria-label={label}
+        debounce={150}
+        showCancelButton="never"
+        spellcheck={false}
+      />
       {results.length > 0 && (
-        <ul id={listId} role="listbox" aria-label="Matching cities" className={css.placeList}>
+        <IonList aria-label={s.place.results} inset>
           {results.map(p => (
-            <li key={p.id} role="option" aria-selected={value?.id === p.id}>
-              <button type="button" className={css.placeOption} onClick={() => { onChange(p); setQuery(''); setResults([]); }}>
-                <span>{p.name}</span>
-                <span className="small">{[p.region, p.country].filter(Boolean).join(', ')}</span>
-              </button>
-            </li>
+            <IonItem key={p.id} button detail={false} onClick={() => { onChange(p); setQuery(''); setResults([]); }}>
+              <IonLabel>
+                <h3>{p.name}</h3>
+                <p>{[p.region, p.country].filter(Boolean).join(', ')}</p>
+              </IonLabel>
+            </IonItem>
           ))}
-        </ul>
+        </IonList>
       )}
-      {query.trim().length >= 2 && ready && results.length === 0 && <p className="small" style={{ margin: 0 }}>No matching city. Try a nearby larger city.</p>}
+      {query.trim().length >= 2 && ready && results.length === 0 && <p className="small" style={{ margin: '0 16px' }}>{s.place.none}</p>}
     </div>
   );
 }
