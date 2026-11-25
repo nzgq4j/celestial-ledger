@@ -1,4 +1,4 @@
-// Generates the Android launcher icons, adaptive icon layers, splash images and
+// Generates the web and home-screen icons, the Android launcher icons, adaptive icon layers, splash images and
 // notification icon from one SVG of the gold astrolabe mark.
 // Usage: node scripts/generate-android-assets.mjs
 import fs from 'node:fs';
@@ -56,6 +56,15 @@ for (const [dir, [w, h]] of Object.entries(SPLASH)) {
     <g transform="translate(${(w - s) / 2} ${(h - s) / 2})">${markSvg(s, d).replace(/^<svg[^>]*>|<\/svg>$/g, '')}</g></svg>`;
   jobs.push(png(svg, `${RES}/${dir}/splash.png`));
 }
+// Web and home-screen icons (public/): iOS rounds the corners itself, so the
+// Apple touch icon is a full navy square; the maskable icon keeps the mark in the
+// central 80% safe zone.
+const WEB = path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'public');
+jobs.push(png(markSvg(180, 180 * 0.62, { bg: NAVY }), `${WEB}/apple-touch-icon.png`));
+jobs.push(png(markSvg(192, 192 * 0.62, { bg: NAVY }), `${WEB}/icon-192.png`));
+jobs.push(png(markSvg(512, 512 * 0.62, { bg: NAVY }), `${WEB}/icon-512.png`));
+jobs.push(png(markSvg(512, 512 * 0.5, { bg: NAVY }), `${WEB}/icon-maskable-512.png`));
+jobs.push(png(markSvg(32, 32 * 0.8, { bg: NAVY, shape: 'rounded' }), `${WEB}/favicon-32.png`));
 await Promise.all(jobs);
 
 // Vector drawables: Android 12+ splash icon and the notification small icon.
