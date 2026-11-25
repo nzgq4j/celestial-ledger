@@ -7,6 +7,9 @@ import { AVAILABLE_LOCALES, LANGUAGE_NAMES, fill, useStrings, type Locale } from
 import * as account from '../platform/account';
 import { ApiError } from '../platform/api';
 import { billing } from '../platform/billing';
+import { isNative } from '../platform/native';
+import { primePermission, pushSupport } from '../platform/push';
+import { PickerField } from '../ui/PickerField';
 import { useApp } from '../state/store';
 import { nameProblem, nameUsable } from '../state/validation';
 import { CalcDetails } from '../ui/components';
@@ -25,6 +28,9 @@ export function Profile() {
   const set = (patch: Partial<Draft>) => setDraft(d => ({ ...d, ...patch }));
   const problem = nameProblem(draft.name);
   const m = app.account.membership;
+  const support = pushSupport();
+  // The Android app can always use on-device notifications; the web needs push.
+  const notifPossible = isNative() || support === 'web';
   const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString(app.locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
 
   const saveProfile = async () => {
@@ -124,18 +130,25 @@ export function Profile() {
             </IonSelect>
           </IonItem>
           <IonItem>
-            <IonToggle checked={app.notif.enabled} onIonChange={e => void app.setNotif({ ...app.notif, enabled: e.detail.checked })}>
+            <IonToggle checked={app.notif.enabled && notifPossible} disabled={!notifPossible}
+              onIonChange={e => {
+                // Safari only shows the permission prompt during the tap itself.
+                if (e.detail.checked) primePermission();
+                void app.setNotif({ ...app.notif, enabled: e.detail.checked });
+              }}>
               <IonLabel className="ion-text-wrap">
                 <h3>{s.notifTitle}</h3>
                 <p>{s.notifCopy}</p>
-                {app.notifBlocked && <IonText color="danger"><p>{s.notifBlocked}</p></IonText>}
+                {support === 'needs-home-screen' && <p>{s.notifHomeScreen}</p>}
+                {support === 'unsupported' && !isNative() && <p>{s.notifUnsupported}</p>}
+                {app.notifIssue && <IonText color="danger"><p>{app.notifIssue === 'blocked' ? s.notifBlocked : s.notifFailed}</p></IonText>}
               </IonLabel>
             </IonToggle>
           </IonItem>
-          {app.notif.enabled && (
+          {app.notif.enabled && notifPossible && (
             <IonItem>
-              <IonInput type="time" label={s.notifTime} value={app.notif.time}
-                onIonChange={e => { const v = String(e.detail.value ?? ''); if (v) void app.setNotif({ ...app.notif, time: v }); }} />
+              <PickerField kind="time" label={s.notifTime} value={app.notif.time}
+                onChange={time => void app.setNotif({ ...app.notif, time })} />
             </IonItem>
           )}
           <IonItem>

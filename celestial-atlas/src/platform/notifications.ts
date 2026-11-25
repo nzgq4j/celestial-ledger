@@ -5,13 +5,15 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { EN, numbersCore, sky, type Profile } from '../engine/atlas';
 import { fillTemplate, type Content } from '../engine/content';
 import { isNative } from './native';
+import { disablePush, enablePush } from './push';
 
 export interface NotifSettings {
   enabled: boolean;
   /** HH:MM local time */
   time: string;
 }
-export const DEFAULT_NOTIF: NotifSettings = { enabled: true, time: '08:00' };
+// On by default in the app (no prompt until scheduling); off on the web, where the browser must ask first.
+export const DEFAULT_NOTIF: NotifSettings = { enabled: isNative(), time: '08:00' };
 
 const CHANNEL = 'daily-insight';
 const DAYS_AHEAD = 14;
@@ -38,14 +40,9 @@ export async function cancelInsights(): Promise<void> {
   } catch { /* nothing scheduled */ }
 }
 
-/**
- * Reschedule the daily insight. Returns false when notifications are not permitted.
- * Asks for permission only when `ask` is true (the user just turned the setting on).
- */
-export async function scheduleInsights(profile: Profile, settings: NotifSettings, ask = false, c: Content = EN): Promise<boolean> {
+/** Schedules the daily insight on the device itself (Android app without push). */
+async function scheduleLocal(profile: Profile, settings: NotifSettings, ask: boolean, c: Content): Promise<boolean> {
   if (!isNative()) return true;
-  await cancelInsights();
-  if (!settings.enabled) return true;
   let perm = await LocalNotifications.checkPermissions();
   if (perm.display !== 'granted' && ask) perm = await LocalNotifications.requestPermissions();
   if (perm.display !== 'granted') return false;
@@ -59,4 +56,29 @@ export async function scheduleInsights(profile: Profile, settings: NotifSettings
     })),
   });
   return true;
+}
+
+/** 'ok': set up (or off); 'blocked': the system refused; 'needs-permission': the browser has not asked yet; 'failed': push could not be set up. */
+export type InsightSync = 'ok' | 'blocked' | 'needs-permission' | 'failed';
+
+/**
+ * Sets up the daily insight: push from the server when this device supports it
+ * (texts composed here for the next 14 days), otherwise the on-device schedule.
+ * Asks for permission only when `ask` is true (the reader just turned it on).
+ */
+export async function syncInsights(profile: Profile, settings: NotifSettings, ask = false, c: Content = EN): Promise<InsightSync> {
+  if (!settings.enabled) {
+    await cancelInsights();
+    await disablePush().catch(() => undefined);
+    return 'ok';
+  }
+  const insights = deliveryTimes(settings.time).map(at => ({ at, ...insightFor(profile, at, c) }));
+  const outcome = await enablePush({ ask, locale: c.locale.slice(0, 2), insights });
+  if (outcome === 'push') { await cancelInsights(); return 'ok'; }
+  if (outcome === 'denied') return 'blocked';
+  if (outcome === 'needs-permission' && !isNative()) return 'needs-permission';
+  // The web has no on-device fallback.
+  if (!isNative()) return 'failed';
+  await cancelInsights();
+  return (await scheduleLocal(profile, settings, ask, c)) ? 'ok' : 'blocked';
 }

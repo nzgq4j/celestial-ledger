@@ -201,3 +201,107 @@ describe("Celestial Atlas app backend migration", () => {
     expect(purged.n).toBe(1);
   });
 });
+
+describe("push notification tables", () => {
+  const hash = (n: number) => n.toString(16).padStart(64, "0");
+  const web = (n: number) =>
+    db.query<{ id: string }>(
+      `insert into public.atlas_push_devices(device_key_hash, platform, endpoint, p256dh, auth_secret)
+       values ($1, 'web', 'https://web.push.apple.com/abc', $2, $3) returning id`,
+      [hash(n), "B".repeat(87), "A".repeat(22)],
+    );
+
+  it("are server-only: members and visitors can neither read nor write them", async () => {
+    await web(1);
+    for (const table of [
+      "atlas_push_devices",
+      "atlas_push_messages",
+      "atlas_push_announcements",
+    ]) {
+      await expect(
+        as(alice, () => db.query(`select * from public.${table}`)),
+      ).rejects.toThrow();
+    }
+    await expect(
+      as(alice, () =>
+        db.query(
+          `insert into public.atlas_push_devices(device_key_hash, platform, fcm_token) values ($1,'android',$2)`,
+          [hash(2), "t".repeat(40)],
+        ),
+      ),
+    ).rejects.toThrow();
+  });
+
+  it("requires the push address that matches the platform", async () => {
+    await expect(
+      db.query(
+        `insert into public.atlas_push_devices(device_key_hash, platform, fcm_token) values ($1,'web',$2)`,
+        [hash(3), "t".repeat(40)],
+      ),
+    ).rejects.toThrow();
+    await expect(
+      db.query(
+        `insert into public.atlas_push_devices(device_key_hash, platform, endpoint, p256dh, auth_secret) values ($1,'web','http://insecure.example/x',$2,$3)`,
+        [hash(4), "B".repeat(87), "A".repeat(22)],
+      ),
+    ).rejects.toThrow();
+    await expect(
+      db.query(
+        `insert into public.atlas_push_devices(device_key_hash, platform, fcm_token) values ('not-a-hash','android',$1)`,
+        ["t".repeat(40)],
+      ),
+    ).rejects.toThrow();
+  });
+
+  it("deletes a device's messages with it, and purges sent and stale data", async () => {
+    const device = (await web(5)).rows[0].id;
+    await db.query(
+      `insert into public.atlas_push_messages(device_id, send_at, title, body, sent_at) values
+        ($1, now() - interval '3 days', 'Old', 'Sent long ago', now() - interval '3 days'),
+        ($1, now() + interval '1 day', 'Next', 'Tomorrow', null)`,
+      [device],
+    );
+    const purged = await one<{ r: { messages: number; devices: number } }>(
+      "select public.purge_atlas_push() as r",
+    );
+    expect(purged.r.messages).toBe(1);
+    expect(
+      (
+        await one<{ n: number }>(
+          "select count(*)::int as n from public.atlas_push_messages where device_id = $1",
+          [device],
+        )
+      ).n,
+    ).toBe(1);
+
+    await db.query(
+      "update public.atlas_push_devices set last_seen_at = now() - interval '61 days' where id = $1",
+      [device],
+    );
+    expect(
+      (
+        await one<{ r: { devices: number } }>(
+          "select public.purge_atlas_push() as r",
+        )
+      ).r.devices,
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      (
+        await one<{ n: number }>(
+          "select count(*)::int as n from public.atlas_push_messages where device_id = $1",
+          [device],
+        )
+      ).n,
+    ).toBe(0);
+  });
+
+  it("only accepts in-app paths for notification links", async () => {
+    const device = (await web(6)).rows[0].id;
+    await expect(
+      db.query(
+        `insert into public.atlas_push_messages(device_id, send_at, title, body, url) values ($1, now(), 't', 'b', 'https://evil.example')`,
+        [device],
+      ),
+    ).rejects.toThrow();
+  });
+});

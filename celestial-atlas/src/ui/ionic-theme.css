@@ -197,3 +197,10 @@ ion-searchbar .searchbar-input-container {
   border: 1px solid rgba(201, 163, 90, 0.28);
   border-radius: 4px;
 }
+
+/* Let switch labels wrap instead of cutting the description short. */
+ion-toggle::part(label) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}

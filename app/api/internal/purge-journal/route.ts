@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 
 /**
  * Daily retention job (Vercel Cron, CRON_SECRET bearer). Removes journal
- * entries past their one-year expiry and expired claim rows left by the
+ * entries past their one-year expiry, sent push messages and devices unseen
+ * for 60 days, and expired claim rows left by the
  * retired checkout flows.
  */
 export async function GET(request: Request) {
@@ -22,18 +23,20 @@ export async function GET(request: Request) {
 
   const admin = createAdminClient();
   const now = new Date().toISOString();
-  const [journal, pending, signin] = await Promise.all([
+  const [journal, pending, signin, push] = await Promise.all([
     admin.rpc("purge_expired_atlas_journal_entries"),
+    admin.rpc("purge_atlas_push"),
     admin.from("pending_chart_claims").delete().lt("expires_at", now),
     admin.from("subscription_signin_claims").delete().lt("expires_at", now),
   ]);
-  if (journal.error || pending.error || signin.error) {
+  if (journal.error || pending.error || signin.error || push.error) {
     console.error(
       JSON.stringify({
         level: "error",
         message: "Retention purge failed",
         journal: !!journal.error,
         claims: !!(pending.error || signin.error),
+        push: !!push.error,
       }),
     );
     return Response.json(

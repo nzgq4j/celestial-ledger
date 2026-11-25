@@ -9,7 +9,7 @@ One app serves the website (celestialatlas.app) and Android:
 | -------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | App      | `celestial-atlas/`         | Vite, React and Ionic (Material Design). All calculation runs on the device with astronomy-engine; places come from bundled GeoNames data. English, Spanish, French and German. |
 | Android  | `celestial-atlas/android/` | Capacitor 8 build of the same app (`com.celestialatlas.app`).                                                                                                                   |
-| Server   | `app/api/`, `lib/`         | Next.js route handlers only: Stripe and Google Play billing, account deletion, contact, email-link hand-off and the daily retention job.                                        |
+| Server   | `app/api/`, `lib/`         | Next.js route handlers only: Stripe and Google Play billing, account deletion, contact, email-link hand-off, push notifications and the daily retention job.                    |
 | Database | `supabase/migrations/`     | Supabase Postgres with owner-only row-level security.                                                                                                                           |
 
 The website build copies the app into `public/`; Next.js serves it and falls
@@ -74,7 +74,10 @@ walkthrough with accessibility checks (`celestial-atlas/e2e/smoke.mjs`).
 
 Server: `NEXT_PUBLIC_APP_URL`, Supabase URL and publishable key, Supabase
 service-role key, Stripe secret and webhook secret, Google Play service
-account and package name, `CRON_SECRET`. The app build reads only
+account and package name, `CRON_SECRET`. Push notifications add
+`WEB_PUSH_VAPID_PUBLIC_KEY`, `WEB_PUSH_VAPID_PRIVATE_KEY`, `WEB_PUSH_SUBJECT`,
+`FIREBASE_SERVICE_ACCOUNT_JSON` and `PUSH_ADMIN_SECRET` (see
+`docs/operations/push-notifications.md`). The app build reads only
 `VITE_*` and `NEXT_PUBLIC_*` variables.
 
 ## Production changes

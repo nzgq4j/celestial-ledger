@@ -8,7 +8,8 @@ import { onBackButton, onResume, tap } from '../platform/native';
 import { localizeChart, localizeSky } from '../engine/localize';
 import { contentFor, detectLocale, isLocale, stringsFor, type Locale } from '../i18n';
 import type { Content } from '../engine/content';
-import { DEFAULT_NOTIF, cancelInsights, scheduleInsights, type NotifSettings } from '../platform/notifications';
+import { DEFAULT_NOTIF, cancelInsights, syncInsights, type NotifSettings } from '../platform/notifications';
+import { disablePush, onPushTap } from '../platform/push';
 import { KEYS, load, removeAll, save } from '../platform/storage';
 import { supabase } from '../platform/supabase';
 import type { JournalEntry } from './journal';
@@ -31,12 +32,11 @@ export interface UiState {
   signA: number | null;
   signB: number;
   openEntry: number | null;
-  insightDismissed: boolean;
 }
 
 const INITIAL_UI: UiState = {
   period: 'daily', horoSign: null, numSel: 'lifePath',
-  partnerName: '', partnerDate: '', signA: null, signB: 4, openEntry: null, insightDismissed: false,
+  partnerName: '', partnerDate: '', signA: null, signB: 4, openEntry: null,
 };
 
 export interface Derived {
@@ -66,7 +66,8 @@ interface AppValue {
   journal: JournalEntry[];
   premium: boolean;
   notif: NotifSettings;
-  notifBlocked: boolean;
+  /** Why notifications are not working, if they are on. */
+  notifIssue: 'blocked' | 'failed' | null;
   route: Route;
   tab: TabId;
   starsTab: StarsTab;
@@ -142,7 +143,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const stringsRef = useRef(stringsFor(locale));
   stringsRef.current = stringsFor(locale);
   contentRef.current = content;
-  const [notifBlocked, setNotifBlocked] = useState(false);
+  const [notifIssue, setNotifIssue] = useState<'blocked' | 'failed' | null>(null);
   const [route, setRoute] = useState<Route>(() => { initHistory(); return currentRoute(); });
   const [paywall, setPaywall] = useState(false);
   const [signInOpen, setSignInOpen] = useState(false);
@@ -201,6 +202,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try { window.scrollTo(0, 0); } catch { /* not in a browser */ }
   }, []);
 
+  // A tapped push notification opens its page.
+  useEffect(() => onPushTap(path => { const r = parsePath(path); go(r.tab, r.sub); }), [go]);
+
   const tab = route.tab;
   const starsTab: StarsTab = route.tab === 'stars' && STARS_TABS.includes(route.sub as StarsTab) ? route.sub as StarsTab : 'horoscope';
   const numTab: NumTab = route.tab === 'numbers' && NUM_TABS.includes(route.sub as NumTab) ? route.sub as NumTab : 'core';
@@ -233,7 +237,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded || !profile) return;
     const n = notifRef.current;
-    void scheduleInsights(profile, n, false, contentRef.current).then(ok => setNotifBlocked(!ok && n.enabled));
+    void syncInsights(profile, n, false, contentRef.current).then(r => {
+      setNotifIssue(n.enabled && (r === 'blocked' || r === 'failed') ? r : null);
+      // The browser has not granted permission (for example after reinstalling): show the switch off.
+      if (r === 'needs-permission') { const off = { ...n, enabled: false }; setNotifState(off); void save(KEYS.notif, off); }
+    });
   }, [loaded, profile, locale]);
 
   /* ---------- Account and sync ---------- */
@@ -375,11 +383,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setNotif = useCallback(async (next: NotifSettings) => {
     setNotifState(next);
-    setUiState(s => ({ ...s, insightDismissed: false }));
     await save(KEYS.notif, next);
     if (profile) {
-      const ok = await scheduleInsights(profile, next, next.enabled, contentRef.current);
-      setNotifBlocked(!ok && next.enabled);
+      const r = await syncInsights(profile, next, next.enabled, contentRef.current);
+      setNotifIssue(next.enabled && (r === 'blocked' || r === 'failed') ? r : r === 'needs-permission' && next.enabled ? 'blocked' : null);
     }
   }, [profile]);
 
@@ -393,6 +400,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetAll = useCallback(async () => {
     await cancelInsights();
+    await disablePush().catch(() => undefined);
     if (userId) await account.signOut().catch(() => undefined);
     await removeAll();
     setProfileState(null); setJournal([]); setLocalPremium(false); setNotifState(DEFAULT_NOTIF);
@@ -404,7 +412,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => { setLocaleState(l); void save(KEYS.locale, l); }, []);
 
   const value: AppValue = {
-    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifBlocked, route, tab, starsTab, numTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
+    loaded, locale, content, setLocale, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
     account: { available: supabase !== null, email: session?.user.email ?? null, membership, syncing },
     go, setStarsTab, setNumTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),

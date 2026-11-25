@@ -1,5 +1,4 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonIcon } from '@ionic/react';
-import { closeOutline } from 'ionicons/icons';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
 import { drawCards, horoscope, recordDraw, report } from '../engine/atlas';
 import { cardsIn } from '../engine/localize';
 import { fill, useContent, useStrings } from '../i18n';
@@ -53,27 +52,10 @@ export function Today() {
       ? { label: t.rising, glyph: chart.rising.sign.glyph, name: chart.rising.sign.name, ev: chart.rising.evidenceId }
       : { label: t.rising, glyph: '?', name: t.addBirthTime, ev: undefined },
   ];
-  const showInsight = app.notif.enabled && !app.ui.insightDismissed;
   const pct = Math.round(sky.illum * 100);
 
   return (
     <div className="screen fade-up" style={{ gap: 18 }}>
-      {showInsight && (
-        <IonCard className={tcss.insight} role="note" aria-label={t.insightLabel}>
-          <div className={tcss.insightRow}>
-            <div className={tcss.insightIcon} aria-hidden="true"><div /></div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className={tcss.insightMeta}><span>{t.insightMeta}</span><span>{t.now}</span></div>
-              <div className={tcss.insightTitle}>{fill(t.insightTitle, { day: nums.personalDay, sign: sky.moon.sign.name })}</div>
-              <div className={tcss.insightBody}>{c.personalDay[nums.personalDay]}</div>
-            </div>
-            <IonButton fill="clear" color="medium" aria-label={t.dismiss} onClick={() => app.setUi({ insightDismissed: true })}>
-              <IonIcon aria-hidden="true" slot="icon-only" icon={closeOutline} />
-            </IonButton>
-          </div>
-        </IonCard>
-      )}
-
       <div className={css.pageHead}>
         <div className="eyebrow">{now.toLocaleDateString(c.locale, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
         <h1 className="display" style={{ fontSize: 40, lineHeight: 1.08 }}>{greeting}</h1>
