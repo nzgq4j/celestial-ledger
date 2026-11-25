@@ -85,7 +85,8 @@ for (const deck of ['Traditional', 'The Whimsical Cats', 'Neon Circuit', 'Proven
 }
 await page.getByRole('button', { name: 'Save to journal' }).click();
 
-await page.locator('ion-header').getByRole('button', { name: 'Atlas+' }).first().click();
+await tab('Account').click();
+await page.getByRole('button', { name: 'Atlas+' }).first().click();
 await page.locator('ion-modal').getByText('See the whole map.').waitFor();
 await axe('paywall'); await shot('11-paywall');
 await page.getByRole('button', { name: 'Start 3-day free trial' }).click();
@@ -97,12 +98,13 @@ await page.getByText('How this was calculated').click();
 await axe('report'); await shot('12-report');
 await page.getByRole('button', { name: 'Save report to journal' }).click();
 
-await tab('Journal').click();
+await tab('Account').click();
+await seg('Journal').click();
 await page.locator('ion-accordion').filter({ hasText: 'Atlas Report' }).first().locator('ion-item').click();
 await axe('journal'); await shot('13-journal');
 
-await page.getByRole('button', { name: /^Profile/ }).click();
-await axe('profile'); await shot('14-profile');
+await seg('Settings').click();
+await axe('account-settings'); await shot('14-account-settings');
 
 // Back navigation goes to the previous tab.
 await tab('Stars').click();
@@ -111,7 +113,8 @@ await shot('15-chart-premium');
 const evidenceMarks = await page.locator('[data-evidence]').count();
 
 // Switch the language to Spanish and check the reading content follows.
-await page.getByRole('button', { name: /^Profile/ }).click();
+await tab('Account').click();
+await seg('Settings').click();
 await page.locator('ion-select').filter({ hasText: 'English' }).click();
 await page.getByRole('radio', { name: 'Español' }).or(page.getByRole('button', { name: 'Español' })).first().click();
 await page.locator('ion-tab-bar').getByRole('tab', { name: 'Hoy' }).click();

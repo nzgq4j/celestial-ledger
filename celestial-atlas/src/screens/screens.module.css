@@ -60,7 +60,7 @@
   width: 44px; height: 44px; border-radius: 50%; background: var(--bg-chip); border: 1px solid rgba(201, 163, 90, 0.5);
   color: var(--gold-bright); font-family: var(--font-display); font-size: 18px; font-weight: 600; padding: 0;
 }
-.main { width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 8px 40px; }
+.main { width: 100%; max-width: 1080px; margin: 0 auto; padding: calc(16px + var(--safe-top)) 8px 40px; }
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 760px; z-index: 30;
   display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: rgba(8, 14, 34, 0.94);
@@ -133,3 +133,10 @@
   position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); z-index: 20;
   background: rgba(10, 17, 40, 0.96); pointer-events: none;
 }
+
+/* ---------- Account page ---------- */
+.backRow { margin: -6px 0 6px -8px; }
+.accountHead { display: flex; align-items: center; gap: 16px; }
+.accountHead .avatar { flex: none; width: 56px; height: 56px; font-size: 24px; display: inline-flex; align-items: center; justify-content: center; }
+.accountWho { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.accountName { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.15; color: var(--ink); overflow-wrap: anywhere; }

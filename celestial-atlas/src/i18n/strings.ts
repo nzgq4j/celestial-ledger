@@ -7,7 +7,7 @@ export type Locale = (typeof LOCALES)[number];
 
 export const en = {
   appName: 'Celestial Atlas',
-  tabs: { home: 'Today', stars: 'Stars', numbers: 'Numbers', tarot: 'Tarot', journal: 'Journal', label: 'App sections' },
+  tabs: { home: 'Today', stars: 'Stars', numbers: 'Numbers', tarot: 'Tarot', journal: 'Journal', account: 'Account', label: 'App sections' },
   common: {
     done: "Done",
     back: 'Back',
@@ -256,6 +256,9 @@ export const en = {
     saved: 'Profile updated',
     invalid: 'Add a name and birth date',
     account: 'Account',
+    settings: 'Settings',
+    sections: 'Account sections',
+    notSignedInShort: 'Not signed in',
     signedInAs: 'Signed in as {email}',
     syncing: 'Syncing…',
     synced: 'Your profile and journal sync to this account.',

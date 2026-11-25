@@ -4,6 +4,7 @@ import { fill, useStrings } from '../i18n';
 import { useApp } from '../state/store';
 import css from './screens.module.css';
 
+/** Journal section of the Account page. */
 export function Journal() {
   const app = useApp();
   const strings = useStrings();
@@ -21,10 +22,9 @@ export function Journal() {
   });
 
   return (
-    <div className="screen fade-up" style={{ gap: 18, maxWidth: 780 }}>
+    <div className="stack" style={{ gap: 18 }}>
       <div className={css.pageHead}>
-        <div className="eyebrow">{journal.length === 1 ? s.one : fill(s.many, { n: journal.length })}</div>
-        <h1 className="h1">{s.title}</h1>
+        <h2 className="eyebrow" style={{ margin: 0 }}>{journal.length === 1 ? s.one : fill(s.many, { n: journal.length })}</h2>
         {app.account.available && !signedIn && (
           <p className="small" style={{ margin: 0 }}>
             {s.syncHint} <IonButton fill="clear" size="small" onClick={app.openSignIn}>{strings.common.signIn}</IonButton>

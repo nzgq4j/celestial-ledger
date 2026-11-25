@@ -1,18 +1,16 @@
 import {
-  IonAlert, IonApp, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonModal, IonTabBar, IonTabButton,
-  IonLabel, IonTitle, IonToast, IonToolbar,
+  IonAlert, IonApp, IonButton, IonContent, IonFooter, IonIcon, IonModal, IonTabBar, IonTabButton, IonLabel, IonToast,
 } from '@ionic/react';
-import { albumsOutline, arrowBackOutline, bookOutline, calculatorOutline, sparklesOutline, sunnyOutline } from 'ionicons/icons';
+import { albumsOutline, arrowBackOutline, calculatorOutline, personCircleOutline, sparklesOutline, sunnyOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { LocaleContext, stringsFor, useStrings } from './i18n';
 import { updatePassword } from './platform/account';
 import { hideNativeSplash, setupSystemBars } from './platform/native';
-import { Journal } from './screens/Journal';
+import { Account } from './screens/Account';
 import { Legal } from './screens/Legal';
 import { Numbers } from './screens/Numbers';
 import { Onboarding } from './screens/Onboarding';
 import { Paywall } from './screens/Paywall';
-import { Profile } from './screens/Profile';
 import { ReportScreen } from './screens/Report';
 import { SignIn } from './screens/SignIn';
 import { Splash } from './screens/Splash';
@@ -21,16 +19,19 @@ import { Tarot } from './screens/Tarot';
 import { Today } from './screens/Today';
 import css from './screens/screens.module.css';
 import { useApp, type TabId } from './state/store';
-import { Mark, Starfield } from './ui/components';
+import { Starfield } from './ui/components';
 
-const TABS: { id: TabId; icon: string }[] = [
-  { id: 'home', icon: sunnyOutline },
-  { id: 'stars', icon: sparklesOutline },
-  { id: 'numbers', icon: calculatorOutline },
-  { id: 'tarot', icon: albumsOutline },
-  { id: 'journal', icon: bookOutline },
+const TABS: { id: TabId; icon: string; label: 'home' | 'stars' | 'numbers' | 'tarot' | 'account' }[] = [
+  { id: 'home', icon: sunnyOutline, label: 'home' },
+  { id: 'stars', icon: sparklesOutline, label: 'stars' },
+  { id: 'numbers', icon: calculatorOutline, label: 'numbers' },
+  { id: 'tarot', icon: albumsOutline, label: 'tarot' },
+  // The Account tab holds the journal and settings (/journal and /profile).
+  { id: 'profile', icon: personCircleOutline, label: 'account' },
 ];
-const MAIN_TABS = new Set<TabId>(TABS.map(t => t.id));
+/** Screens reached from the tab bar; everything else gets a back button. */
+const MAIN_TABS = new Set<TabId>(['home', 'stars', 'numbers', 'tarot', 'journal', 'profile']);
+const selectedTab = (tab: TabId): TabId | undefined => (tab === 'journal' ? 'profile' : MAIN_TABS.has(tab) ? tab : undefined);
 
 /** How long the animated web splash shows after the native splash hides. */
 const SPLASH_MS = 1500;
@@ -96,17 +97,16 @@ export function App() {
 function Shell() {
   const app = useApp();
   const s = useStrings();
-  const first = app.profile?.name.split(' ')[0] || '';
   const sub = !MAIN_TABS.has(app.tab);
 
   const screen = (() => {
     if (app.tab === 'privacy' || app.tab === 'terms') return <Legal kind={app.tab} />;
-    if (app.tab === 'profile') return <Profile />;
+    if (app.tab === 'profile' || app.tab === 'journal') return <Account />;
     if (app.derivedError || !app.derived) {
       return (
         <div className="panel stack" style={{ gap: 12 }}>
           <p className="body">{s.common.chartError}</p>
-          <IonButton onClick={() => app.go('profile')}>{s.common.openProfile}</IonButton>
+          <IonButton onClick={() => app.go('profile', 'settings')}>{s.common.openProfile}</IonButton>
         </div>
       );
     }
@@ -115,7 +115,6 @@ function Shell() {
       case 'stars': return <Stars />;
       case 'numbers': return <Numbers />;
       case 'tarot': return <Tarot />;
-      case 'journal': return <Journal />;
       case 'report': return app.report ? <ReportScreen /> : <Today />;
       default: return <Today />;
     }
@@ -123,40 +122,28 @@ function Shell() {
 
   return (
     <div className="ion-page" id="atlas-shell">
-      <IonHeader>
-        <IonToolbar>
-          {sub && (
-            <IonButtons slot="start">
-              <IonButton aria-label={s.common.back} onClick={() => { if (!app.back()) app.go('home'); }}>
-                <IonIcon aria-hidden="true" slot="icon-only" icon={arrowBackOutline} />
-              </IonButton>
-            </IonButtons>
-          )}
-          <IonTitle>
-            <span className={css.brand}><Mark />{s.appName}</span>
-          </IonTitle>
-          <IonButtons slot="end">
-            {!app.premium && app.profile && (
-              <IonButton color="primary" fill="outline" shape="round" size="small" onClick={app.openPaywall}>{s.common.atlasPlus}</IonButton>
-            )}
-            {app.profile && (
-              <IonButton className={css.avatarButton} aria-label={`${s.common.profile.replace('{name}', first)}`} onClick={() => app.go('profile')}>
-                <span className={css.avatar} aria-hidden="true">{first.charAt(0).toUpperCase() || '·'}</span>
-              </IonButton>
-            )}
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+      {/* No header bar: this keeps the status-bar area solid so content never scrolls under the clock. */}
+      <div className={css.safeTop} aria-hidden="true" />
       <IonContent fullscreen>
-        <main className={css.main}>{screen}</main>
+        <main className={css.main}>
+          {sub && (
+            <div className={css.backRow}>
+              <IonButton fill="clear" size="small" onClick={() => { if (!app.back()) app.go('home'); }}>
+                <IonIcon aria-hidden="true" slot="start" icon={arrowBackOutline} />
+                {s.common.back}
+              </IonButton>
+            </div>
+          )}
+          {screen}
+        </main>
       </IonContent>
       {app.profile && (
         <IonFooter>
-          <IonTabBar id="atlas-tabbar" selectedTab={MAIN_TABS.has(app.tab) ? app.tab : undefined} aria-label={s.tabs.label}>
+          <IonTabBar id="atlas-tabbar" selectedTab={selectedTab(app.tab)} aria-label={s.tabs.label}>
             {TABS.map(t => (
               <IonTabButton key={t.id} tab={t.id} onClick={() => app.go(t.id)}>
                 <IonIcon aria-hidden="true" icon={t.icon} />
-                <IonLabel>{s.tabs[t.id as keyof typeof s.tabs]}</IonLabel>
+                <IonLabel>{s.tabs[t.label]}</IonLabel>
               </IonTabButton>
             ))}
           </IonTabBar>
