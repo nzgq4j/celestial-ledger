@@ -304,21 +304,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (target?.remoteId && userId) void account.deleteJournalEntry(target.remoteId).catch(() => showToast('Could not delete from your account. Try again later.'));
   }, [userId, showToast]);
 
-  const startTrial = useCallback(async (plan: PlanId) => {
-    const ok = await billing.purchase(plan);
-    setPaywall(false);
+  const refreshMembership = useCallback(async () => {
     if (userId) setMembership(await account.loadMembership().catch(() => null));
-    else setLocalPremium(ok);
-    if (ok) { void tap(); showToast('Welcome to Atlas+'); }
-  }, [showToast, userId]);
+  }, [userId]);
+
+  const startTrial = useCallback(async (plan: PlanId) => {
+    const outcome = await billing.purchase(plan);
+    if (outcome === 'redirect') return; // continues in the store's checkout
+    setPaywall(false);
+    if (billing.needsAccount) await refreshMembership();
+    else setLocalPremium(outcome === 'active');
+    if (outcome === 'active') { void tap(); showToast('Welcome to Atlas+'); }
+  }, [showToast, refreshMembership]);
 
   const manageMembership = useCallback(async () => {
-    if (premium) {
-      const still = await billing.manage();
-      if (userId) setMembership(await account.loadMembership().catch(() => null));
-      else setLocalPremium(still);
-    } else setPaywall(true);
-  }, [premium, userId]);
+    if (!premium) { setPaywall(true); return; }
+    const outcome = await billing.manage();
+    if (outcome === 'redirect') return;
+    if (billing.needsAccount) await refreshMembership();
+    else setLocalPremium(outcome === 'active');
+  }, [premium, refreshMembership]);
+
+  // Returning from Stripe Checkout: the webhook may take a moment, so check the membership a few times.
+  useEffect(() => {
+    if (!userId) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') !== 'complete') return;
+    window.history.replaceState(window.history.state, '', window.location.pathname);
+    showToast('Welcome to Atlas+. Confirming your membership…');
+    let tries = 0;
+    const id = setInterval(() => {
+      tries += 1;
+      void account.loadMembership().then(m => {
+        setMembership(m);
+        if (m.plan === 'premium' || tries >= 6) clearInterval(id);
+      }).catch(() => { if (tries >= 6) clearInterval(id); });
+    }, 2500);
+    return () => clearInterval(id);
+  }, [userId, showToast]);
 
   const setNotif = useCallback(async (next: NotifSettings) => {
     setNotifState(next);

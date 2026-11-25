@@ -257,6 +257,7 @@ export const en = {
     deleteTitle: 'Delete your account?',
     deleteCopy: 'This permanently deletes your account, birth details and journal. Type DELETE to confirm.',
     deleteActiveSub: 'Cancel your Atlas+ subscription before deleting your account.',
+    deleteReauth: 'For your security, sign in again, then delete your account.',
     deleted: 'Your account has been deleted.',
     notifTitle: 'Daily insight notification',
     notifCopy: 'Your personal day and the moon, each morning.',

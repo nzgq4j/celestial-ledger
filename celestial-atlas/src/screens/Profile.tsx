@@ -56,6 +56,7 @@ export function Profile() {
             await app.resetAll();
             app.showToast(s.deleted);
           }).catch((e: unknown) => {
+            if (e instanceof ApiError && e.code === 'REAUTH_REQUIRED') { app.showToast(s.deleteReauth); app.openSignIn(); return; }
             app.showToast(e instanceof ApiError && e.code === 'ACTIVE_SUBSCRIPTION' ? s.deleteActiveSub : e instanceof Error ? e.message : String(e));
           });
           return true;

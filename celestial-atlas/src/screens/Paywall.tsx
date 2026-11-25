@@ -2,6 +2,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToo
 import { closeOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { fill, useStrings } from '../i18n';
+import { ApiError } from '../platform/api';
 import { PLANS, TRIAL_DAYS, billing } from '../platform/billing';
 import { useApp } from '../state/store';
 import css from './screens.module.css';
@@ -11,14 +12,14 @@ export function Paywall() {
   const strings = useStrings();
   const s = strings.paywall;
   const [busy, setBusy] = useState(false);
-  const needsAccount = app.account.available && !app.account.email;
+  const needsAccount = billing.needsAccount && !app.account.email;
   const plan = PLANS[0];
 
   const start = async () => {
     if (needsAccount) { app.closePaywall(); app.openSignIn(); return; }
     setBusy(true);
     try { await app.startTrial(plan.id); }
-    catch { app.showToast(s.failed); }
+    catch (e) { app.showToast(e instanceof ApiError && e.status !== 500 ? e.message : s.failed); }
     finally { setBusy(false); }
   };
 
@@ -52,7 +53,7 @@ export function Paywall() {
             {needsAccount ? strings.common.signIn : fill(s.start, { days: TRIAL_DAYS })}
           </IonButton>
           <p className="note" style={{ textAlign: 'center', marginTop: 12 }}>{billing.isDemo ? s.demo : s.cancelAnytime}</p>
-          {!billing.isDemo && !needsAccount && (
+          {billing.canRestore && !needsAccount && (
             <IonButton expand="block" fill="clear" color="medium" onClick={() => void billing.restore().then(() => app.closePaywall())}>{s.restore}</IonButton>
           )}
         </div>

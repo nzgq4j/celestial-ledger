@@ -1,20 +1,23 @@
-import { PRIVATE_RESPONSE_HEADERS } from "@/lib/api-security";
 import { obfuscatedAccountIdFor } from "@/lib/google-play/account-id";
 import { loadPlayCatalog } from "@/lib/google-play/store";
-import { createClient } from "@/lib/supabase/server";
+import {
+  appJson,
+  appPreflight,
+  authenticateRequest,
+} from "@/lib/request-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const json = (body: unknown, status = 200) =>
-  Response.json(body, { status, headers: PRIVATE_RESPONSE_HEADERS });
+export const OPTIONS = appPreflight;
 
 /**
  * Google Play product and base-plan ids for Atlas (public catalogue facts),
  * plus the signed-in user's obfuscated Play account id when there is a
  * session. Private/no-store because of the latter.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const json = (body: unknown, status = 200) => appJson(request, body, status);
   let products;
   try {
     products = await loadPlayCatalog();
@@ -22,9 +25,10 @@ export async function GET() {
     return json({ error: "The Google Play catalogue is unavailable." }, 503);
   }
 
-  const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getClaims();
-  const userId = auth?.claims?.sub;
+  // Signed-out readers still get the catalogue; a session adds the account id.
+  // A cross-origin request without a bearer token is treated as signed out.
+  const auth = await authenticateRequest(request);
+  const userId = auth.ok ? auth.user.userId : null;
 
   return json({
     products: products.map((price) => ({

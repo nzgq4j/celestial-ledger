@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  isSameOrigin,
-  PRIVATE_RESPONSE_HEADERS,
-  readLimitedJson,
-  RequestPayloadError,
-} from "@/lib/api-security";
+import { readLimitedJson, RequestPayloadError } from "@/lib/api-security";
 import { GooglePlayApiError } from "@/lib/google-play/api";
 import { GoogleAuthError } from "@/lib/google-play/service-account";
 import {
@@ -20,7 +15,7 @@ import {
   syncPlayPurchase,
 } from "@/lib/google-play/sync";
 import { membershipPlanFor } from "@/lib/membership/plans";
-import { createClient } from "@/lib/supabase/server";
+import { appJson, appPreflight, authenticateRequest } from "@/lib/request-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,17 +42,16 @@ type VerifyErrorCode =
   | "unknown_product"
   | "unavailable";
 
-const error = (code: VerifyErrorCode, status: number) =>
-  Response.json({ error: code }, { status, headers: PRIVATE_RESPONSE_HEADERS });
+export const OPTIONS = appPreflight;
 
 export async function POST(request: Request) {
-  if (!isSameOrigin(request)) return error("origin_rejected", 403);
+  const error = (code: VerifyErrorCode, status: number) =>
+    appJson(request, { error: code }, status);
 
-  const supabase = await createClient();
-  const { data: auth, error: authError } = await supabase.auth.getClaims();
-  const userId = auth?.claims?.sub;
-  if (authError || typeof userId !== "string")
-    return error("sign_in_required", 401);
+  // The app sends a bearer token; the website uses its same-origin session cookie.
+  const auth = await authenticateRequest(request);
+  if (!auth.ok) return error(auth.code, auth.status);
+  const { userId } = auth.user;
 
   let body: unknown;
   try {
@@ -85,16 +79,13 @@ export async function POST(request: Request) {
       purchaseToken: parsed.data.purchaseToken,
       requireAccountMatch: true,
     });
-    return Response.json(
-      {
-        plan: membershipPlanFor(
-          subscriptionGrantsAccess(saved) ? saved.plan_key : null,
-        ),
-        status: saved.status,
-        currentPeriodEnd: saved.current_period_end,
-      },
-      { headers: PRIVATE_RESPONSE_HEADERS },
-    );
+    return appJson(request, {
+      plan: membershipPlanFor(
+        subscriptionGrantsAccess(saved) ? saved.plan_key : null,
+      ),
+      status: saved.status,
+      currentPeriodEnd: saved.current_period_end,
+    });
   } catch (cause) {
     if (cause instanceof PlaySyncConflict) {
       if (cause.code === "STRIPE_SUBSCRIPTION_ACTIVE")
