@@ -19,6 +19,9 @@ export default defineConfig([
     "next-env.d.ts",
     "android/**",
     "celestial-atlas/**",
+    // The app build copied into public/ by scripts/copy-app.mjs.
+    "public/assets/**",
+    "public/sw.js",
     "UPDATE/**",
   ]),
 ]);

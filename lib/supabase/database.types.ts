@@ -14,6 +14,125 @@ export type Database = {
   };
   public: {
     Tables: {
+      atlas_push_announcements: {
+        Row: {
+          body: Json;
+          created_at: string;
+          failed_count: number;
+          id: string;
+          sent_count: number;
+          title: Json;
+          url: string;
+        };
+        Insert: {
+          body: Json;
+          created_at?: string;
+          failed_count?: number;
+          id?: string;
+          sent_count?: number;
+          title: Json;
+          url?: string;
+        };
+        Update: {
+          body?: Json;
+          created_at?: string;
+          failed_count?: number;
+          id?: string;
+          sent_count?: number;
+          title?: Json;
+          url?: string;
+        };
+        Relationships: [];
+      };
+      atlas_push_devices: {
+        Row: {
+          announcements: boolean;
+          auth_secret: string | null;
+          created_at: string;
+          device_key_hash: string;
+          endpoint: string | null;
+          fcm_token: string | null;
+          id: string;
+          last_seen_at: string;
+          locale: string;
+          p256dh: string | null;
+          platform: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          announcements?: boolean;
+          auth_secret?: string | null;
+          created_at?: string;
+          device_key_hash: string;
+          endpoint?: string | null;
+          fcm_token?: string | null;
+          id?: string;
+          last_seen_at?: string;
+          locale?: string;
+          p256dh?: string | null;
+          platform: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          announcements?: boolean;
+          auth_secret?: string | null;
+          created_at?: string;
+          device_key_hash?: string;
+          endpoint?: string | null;
+          fcm_token?: string | null;
+          id?: string;
+          last_seen_at?: string;
+          locale?: string;
+          p256dh?: string | null;
+          platform?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      atlas_push_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          device_id: string;
+          id: string;
+          send_at: string;
+          sent_at: string | null;
+          title: string;
+          url: string;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          device_id: string;
+          id?: string;
+          send_at: string;
+          sent_at?: string | null;
+          title: string;
+          url?: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          device_id?: string;
+          id?: string;
+          send_at?: string;
+          sent_at?: string | null;
+          title?: string;
+          url?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "atlas_push_messages_device_id_fkey";
+            columns: ["device_id"];
+            isOneToOne: false;
+            referencedRelation: "atlas_push_devices";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       atlas_journal_entries: {
         Row: {
           body: string;
@@ -1580,6 +1699,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      purge_atlas_push: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
       atlas_membership: {
         Args: Record<PropertyKey, never>;
         Returns: Json;

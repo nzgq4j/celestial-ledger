@@ -4,6 +4,10 @@
     {
       "path": "/api/internal/purge-journal",
       "schedule": "23 3 * * *"
+    },
+    {
+      "path": "/api/internal/push-dispatch",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

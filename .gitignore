@@ -28,3 +28,4 @@ npm-debug.log*
 /public/icon-512.png
 /public/icon-maskable-512.png
 /public/manifest.webmanifest
+/public/sw.js

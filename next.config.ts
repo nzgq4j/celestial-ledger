@@ -75,6 +75,14 @@ const nextConfig: NextConfig = {
       headers: [{ key: "Cache-Control", value: "no-cache" }],
     },
     {
+      // The service worker must update promptly and only control this site.
+      source: "/sw.js",
+      headers: [
+        { key: "Cache-Control", value: "no-cache" },
+        { key: "Service-Worker-Allowed", value: "/" },
+      ],
+    },
+    {
       source: "/assets/:path*",
       headers: [
         { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
