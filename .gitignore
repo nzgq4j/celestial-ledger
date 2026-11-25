@@ -29,3 +29,6 @@ npm-debug.log*
 /public/icon-maskable-512.png
 /public/manifest.webmanifest
 /public/sw.js
+
+# Firebase app config: keep local, never commit (any folder).
+google-services.json

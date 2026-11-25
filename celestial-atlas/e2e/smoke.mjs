@@ -57,6 +57,11 @@ const seg = name => page.locator('ion-segment-button').filter({ hasText: name })
 const tab = name => page.locator('ion-tab-bar').getByRole('tab', { name });
 await tab('Stars').click();
 await axe('stars-horoscope'); await shot('05-horoscope');
+// Pick another sign from the sign selector.
+await page.locator('ion-select').filter({ hasText: 'Sign' }).first().click();
+await page.getByRole('button', { name: /^Gemini/ }).or(page.getByRole('radio', { name: /^Gemini/ })).first().click();
+await page.locator('ion-card').filter({ hasText: 'Gemini' }).first().waitFor();
+await axe('stars-sign-selected'); await shot('05b-horoscope-gemini');
 await seg('Birth chart').click();
 await page.locator('svg[role=img]').waitFor();
 await axe('stars-chart'); await shot('06-chart');
