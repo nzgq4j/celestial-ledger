@@ -1,12 +1,16 @@
 # Email setup (Supabase Auth)
 
+Members sign in with email and password; there is no one-time-code sign-in.
 Celestial Atlas sends its account emails through Supabase Auth: sign-up
-confirmation, the 6-digit sign-in code, password reset, email change and
-security notices. Templates, the sender and allowed links are set in the
-Supabase dashboard for project `jyguyvpbstskpuwqwrok`. The Supabase connector
-used by Claude cannot change these settings, so they are applied by hand or with
-`scripts/configure-supabase-email-templates.mjs --apply` and a personal access
-token.
+confirmation, password reset, email change and security notices. Templates, the
+sender and allowed links are set for project `jyguyvpbstskpuwqwrok` in the
+Supabase dashboard, or with `scripts/configure-supabase-email-templates.mjs
+--apply` and a Supabase personal access token (the Supabase MCP connector cannot
+change auth settings).
+
+**Current state (applied 2026-11-25):** Resend SMTP sender, 30 emails an hour,
+branded templates, Site URL `https://www.celestialatlas.app`, and redirect URLs
+`/auth/confirm`, `/auth/callback` and `https://www.celestialatlas.app/**`.
 
 ## 1. Sender (Resend SMTP)
 
@@ -29,20 +33,22 @@ Resend.
    - Host: `smtp.resend.com`, port `465`
    - Username: `resend`
    - Password: the Resend API key (enter it only here, never in chat or git)
-4. **Rate limit.** **Authentication > Rate Limits**: raise **emails sent per
-   hour** (for example to 100) once custom SMTP is on.
+4. **Rate limit.** **Authentication > Rate Limits**: **emails sent per hour**
+   (30 now). Raise it if sign-ups or resets start to hit the limit.
 
 ## 2. Links
 
 **Authentication > URL Configuration**:
 
 - Site URL: `https://www.celestialatlas.app`
-- Redirect URLs: `https://www.celestialatlas.app/**` and
-  `https://celestialatlas.app/**`
+- Redirect URLs: `https://www.celestialatlas.app/auth/confirm`,
+  `https://www.celestialatlas.app/auth/callback` and
+  `https://www.celestialatlas.app/**`
 
 Email links go to `/auth/confirm`, which passes the token to the app in the URL
-fragment (never sent to a server). The Android app signs in with the 6-digit
-code, so it needs no extra redirect URL.
+fragment (never sent to a server). Confirming an account or resetting a password
+happens in the browser; the Android app then signs in with email and password,
+so it needs no extra redirect URL.
 
 ## 3. Templates
 
@@ -57,8 +63,8 @@ For each row in `SUBJECTS.md`:
 3. Switch the body to source/HTML, replace it with the full contents of the
    matching `.html` file, and save.
 
-The **Magic link or OTP**, **Confirm sign up** and **Reauthentication**
-templates must keep `{{ .Token }}`: the app asks for that 6-digit code.
+Only **Reauthentication** carries a code (`{{ .Token }}`); the app does not use
+it today. The other templates are link-only.
 
 To regenerate the files after editing the script:
 
@@ -69,10 +75,11 @@ npx prettier --write docs/operations/supabase-email-templates
 
 ## 4. Check
 
-1. In the app, open **Account**, tap **Sign in**, choose **Email code**, enter
-   an address you can read and tap **Email me a code**.
-2. The email should arrive within a minute from `no-reply@celestialatlas.app`,
-   branded, with a 6-digit code. Enter the code in the app.
+1. In the app, open **Account**, tap **Sign in**, enter a new address you can
+   read and a password of at least 8 characters, and tap **Create account**.
+2. The confirmation email should arrive within a minute from
+   `no-reply@celestialatlas.app`, branded. Tap **Confirm email address**, then
+   sign in with the email and password.
 3. Try **Forgot password?** once and follow the link: it should open the app and
    ask for a new password.
 

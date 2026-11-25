@@ -40,9 +40,9 @@ Every step that changes production needs the owner's approval first.
 ## 4. Supabase Auth
 
 - Email: follow `docs/operations/email-setup.md` (custom SMTP sender, URL
-  configuration, and the branded templates with the 6-digit code the app uses).
-- Add `https://celestialatlas.app/profile` and `/today` to the allowed redirect
-  URLs.
+  configuration and the branded templates). Done on 2026-11-25.
+- Allowed redirect URLs include `https://www.celestialatlas.app/**`, which
+  covers `/profile` and `/today`. Done on 2026-11-25.
 
 ## 5. Vercel
 

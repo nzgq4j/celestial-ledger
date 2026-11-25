@@ -74,10 +74,8 @@ const config = {
     eyebrow: "Account confirmation",
     heading: "Confirm your email address",
     paragraphs: [
-      "Welcome to Celestial Atlas. Confirm your email address to finish creating your private account.",
-      "Enter this code in the app, or use the button below.",
+      "Welcome to Celestial Atlas. Confirm your email address to finish creating your private account, then sign in with your email and password.",
     ],
-    code: "{{ .Token }}",
     action: { label: "Confirm email address", href: confirmUrl("email") },
   }),
   mailer_subjects_invite: "You’re invited to Celestial Atlas",
@@ -89,15 +87,13 @@ const config = {
     ],
     action: { label: "Accept invitation", href: confirmUrl("invite") },
   }),
-  mailer_subjects_magic_link:
-    "{{ .Token }} is your Celestial Atlas sign-in code",
+  mailer_subjects_magic_link: "Your Celestial Atlas sign-in link",
   mailer_templates_magic_link_content: brandedEmail({
     eyebrow: "Secure sign in",
     heading: "Continue to Celestial Atlas",
     paragraphs: [
-      "Enter this single-use code in the Celestial Atlas app to sign in, or use the button below on this device. If you did not request it, you can ignore this email.",
+      "Use the button below to sign in on this device. If you did not request it, you can ignore this email.",
     ],
-    code: "{{ .Token }}",
     action: { label: "Sign in securely", href: confirmUrl("magiclink") },
   }),
   mailer_subjects_email_change:
