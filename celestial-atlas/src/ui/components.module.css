@@ -3,15 +3,15 @@
 .skyContained { position: absolute; }
 .ringBig {
   position: absolute; right: -280px; top: -280px; width: 760px; height: 760px; border-radius: 50%;
-  border: 1px solid rgba(201, 163, 90, 0.13); animation: slowspin 400s linear infinite;
+  border: 1px solid rgb(var(--gold-rgb) / 0.13); animation: slowspin 400s linear infinite;
 }
-.ringDash { position: absolute; inset: 70px; border-radius: 50%; border: 1px dashed rgba(201, 163, 90, 0.12); }
-.ringInner { position: absolute; inset: 160px; border-radius: 50%; border: 1px solid rgba(201, 163, 90, 0.1); }
-.axisV { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(201, 163, 90, 0.08); }
-.axisH { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(201, 163, 90, 0.08); }
+.ringDash { position: absolute; inset: 70px; border-radius: 50%; border: 1px dashed rgb(var(--gold-rgb) / 0.12); }
+.ringInner { position: absolute; inset: 160px; border-radius: 50%; border: 1px solid rgb(var(--gold-rgb) / 0.1); }
+.axisV { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgb(var(--gold-rgb) / 0.08); }
+.axisH { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgb(var(--gold-rgb) / 0.08); }
 .ringSmall {
   position: absolute; left: -200px; bottom: -260px; width: 520px; height: 520px; border-radius: 50%;
-  border: 1px solid rgba(201, 163, 90, 0.09);
+  border: 1px solid rgb(var(--gold-rgb) / 0.09);
 }
 .star { position: absolute; border-radius: 50%; opacity: 0.5; animation-name: twinkle; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
 
@@ -20,7 +20,7 @@
 .mark > span { border-radius: 50%; background: var(--gold-bright); }
 
 /* Sub-tabs */
-.subtabs { display: flex; gap: 4px; border-bottom: 1px solid rgba(201, 163, 90, 0.22); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.subtabs { display: flex; gap: 4px; border-bottom: 1px solid rgb(var(--gold-rgb) / 0.22); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .subtabs::-webkit-scrollbar { display: none; }
 .subtab {
   background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted);
@@ -30,14 +30,14 @@
 
 /* Moon */
 .moon {
-  flex-shrink: 0; border-radius: 50%; overflow: hidden; position: relative; background: var(--gold-bright);
-  box-shadow: 0 0 40px rgba(227, 194, 126, 0.25); border: 1px solid rgba(227, 194, 126, 0.6);
+  flex-shrink: 0; border-radius: 50%; overflow: hidden; position: relative; background: var(--moon);
+  box-shadow: 0 0 40px rgb(var(--gold-bright-rgb) / 0.25); border: 1px solid rgb(var(--gold-bright-rgb) / 0.6);
 }
 .moonShade { position: absolute; inset: -1px; border-radius: 50%; background: var(--bg-deep); }
 
 /* Ratings */
 .segs { display: flex; gap: 3px; }
-.seg, .segOn { width: 14px; height: 5px; border-radius: 1px; background: rgba(201, 163, 90, 0.18); }
+.seg, .segOn { width: 14px; height: 5px; border-radius: 1px; background: rgb(var(--gold-rgb) / 0.18); }
 .segOn { background: var(--gold); }
 
 /* Tarot card */
@@ -51,7 +51,7 @@
 .cardBorder { position: absolute; inset: 6px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 3px; pointer-events: none; }
 .corner { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; color: var(--accent-text, var(--accent)); z-index: 1; text-align: center; line-height: 1.1; }
 .cardInnerCompact {
-  position: absolute; inset: 5px; border: 1px solid rgba(201, 163, 90, 0.45); border-radius: 3px;
+  position: absolute; inset: 5px; border: 1px solid rgb(var(--gold-rgb) / 0.45); border-radius: 3px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 6px; text-align: center;
 }
 .cornerCompact { font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--gold-bright); line-height: 1.15; }
@@ -77,5 +77,5 @@
 .toastRegion { position: fixed; left: 0; right: 0; bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 24px); z-index: 60; display: flex; justify-content: center; pointer-events: none; }
 .toast {
   background: var(--ink); color: var(--bg); padding: 11px 20px; border-radius: 22px; font-size: 14px; font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); animation: fadeUp .25s ease both;
+  box-shadow: 0 10px 30px rgb(var(--shadow-rgb) / 0.4); animation: fadeUp .25s ease both;
 }

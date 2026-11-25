@@ -116,7 +116,7 @@ export function Numbers() {
               </IonItem>
             </IonList>
             {nc && (
-              <div className="stack" style={{ gap: 14, paddingTop: 16, borderTop: '1px solid rgba(201,163,90,0.18)' }}>
+              <div className="stack" style={{ gap: 14, paddingTop: 16, borderTop: '1px solid rgb(var(--gold-rgb) / 0.18)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
                   <div className="serif" style={{ fontSize: 46, fontWeight: 600, color: 'var(--gold-bright)', lineHeight: 1 }}>{nc.a} <span style={{ fontSize: 24, color: 'var(--muted)' }}>&amp;</span> {nc.b}</div>
                   <div>

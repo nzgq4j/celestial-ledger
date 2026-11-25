@@ -247,6 +247,10 @@ export const en = {
   },
   profile: {
     language: 'Language',
+    appearance: 'Appearance',
+    themeSystem: 'Match device',
+    themeLight: 'Light',
+    themeDark: 'Dark',
     eyebrow: 'Profile',
     birthDetails: 'Birth details',
     fullName: 'Full birth name',

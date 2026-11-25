@@ -10,9 +10,9 @@ export const isNative = (): boolean => Capacitor.isNativePlatform();
 export async function setupSystemBars(): Promise<void> {
   if (!isNative()) return;
   try {
-    // Light glyphs on the navy bar. (Capacitor's Style.Dark means "light text for dark backgrounds".)
     // The app draws edge to edge; Capacitor's SystemBars passes the bar insets to CSS.
-    await StatusBar.setStyle({ style: Style.Dark });
+    // The glyph colour follows the theme (src/platform/theme.ts); light glyphs until it applies.
+    await StatusBar.setStyle({ style: document.documentElement.classList.contains('theme-light') ? Style.Light : Style.Dark });
   } catch { /* older Android or not available */ }
 }
 

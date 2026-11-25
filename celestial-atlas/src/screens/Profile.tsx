@@ -9,6 +9,7 @@ import { ApiError } from '../platform/api';
 import { billing } from '../platform/billing';
 import { isNative } from '../platform/native';
 import { primePermission, pushSupport } from '../platform/push';
+import type { ThemePref } from '../platform/theme';
 import { PickerField } from '../ui/PickerField';
 import { useApp } from '../state/store';
 import { nameProblem, nameUsable } from '../state/validation';
@@ -124,6 +125,14 @@ export function AccountSettings() {
             <IonSelect label={s.language} interface="action-sheet" value={app.locale}
               onIonChange={e => app.setLocale(e.detail.value as Locale)}>
               {AVAILABLE_LOCALES.map(l => <IonSelectOption key={l} value={l} lang={l}>{LANGUAGE_NAMES[l]}</IonSelectOption>)}
+            </IonSelect>
+          </IonItem>
+          <IonItem>
+            <IonSelect label={s.appearance} interface="action-sheet" value={app.theme}
+              onIonChange={e => app.setTheme(e.detail.value as ThemePref)}>
+              <IonSelectOption value="system">{s.themeSystem}</IonSelectOption>
+              <IonSelectOption value="light">{s.themeLight}</IonSelectOption>
+              <IonSelectOption value="dark">{s.themeDark}</IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem>

@@ -243,6 +243,10 @@ export const fr: Strings = {
   },
   profile: {
     language: 'Langue',
+    appearance: 'Apparence',
+    themeSystem: 'Comme l’appareil',
+    themeLight: 'Clair',
+    themeDark: 'Sombre',
     eyebrow: 'Profil',
     birthDetails: 'Informations de naissance',
     fullName: 'Nom de naissance complet',

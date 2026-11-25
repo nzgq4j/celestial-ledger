@@ -20,6 +20,8 @@ export const SPREADS: Spread[] = [
 
 /** The deck chooser's own palette (before a deck is picked). */
 export const CHOOSER = { bg: '#12121f', ink: '#f5ede0', accent: '#c9a86a' };
+/** Deck chooser colours in the light theme. */
+export const CHOOSER_LIGHT = { bg: '#f4eee2', ink: '#1b2140', accent: '#7d5a1c' };
 
 export interface DrawnCard<C> { card: C; reversed: boolean; position: string }
 

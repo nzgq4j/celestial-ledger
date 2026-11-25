@@ -111,6 +111,28 @@ await axe('journal'); await shot('13-journal');
 await seg('Settings').click();
 await axe('account-settings'); await shot('14-account-settings');
 
+// Light theme: switch in Settings, then check the main screens for contrast and layout.
+await page.locator('ion-select').filter({ hasText: 'Appearance' }).click();
+await page.getByRole('button', { name: 'Light' }).or(page.getByRole('radio', { name: 'Light' })).first().click();
+await page.waitForFunction(() => document.documentElement.classList.contains('theme-light'));
+await page.waitForTimeout(400);
+await axe('light-settings'); await shot('L1-light-settings');
+await seg('Journal').click();
+await axe('light-journal'); await shot('L2-light-journal');
+await tab('Today').click();
+await axe('light-today'); await shot('L3-light-today');
+await tab('Stars').click();
+await seg('Horoscope').click();
+await axe('light-horoscope'); await shot('L4-light-horoscope');
+await seg('Birth chart').click();
+await axe('light-chart'); await shot('L5-light-chart');
+await tab('Numbers').click();
+await axe('light-numbers'); await shot('L6-light-numbers');
+await tab('Tarot').click();
+await axe('light-tarot'); await shot('L7-light-tarot');
+const lightKept = await page.evaluate(() => localStorage.getItem('atlas_theme'));
+if (lightKept !== 'light') throw new Error(`theme not remembered: ${lightKept}`);
+
 // Back navigation goes to the previous tab.
 await tab('Stars').click();
 await seg('Birth chart').click();

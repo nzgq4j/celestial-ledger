@@ -4,18 +4,18 @@
   padding: 40px 24px; text-align: center;
 }
 .astrolabe { position: relative; width: 200px; height: 200px; margin-bottom: 44px; animation: splashIn 1s ease both; }
-.ringOuter { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(201, 163, 90, 0.55); animation: slowspin 24s linear infinite; }
+.ringOuter { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgb(var(--gold-rgb) / 0.55); animation: slowspin 24s linear infinite; }
 .ringDot { position: absolute; left: 50%; top: -4px; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 12px var(--gold-bright); }
-.ringMid { position: absolute; inset: 26px; border-radius: 50%; border: 1px dashed rgba(201, 163, 90, 0.45); animation: spinRev 36s linear infinite; }
+.ringMid { position: absolute; inset: 26px; border-radius: 50%; border: 1px dashed rgb(var(--gold-rgb) / 0.45); animation: spinRev 36s linear infinite; }
 .ringDotSmall { position: absolute; left: -3px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: var(--gold); }
-.ringCore { position: absolute; inset: 58px; border-radius: 50%; border: 1px solid rgba(201, 163, 90, 0.35); }
-.crossV { position: absolute; left: 50%; top: -14px; bottom: -14px; width: 1px; background: linear-gradient(transparent, rgba(201, 163, 90, 0.5), transparent); }
-.crossH { position: absolute; top: 50%; left: -14px; right: -14px; height: 1px; background: linear-gradient(90deg, transparent, rgba(201, 163, 90, 0.5), transparent); }
+.ringCore { position: absolute; inset: 58px; border-radius: 50%; border: 1px solid rgb(var(--gold-rgb) / 0.35); }
+.crossV { position: absolute; left: 50%; top: -14px; bottom: -14px; width: 1px; background: linear-gradient(transparent, rgb(var(--gold-rgb) / 0.5), transparent); }
+.crossH { position: absolute; top: 50%; left: -14px; right: -14px; height: 1px; background: linear-gradient(90deg, transparent, rgb(var(--gold-rgb) / 0.5), transparent); }
 .pulse { position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold-bright); animation: corePulse 2.4s ease-in-out infinite; }
 .splashKicker { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 14px; animation: fadeUp .8s ease .3s both; }
 .splashTitle { font-family: var(--font-display); font-size: 56px; font-weight: 600; line-height: 1; margin: 0 0 16px; letter-spacing: 0.02em; animation: fadeUp .8s ease .45s both; }
 .splashSub { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--ink-lead); margin: 0 0 40px; animation: fadeUp .8s ease .6s both; }
-.sweepTrack { width: 160px; height: 2px; background: rgba(201, 163, 90, 0.18); border-radius: 1px; overflow: hidden; animation: fadeUp .8s ease .7s both; }
+.sweepTrack { width: 160px; height: 2px; background: rgb(var(--gold-rgb) / 0.18); border-radius: 1px; overflow: hidden; animation: fadeUp .8s ease .7s both; }
 .sweep { width: 40%; height: 100%; background: var(--gold-bright); border-radius: 1px; animation: loadSweep 1.4s ease-in-out infinite; }
 
 /* ---------- Onboarding ---------- */
@@ -27,8 +27,8 @@
 .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 36px; }
 .dots > div { height: 4px; border-radius: 2px; transition: all .3s ease; }
 .welcomeMark { width: 120px; height: 120px; margin: 0 auto 32px; border-radius: 50%; border: 1px solid var(--gold); position: relative; display: flex; align-items: center; justify-content: center; }
-.welcomeDash { position: absolute; inset: 12px; border-radius: 50%; border: 1px dashed rgba(201, 163, 90, 0.5); }
-.welcomeCore { width: 14px; height: 14px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 24px rgba(227, 194, 126, 0.7); }
+.welcomeDash { position: absolute; inset: 12px; border-radius: 50%; border: 1px dashed rgb(var(--gold-rgb) / 0.5); }
+.welcomeCore { width: 14px; height: 14px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 24px rgb(var(--gold-bright-rgb) / 0.7); }
 .welcomeLead { font-size: 16px; line-height: 1.65; color: var(--ink-lead); margin: 0 0 36px; text-wrap: pretty; }
 .stepTitle { font-family: var(--font-display); font-size: 38px; font-weight: 600; margin: 0 0 10px; line-height: 1.1; }
 .stepLead { font-size: 14.5px; line-height: 1.6; color: var(--muted); margin: 0 0 26px; }
@@ -36,35 +36,35 @@
 
 /* ---------- Place search ---------- */
 .placeSearch { display: flex; flex-direction: column; gap: 10px; }
-.placeChosen { --background: transparent; --inner-padding-end: 0; display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: var(--radius); background: rgba(201, 163, 90, 0.08); }
+.placeChosen { --background: transparent; --inner-padding-end: 0; display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: var(--radius); background: rgb(var(--gold-rgb) / 0.08); }
 .placeChosenName { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
 .placeList { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hairline); border-radius: var(--radius); overflow: hidden; background: var(--bg-input); }
 .placeList li + li { border-top: 1px solid var(--hairline-soft); }
 .placeOption { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: none; border: none; padding: 12px 14px; min-height: 52px; }
-.placeOption:hover, .placeOption:focus-visible { background: rgba(201, 163, 90, 0.1); }
+.placeOption:hover, .placeOption:focus-visible { background: rgb(var(--gold-rgb) / 0.1); }
 
 /* ---------- Shell ---------- */
 .shell { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100dvh; max-width: 760px; margin: 0 auto; }
 .topbar {
   position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between;
-  padding: calc(14px + var(--safe-top)) 18px 14px; background: rgba(10, 17, 40, 0.88); backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(201, 163, 90, 0.18);
+  padding: calc(14px + var(--safe-top)) 18px 14px; background: rgb(var(--navy-rgb) / 0.88); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgb(var(--gold-rgb) / 0.18);
 }
 .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 20px; font-weight: 600; }
 .topActions { display: flex; align-items: center; gap: 10px; }
 .plusChip {
-  background: none; border: 1px solid rgba(201, 163, 90, 0.55); color: var(--gold-bright); border-radius: 22px;
+  background: none; border: 1px solid rgb(var(--gold-rgb) / 0.55); color: var(--gold-bright); border-radius: 22px;
   padding: 0 16px; min-height: 44px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
 }
 .avatar {
-  width: 44px; height: 44px; border-radius: 50%; background: var(--bg-chip); border: 1px solid rgba(201, 163, 90, 0.5);
+  width: 44px; height: 44px; border-radius: 50%; background: var(--bg-chip); border: 1px solid rgb(var(--gold-rgb) / 0.5);
   color: var(--gold-bright); font-family: var(--font-display); font-size: 18px; font-weight: 600; padding: 0;
 }
 .main { width: 100%; max-width: 1080px; margin: 0 auto; padding: calc(16px + var(--safe-top)) 8px 40px; }
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 760px; z-index: 30;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: rgba(8, 14, 34, 0.94);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgba(201, 163, 90, 0.25);
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: rgb(var(--navy-rgb) / 0.94);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgb(var(--gold-rgb) / 0.25);
   padding: 6px 4px calc(10px + var(--safe-bottom));
 }
 .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: none; border: none; color: var(--muted); padding: 8px 2px; min-height: 56px; }
@@ -74,27 +74,27 @@
 
 /* ---------- Paywall ---------- */
 .scrim {
-  position: fixed; inset: 0; z-index: 50; background: rgba(4, 8, 20, 0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  position: fixed; inset: 0; z-index: 50; background: rgb(var(--navy-rgb) / 0.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center; padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
 }
 .sheet {
-  width: 100%; max-width: 440px; background: var(--panel-solid); border: 1px solid rgba(201, 163, 90, 0.5); border-radius: 8px;
+  width: 100%; max-width: 440px; background: var(--panel-solid); border: 1px solid rgb(var(--gold-rgb) / 0.5); border-radius: 8px;
   padding: 32px 24px; position: relative; animation: fadeUp .35s ease both; max-height: 100%; overflow: auto;
 }
 .close { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; background: none; border: none; color: var(--muted); font-size: 24px; }
 .plan {
   display: flex; justify-content: space-between; align-items: center; gap: 12px; border-radius: var(--radius-lg);
-  padding: 16px 18px; min-height: 64px; text-align: left; background: transparent; border: 1.5px solid rgba(201, 163, 90, 0.25);
+  padding: 16px 18px; min-height: 64px; text-align: left; background: transparent; border: 1.5px solid rgb(var(--gold-rgb) / 0.25);
 }
-.planOn { border-color: var(--gold); background: rgba(201, 163, 90, 0.1); }
+.planOn { border-color: var(--gold); background: rgb(var(--gold-rgb) / 0.1); }
 
 /* ---------- Shared screen pieces ---------- */
 .pageHead { display: flex; flex-direction: column; gap: 10px; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--muted);
-  border: 1px solid rgba(201, 163, 90, 0.2); border-radius: var(--radius); padding: 8px 11px; min-height: 44px; font-size: 13px;
+  border: 1px solid rgb(var(--gold-rgb) / 0.2); border-radius: var(--radius); padding: 8px 11px; min-height: 44px; font-size: 13px;
 }
-.chipOn { background: rgba(201, 163, 90, 0.16); color: var(--gold-bright); border-color: var(--gold); }
+.chipOn { background: rgb(var(--gold-rgb) / 0.16); color: var(--gold-bright); border-color: var(--gold); }
 .pill {
   background: transparent; color: var(--ink); border: 1px solid var(--hairline-strong); border-radius: 22px;
   padding: 0 18px; min-height: 44px; font-size: 13.5px; font-weight: 500; white-space: nowrap;
@@ -121,9 +121,9 @@
 .numberGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 .numberCard {
   position: relative; overflow: hidden; padding: 18px 12px; text-align: center; color: var(--muted); background: var(--ion-card-background, rgba(255,255,255,0.03));
-  border: 1.5px solid rgba(201, 163, 90, 0.2); border-radius: var(--radius-lg); min-height: 44px; font: inherit;
+  border: 1.5px solid rgb(var(--gold-rgb) / 0.2); border-radius: var(--radius-lg); min-height: 44px; font: inherit;
 }
-.numberCardOn { border-color: var(--gold); background: rgba(201, 163, 90, 0.12); color: var(--gold-bright); }
+.numberCardOn { border-color: var(--gold); background: rgb(var(--gold-rgb) / 0.12); color: var(--gold-bright); }
 .numberValue { font-family: var(--font-display); font-size: 40px; font-weight: 600; line-height: 1; color: var(--gold-bright); }
 .empty { text-align: center; padding: 32px 20px; }
 .journalList { border-radius: var(--radius-lg); overflow: hidden; }
@@ -131,7 +131,7 @@
 /* Covers the status-bar area in full-screen onboarding so scrolled text never runs under the clock. */
 .safeTop {
   position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); z-index: 20;
-  background: rgba(10, 17, 40, 0.96); pointer-events: none;
+  background: rgb(var(--navy-rgb) / 0.96); pointer-events: none;
 }
 
 /* ---------- Account page ---------- */
