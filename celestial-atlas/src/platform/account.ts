@@ -27,6 +27,17 @@ const client = () => {
   return supabase;
 };
 
+/** A name for the signed-in account: the provider's full name (Google), else the email before the @. */
+export function displayName(user: { email?: string | null; user_metadata?: Record<string, unknown> } | null): string | null {
+  if (!user) return null;
+  const meta = user.user_metadata ?? {};
+  for (const key of ['full_name', 'name']) {
+    const v = meta[key];
+    if (typeof v === 'string' && v.trim()) return v.trim().slice(0, 80);
+  }
+  return user.email ? user.email.split('@')[0] : null;
+}
+
 /* ---------- Sign-in ---------- */
 
 export async function signInWithPassword(email: string, password: string) {
