@@ -3,7 +3,10 @@
 import type { Profile } from '../engine/atlas';
 import type { EvidenceMap } from '../engine/records';
 import type { JournalEntry } from '../state/journal';
+import { App } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 import { postJson } from './api';
+import { isNative } from './native';
 import { supabase } from './supabase';
 
 export interface Membership {
@@ -34,10 +37,49 @@ export async function signInWithPassword(email: string, password: string) {
 export async function signUp(email: string, password: string, redirectTo: string) {
   const { data, error } = await client().auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
   if (error) throw new AccountError(error.code ?? 'SIGN_UP_FAILED', error.message);
-  return { needsConfirmation: !data.session };
+  // Supabase answers a sign-up for a registered address with a user that has no
+  // identities and sends no email (so addresses cannot be probed).
+  const alreadyExists = !!data.user && !data.session && (data.user.identities?.length ?? 0) === 0;
+  return { needsConfirmation: !data.session, alreadyExists };
 }
 
-/** Sends a one-time sign-in code by email (also creates the account if new). */
+/**
+ * Android returns from Google through this app link (an intent filter in
+ * AndroidManifest.xml); it is on the Supabase redirect allow list.
+ */
+export const OAUTH_APP_RETURN = 'com.celestialatlas.app://auth-callback';
+
+/**
+ * Continue with Google (signs in, or creates the account the first time).
+ * The web leaves the page and returns through /auth/callback with a PKCE code,
+ * which the Supabase client exchanges on load. Android opens Google in a
+ * Custom Tab (Google refuses sign-in inside app web views) and finishes in
+ * onOAuthReturn.
+ */
+export async function signInWithGoogle(webReturn: string): Promise<void> {
+  const native = isNative();
+  const { data, error } = await client().auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: native ? OAUTH_APP_RETURN : webReturn, skipBrowserRedirect: native },
+  });
+  if (error) throw new AccountError(error.code ?? 'OAUTH_FAILED', error.message);
+  if (native && data.url) await Browser.open({ url: data.url });
+}
+
+/** Android: completes Google sign-in when the app link opens the app. */
+export function onOAuthReturn(handler: (ok: boolean) => void): () => void {
+  if (!isNative() || !supabase) return () => undefined;
+  const sub = App.addListener('appUrlOpen', ({ url }) => {
+    if (!url.startsWith(OAUTH_APP_RETURN)) return;
+    void Browser.close().catch(() => undefined);
+    const code = new URL(url).searchParams.get('code');
+    if (!code) { handler(false); return; }
+    void client().auth.exchangeCodeForSession(code).then(({ error }) => handler(!error), () => handler(false));
+  });
+  return () => { void sub.then(h => h.remove()); };
+}
+
+/** Emails a password reset link. */
 export async function sendPasswordReset(email: string, redirectTo: string) {
   const { error } = await client().auth.resetPasswordForEmail(email, { redirectTo });
   if (error) throw new AccountError(error.code ?? 'RESET_FAILED', error.message);

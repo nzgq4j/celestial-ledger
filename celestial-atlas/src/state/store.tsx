@@ -266,7 +266,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!supabase) return;
-    void supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    // A Google sign-in returns to /profile?code=… (see /auth/callback); the client
+    // exchanges the code while it starts, then the code is removed from the address.
+    const oauthReturn = new URLSearchParams(window.location.search).has('code');
+    void supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      if (!oauthReturn) return;
+      window.history.replaceState(window.history.state, '', window.location.pathname);
+      showToast(data.session ? stringsRef.current.signin.welcome : stringsRef.current.signin.googleFailed);
+    });
+    const offOAuth = account.onOAuthReturn(ok => {
+      if (ok) { setSignInOpen(false); showToast(stringsRef.current.signin.welcome); }
+      else showToast(stringsRef.current.signin.googleFailed);
+    });
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       if (event === 'PASSWORD_RECOVERY') setPasswordPrompt(true);
@@ -279,7 +291,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .then(() => { if (link.type === 'recovery') setPasswordPrompt(true); else showToast(stringsRef.current.signin.welcome); })
         .catch(() => showToast(stringsRef.current.signin.linkFailed));
     }
-    return () => data.subscription.unsubscribe();
+    return () => { data.subscription.unsubscribe(); offOAuth(); };
   }, []);
 
   const journalRef = useRef(journal);
