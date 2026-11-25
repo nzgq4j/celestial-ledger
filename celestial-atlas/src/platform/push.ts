@@ -102,7 +102,7 @@ async function nativeToken(ask: boolean): Promise<string | 'denied' | 'needs-per
 }
 
 /** Registers this device for push and uploads its upcoming insights. */
-export async function enablePush(opts: { ask: boolean; locale: string; insights: Insight[] }): Promise<PushOutcome> {
+export async function enablePush(opts: { ask: boolean; locale: string; insights: Insight[]; announcements: boolean }): Promise<PushOutcome> {
   const support = pushSupport();
   if (support !== 'native' && support !== 'web') return 'unavailable';
   try {
@@ -116,7 +116,7 @@ export async function enablePush(opts: { ask: boolean; locale: string; insights:
         ? { fcmToken: address }
         : { subscription: { endpoint: address.endpoint, keys: { p256dh: address.keys?.p256dh, auth: address.keys?.auth } } }),
       locale: ['en', 'es', 'fr', 'de'].includes(opts.locale) ? opts.locale : 'en',
-      announcements: true,
+      announcements: opts.announcements,
       insights: opts.insights.map(i => ({ at: i.at.toISOString(), title: i.title, body: i.body })),
     };
     return (await send('POST', body)) ? 'push' : 'unavailable';

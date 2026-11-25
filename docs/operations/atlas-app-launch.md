@@ -39,8 +39,8 @@ Every step that changes production needs the owner's approval first.
 
 ## 4. Supabase Auth
 
-- Run `scripts/configure-supabase-email-templates.mjs`. The sign-in and
-  confirmation emails now carry the 6-digit code the app uses.
+- Email: follow `docs/operations/email-setup.md` (custom SMTP sender, URL
+  configuration, and the branded templates with the 6-digit code the app uses).
 - Add `https://celestialatlas.app/profile` and `/today` to the allowed redirect
   URLs.
 

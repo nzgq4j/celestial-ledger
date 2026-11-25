@@ -8,12 +8,27 @@ import { isNative } from './native';
 import { disablePush, enablePush } from './push';
 
 export interface NotifSettings {
+  /** The daily insight notification. */
   enabled: boolean;
   /** HH:MM local time */
   time: string;
+  /** Occasional news and announcements from Celestial Atlas (push only). */
+  news: boolean;
 }
 // On by default in the app (no prompt until scheduling); off on the web, where the browser must ask first.
-export const DEFAULT_NOTIF: NotifSettings = { enabled: isNative(), time: '08:00' };
+export const DEFAULT_NOTIF: NotifSettings = { enabled: isNative(), time: '08:00', news: isNative() };
+
+/** Reads saved settings. Older versions had one switch that also covered news. */
+export function normalizeNotif(saved: unknown): NotifSettings {
+  if (typeof saved !== 'object' || saved === null || !('enabled' in saved)) return DEFAULT_NOTIF;
+  const s = saved as Partial<NotifSettings>;
+  const enabled = s.enabled === true;
+  const time = typeof s.time === 'string' && /^\d{2}:\d{2}$/.test(s.time) ? s.time : DEFAULT_NOTIF.time;
+  return { enabled, time, news: typeof s.news === 'boolean' ? s.news : enabled };
+}
+
+/** True when either notification is on. */
+export const anyNotif = (s: NotifSettings): boolean => s.enabled || s.news;
 
 const CHANNEL = 'daily-insight';
 const DAYS_AHEAD = 14;
@@ -67,18 +82,19 @@ export type InsightSync = 'ok' | 'blocked' | 'needs-permission' | 'failed';
  * Asks for permission only when `ask` is true (the reader just turned it on).
  */
 export async function syncInsights(profile: Profile, settings: NotifSettings, ask = false, c: Content = EN): Promise<InsightSync> {
-  if (!settings.enabled) {
+  if (!anyNotif(settings)) {
     await cancelInsights();
     await disablePush().catch(() => undefined);
     return 'ok';
   }
-  const insights = deliveryTimes(settings.time).map(at => ({ at, ...insightFor(profile, at, c) }));
-  const outcome = await enablePush({ ask, locale: c.locale.slice(0, 2), insights });
+  // News alone registers the device with no daily messages.
+  const insights = settings.enabled ? deliveryTimes(settings.time).map(at => ({ at, ...insightFor(profile, at, c) })) : [];
+  const outcome = await enablePush({ ask, locale: c.locale.slice(0, 2), insights, announcements: settings.news });
   if (outcome === 'push') { await cancelInsights(); return 'ok'; }
   if (outcome === 'denied') return 'blocked';
   if (outcome === 'needs-permission' && !isNative()) return 'needs-permission';
-  // The web has no on-device fallback.
-  if (!isNative()) return 'failed';
+  // The web has no on-device fallback, and news always needs push.
+  if (!isNative() || !settings.enabled) return 'failed';
   await cancelInsights();
   return (await scheduleLocal(profile, settings, ask, c)) ? 'ok' : 'blocked';
 }

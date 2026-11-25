@@ -33,6 +33,8 @@ export function AccountSettings() {
   const support = pushSupport();
   // The Android app can always use on-device notifications; the web needs push.
   const notifPossible = isNative() || support === 'web';
+  // News arrives only by push (the Firebase build on Android, or Web Push).
+  const newsPossible = support === 'native' || support === 'web';
   const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString(app.locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '');
 
   const saveProfile = async () => {
@@ -120,6 +122,50 @@ export function AccountSettings() {
       )}
 
       <IonCard>
+        <IonCardHeader><IonCardSubtitle className="eyebrow">{s.notifSection}</IonCardSubtitle></IonCardHeader>
+        <IonList lines="full">
+          <IonItem>
+            <IonToggle checked={app.notif.enabled && notifPossible} disabled={!notifPossible}
+              onIonChange={e => {
+                // Safari only shows the permission prompt during the tap itself.
+                if (e.detail.checked) primePermission();
+                void app.setNotif({ ...app.notif, enabled: e.detail.checked });
+              }}>
+              <IonLabel className="ion-text-wrap">
+                <h3>{s.notifTitle}</h3>
+                <p>{s.notifCopy}</p>
+              </IonLabel>
+            </IonToggle>
+          </IonItem>
+          {app.notif.enabled && notifPossible && (
+            <IonItem>
+              <PickerField kind="time" label={s.notifTime} value={app.notif.time}
+                onChange={time => void app.setNotif({ ...app.notif, time })} />
+            </IonItem>
+          )}
+          <IonItem lines="none">
+            <IonToggle checked={app.notif.news && newsPossible} disabled={!newsPossible}
+              onIonChange={e => {
+                if (e.detail.checked) primePermission();
+                void app.setNotif({ ...app.notif, news: e.detail.checked });
+              }}>
+              <IonLabel className="ion-text-wrap">
+                <h3>{s.newsTitle}</h3>
+                <p>{s.newsCopy}</p>
+              </IonLabel>
+            </IonToggle>
+          </IonItem>
+        </IonList>
+        {(support === 'needs-home-screen' || (support === 'unsupported' && !isNative()) || app.notifIssue) && (
+          <IonCardContent className="stack" style={{ gap: 6, paddingTop: 0 }}>
+            {support === 'needs-home-screen' && <p className="small" style={{ margin: 0 }}>{s.notifHomeScreen}</p>}
+            {support === 'unsupported' && !isNative() && <p className="small" style={{ margin: 0 }}>{s.notifUnsupported}</p>}
+            {app.notifIssue && <IonText color="danger"><p className="small" style={{ margin: 0 }} role="alert">{app.notifIssue === 'blocked' ? s.notifBlocked : s.notifFailed}</p></IonText>}
+          </IonCardContent>
+        )}
+      </IonCard>
+
+      <IonCard>
         <IonList lines="full">
           <IonItem>
             <IonSelect label={s.language} interface="action-sheet" value={app.locale}
@@ -135,28 +181,6 @@ export function AccountSettings() {
               <IonSelectOption value="dark">{s.themeDark}</IonSelectOption>
             </IonSelect>
           </IonItem>
-          <IonItem>
-            <IonToggle checked={app.notif.enabled && notifPossible} disabled={!notifPossible}
-              onIonChange={e => {
-                // Safari only shows the permission prompt during the tap itself.
-                if (e.detail.checked) primePermission();
-                void app.setNotif({ ...app.notif, enabled: e.detail.checked });
-              }}>
-              <IonLabel className="ion-text-wrap">
-                <h3>{s.notifTitle}</h3>
-                <p>{s.notifCopy}</p>
-                {support === 'needs-home-screen' && <p>{s.notifHomeScreen}</p>}
-                {support === 'unsupported' && !isNative() && <p>{s.notifUnsupported}</p>}
-                {app.notifIssue && <IonText color="danger"><p>{app.notifIssue === 'blocked' ? s.notifBlocked : s.notifFailed}</p></IonText>}
-              </IonLabel>
-            </IonToggle>
-          </IonItem>
-          {app.notif.enabled && notifPossible && (
-            <IonItem>
-              <PickerField kind="time" label={s.notifTime} value={app.notif.time}
-                onChange={time => void app.setNotif({ ...app.notif, time })} />
-            </IonItem>
-          )}
           <IonItem>
             <IonLabel className="ion-text-wrap">
               <h3>{s.membership}</h3>

@@ -6,7 +6,7 @@ Copy each subject and the complete contents of its HTML file into the matching S
 | --------------------------- | -------------------------------------------------------- | ------------------------------------------ |
 | Confirm sign up             | `Confirm your Celestial Atlas account`                   | [HTML](./confirm-sign-up.html)             |
 | Invite user                 | `You’re invited to Celestial Atlas`                      | [HTML](./invite-user.html)                 |
-| Magic link or OTP           | `Your Celestial Atlas sign-in link`                      | [HTML](./magic-link-or-otp.html)           |
+| Magic link or OTP           | `{{ .Token }} is your Celestial Atlas sign-in code`      | [HTML](./magic-link-or-otp.html)           |
 | Change email address        | `Confirm your new Celestial Atlas email address`         | [HTML](./change-email-address.html)        |
 | Reset password              | `Reset your Celestial Atlas password`                    | [HTML](./reset-password.html)              |
 | Reauthentication            | `{{ .Token }} is your Celestial Atlas verification code` | [HTML](./reauthentication.html)            |
