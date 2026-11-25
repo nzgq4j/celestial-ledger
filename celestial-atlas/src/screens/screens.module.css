@@ -140,3 +140,6 @@
 .accountHead .avatar { flex: none; width: 56px; height: 56px; font-size: 24px; display: inline-flex; align-items: center; justify-content: center; }
 .accountWho { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .accountName { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.15; color: var(--ink); overflow-wrap: anywhere; }
+
+/* Sign in: the link to the other screen (Create account or Sign in). */
+.switchRow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--hairline-soft); }

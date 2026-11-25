@@ -34,10 +34,13 @@ export async function signInWithPassword(email: string, password: string) {
 export async function signUp(email: string, password: string, redirectTo: string) {
   const { data, error } = await client().auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
   if (error) throw new AccountError(error.code ?? 'SIGN_UP_FAILED', error.message);
-  return { needsConfirmation: !data.session };
+  // Supabase answers a sign-up for a registered address with a user that has no
+  // identities and sends no email (so addresses cannot be probed).
+  const alreadyExists = !!data.user && !data.session && (data.user.identities?.length ?? 0) === 0;
+  return { needsConfirmation: !data.session, alreadyExists };
 }
 
-/** Sends a one-time sign-in code by email (also creates the account if new). */
+/** Emails a password reset link. */
 export async function sendPasswordReset(email: string, redirectTo: string) {
   const { error } = await client().auth.resetPasswordForEmail(email, { redirectTo });
   if (error) throw new AccountError(error.code ?? 'RESET_FAILED', error.message);
