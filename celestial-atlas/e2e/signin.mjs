@@ -30,8 +30,13 @@ const expect = async (name, locator) => {
 
 // Supabase stub: the next sign-up answers as a new or an existing address.
 let signupMode = 'new';
+let authorizeUrl = '';
 await page.route('https://auth.test/**', route => {
   const url = route.request().url();
+  if (url.includes('/auth/v1/authorize')) {
+    authorizeUrl = url;
+    return route.fulfill({ status: 200, contentType: 'text/html', body: '<p>Google stub</p>' });
+  }
   if (url.includes('/auth/v1/signup')) {
     const identities = signupMode === 'new' ? [{ id: 'i1', provider: 'email' }] : [];
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', aud: 'authenticated', role: '', email: 'x@example.com', identities, created_at: new Date().toISOString(), app_metadata: {}, user_metadata: {} }) });
@@ -51,10 +56,12 @@ await page.getByRole('button', { name: 'Sign in' }).first().click();
 const modal = page.locator('ion-modal').filter({ has: page.locator('#signin-title') });
 await expect('sign-in screen opens', modal.getByText('New to Celestial Atlas?'));
 await expect('Create account is available before typing anything', modal.getByRole('button', { name: 'Create account' }));
+await expect('Google button on Sign in', modal.getByRole('button', { name: 'Continue with Google' }));
 await axe('signin'); await shot('S1-signin');
 
 await modal.getByRole('button', { name: 'Create account' }).click();
 await expect('create account screen', modal.locator('#signin-title').filter({ hasText: 'Create account' }));
+await expect('Google button on Create account', modal.getByRole('button', { name: 'Continue with Google' }));
 await axe('create'); await shot('S2-create');
 
 await modal.locator('ion-input').filter({ hasText: 'Email' }).locator('input').fill('new@example.com');
@@ -76,6 +83,14 @@ await modal.getByRole('button', { name: 'Create account' }).click();
 await expect('existing address: back on Sign in with a clear message', modal.getByText(/An account already exists for taken@example\.com/));
 await expect('email kept on Sign in', modal.locator('ion-input input[type="email"]'));
 await axe('signin-exists'); await shot('S4-exists');
+
+// Continue with Google leaves for Supabase's Google authorize address, returning to /auth/callback.
+await modal.getByRole('button', { name: 'Continue with Google' }).click();
+await page.waitForURL(/auth\.test\/auth\/v1\/authorize/, { timeout: 5000 }).catch(() => undefined);
+const a = authorizeUrl ? new URL(authorizeUrl) : null;
+checks.push(a && a.searchParams.get('provider') === 'google' && a.searchParams.get('redirect_to') === 'http://localhost:4173/auth/callback'
+  && a.searchParams.get('code_challenge_method')?.toLowerCase() === 's256'
+  ? 'ok: Google goes to authorize with PKCE and returns to /auth/callback' : `FAILED: Google authorize request (${authorizeUrl || 'none'})`);
 
 console.log(JSON.stringify({ checks, errors, violations }, null, 2));
 await browser.close();

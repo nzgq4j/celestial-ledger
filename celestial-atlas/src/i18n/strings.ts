@@ -344,6 +344,9 @@ export const en = {
     haveAccount: "Already have an account?",
     newHere: "New to Celestial Atlas?",
     alreadyExists: "An account already exists for {email}. Sign in, or use Forgot password? to reset it.",
+    google: "Continue with Google",
+    or: "or",
+    googleFailed: "Google sign-in did not finish. Please try again.",
   },
   toasts: {
     syncFailed: 'Sync failed. Your changes are saved on this device.',

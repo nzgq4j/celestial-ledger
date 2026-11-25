@@ -340,6 +340,9 @@ export const es: Strings = {
     haveAccount: "¿Ya tienes una cuenta?",
     newHere: "¿Eres nuevo en Celestial Atlas?",
     alreadyExists: "Ya existe una cuenta para {email}. Inicia sesión o usa ¿Has olvidado tu contraseña? para restablecerla.",
+    google: "Continuar con Google",
+    or: "o",
+    googleFailed: "No se ha completado el inicio de sesión con Google. Inténtalo de nuevo.",
   },
   toasts: {
     syncFailed: 'No se ha podido sincronizar. Tus cambios están guardados en este dispositivo.',

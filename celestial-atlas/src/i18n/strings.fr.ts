@@ -340,6 +340,9 @@ export const fr: Strings = {
     haveAccount: "Vous avez déjà un compte ?",
     newHere: "Nouveau sur Celestial Atlas ?",
     alreadyExists: "Un compte existe déjà pour {email}. Connectez-vous ou utilisez Mot de passe oublié ? pour le réinitialiser.",
+    google: "Continuer avec Google",
+    or: "ou",
+    googleFailed: "La connexion avec Google n’a pas abouti. Veuillez réessayer.",
   },
   toasts: {
     syncFailed: 'La synchronisation a échoué. Vos modifications sont enregistrées sur cet appareil.',
