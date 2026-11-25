@@ -1,5 +1,5 @@
 import {
-  IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonChip, IonItem, IonLabel, IonList, IonNote,
+  IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonItem, IonLabel, IonList, IonNote,
   IonSegment, IonSegmentButton, IonSelect, IonSelectOption,
 } from '@ionic/react';
 import { SIGNS, chartAspects, horoscope, signCompat, signIn, type BodyPlacement, type Chart, type Period, type PlanetPlacement } from '../engine/atlas';
@@ -57,14 +57,17 @@ function HoroscopeTab() {
         <IonSegmentButton value="weekly"><IonLabel>{s.weekly}</IonLabel></IonSegmentButton>
         <IonSegmentButton value="monthly"><IonLabel>{app.premium ? s.monthly : s.monthlyPlus}</IonLabel></IonSegmentButton>
       </IonSegment>
-      <div className={css.chipRow} role="radiogroup" aria-label={s.sign}>
-        {SIGNS.map((_, i) => signIn(i, c)).map((z, i) => (
-          <IonChip key={z.name} role="radio" aria-checked={i === sign} outline={i !== sign} color={i === sign ? 'primary' : undefined}
-            onClick={() => app.setUi({ horoSign: i })}>
-            <span className="glyph" aria-hidden="true" style={{ marginRight: 6 }}>{z.glyph}</span>{z.name}
-          </IonChip>
-        ))}
-      </div>
+      <IonList lines="none" className="field-list">
+        <IonItem>
+          <IonSelect label={s.sign} labelPlacement="stacked" fill="outline" interface="action-sheet" value={sign}
+            selectedText={`${signIn(sign, c).name} · ${signIn(sign, c).dates}`}
+            onIonChange={e => app.setUi({ horoSign: Number(e.detail.value) })}>
+            {SIGNS.map((_, i) => signIn(i, c)).map((z, i) => (
+              <IonSelectOption key={z.name} value={i}>{`${z.name} · ${z.dates}`}</IonSelectOption>
+            ))}
+          </IonSelect>
+        </IonItem>
+      </IonList>
 
       {locked ? (
         <IonCard className={css.lock}>
