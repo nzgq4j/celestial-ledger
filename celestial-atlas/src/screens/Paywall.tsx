@@ -1,58 +1,62 @@
-import { useEffect, useRef, useState } from 'react';
-import { billing, PLANS, TRIAL_DAYS } from '../platform/billing';
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/react';
+import { closeOutline } from 'ionicons/icons';
+import { useState } from 'react';
+import { fill, useStrings } from '../i18n';
+import { PLANS, TRIAL_DAYS, billing } from '../platform/billing';
 import { useApp } from '../state/store';
 import css from './screens.module.css';
 
-export const PAYWALL_FEATURES = [
-  'Monthly forecasts with key dates for every sign',
-  'Your full birth chart — Mercury through Pluto',
-  'The Atlas Report: chart, numbers and tarot in one life & love reading',
-];
-
 export function Paywall() {
-  const { closePaywall, startTrial } = useApp();
+  const app = useApp();
+  const strings = useStrings();
+  const s = strings.paywall;
   const [busy, setBusy] = useState(false);
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const needsAccount = app.account.available && !app.account.email;
+  const plan = PLANS[0];
 
-  useEffect(() => {
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closePaywall(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [closePaywall]);
+  const start = async () => {
+    if (needsAccount) { app.closePaywall(); app.openSignIn(); return; }
+    setBusy(true);
+    try { await app.startTrial(plan.id); }
+    catch { app.showToast(s.failed); }
+    finally { setBusy(false); }
+  };
 
   return (
-    <div className={css.scrim} onClick={closePaywall}>
-      <div className={css.sheet} role="dialog" aria-modal="true" aria-labelledby="paywall-title" onClick={e => e.stopPropagation()}>
-        <button ref={closeRef} type="button" className={css.close} aria-label="Close" onClick={closePaywall}>×</button>
-        <div className="eyebrow" style={{ letterSpacing: '0.22em', marginBottom: 10 }}>Atlas+</div>
-        <h2 id="paywall-title" className="display" style={{ fontSize: 34, marginBottom: 20 }}>See the whole map.</h2>
-        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {PAYWALL_FEATURES.map(f => (
-            <li key={f} style={{ display: 'flex', gap: 12, fontSize: 14.5, lineHeight: 1.5, color: 'var(--ink-soft)' }}>
-              <span style={{ color: 'var(--gold-bright)' }} aria-hidden="true">✦</span>{f}
-            </li>
-          ))}
-        </ul>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
-          {PLANS.map(p => (
-            <div key={p.id} className={`${css.plan} ${css.planOn}`}>
-              <span>
-                <span style={{ display: 'block', fontSize: 15, fontWeight: 600 }}>{p.label}</span>
-                <span className="small" style={{ fontSize: 12.5 }}>{p.note}</span>
-              </span>
-              <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{p.price}</span>
-            </div>
-          ))}
+    <>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>{strings.common.atlasPlus}</IonTitle>
+          <IonButtons slot="end">
+            <IonButton aria-label={strings.common.close} onClick={app.closePaywall}><IonIcon aria-hidden="true" slot="icon-only" icon={closeOutline} /></IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding">
+        <div className={css.sheetBody}>
+          <h2 id="paywall-title" className="display" style={{ fontSize: 34, marginBottom: 18 }}>{s.title}</h2>
+          <ul className={css.featureList}>
+            {s.features.map(f => (
+              <li key={f}><span aria-hidden="true">✦</span>{f}</li>
+            ))}
+          </ul>
+          <div className={`${css.plan} ${css.planOn}`}>
+            <span>
+              <span style={{ display: 'block', fontSize: 15, fontWeight: 600 }}>{s.yearly}</span>
+              <span className="small" style={{ fontSize: 12.5 }}>{fill(s.note, { days: TRIAL_DAYS })}</span>
+            </span>
+            <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{plan.price}</span>
+          </div>
+          {needsAccount && <p className="small" style={{ margin: '14px 0 0' }}>{s.signInFirst}</p>}
+          <IonButton expand="block" size="large" style={{ marginTop: 18 }} disabled={busy} onClick={() => void start()}>
+            {needsAccount ? strings.common.signIn : fill(s.start, { days: TRIAL_DAYS })}
+          </IonButton>
+          <p className="note" style={{ textAlign: 'center', marginTop: 12 }}>{billing.isDemo ? s.demo : s.cancelAnytime}</p>
+          {!billing.isDemo && !needsAccount && (
+            <IonButton expand="block" fill="clear" color="medium" onClick={() => void billing.restore().then(() => app.closePaywall())}>{s.restore}</IonButton>
+          )}
         </div>
-        <button type="button" className="btn-primary" style={{ width: '100%', padding: 15, fontSize: 15 }} disabled={busy}
-          onClick={async () => { setBusy(true); try { await startTrial(PLANS[0].id); } finally { setBusy(false); } }}>
-          Start {TRIAL_DAYS}-day free trial
-        </button>
-        <p className="note" style={{ fontSize: 12, textAlign: 'center', marginTop: 12 }}>
-          {billing.isDemo ? 'Cancel anytime. Demo only — no payment is taken.' : 'Cancel anytime.'}
-        </p>
-      </div>
-    </div>
+      </IonContent>
+    </>
   );
 }

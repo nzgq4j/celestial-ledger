@@ -1,0 +1,103 @@
+/* Ionic theme in the Celestial Atlas palette (dark, Material Design mode). */
+:root {
+  --ion-font-family: 'Work Sans', system-ui, sans-serif;
+
+  --ion-background-color: #0a1128;
+  --ion-background-color-rgb: 10, 17, 40;
+  --ion-text-color: #efe6d2;
+  --ion-text-color-rgb: 239, 230, 210;
+
+  --ion-color-primary: #c9a35a;
+  --ion-color-primary-rgb: 201, 163, 90;
+  --ion-color-primary-contrast: #0a1128;
+  --ion-color-primary-contrast-rgb: 10, 17, 40;
+  --ion-color-primary-shade: #b18f4f;
+  --ion-color-primary-tint: #e3c27e;
+
+  --ion-color-secondary: #8fb4e8;
+  --ion-color-secondary-rgb: 143, 180, 232;
+  --ion-color-secondary-contrast: #0a1128;
+  --ion-color-secondary-contrast-rgb: 10, 17, 40;
+  --ion-color-secondary-shade: #7e9ecc;
+  --ion-color-secondary-tint: #9abcea;
+
+  --ion-color-danger: #d98c7a;
+  --ion-color-danger-rgb: 217, 140, 122;
+  --ion-color-danger-contrast: #0a1128;
+  --ion-color-danger-contrast-rgb: 10, 17, 40;
+  --ion-color-danger-shade: #bf7b6b;
+  --ion-color-danger-tint: #dd9887;
+
+  --ion-color-medium: #aeb6cc;
+  --ion-color-medium-rgb: 174, 182, 204;
+  --ion-color-medium-contrast: #0a1128;
+  --ion-color-medium-contrast-rgb: 10, 17, 40;
+  --ion-color-medium-shade: #99a0b4;
+  --ion-color-medium-tint: #b6bdd1;
+
+  --ion-toolbar-background: rgba(10, 17, 40, 0.92);
+  --ion-toolbar-color: #efe6d2;
+  --ion-toolbar-border-color: rgba(201, 163, 90, 0.18);
+  --ion-tab-bar-background: rgba(8, 14, 34, 0.96);
+  --ion-tab-bar-border-color: rgba(201, 163, 90, 0.25);
+  --ion-tab-bar-color: #aeb6cc;
+  --ion-tab-bar-color-selected: #e3c27e;
+  --ion-card-background: #111c3d;
+  --ion-item-background: transparent;
+  --ion-item-border-color: rgba(201, 163, 90, 0.15);
+  --ion-border-color: rgba(201, 163, 90, 0.28);
+  --ion-placeholder-color: #8d96b3;
+  --ion-backdrop-color: #04080f;
+}
+
+ion-content {
+  --background: transparent;
+}
+ion-card {
+  margin: 0;
+  border: 1px solid rgba(201, 163, 90, 0.28);
+  border-radius: 6px;
+  box-shadow: none;
+  color: var(--ion-text-color);
+}
+ion-card-content {
+  font-size: 15px;
+  line-height: 1.6;
+}
+ion-button {
+  --border-radius: 4px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  min-height: 44px;
+}
+ion-segment {
+  --background: transparent;
+}
+ion-segment-button {
+  --color: #aeb6cc;
+  --color-checked: #efe6d2;
+  --indicator-color: #c9a35a;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  min-height: 48px;
+}
+ion-chip {
+  min-height: 40px;
+}
+ion-list {
+  background: transparent;
+}
+ion-modal {
+  --background: #0e1834;
+  --border-radius: 8px;
+}
+ion-toast {
+  --background: #efe6d2;
+  --color: #0a1128;
+  --border-radius: 22px;
+}
+ion-tab-button {
+  min-height: 56px;
+  --ripple-color: #c9a35a;
+}

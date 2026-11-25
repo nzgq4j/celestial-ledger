@@ -2,6 +2,8 @@ import type { EvidenceMap } from '../engine/records';
 
 export interface JournalEntry {
   id: number;
+  /** Server ID once the entry is synced to the member's account. */
+  remoteId?: string;
   type: string;
   title: string;
   body: string;
