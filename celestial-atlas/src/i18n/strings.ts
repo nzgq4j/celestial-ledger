@@ -9,6 +9,7 @@ export const en = {
   appName: 'Celestial Atlas',
   tabs: { home: 'Today', stars: 'Stars', numbers: 'Numbers', tarot: 'Tarot', journal: 'Journal', label: 'App sections' },
   common: {
+    done: "Done",
     back: 'Back',
     close: 'Close',
     atlasPlus: 'Atlas+',
@@ -25,6 +26,8 @@ export const en = {
     openProfile: 'Open profile',
   },
   onboarding: {
+    selectDate: "Select a date",
+    selectTime: "Select a time",
     welcomeKicker: 'Welcome to',
     welcomeLead: 'Your birth chart, your numbers, and the cards — read together, in plain language you can actually use.',
     start: 'Build my atlas',

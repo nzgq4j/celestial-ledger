@@ -1,10 +1,11 @@
-import { IonCheckbox, IonInput, IonItem, IonList, IonRadio, IonRadioGroup, IonText } from '@ionic/react';
+import { IonCheckbox, IonItem, IonList, IonRadio, IonRadioGroup, IonText } from '@ionic/react';
 import { DateTime } from 'luxon';
 import type { Profile } from '../engine/atlas';
 import type { Place } from '../engine/places';
 import { birthTimeProblem, resolveBirthTime, type Disambiguation } from '../engine/time';
 import { fill, useStrings } from '../i18n';
 import { MIN_DATE, todayISO, validDate } from '../state/validation';
+import { PickerField } from '../ui/PickerField';
 
 export interface Draft {
   name: string;
@@ -38,12 +39,12 @@ export function DateTimeFields({ draft, set, withUnknown = true }: { draft: Draf
   return (
     <IonList lines="none" className="field-list">
       <IonItem>
-        <IonInput type="date" label={s.onboarding.dateLabel} labelPlacement="stacked" fill="outline" value={draft.date}
-          min={MIN_DATE} max={todayISO()} onIonInput={e => set({ date: String(e.detail.value ?? ''), disambiguation: undefined })} />
+        <PickerField kind="date" label={s.onboarding.dateLabel} value={draft.date} min={MIN_DATE} max={todayISO()}
+          onChange={date => set({ date, disambiguation: undefined })} />
       </IonItem>
       <IonItem>
-        <IonInput type="time" label={s.onboarding.timeLabel} labelPlacement="stacked" fill="outline" value={draft.time}
-          disabled={draft.timeUnknown} onIonInput={e => set({ time: String(e.detail.value ?? ''), disambiguation: undefined })} />
+        <PickerField kind="time" label={s.onboarding.timeLabel} value={draft.time} disabled={draft.timeUnknown}
+          onChange={time => set({ time, disambiguation: undefined })} />
       </IonItem>
       {withUnknown && (
         <IonItem>

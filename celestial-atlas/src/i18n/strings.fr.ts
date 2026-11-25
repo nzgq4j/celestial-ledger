@@ -5,6 +5,7 @@ export const fr: Strings = {
   appName: 'Celestial Atlas',
   tabs: { home: 'Aujourd’hui', stars: 'Astres', numbers: 'Nombres', tarot: 'Tarot', journal: 'Journal', label: 'Sections de l’application' },
   common: {
+    done: "OK",
     back: 'Retour',
     close: 'Fermer',
     atlasPlus: 'Atlas+',
@@ -21,6 +22,8 @@ export const fr: Strings = {
     openProfile: 'Ouvrir le profil',
   },
   onboarding: {
+    selectDate: "Choisir une date",
+    selectTime: "Choisir une heure",
     welcomeKicker: 'Bienvenue dans',
     welcomeLead: 'Votre thème astral, vos nombres et les cartes, lus ensemble, dans un langage clair et vraiment utile.',
     start: 'Créer mon atlas',

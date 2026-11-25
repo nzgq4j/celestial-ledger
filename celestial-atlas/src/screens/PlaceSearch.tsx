@@ -39,7 +39,7 @@ export function PlaceSearch({ value, onChange, label }: { value: Place | null; o
         spellcheck={false}
       />
       {results.length > 0 && (
-        <IonList aria-label={s.place.results} inset>
+        <IonList aria-label={s.place.results} lines="full">
           {results.map(p => (
             <IonItem key={p.id} button detail={false} onClick={() => { onChange(p); setQuery(''); setResults([]); }}>
               <IonLabel>
