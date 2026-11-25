@@ -64,11 +64,6 @@ export const de: Strings = {
     zone: 'Zeitzone {zone} · {offset} an diesem Datum.',
   },
   today: {
-    insightTitle: 'Persönlicher Tag {day} · Mond im Zeichen {sign}',
-    insightMeta: 'Celestial Atlas',
-    now: 'jetzt',
-    dismiss: 'Ausblenden',
-    insightLabel: 'Dein Impuls für heute',
     morning: 'Guten Morgen, {name}.',
     afternoon: 'Guten Tag, {name}.',
     evening: 'Guten Abend, {name}.',

@@ -68,11 +68,6 @@ export const en = {
     zone: 'Time zone {zone} · {offset} on that date.',
   },
   today: {
-    insightTitle: 'Personal Day {day} · Moon in {sign}',
-    insightMeta: 'Celestial Atlas',
-    now: 'now',
-    dismiss: 'Dismiss',
-    insightLabel: "Today's insight",
     morning: 'Good morning, {name}.',
     afternoon: 'Good afternoon, {name}.',
     evening: 'Good evening, {name}.',

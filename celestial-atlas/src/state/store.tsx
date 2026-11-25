@@ -31,12 +31,11 @@ export interface UiState {
   signA: number | null;
   signB: number;
   openEntry: number | null;
-  insightDismissed: boolean;
 }
 
 const INITIAL_UI: UiState = {
   period: 'daily', horoSign: null, numSel: 'lifePath',
-  partnerName: '', partnerDate: '', signA: null, signB: 4, openEntry: null, insightDismissed: false,
+  partnerName: '', partnerDate: '', signA: null, signB: 4, openEntry: null,
 };
 
 export interface Derived {
@@ -375,7 +374,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setNotif = useCallback(async (next: NotifSettings) => {
     setNotifState(next);
-    setUiState(s => ({ ...s, insightDismissed: false }));
     await save(KEYS.notif, next);
     if (profile) {
       const ok = await scheduleInsights(profile, next, next.enabled, contentRef.current);

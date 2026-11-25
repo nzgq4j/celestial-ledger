@@ -64,11 +64,6 @@ export const fr: Strings = {
     zone: 'Fuseau horaire {zone} · {offset} à cette date.',
   },
   today: {
-    insightTitle: 'Jour personnel {day} · Lune en {sign}',
-    insightMeta: 'Celestial Atlas',
-    now: 'maintenant',
-    dismiss: 'Ignorer',
-    insightLabel: 'Le message du jour',
     morning: 'Bonjour, {name}.',
     afternoon: 'Bon après-midi, {name}.',
     evening: 'Bonsoir, {name}.',
