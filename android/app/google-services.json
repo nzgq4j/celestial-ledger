@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "767501491656",
+    "project_id": "com-celestialatlas-app",
+    "storage_bucket": "com-celestialatlas-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767501491656:android:380c82b9355ecb22d7b4fd",
+        "android_client_info": {
+          "package_name": "com.celestialatlas.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBa71EmzX_u3PLtA4VEXWMJz5hfJ3EiuaQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
