@@ -305,3 +305,38 @@ describe("push notification tables", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("saved chart allowance", () => {
+  const insertChart = (uid: string, name: string) =>
+    db.query(
+      `insert into public.birth_profiles(user_id,label,birth_date,birth_time,time_unknown,city,country,display_name,latitude,longitude,time_zone,full_name,expires_at)
+       values ($1,$2,'1990-01-01','12:00',false,'Avignon','France','Avignon, France',43.9493,4.8055,'Europe/Paris',$2,now()+interval '1 year')`,
+      [uid, name],
+    );
+
+  it("lets Atlas+ keep its own chart plus 7 more, and no more", async () => {
+    // Alice is an Atlas+ member (trialing) from the membership test above.
+    const existing = Number(
+      (
+        await one<{ n: string }>(
+          "select count(*) as n from public.birth_profiles where user_id = $1 and expires_at > now()",
+          [alice],
+        )
+      ).n,
+    );
+    for (let i = existing; i < 8; i++)
+      await insertChart(alice, `Companion ${i}`);
+    await expect(insertChart(alice, "One too many")).rejects.toThrow(
+      /SAVED_CHART_ALLOWANCE_EXHAUSTED/,
+    );
+  });
+
+  it("keeps the free plan at one chart", async () => {
+    const carol = "30000000-0000-4000-8000-000000000004";
+    await db.query("insert into auth.users(id) values ($1)", [carol]);
+    await insertChart(carol, "Carol");
+    await expect(insertChart(carol, "Second")).rejects.toThrow(
+      /SAVED_CHART_ALLOWANCE_EXHAUSTED/,
+    );
+  });
+});

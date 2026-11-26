@@ -3,7 +3,7 @@ import {
 } from '@ionic/react';
 import { albumsOutline, arrowBackOutline, calculatorOutline, personCircleOutline, sparklesOutline, sunnyOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import { LocaleContext, stringsFor, useStrings } from './i18n';
+import { LocaleContext, fill, stringsFor, useStrings } from './i18n';
 import { updatePassword } from './platform/account';
 import { hideNativeSplash, setupSystemBars } from './platform/native';
 import { Account } from './screens/Account';
@@ -132,6 +132,12 @@ function Shell() {
                 <IonIcon aria-hidden="true" slot="start" icon={arrowBackOutline} />
                 {s.common.back}
               </IonButton>
+            </div>
+          )}
+          {app.viewing && (
+            <div className={css.viewingBar} role="status">
+              <span>{fill(s.charts.viewing, { name: app.viewing.profile.name })}</span>
+              <IonButton size="small" fill="outline" onClick={() => app.viewChart(null)}>{s.charts.backToMine}</IonButton>
             </div>
           )}
           {screen}

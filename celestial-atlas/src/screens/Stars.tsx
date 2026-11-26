@@ -132,7 +132,7 @@ function BirthChartTab() {
   const strings = useStrings();
   const c = useContent();
   const s = strings.stars;
-  const p = app.profile!, { chart } = app.derived!, premium = app.premium;
+  const p = app.chartProfile!, { chart } = app.derived!, premium = app.premium;
   const timeKnown = chart.record.timeKnown;
   const bodies = chartBodies(chart, premium);
   const aspects = chartAspects(chart, bodies);

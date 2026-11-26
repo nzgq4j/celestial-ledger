@@ -15,9 +15,9 @@ export function useOpenReport() {
   return () => {
     if (!app.premium) return app.openPaywall();
     // The report draws on name numbers; legacy profiles may not have the full birth name yet.
-    if (!app.profile?.name.trim()) { app.showToast(s.report.needsName); app.go('profile', 'settings'); return; }
+    if (!app.chartProfile?.name.trim()) { app.showToast(s.report.needsName); app.go('profile', 'settings'); return; }
     const d = app.derived!;
-    app.openReport(report(app.profile!, d.chart, d.nums, d.sky, cardsIn(c), app.now, c));
+    app.openReport(report(app.chartProfile!, d.chart, d.nums, d.sky, cardsIn(c), app.now, c));
   };
 }
 
@@ -27,7 +27,7 @@ export function Today() {
   const c = useContent();
   const t = s.today;
   const openReport = useOpenReport();
-  const p = app.profile!, { chart, nums, sky } = app.derived!, now = app.now;
+  const p = app.chartProfile!, { chart, nums, sky } = app.derived!, now = app.now;
   const first = p.name.split(' ')[0] || '';
   const home = horoscope(chart.sun.signIdx, 'daily', now, sky.moon.signIdx, c);
   const hour = now.getHours();

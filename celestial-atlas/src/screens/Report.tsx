@@ -8,7 +8,7 @@ export function ReportScreen() {
   const strings = useStrings();
   const s = strings.report;
   const c = useContent();
-  const rep = app.report!, p = app.profile!, { chart, nums } = app.derived!, now = app.now;
+  const rep = app.report!, p = app.chartProfile!, { chart, nums } = app.derived!, now = app.now;
   const moon = chart.moon.uncertain ? chart.moon.possibleSigns.map(x => x.name).join(' / ') : chart.moon.sign.name;
   const sub = fill(s.sub, {
     sun: chart.sun.sign.name, moon, lp: nums.lifePath,

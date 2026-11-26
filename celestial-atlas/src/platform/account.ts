@@ -210,6 +210,50 @@ export async function saveProfile(p: Profile): Promise<void> {
   if (error) throw new AccountError(error.message.includes('ALLOWANCE') ? 'CHART_LIMIT' : 'PROFILE_SAVE_FAILED', error.message);
 }
 
+/* ---------- Other people's charts (Atlas+) ---------- */
+
+/** Atlas+ keeps the member's own chart plus this many more (the server allows 8 in total). */
+export const MAX_EXTRA_CHARTS = 7;
+
+export interface SavedChart {
+  id: string;
+  profile: Profile;
+}
+
+const chartError = (error: { message: string }, fallback: string) =>
+  new AccountError(error.message.includes('ALLOWANCE') ? 'CHART_LIMIT' : fallback, error.message);
+
+/** Every active chart after the member's own (the oldest), oldest first. */
+export async function loadCharts(): Promise<SavedChart[]> {
+  const { data, error } = await client().from('birth_profiles').select(PROFILE_COLUMNS)
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: true }).order('id', { ascending: true });
+  if (error) throw new AccountError('CHARTS_LOAD_FAILED', error.message);
+  return ((data ?? []) as BirthProfileRow[]).slice(1).map(row => ({ id: row.id, profile: rowToProfile(row) }));
+}
+
+/** Adds a chart, or updates one by id; either renews its one-year expiry. Returns the chart. */
+export async function saveChart(p: Profile, id?: string): Promise<SavedChart> {
+  const c = client();
+  const { data: auth } = await c.auth.getUser();
+  if (!auth.user) throw new AccountError('SIGNED_OUT', 'Sign in to save charts.');
+  const expires = new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString();
+  const row = { ...profileToRow(p), label: p.name.trim().slice(0, 80) || 'Chart', expires_at: expires };
+  if (id) {
+    const { error } = await c.from('birth_profiles').update(row).eq('id', id);
+    if (error) throw chartError(error, 'CHART_SAVE_FAILED');
+    return { id, profile: p };
+  }
+  const { data, error } = await c.from('birth_profiles').insert({ ...row, user_id: auth.user.id }).select('id').single();
+  if (error || !data) throw chartError(error ?? { message: 'No chart returned' }, 'CHART_SAVE_FAILED');
+  return { id: (data as { id: string }).id, profile: p };
+}
+
+export async function deleteChart(id: string): Promise<void> {
+  const { error } = await client().from('birth_profiles').delete().eq('id', id);
+  if (error) throw new AccountError('CHART_DELETE_FAILED', error.message);
+}
+
 /* ---------- Journal ---------- */
 
 const ENTRY_TYPES: Record<string, string> = {

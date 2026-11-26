@@ -18,7 +18,7 @@ export function Numbers() {
   const typesIn = NUM_TYPES.map(t => ({ ...t, ...c.numTypes[t.key] }));
   const { nums } = app.derived!;
   const now = app.now;
-  const hasName = !!app.profile?.name.trim();
+  const hasName = !!app.chartProfile?.name.trim();
   const types = hasName ? typesIn : typesIn.filter(t => t.key === 'lifePath' || t.key === 'birthday');
   const sel = types.some(t => t.key === app.ui.numSel) ? app.ui.numSel : 'lifePath';
   const nd = typesIn.find(t => t.key === sel)!, nv = nums[sel], nm = c.num[nv];
