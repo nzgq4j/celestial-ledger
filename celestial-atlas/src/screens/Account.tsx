@@ -1,6 +1,7 @@
 import { IonButton, IonCard, IonCardContent, IonLabel, IonSegment, IonSegmentButton } from '@ionic/react';
 import { fill, useStrings } from '../i18n';
 import { useApp, type AccountTab } from '../state/store';
+import { Charts } from './Charts';
 import { Journal } from './Journal';
 import { AccountSettings } from './Profile';
 import css from './screens.module.css';
@@ -42,10 +43,11 @@ export function Account() {
 
       <IonSegment value={app.accountTab} aria-label={s.sections} onIonChange={e => app.setAccountTab(e.detail.value as AccountTab)}>
         <IonSegmentButton value="journal"><IonLabel>{strings.journal.title}</IonLabel></IonSegmentButton>
+        <IonSegmentButton value="charts"><IonLabel>{strings.charts.section}</IonLabel></IonSegmentButton>
         <IonSegmentButton value="settings"><IonLabel>{s.settings}</IonLabel></IonSegmentButton>
       </IonSegment>
 
-      {app.accountTab === 'journal' ? <Journal /> : <AccountSettings />}
+      {app.accountTab === 'journal' ? <Journal /> : app.accountTab === 'charts' ? <Charts /> : <AccountSettings />}
     </div>
   );
 }

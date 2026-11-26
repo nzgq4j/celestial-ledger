@@ -23,7 +23,7 @@ export type NumTab = 'core' | 'cycles' | 'compat';
 const STARS_TABS: StarsTab[] = ['horoscope', 'chart', 'transits', 'compat'];
 const NUM_TABS: NumTab[] = ['core', 'cycles', 'compat'];
 /** Sections of the Account page: the journal (default) and settings. */
-export type AccountTab = 'journal' | 'settings';
+export type AccountTab = 'journal' | 'charts' | 'settings';
 
 /** Per-screen choices that survive switching tabs, as in the prototype. */
 export interface UiState {
@@ -87,6 +87,12 @@ interface AppValue {
   ui: UiState;
   report: Report | null;
   now: Date;
+  /** Other people's charts on the account (Atlas+). */
+  charts: account.SavedChart[];
+  /** The chart Today, Stars, Numbers and reports show while viewing someone else's. */
+  viewing: account.SavedChart | null;
+  /** The chart the reading screens use: the viewed chart, else the member's own. */
+  chartProfile: Profile | null;
   derived: Derived | null;
   derivedError: string | null;
   account: AccountState;
@@ -111,6 +117,9 @@ interface AppValue {
   openReport: (r: Report) => void;
   signOut: () => Promise<void>;
   resetAll: () => Promise<void>;
+  viewChart: (id: string | null) => void;
+  saveChart: (p: Profile, id?: string) => Promise<boolean>;
+  deleteChart: (id: string) => Promise<void>;
 }
 
 const Ctx = createContext<AppValue | null>(null);
@@ -162,6 +171,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const [ui, setUiState] = useState<UiState>(INITIAL_UI);
   const [report, setReport] = useState<Report | null>(null);
+  const [charts, setCharts] = useState<account.SavedChart[]>([]);
+  const [viewingId, setViewingId] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [session, setSession] = useState<Session | null>(null);
   const [membership, setMembership] = useState<account.Membership | null>(null);
@@ -185,7 +196,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       load<NotifSettings>(KEYS.notif, DEFAULT_NOTIF),
       load<string | null>(KEYS.locale, null),
       load<string | null>(KEYS.theme, null),
-    ]).then(([p, j, pr, n, l, t]) => {
+      load<account.SavedChart[]>(KEYS.charts, []),
+    ]).then(([p, j, pr, n, l, t, ch]) => {
+      if (alive && Array.isArray(ch)) setCharts(ch);
       if (alive && isLocale(l)) setLocaleState(l);
       if (alive && isThemePref(t)) { setThemeState(t); rememberThemePref(t); }
       if (!alive) return;
@@ -226,9 +239,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setStarsTab = useCallback((t: StarsTab) => { const r = { tab: 'stars' as const, sub: t }; replaceRoute(r); setRoute(r); }, []);
   const setNumTab = useCallback((t: NumTab) => { const r = { tab: 'numbers' as const, sub: t }; replaceRoute(r); setRoute(r); }, []);
   // /journal and /profile both open the Account page; /profile/settings opens its settings.
-  const accountTab: AccountTab = route.tab === 'profile' && route.sub === 'settings' ? 'settings' : 'journal';
+  const accountTab: AccountTab = route.tab === 'profile' && (route.sub === 'settings' || route.sub === 'charts') ? route.sub : 'journal';
   const setAccountTab = useCallback((t: AccountTab) => {
-    const r: Route = t === 'settings' ? { tab: 'profile', sub: 'settings' } : { tab: 'profile' };
+    const r: Route = t === 'journal' ? { tab: 'profile' } : { tab: 'profile', sub: t };
     replaceRoute(r); setRoute(r);
   }, []);
 
@@ -331,6 +344,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setJournal(entries);
         await save(KEYS.journal, entries);
         setMembership(await account.loadMembership());
+        const others = await account.loadCharts();
+        if (!alive) return;
+        setCharts(others);
+        await save(KEYS.charts, others);
       } catch (e) {
         if (alive) showToast(stringsRef.current.toasts.syncFailed);
       } finally {
@@ -346,6 +363,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }), [userId]);
 
   const premium = userId ? membership?.plan === 'premium' : localPremium;
+  // Viewing someone else's chart needs Atlas+; otherwise the member's own chart is shown.
+  const viewing = premium ? charts.find(c => c.id === viewingId) ?? null : null;
+  const chartProfile = viewing?.profile ?? profile;
+
+  const viewChart = useCallback((id: string | null) => {
+    setViewingId(id); setReport(null);
+    const home: Route = { tab: 'home' };
+    pushRoute(home); setRoute(home);
+  }, []);
+
+  const saveChart = useCallback(async (p: Profile, id?: string): Promise<boolean> => {
+    try {
+      const saved = await account.saveChart(p, id);
+      setCharts(prev => {
+        const next = id ? prev.map(c => (c.id === id ? saved : c)) : [...prev, saved];
+        void save(KEYS.charts, next);
+        return next;
+      });
+      return true;
+    } catch (e) {
+      showToast(e instanceof account.AccountError && e.code === 'CHART_LIMIT' ? stringsRef.current.charts.limit : stringsRef.current.charts.saveFailed);
+      return false;
+    }
+  }, [showToast]);
+
+  const deleteChart = useCallback(async (id: string) => {
+    try {
+      await account.deleteChart(id);
+      setCharts(prev => { const next = prev.filter(c => c.id !== id); void save(KEYS.charts, next); return next; });
+      setViewingId(v => (v === id ? null : v));
+    } catch {
+      showToast(stringsRef.current.charts.deleteFailed);
+    }
+  }, [showToast]);
 
   /* ---------- Actions ---------- */
 
@@ -437,6 +488,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await account.signOut().catch(() => undefined);
     setMembership(null);
+    // Other people's charts belong to the account; keep no copy on the device.
+    setCharts([]); setViewingId(null); await save(KEYS.charts, []);
     showToast(stringsRef.current.toasts.signedOut);
   }, [showToast]);
 
@@ -446,7 +499,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (userId) await account.signOut().catch(() => undefined);
     await removeAll();
     setProfileState(null); setJournal([]); setLocalPremium(false); setNotifState(DEFAULT_NOTIF);
-    setUiState(INITIAL_UI); setReport(null); setMembership(null);
+    setUiState(INITIAL_UI); setReport(null); setMembership(null); setCharts([]); setViewingId(null);
     const home: Route = { tab: 'home' };
     replaceRoute(home); setRoute(home);
   }, [userId]);
@@ -455,14 +508,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setTheme = useCallback((t: ThemePref) => { setThemeState(t); rememberThemePref(t); void save(KEYS.theme, t); }, []);
 
   const value: AppValue = {
-    loaded, locale, content, setLocale, theme, setTheme, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, derived: null, derivedError: null,
+    loaded, locale, content, setLocale, theme, setTheme, passwordPrompt, closePasswordPrompt: () => setPasswordPrompt(false), profile, journal, premium, notif, notifIssue, route, tab, starsTab, numTab, accountTab, paywall, signInOpen, toast, ui, report, now, charts, viewing, chartProfile, derived: null, derivedError: null,
     account: { available: supabase !== null, email: session?.user.email ?? null, name: account.displayName(session?.user ?? null), membership, syncing },
     go, setStarsTab, setNumTab, setAccountTab, back, setUi, setProfile, addJournal, deleteJournal, showToast,
     openPaywall: () => setPaywall(true), closePaywall: () => setPaywall(false),
     openSignIn: () => setSignInOpen(true), closeSignIn: () => setSignInOpen(false),
-    startTrial, manageMembership, setNotif, openReport, signOut, resetAll,
+    startTrial, manageMembership, setNotif, openReport, signOut, resetAll, viewChart, saveChart, deleteChart,
   };
-  const { derived, error: derivedError } = useDerived(profile, now, content);
+  const { derived, error: derivedError } = useDerived(chartProfile, now, content);
   value.derived = derived;
   value.derivedError = derivedError;
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

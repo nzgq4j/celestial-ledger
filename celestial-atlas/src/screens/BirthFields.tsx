@@ -34,7 +34,7 @@ export function draftToProfile(d: Draft): Profile | null {
   };
 }
 
-export function DateTimeFields({ draft, set, withUnknown = true }: { draft: Draft; set: (p: Partial<Draft>) => void; withUnknown?: boolean }) {
+export function DateTimeFields({ draft, set, withUnknown = true, unknownLabel }: { draft: Draft; set: (p: Partial<Draft>) => void; withUnknown?: boolean; unknownLabel?: string }) {
   const s = useStrings();
   return (
     <IonList lines="none" className="field-list">
@@ -50,7 +50,7 @@ export function DateTimeFields({ draft, set, withUnknown = true }: { draft: Draf
         <IonItem>
           <IonCheckbox checked={draft.timeUnknown} labelPlacement="end" justify="start"
             onIonChange={e => set({ timeUnknown: e.detail.checked, disambiguation: undefined })}>
-            {s.onboarding.timeUnknown}
+            {unknownLabel ?? s.onboarding.timeUnknown}
           </IonCheckbox>
         </IonItem>
       )}

@@ -50,6 +50,10 @@ through Stripe Checkout (`/api/app/checkout`, which refuses any other active
 price); Android through Google Play (`/api/google-play/verify`). Membership is
 read with the `atlas_membership()` database function.
 
+Atlas+ members can keep up to 7 more birth charts (family and friends) in
+**Account > Charts** and view any of them on Today, Stars and Numbers. The
+database enforces the allowance: 1 saved chart on the free plan, 8 on Atlas+.
+
 ## Development
 
 ```bash

@@ -11,6 +11,8 @@ export const KEYS = {
   theme: 'atlas_theme',
   /** The account the device's chart and journal belong to (absent: made while signed out). */
   owner: 'atlas_owner',
+  /** Device copy of the account's other charts (Atlas+). */
+  charts: 'atlas_charts',
 } as const;
 
 export async function load<T>(key: string, fallback: T): Promise<T> {

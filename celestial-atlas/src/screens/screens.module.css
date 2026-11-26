@@ -155,3 +155,11 @@
 .googleButton:disabled { opacity: 0.6; cursor: default; }
 .orRule { display: flex; align-items: center; gap: 12px; margin: 18px 0 4px; color: var(--muted); font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; }
 .orRule::before, .orRule::after { content: ''; flex: 1; height: 1px; background: var(--hairline); }
+
+/* Charts (Account) and the bar shown while viewing someone else's chart. */
+.chartsHead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.viewingBar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin: 0 0 16px;
+  padding: 10px 14px; border: 1px solid var(--gold); border-radius: var(--radius-lg); background: rgb(var(--gold-rgb) / 0.12);
+  color: var(--ink); font-weight: 500;
+}
